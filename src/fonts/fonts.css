@@ -1,0 +1,13 @@
+@font-face {
+    font-family: 'YeojuCeramic';
+    src: url('./YeojuCeramic.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'GwangyangTouching';
+    src: url('./GwangyangTouching.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Tokki';
+    src: url('./HSSanTokki.ttf') format('truetype');
+}

@@ -1,174 +1,102 @@
-.mainTop {
-  background-image: url('../../images/home.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  min-height: 100vh; 
-  display: flex;
-  color: white;
-  text-align: center;
-  white-space: nowrap;
+.main-container {
+    position: relative;
+    width: 100%;
+    height: 135vh;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
-.mainLeft {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: relative;
+.video-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow-y: hidden;
+    
 }
 
-.mainText {
-  margin: auto;
-  font-size: 5em;
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
-  font-family: "YeojuCeramic";
-  line-height: 1.5;
+.video-background video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
 }
 
-.joinButton {
-  background: linear-gradient(45deg, #746EF4, #FF66C3);
-  color: white;
-  border: solid white 0.1px;
-  padding: 0.5em 1em;
-  border-radius: 25px;
-  margin-top: 0.2em;
-  margin-bottom: 1em; 
-  font-size: 1.2em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: transform 0.3s;
-  width: 150px;
-  font-family: "YeojuCeramic";
-  text-decoration: none; 
+.main-video-content {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    text-align: center;
+    color: white;
+    font-family: 'TOkki';
 }
 
-.joinButton:hover {
-  transform: scale(1.1);
+.main-video-content h1 {
+    font-size: 7vw;
 }
 
-.buttonsContainer {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  font-family: "YeojuCeramic";
-  font-size: max(14px, 3vw);
-  margin: auto 0;
+.main-video-content p {
+    font-size: 4vw;
 }
 
-.button {
-  background: linear-gradient(45deg, #746EF4, rgb(255, 102, 195));
-  border: none;
-  color: white;
-  max-width: 70%;
-  width: 80%;
-  height: 30vh; 
-  font-size: 8vh;
-  border-radius: 30px;
-  cursor: pointer;
-  transition: transform 0.3s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  line-height: 1.2;
-  transition: transform 0.5s;
-  margin: 0.5em 0;
-  white-space: pre-wrap;
-  font-family: "YeojuCeramic";
+.main-carousel {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 20px;
+    width: 100%;
+    max-width: 100vw;
+    
 }
 
-.highlight {
-  color: rgb(99, 2, 206);
-  font-weight: bold;
+.main-carousel .carousel-caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white; 
+    padding: 20px; 
+    text-align: center; 
+    transition: bottom 0.3s; 
 }
 
-.highlight:hover {
-  color: rgb(99, 2, 206);
-  font-weight: bold;
-  transform: scale(1.1);
+.main-carousel .carousel-inner {
+    height: 50vh;
+    width: 100vw;
+    font-family: 'TOkki';
+    position: relative;
 }
 
-.button:hover {
-  transform: scale(1.1);
-}
-
-.bottom-container {
-  background-color: white; 
-  padding: 20px; 
-  overflow-y: auto;
-}
-
-.main-bottom {
-  display: flex;
-  flex-direction: column; 
-  align-items: center;
-}
-
-.image-container {
-  width: 100%; 
-}
-
-.tpic {
-  width: 100%;
-}
-
-.bottom-text-container {
-  margin-top: 20px; 
-  text-align: center;
-  color: black;
-  visibility: visible;
-  margin-bottom: 80px;
-  font-size: 4em;
-  font-family: YeojuCeramic;
-  white-space: nowrap;
-}
-.logo-link {
-  display: inline-block;
-  margin-top: 20px;
-}
-
-.logo {
-  width: 40px;
-  height: 40px;
-}
-.logo-container {
-  display: flex;
-  gap: 10px; /* 로고 사이의 간격 조절 */
-  margin-top: 20px;
+.main-carousel .carousel-item {
+    position: relative;
+    height: 100%;
 }
 
 @media (max-width: 768px) {
-  .mainText {
-    font-size: 3em; /* 수정된 부분 */
-  }
-  
-  .Maintop {
-    flex-direction: column;
-    align-items: center;
-  }
+    .main-container {
+        height: 100vh;
+    }
+    .video-background {
+        height: 80%;
+    }
 
-  .MainLeft {
-    order: 2;
-    margin-top: 20px; 
-  }
+    .video-background video {
+        height: 100%;
+    }
 
-  .buttonsContainer {
-    order: 3;
-    width: 500px;
-    font-size: 14px;
-  }
-
-  .joinButton {
-    margin-bottom: 20px;
-  }
-
-  .bottom-text-container {
-    font-size: 2em;
-  }
+    .main-video-content {
+        top: 40%;
+        font-size: 1rem;
+    }
+    .main-carousel {
+        height: 20%;
+    }
+    .main-carousel .carousel-inner {
+        height : 100%;
+    }
 }
