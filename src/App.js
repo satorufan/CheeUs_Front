@@ -7,6 +7,7 @@ import Login from './components/login/Login';
 import Header from './components/app/Header';
 import Footer from './components/app/Footer';
 import Profile from './components/profile/profile';
+import Match from './components/match/Match';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/main" element={<Main />} />
+          <Route path="/match" element={<Match />} />
           <Route path="*" element={<div>404</div>} />
         </Routes>
         <Footer/>

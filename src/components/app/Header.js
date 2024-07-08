@@ -39,7 +39,7 @@ function Header() {
               <Navbar.Toggle aria-controls="navbarNav" />
               <Navbar.Collapse id="navbarNav">
                 <Nav className="ms-auto">
-                  <Nav.Link href="/matching">둘이 마셔요</Nav.Link>
+                  <Nav.Link href="/match">둘이 마셔요</Nav.Link>
                   <Nav.Link href="/together">함께 마셔요</Nav.Link>
                   <Nav.Link href="/board">게시판</Nav.Link>
                   <Nav.Link href="/event">이벤트</Nav.Link>
