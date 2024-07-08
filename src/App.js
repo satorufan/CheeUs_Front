@@ -6,7 +6,7 @@ import Main from './components/main/Main';
 import Login from './components/login/Login';
 import Header from './components/app/Header';
 import Footer from './components/app/Footer';
-import Profile from './components/profile/profile';
+import MyProfilePage from './components/profile/MyProfilePage';
 import Match from './components/match/Match';
 
 function App() {
@@ -17,7 +17,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Main />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/mypage" element={<MyProfilePage />} />
           <Route path="/main" element={<Main />} />
           <Route path="/match" element={<Match />} />
           <Route path="*" element={<div>404</div>} />

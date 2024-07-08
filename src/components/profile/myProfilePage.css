@@ -1,0 +1,15 @@
+.myprofile-container{
+    margin-bottom:130px;
+}
+
+.edit-myprofile-btn{
+    padding: 5px 20px;
+    border: solid 2px white;
+    margin-left: calc(60% - 100px);
+}
+
+.edit-myprofile-btn:hover{
+    background-color: black;
+    border: solid 2px white;
+    color: white;
+}

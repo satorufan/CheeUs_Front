@@ -1,0 +1,113 @@
+
+.profile-container {
+    display: flex;
+    justify-content: center;
+    font-family: 'GwangyangTouching';
+}
+
+
+.profiles {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px
+}
+
+
+.profile-card {
+    width: 25vw; 
+    height: 65vh;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 10px;
+    padding: 20px;
+    background-color: #fff;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    position: relative; 
+    font-family: 'GwangyangTouching';}
+
+.profile-image {
+    width: 100%;
+    height: 27vh;
+    border-radius: 5%;
+    object-fit: cover;
+    margin-bottom: 10px;
+    cursor: pointer; 
+}
+
+.profile-details {
+    text-align: left;
+    overflow: hidden; 
+    flex-grow: 1; 
+}
+
+.profile-details h3 {
+    margin-bottom: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis; 
+    white-space: nowrap;
+}
+
+.profile-details .location-like {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.profile-details .profile-tags {
+    flex: 1; 
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 0;
+    list-style: none;
+    margin: 0;
+    position: absolute; 
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px;
+}
+
+.profile-details .profile-tags li {
+    background-color: #f0f0f0;
+    color: #333;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 13px;
+}
+
+
+.profile-details span {
+    font-size: 70%;
+}
+
+.profileIntro {
+    height: 13vh;
+    overflow-y: auto;
+    border: 2px solid grey;
+    border-radius: 20px; 
+    padding: 5px;
+}
+.myprofile-container {
+    margin-bottom: 130px; 
+}
+
+.edit-myprofile-btn {
+    padding: 5px 20px;
+    border: solid 2px white;
+    margin-left: 55%;
+}
+
+.edit-myprofile-btn:hover {
+    background-color: black;
+    border: solid 2px white;
+    color: white;
+}
+
+.img-fluid {
+    width: 500px;
+}
