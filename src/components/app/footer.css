@@ -6,6 +6,7 @@
     color: black;
     padding: 10px 0;
     font-family: 'GwangyangTouching', sans-serif;
+    z-index: 9999;	/*footer가 항상 위에있도록*/
 }
 
 .text-center{
