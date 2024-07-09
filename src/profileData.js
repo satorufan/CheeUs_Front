@@ -13,7 +13,8 @@ const profiles = [
         "intro": "Front-end Developer가되고싶은 어쩌고 저쩌고메롱메롱어니마ㅓ;ㅣㅏㅓ미ㅏㅓㅎ;ㅣ마ㅓㅇㅎ;ㅏㅣㅓㅁ;ㅏㅣㅇ험;ㅏㅣㅓㅇㅎ;ㅣㅁ",
         "popularity": 150,
         "latitude": 35.8242, 
-        "longitude": 127.1480 
+        "longitude": 127.1480,
+        "confirmedlist" : [],
     },
     {
         "id": 2,
@@ -29,7 +30,8 @@ const profiles = [
         "intro": "Back-end Developer",
         "popularity": 200,
         "latitude": 35.7168,
-        "longitude": 126.7346 
+        "longitude": 126.7346,
+        "confirmedlist" : [],
     },
     {
         "id": 3,
@@ -45,7 +47,8 @@ const profiles = [
         "intro": "iOS Developer",
         "popularity": 180,
         "latitude": 37.7749,
-        "longitude": -122.4194 
+        "longitude": -122.4194,
+        "confirmedlist" : [],
     },
     {
         "id": 4,
@@ -61,7 +64,8 @@ const profiles = [
         "intro": "Full-stack Developer 안녕하세요 선생님 안녕 친구야 인사하는 어린이 착한 어린이 아침해가 떴습니다 자리에서일어나서 세수하고 어쩌고 해야 착한 어린이",
         "popularity": 160,
         "latitude": 47.6062,
-        "longitude": -122.3321 
+        "longitude": -122.3321,
+        "confirmedlist" : [],
     },
     {
         "id": 5,
@@ -77,7 +81,8 @@ const profiles = [
         "intro": "Data Scientist",
         "popularity": 190,
         "latitude": 41.8781,
-        "longitude": -87.6298 
+        "longitude": -87.6298,
+        "confirmedlist" : [],
     }
 ];
 
