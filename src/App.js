@@ -8,6 +8,7 @@ import Header from './components/app/Header';
 import Footer from './components/app/Footer';
 import MyProfilePage from './components/profile/MyProfilePage';
 import Match from './components/match/Match';
+import InputFrom from './components/board/InputForm';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/mypage" element={<MyProfilePage />} />
           <Route path="/main" element={<Main />} />
           <Route path="/match" element={<Match />} />
+          <Route path="/input" element={<InputFrom />} />
           <Route path="*" element={<div>404</div>} />
         </Routes>
         <Footer/>
