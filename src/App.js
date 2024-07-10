@@ -11,6 +11,7 @@ import MyProfilePage from './components/profile/MyProfilePage';
 import UserProfilePage from './components/profile/UserProfilePage';
 import Match from './components/match/Match';
 import DTBoard from './components/dtboard/DTBoard';
+import Board from './components/board/BoardPage';
 import InputFrom from './components/board/InputForm';
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
           <Route path="/main" element={<Main />} />
           <Route path="/match" element={<Match />} />
           <Route path="/dtboard" element={<DTBoard />} />
+          <Route path="/board" element={<Board />} />
           <Route path="/input" element={<InputFrom />} />
           <Route path="*" element={<div>404</div>} />
         </Routes>

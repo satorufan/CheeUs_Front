@@ -63,24 +63,28 @@
   color: #FF6B6B;
   position: fixed;
   top : 60%;
-  left : 19%;
+  left : 18%;
   border : solid 3px #FF6B6B;
   border-radius: 50px;
   padding :5px;
   transition: transform 0.3s ease-in-out;
   z-index: -1;
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
 }
 
 .swipeButtons .favorite_button {
   color: #2d8636;
   position: fixed;
   top : 60%;
-  right : 19%;
+  right : 18%;
   border : solid 3px #2d8636;
   border-radius: 50px;
   padding :5px;
   transition: transform 0.3s ease-in-out;
   z-index: -1;
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
 }
 
 .swipeButtons .close_button:hover,
@@ -120,7 +124,10 @@
 }
 
 @media (max-width: 768px) {
-  .show-nope, .show-like {
+  .show-nope, .show-like,
+  .swipeButtons .favorite_button,
+  .swipeButtons .close_button
+   {
     opacity: 0;
   }
 }
