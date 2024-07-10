@@ -16,6 +16,7 @@ const MyProfilePage = () => {
 
     return (
         <div className="myprofile-container">
+           <div className="user-profile-nickname">My Profile</div>
           <div className="profile-container">
               <ProfileCard profile={loggedInUserProfile} />
           </div>

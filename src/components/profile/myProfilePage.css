@@ -4,8 +4,9 @@
 
 .edit-myprofile-btn{
     padding: 5px 20px;
+    font-family : 'YeojuCeramic';
     border: solid 2px white;
-    margin-left: calc(60% - 100px);
+    margin-left: calc(60% - 50px);
 }
 
 .edit-myprofile-btn:hover{

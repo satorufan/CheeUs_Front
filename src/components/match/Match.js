@@ -1,169 +1,191 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import TinderCard from 'react-tinder-card';
+import React, { useEffect, useState } from 'react';
+import TinderCards from './TinderCards';
 import profiles from '../../profileData';
-import ProfileCard from '../profile/ProfileCard';
-import './tinderCards.css';
-import CloseIcon from '@mui/icons-material/Close';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import IconButton from '@mui/material/IconButton';
+import { Modal, Button } from 'react-bootstrap';
+import './match.css';
+import axios from 'axios';
 
 const loggedInUserId = 1;
 
 const Match = () => {
-  const [currentIndex, setCurrentIndex] = useState(-1);
-  const [lastDirection, setLastDirection] = useState(null);
-  const [showMessages, setShowMessages] = useState([]);
-  const [shuffledProfiles, setShuffledProfiles] = useState([]);
+  const [locationOk, setLocationOk] = useState(null); 
+  const [showModal, setShowModal] = useState(false); 
+  const [userLocation, setUserLocation] = useState(null); 
+  const [matchServiceAgreed, setMatchServiceAgreed] = useState(false); 
 
   useEffect(() => {
-    const filteredProfiles = profiles.filter(profile =>
-      !profile.confirmedlist.includes(loggedInUserId) && profile.id !== loggedInUserId
-    );
-
-    if (filteredProfiles.length === 0) {
-      setCurrentIndex(-1);
-      setShuffledProfiles([]);
-      setShowMessages([]);
-      return;
-    }
-
-    const shuffled = shuffleArray(filteredProfiles);
-    setShuffledProfiles(shuffled);
-    setShowMessages(Array(shuffled.length).fill(''));
-    setCurrentIndex(shuffled.length - 1);
-  }, []);
-
-  useEffect(() => {
-    console.log('currentIndex:', currentIndex);
-  }, [currentIndex]);
-
-  const shuffleArray = (array) => {
-    const shuffled = [...array];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
-  };
-
-  const childRefs = useMemo(
-    () => shuffledProfiles.map(() => React.createRef()),
-    [shuffledProfiles]
-  );
-
-  const canSwipe = currentIndex >= 0;
-
-  const swiped = (direction, profileId, index) => {
-    setLastDirection(direction);
-
-    const newShowMessages = [...showMessages];
-    if (direction === 'right') {
-      newShowMessages[index] = 'LIKE';
-    } else if (direction === 'left') {
-      newShowMessages[index] = 'NOPE';
-    }
-    setShowMessages(newShowMessages);
-
-    updateConfirmedList(profileId);
-    setCurrentIndex(prevIndex => prevIndex - 1);
-  };
-
-  const updateConfirmedList = (profileId) => {
-    const updatedProfiles = shuffledProfiles.map(profile => {
-      if (profile.id === profileId) {
-        return {
-          ...profile,
-          confirmedlist: [...profile.confirmedlist, loggedInUserId]
-        };
+    const checkLocationPermission = async () => {
+      try {
+        const user = profiles.find(profile => profile.id === loggedInUserId);
+        if (user && user.location_ok === 1) {
+          // 위치 동의가 이미 허용된 경우
+          requestGeoLocation(setUserLocation, setLocationOk);
+        } else if (user && user.location_ok === 0) {
+          // 위치 동의는 했지만 GPS 요청을 거부한 경우
+          setShowModal(true);
+        } else {
+          // 사용자 정보가 없는 경우
+          setLocationOk(false);
+        }
+      } catch (error) {
+        console.error('위치 정보 확인 중 에러 발생: ', error);
+        setLocationOk(false);
       }
-      return profile;
-    });
-    setShuffledProfiles(updatedProfiles);
+    };
+
+    // 컴포넌트가 마운트될 때 위치 동의 확인
+    if (locationOk === null) {
+      checkLocationPermission();
+    }
+  }, [locationOk]);
+
+  // 모달에서 동의 버튼 클릭
+  const handleConfirm = () => {
+    setShowModal(false); 
+    setLocationOk(true); 
+    requestGeoLocation(setUserLocation, setLocationOk); // GPS 요청
+    updateLocationPermissionOnServer(); // 서버에 위치 정보 동의 업데이트 요청
   };
 
-  const outOfFrame = (name, idx) => {
-    console.log(`${name} (${idx}) left the screen!`);
-    if (idx === 0) {
-      setCurrentIndex(-1); // 마지막 카드 처리 후 상태 업데이트
-    }
+  // 모달에서 취소 버튼 클릭
+  const handleCancel = () => {
+    setLocationOk(false); 
+    setShowModal(false);
   };
 
-  const swipe = async (dir, index) => {
-    if (!canSwipe || index < 0 || index >= shuffledProfiles.length || !childRefs[index]?.current) {
-      console.log(`Cannot swipe at index: ${index}.`);
-      return;
-    }
-
-    try {
-      await childRefs[index].current.swipe(dir);
-    } catch (error) {
-      console.error('Error while swiping: ', error);
-    }
+  // 1:1 매칭 서비스 동의 모달에서 동의 버튼 클릭 시 처리
+  const handleMatchServiceConfirm = () => {
+    setMatchServiceAgreed(true);
+    updateMatchServiceAgreementOnServer(); // 서버에 매칭 서비스 동의 업데이트 요청
   };
 
-  const handleSwipeLeft = async () => {
-    if (!canSwipe || currentIndex >= shuffledProfiles.length) return;
-    if (childRefs[currentIndex]?.current) {
-      await swipe('left', currentIndex);
-    }
-  };
-  
-  const handleSwipeRight = async () => {
-    if (!canSwipe || currentIndex >= shuffledProfiles.length) return;
-    if (childRefs[currentIndex]?.current) {
-      await swipe('right', currentIndex);
-    }
-  };
-
-  const handleCardClick = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+  // 1:1 매칭 서비스 동의 모달에서 취소 버튼 클릭 시 처리
+  const handleMatchServiceCancel = () => {
+    setMatchServiceAgreed(false); // 1:1 매칭 서비스 동의 거부 상태로 변경
   };
 
   return (
-    <div className="tinderCard_container">
-      {currentIndex === -1 ? (
-        <div className="noMoreCardsMessage">
-          <p>매칭 할 카드가 없습니다.</p>
-          <p>함께 마셔요 게시판에는 있을지도~?</p>
+    <div className="Match_container">
+      {locationOk === null ? (
+        <div className="permissionMessage">
+          <p>위치 정보 확인 중...</p>
         </div>
+      ) : locationOk && userLocation && !matchServiceAgreed ? (
+        <div className="permissionMessage">
+          <p>1:1 매칭 서비스를 사용하려면 동의해주세요.</p>
+          <Button variant="dark" onClick={() => setShowModal(true)}>
+            동의하기
+          </Button>
+        </div>
+      ) : locationOk && userLocation && matchServiceAgreed ? (
+        <TinderCards profiles={profiles} />
       ) : (
-        <>
-          <div className='cardContainer'>
-            {shuffledProfiles.map((profile, index) => (
-              <TinderCard
-                ref={childRefs[index]}
-                className='swipe'
-                key={profile.id}
-                onSwipe={(dir) => swiped(dir, profile.id, index)}
-                onCardLeftScreen={() => outOfFrame(profile.id, index)}
-                preventSwipe={['up', 'down']}
-              >
-                <div className="card" onClick={handleCardClick}>
-                  <ProfileCard profile={profile} />
-                  {showMessages[index] && (
-                    <div className={`infoText ${showMessages[index] === 'LIKE' ? 'like' : 'nope'}`}>
-                      {showMessages[index]}
-                    </div>
-                  )}
-                </div>
-              </TinderCard>
-            ))}
-          </div>
-          {canSwipe && (
-            <div className='swipeButtons'>
-              <IconButton onClick={handleSwipeLeft} disabled={!canSwipe}>
-                <CloseIcon fontSize='large' className="close_button" />
-              </IconButton>
-              <IconButton onClick={handleSwipeRight} disabled={!canSwipe}>
-                <FavoriteIcon fontSize='large' className="favorite_button" />
-              </IconButton>
-            </div>
+        <div className="permissionMessage">
+          <p>매칭 서비스를 사용하려면 위치 정보 제공에 동의해야 합니다.</p>
+          {locationOk === false && (
+            <>
+              <div>
+                현재 위치 정보가 <span>차단</span>되어 있습니다.
+              </div>
+              <div>
+                주소창 왼쪽의 <span>ⓘ</span> 버튼을 눌러 위치 권한을 <span>허용</span>한 후 다시 시도해주세요.
+              </div>
+            </>
           )}
-        </>
+          <Button variant="dark" onClick={() => setShowModal(true)}>
+            동의하기
+          </Button>
+        </div>
       )}
+
+      {/* 위치 정보 동의 모달 */}
+      <Modal show={showModal} onHide={() => setShowModal(false)} style={{ fontFamily: "YeojuCeramic" }}>
+        <Modal.Header closeButton>
+          <Modal.Title>위치 정보 동의</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          이 앱이 사용자의 위치 정보를 사용하도록 허용하시겠습니까?
+        </Modal.Body>
+        <Modal.Footer style={{ borderTop: "none" }}>
+          <Button variant="secondary" onClick={handleCancel}>
+            취소
+          </Button>
+          <Button variant="dark" onClick={handleConfirm}>
+            동의
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* 1:1 매칭 서비스 동의 모달 */}
+      <Modal show={!matchServiceAgreed && locationOk && userLocation} onHide={handleMatchServiceCancel} style={{ fontFamily: "YeojuCeramic" }}>
+        <Modal.Header closeButton>
+          <Modal.Title>1:1 매칭 서비스 사용 동의</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          1:1 매칭 서비스를 사용하도록 허용하시겠습니까?
+        </Modal.Body>
+        <Modal.Footer style={{ borderTop: "none" }}>
+          <Button variant="secondary" onClick={handleMatchServiceCancel}>
+            취소
+          </Button>
+          <Button variant="dark" onClick={handleMatchServiceConfirm}>
+            동의
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
 
 export default Match;
+
+// 브라우저에서 GPS 동의 요청
+const requestGeoLocation = (setUserLocation, setLocationOk) => {
+  if ('geolocation' in navigator) {
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        console.log('사용자의 현재 위치:', position.coords);
+        // 위치 정보를 상태에 저장
+        setUserLocation(position.coords);
+        setLocationOk(true);
+      },
+      error => {
+        console.error('위치 정보 요청 에러:', error);
+        setLocationOk(false); 
+      }
+    );
+  } else {
+    console.log('Geolocation 사용 불가능');
+    setLocationOk(false); 
+  }
+};
+
+// 서버에 위치 정보 동의 업데이트 요청
+const updateLocationPermissionOnServer = async () => {
+  try {
+    const user = profiles.find(profile => profile.id === loggedInUserId);
+    const updatedUser = { ...user, location_ok: 1 };
+    console.log('서버에 위치 정보 동의 업데이트 요청:', updatedUser);
+
+     // url 설정하기
+    const response = await axios.put(`https://your-server-api-url/updateLocationPermission/${loggedInUserId}`, updatedUser);
+    console.log('서버 응답:', response.data);
+  } catch (error) {
+    console.error('서버 요청 에러:', error);
+  }
+};
+
+// 서버에 매칭 서비스 동의 업데이트 요청 
+const updateMatchServiceAgreementOnServer = async () => {
+  try {
+    const user = profiles.find(profile => profile.id === loggedInUserId);
+    const updatedUser = { ...user, match_ok: 1 }; 
+    console.log('서버에 매칭 서비스 동의 업데이트 요청:', updatedUser);
+
+    // url 설정하기
+    const response = await axios.put(`https://your-server-api-url/updateMatchServiceAgreement/${loggedInUserId}`, updatedUser);
+    console.log('서버 응답:', response.data); // 서버에서 받은 응답 로그
+  } catch (error) {
+    console.error('서버 요청 에러:', error);
+  }
+};

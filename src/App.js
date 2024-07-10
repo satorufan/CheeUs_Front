@@ -8,6 +8,7 @@ import Login from './components/login/Login';
 import Header from './components/app/Header';
 import Footer from './components/app/Footer';
 import MyProfilePage from './components/profile/MyProfilePage';
+import UserProfilePage from './components/profile/UserProfilePage';
 import Match from './components/match/Match';
 import DTBoard from './components/dtboard/DTBoard';
 import InputFrom from './components/board/InputForm';
@@ -22,9 +23,9 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
           <Route path="/mypage" element={<MyProfilePage />} />
+          <Route path="/userprofile/:id" element={<UserProfilePage />} />
           <Route path="/main" element={<Main />} />
           <Route path="/match" element={<Match />} />
-
           <Route path="/dtboard" element={<DTBoard />} />
           <Route path="/input" element={<InputFrom />} />
           <Route path="*" element={<div>404</div>} />
