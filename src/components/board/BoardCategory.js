@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ArrowOutwardIcon from '@mui/icons-material/ArrowOutward';
 import "./boardCategory.css";
-import BoardTop from './BoardTop';
 
 function BoardPage() {
     const [activeIndex, setActiveIndex] = useState(0);
@@ -13,7 +12,7 @@ function BoardPage() {
             bgImage: "/images/community.jpg",
             title: "자유게시판",
             description: "열린 대화의 장!",
-            path: "/board/community"
+            path: "/board/freeboard"
         },
         {
             bgImage: "/images/shortform.jpg",
