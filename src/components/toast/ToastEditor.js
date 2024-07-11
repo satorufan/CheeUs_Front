@@ -1,7 +1,8 @@
 import React, { useRef, useState } from "react";
 import Box from "@mui/material/Box";
 import "@toast-ui/editor/dist/toastui-editor.css";
-import { Editor } from "@toast-ui/react-editor";
+import {Editor} from '@toast-ui/react-editor';
+
 
 const ToastEditor = ({ content }) => {
   const editorRef = useRef(null);

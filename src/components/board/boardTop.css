@@ -1,0 +1,29 @@
+.board-page-top {
+    background-color: black;
+    width: 100vw;
+    height:50px;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    color: white;
+    font-family: 'Tokki';
+    font-size:20px;
+}
+
+.category-container{
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    gap :20px;
+}
+
+.chip-name{
+    padding : 5px 15px;
+    font-family: 'GwangyangTouching';
+    font-size:15px;
+    border-radius: 50px;
+    background-color: white;
+    color :black;
+}
+
