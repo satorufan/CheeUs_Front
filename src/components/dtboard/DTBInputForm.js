@@ -4,7 +4,7 @@ import { BsArrowLeft } from 'react-icons/bs';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import ToastEditor from './ToastEditor';
 import './DTBinputForm.css';
-import DTBoardMap from './DTBoardMap';
+import InputMap from './InputMap';
 import { usePosts } from './PostContext';
 
 function DTBInputForm() {
@@ -51,7 +51,7 @@ function DTBInputForm() {
           <ToastEditor editorRef={editorRef} />
         </div>
         <div className="mapContainer">
-          <DTBoardMap />
+          <InputMap />
         </div>
       </div>
       <div className="bottomContainer">
