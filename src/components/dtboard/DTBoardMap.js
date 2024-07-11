@@ -1,39 +1,43 @@
 import React, { useEffect, useState } from 'react';
 
 /* global kakao */
-const kakaokey = "cc91cb103ac5f5d244562ea0a92a3053";
+const kakaokey = "cc91cb103ac5f5d244562ea0a92a3053"; // 카카오 API 키
+
+// 게시물 데이터
+const posts = [
+  { id: 1, title: '호수공원 벤치에서 맥주드실분', description: 'Menu description.', lat: 37.5665, lng: 126.9780 },
+  { id: 2, title: '다운타운에서 맥주 같이드실분', description: 'Menu description.', lat: 37.5700, lng: 126.9770 },
+  { id: 3, title: '피맥 조지실분 선착순 3명 구합니다', description: '피자네버슬립스-잠실점 | 2024.07.03 6:30pm', lat: 37.5700, lng: 126.9760 },
+  { id: 4, title: '곱소하실분 - 나루역 4출 4명', description: 'Menu description.', lat: 37.5730, lng: 126.9770 },
+  { id: 5, title: '참치 배터지게 드실분있나요?', description: 'Menu description.', lat: 37.5700, lng: 126.9760  },
+  { id: 6, title: 'dumi 1', description: 'dumi1'},
+  { id: 7, title: 'dumi 2', description: 'dumi2'},
+  { id: 8, title: 'dumi 3', description: 'dumi3'},
+  { id: 9, title: 'dumi 4', description: 'dumi4'},
+  { id: 10, title: 'dumi 5', description: 'dumi5'},
+  { id: 12, title: 'dumi 6', description: 'dumi6'},
+  { id: 13, title: 'dumi 7', description: 'dumi7'},
+  { id: 14, title: 'dumi 8', description: 'dumi8'},
+  { id: 15, title: 'dumi 9', description: 'dumi9'},
+  { id: 16, title: 'dumi 10', description: 'dumi10'},
+  { id: 17, title: 'dumi 11', description: 'dumi11'},
+  { id: 18, title: 'dumi 12', description: 'dumi12'},
+];
+
 const DTBoardMap = () => {
   const [map, setMap] = useState(null);
   const [searchInput, setSearchInput] = useState('');
   const [markers, setMarkers] = useState([]);
-  const posts = [
-    { id: 1, title: '호수공원 벤치에서 맥주드실분', description: 'Menu description.', lat: 37.5665, lng: 126.9780 },
-    { id: 2, title: '다운타운에서 맥주 같이드실분', description: 'Menu description.', lat: 37.5700, lng: 126.9760 },
-    { id: 3, title: '피맥 조지실분 선착순 3명 구합니다', description: '피자네버슬립스-잠실점 | 2024.07.03 6:30pm', lat: 37.5710, lng: 126.9766  },
-    { id: 4, title: '곱소하실분 - 나루역 4출 4명', description: 'Menu description.', lat: 37.5730, lng: 126.9770 },
-    { id: 5, title: '참치 배터지게 드실분있나요?', description: 'Menu description.', lat: 37.5700, lng: 126.9760  },
-    { id: 6, title: 'dumi 1', description: 'dumi1'},
-    { id: 7, title: 'dumi 2', description: 'dumi2'},
-    { id: 8, title: 'dumi 3', description: 'dumi3'},
-    { id: 9, title: 'dumi 4', description: 'dumi4'},
-    { id: 10, title: 'dumi 5', description: 'dumi5'},
-    { id: 12, title: 'dumi 6', description: 'dumi6'},
-    { id: 13, title: 'dumi 7', description: 'dumi7'},
-    { id: 14, title: 'dumi 8', description: 'dumi8'},
-    { id: 15, title: 'dumi 9', description: 'dumi9'},
-    { id: 16, title: 'dumi 10', description: 'dumi10'},
-    { id: 17, title: 'dumi 11', description: 'dumi11'},
-    { id: 18, title: 'dumi 12', description: 'dumi12'},
-  ];
 
   useEffect(() => {
+    // 카카오맵 스크립트 로드
     const script = document.createElement('script');
     script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaokey}&libraries=services,clusterer&autoload=false`; // clusterer 라이브러리 추가
     script.async = true;
     script.onload = () => {
       if (window.kakao && window.kakao.maps) {
         kakao.maps.load(() => {
-          const mapContainer = document.getElementById('map');
+          const mapContainer = document.getElementById('map'); // 지도를 표시할 div
           const mapOption = {
             center: new kakao.maps.LatLng(37.5665, 126.9780), // 지도 중심 좌표
             level: 3, // 지도 확대 레벨
@@ -50,7 +54,7 @@ const DTBoardMap = () => {
           // 마커 클러스터러를 생성
           const clusterer = new kakao.maps.MarkerClusterer({
             map: map, // 마커들을 클러스터로 관리하고 표시할 지도 객체
-            averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정
+            averageCenter: false, // 클러스터의 중심을 평균 위치가 아닌 클릭한 위치로 설정
             minLevel: 10 // 클러스터 할 최소 지도 레벨
           });
 
@@ -63,21 +67,22 @@ const DTBoardMap = () => {
 
               // 마커에 클릭 이벤트 추가 (예: 인포윈도우 표시)
               const infowindow = new kakao.maps.InfoWindow({
-                content: `<div style="padding:5px;">${post.title}</div>`, // 게시물 제목을 표시
+                content: generateInfoWindowContent(post),
+                removable: true
               });
               kakao.maps.event.addListener(marker, 'click', () => {
                 infowindow.open(map, marker);
               });
 
-              return marker;
+              return { marker, infowindow, post };
             }
             return null;
-          }).filter(marker => marker !== null);
+          }).filter(markerObj => markerObj !== null);
 
           // 클러스터러에 마커들을 추가
-          clusterer.addMarkers(newMarkers);
+          clusterer.addMarkers(newMarkers.map(markerObj => markerObj.marker));
 
-          // 클릭 이벤트 설정
+          // 지도 클릭 이벤트 설정
           kakao.maps.event.addListener(map, 'click', (mouseEvent) => {
             const latlng = mouseEvent.latLng;
             const geocoder = new kakao.maps.services.Geocoder();
@@ -96,16 +101,26 @@ const DTBoardMap = () => {
 
                 // 인포윈도우 내용
                 const iwContent = `
-                  <div style="padding:5px;">
-                    ${address} <br>
-                    <a href="https://map.kakao.com/link/map/${address},${latlng.getLat()},${latlng.getLng()}" style="color:blue" target="_blank">큰지도보기</a> 
-                    <a href="https://map.kakao.com/link/to/${address},${latlng.getLat()},${latlng.getLng()}" style="color:blue" target="_blank">길찾기</a>
+                  <div style="padding:10px; width:200px; height:100px;">
+                    <div style="margin-bottom:5px;">${address}</div>
+                    <div>
+                      <a href="https://map.kakao.com/link/map/${address},${latlng.getLat()},${latlng.getLng()}" style="color:blue" target="_blank">큰지도보기</a>
+                    </div>
+                    <div>
+                      <a href="https://map.kakao.com/link/to/${address},${latlng.getLat()},${latlng.getLng()}" style="color:blue" target="_blank">길찾기</a>
+                    </div>
                   </div>`;
-                
+
                 // 인포윈도우 생성
                 const infowindow = new kakao.maps.InfoWindow({
                   content: iwContent,
                   position: latlng,
+                  removable: true // 인포윈도우를 닫기 쉽게 설정
+                });
+
+                // 인포윈도우가 닫힐 때 마커 제거
+                kakao.maps.event.addListener(infowindow, 'close', () => {
+                  newMarker.setMap(null);
                 });
 
                 // 마커 위에 인포윈도우를 표시
@@ -153,6 +168,29 @@ const DTBoardMap = () => {
     });
   };
 
+  const generateInfoWindowContent = (post) => {
+    const relatedPosts = posts.filter(p => p.lat === post.lat && p.lng === post.lng);
+  
+    let content = `
+      <div style="padding:10px; background-color:white; border-radius:5px; box-shadow: 0px 0px 10px rgba(0,0,0,0.5);">
+    `;
+  
+    relatedPosts.forEach(p => {
+      content += `
+        <h3 style="margin:0; padding-bottom:5px; border-bottom:1px solid #ccc;">${p.title}</h3>
+        <p style="margin:5px 0;">${p.description}</p>
+        <button style="padding: 5px 10px; background-color: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">
+          같이 마시러 가기
+        </button>
+        <br>
+      `;
+    });
+  
+    content += `</div>`;
+    return content;
+  };
+  
+
   return (
     <div className="board-right">
       <div className="map-search-box">
@@ -164,7 +202,7 @@ const DTBoardMap = () => {
         />
         <button onClick={handleSearch}>검색</button>
       </div>
-      <div id="map" className="map"></div>
+      <div id="map" style={{ width: '100%' }}></div>
     </div>
   );
 };

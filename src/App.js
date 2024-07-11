@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, BrowserRouter } from 'react-router-dom';
 import './fonts/fonts.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Main from './components/main/Main';
@@ -19,7 +19,7 @@ import { PostProvider } from './components/dtboard/PostContext';
 function App() {
   return (
     <div className="App">
-      <Router>
+      <BrowserRouter>
         <PostProvider>
           <Header />
           <Routes>
@@ -38,7 +38,7 @@ function App() {
           </Routes>
           <Footer />
         </PostProvider>
-      </Router>
+      </BrowserRouter>
     </div>
   );
 }
