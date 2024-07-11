@@ -1,32 +1,17 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './DTBoard.css';
 import DTBoardContent from './DTBoardContent';
 import DTBoardMap from './DTBoardMap';
+import { useNavigate } from 'react-router-dom';
+import { usePosts } from './PostContext';
 
 const DTBoard = () => {
-  const posts = [
-    { id: 1, title: '호수공원 벤치에서 맥주드실분', description: 'Menu description.' },
-    { id: 2, title: '다운타운에서 맥주 같이드실분', description: 'Menu description.' },
-    { id: 3, title: '피맥 조지실분 선착순 3명 구합니다', description: '피자네버슬립스-잠실점 | 2024.07.03 6:30pm' },
-    { id: 4, title: '곱소하실분 - 나루역 4출 4명', description: 'Menu description.' },
-    { id: 5, title: '참치 배터지게 드실분있나요?', description: 'Menu description.' },
-    { id: 6, title: 'dumi 1', description: 'dumi1'},
-    { id: 7, title: 'dumi 2', description: 'dumi2'},
-    { id: 8, title: 'dumi 3', description: 'dumi3'},
-    { id: 9, title: 'dumi 4', description: 'dumi4'},
-    { id: 10, title: 'dumi 5', description: 'dumi5'},
-    { id: 12, title: 'dumi 6', description: 'dumi6'},
-    { id: 13, title: 'dumi 7', description: 'dumi7'},
-    { id: 14, title: 'dumi 8', description: 'dumi8'},
-    { id: 15, title: 'dumi 9', description: 'dumi9'},
-    { id: 16, title: 'dumi 10', description: 'dumi10'},
-    { id: 17, title: 'dumi 11', description: 'dumi11'},
-    { id: 18, title: 'dumi 12', description: 'dumi12'},
-  ];
-  
+  const { posts } = usePosts();
+  const navigate = useNavigate();
   
   //페이지 설정-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  const[currentPage, setCurrentPage] = useState(1);   //현재 페이지의 기본값을 1로 한다.
+
+  const [currentPage, setCurrentPage] = React.useState(1);   //현재 페이지의 기본값을 1로 한다.
   const postsPerPage = 7;  //한 페이지에 표시할 포스트의 수.
  
   const indexOfLastPost = currentPage * postsPerPage;  //페이지의 마지막 게시물 index
@@ -39,8 +24,13 @@ const DTBoard = () => {
   return (
     <div className="board-layout">
       <div className="board-content">
-      	{/* totalPost / postsPerPage로 총 페이지 수 구함 -> DTBoardContents의 */}
-        <DTBoardContent posts={currentPosts} totalPosts={posts.length} postsPerPage={postsPerPage} paginate={paginate} />
+        <DTBoardContent
+          posts={currentPosts}
+          totalPosts={posts.length}
+          postsPerPage={postsPerPage}
+          paginate={paginate}
+          onWriteButtonClick={() => navigate('/dtboard/input')}
+        />
         <DTBoardMap />
       </div>
     </div>

@@ -3,9 +3,33 @@
 	margin-bottom: 200px;
 }
 .topContainer{
+	display: flex;
 	height: 7vh;
 	margin-left: 23px;
 	padding: 8px;
+}
+.textareaHeader{
+	flex: 1;
+}
+.mapHeader{
+	flex: 1;
+    font-size: 2.75rem;
+    background: transparent;
+    padding: 0px;
+    font-size: 1.5rem;
+    width: 100%;
+    resize: none;
+    line-height: 1.5;
+    outline: none;
+    border: none;
+    font-weight: bold;
+    color: #666;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+}
+.mapping{
+	margin-left: 10px;
 }
 .contentContainer{
 	display: flex;
@@ -33,17 +57,18 @@
   }
   .backButton {
     font-size: 1.124rem;
+    font-weight: bold;
     height: 2.5rem;
     padding: 0.5rem 1rem;
     align-items: center;
-    background: none;
+    background-color: #888;
     border-radius: 4px;
     cursor: pointer;
     border: none;
     display: flex;
     outline: none;
-    color: var(--text1);
-    margin-left: 10px;
+    color: white;
+    margin-left: 25px;
   }
   
   .arrowWrap {
