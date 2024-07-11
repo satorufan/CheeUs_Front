@@ -36,6 +36,7 @@ const AuthProvider = ({ children }) => {
 
 	useEffect(()=>{
 		const tokenEmail = getJwtToken();
+		console.log(tokenEmail);
 		if (tokenEmail) {
 			setEmail(jwtDecode(tokenEmail).email);
 		}
