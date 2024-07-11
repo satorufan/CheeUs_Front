@@ -1,0 +1,102 @@
+.shortform-container {
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    margin-top : 30px;
+}
+
+.video-card-container {
+    display: grid;
+    width: 70vw;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    justify-items: center;
+    justify-content: center;
+    margin-bottom: 120px;
+}
+
+.video-card {
+    width: 300px;
+    height: 450px;
+    background-color: #fff;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.video-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.card-video {
+    position: relative;
+    overflow: hidden;
+}
+
+.card-video video {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* 비디오 컨트롤 숨김 스타일 */
+.video-element::-webkit-media-controls,
+.video-element::-webkit-media-controls-overlay-play-button,
+.video-element::-webkit-media-controls-play-button,
+.video-element::-webkit-media-controls-start-playback-button,
+.video-element::-webkit-media-controls-current-time-display,
+.video-element::-webkit-media-controls-time-remaining-display,
+.video-element::-webkit-media-controls-seek-back-button,
+.video-element::-webkit-media-controls-seek-forward-button,
+.video-element::-webkit-media-controls-volume-slider,
+.video-element::-webkit-media-controls-mute-button,
+.video-element::-webkit-media-controls-toggle-closed-captions-button {
+    display: none !important;
+}
+
+.card-content {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    padding: 1rem;
+}
+
+.card-avatar {
+    --Avatar-size: 2rem;
+}
+
+.card-icons {
+    margin-left: auto;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.card-icons a {
+    font-weight: 500;
+    color: #808080;
+    transition: color 0.3s;
+    text-decoration: none;
+}
+
+.card-icons a:hover {
+    color: #ff0000;
+}
+
+.video-content {
+    overflow: hidden;
+    height: 50px;
+}
+
+@media (max-width: 1200px) {
+    .video-card-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .video-card-container {
+        grid-template-columns: repeat(1, 1fr);
+    }
+}

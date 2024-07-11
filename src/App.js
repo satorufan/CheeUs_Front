@@ -1,5 +1,5 @@
 import './App.css';
-import { BrowserRouter as BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './fonts/fonts.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Main from './components/main/Main';
@@ -11,8 +11,9 @@ import MyProfilePage from './components/profile/MyProfilePage';
 import UserProfilePage from './components/profile/UserProfilePage';
 import Match from './components/match/Match';
 import DTBoard from './components/dtboard/DTBoard';
-import Board from './components/board/BoardPage';
-import InputFrom from './components/board/InputForm';
+import BoardPage from './components/board/BoardPage';
+import ShortForm from './components/shortform/ShortFrom';
+import InputFrom from './components/toast/InputForm';
 
 function App() {
   return (
@@ -28,7 +29,8 @@ function App() {
           <Route path="/main" element={<Main />} />
           <Route path="/match" element={<Match />} />
           <Route path="/dtboard" element={<DTBoard />} />
-          <Route path="/board" element={<Board />} />
+          <Route path="/board" element={<BoardPage />} />
+          <Route path="/board/shortform" element={<ShortForm />} />
           <Route path="/input" element={<InputFrom />} />
           <Route path="*" element={<div>404</div>} />
         </Routes>
