@@ -7,8 +7,8 @@ import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import Badge from '@mui/material/Badge';
 import MailIcon from '@mui/icons-material/Mail';
-import './header.css'; 
 import { AuthContext } from '../login/OAuth';
+import './header.css';
 
 function Header() {
     const [isLoggedIn, setIsLoggedIn] = useState(true); // 로그인 여부 확인

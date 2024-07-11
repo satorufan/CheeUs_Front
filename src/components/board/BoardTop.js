@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './boardTop.css';
 
 const chipData = [
-  { label: '자유 게시판', path: '/board/community' },
+  { label: '자유 게시판', path: '/board/freeboard' },
   { label: '숏폼 게시판', path: '/board/shortform' },
   { label: '이벤트 게시판', path: '/board/eventboard' }
 ];
