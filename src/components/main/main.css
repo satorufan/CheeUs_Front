@@ -4,6 +4,7 @@
     height: 135vh;
     overflow-x: hidden;
     overflow-y: auto;
+    margin-bottom : 120px;
 }
 
 .video-background {

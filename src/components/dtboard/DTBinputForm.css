@@ -1,0 +1,211 @@
+.inputContainer{
+	height: 100vh;
+	margin-bottom: 200px;
+}
+.topContainer{
+	display: flex;
+	height: 7vh;
+	margin-left: 23px;
+	padding: 8px;
+}
+.textareaHeader{
+	flex: 1;
+}
+.mapHeader{
+	flex: 1;
+    font-size: 2.75rem;
+    background: transparent;
+    padding: 0px;
+    font-size: 1.5rem;
+    width: 100%;
+    resize: none;
+    line-height: 1.5;
+    outline: none;
+    border: none;
+    font-weight: bold;
+    color: #666;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+}
+.mapping{
+	margin-left: 10px;
+}
+.contentContainer{
+	display: flex;
+	height: 98vh;
+}
+.textarea {
+    background: transparent;
+    display: block;
+    padding: 0px;
+    font-size: 2.75rem;
+    width: 100%;
+    resize: none;
+    line-height: 1.5;
+    outline: none;
+    border: none;
+    font-weight: bold;
+    color: #212529;
+  }
+  .buttonsWrap {
+    display: flex;
+    align-items: right;
+    justify-content: space-between;
+    padding: 8px 0px;
+    margin: 8px 8px;
+  }
+  .backButton {
+    font-size: 1.124rem;
+    font-weight: bold;
+    height: 2.5rem;
+    padding: 0.5rem 1rem;
+    align-items: center;
+    background-color: #888;
+    border-radius: 4px;
+    cursor: pointer;
+    border: none;
+    display: flex;
+    outline: none;
+    color: white;
+    margin-left: 25px;
+  }
+  
+  .arrowWrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .arrow {
+    font-size: 20px;
+  }
+  
+  .arrowText {
+    margin-left: 8px;
+    font-size: 1.125rem;
+  }
+  
+  .submitButton {
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    cursor: pointer;
+    outline: none;
+    border: none;
+    background-color: #12b886;
+    color: #ffffff;
+    border-radius: 4px;
+    padding: 0px 1.25rem;
+    height: 2.5rem;
+    font-size: 1.125rem;
+    margin-right: 25px;
+  }
+  
+  .mypageContainer {
+  	flex: 1;
+    margin: 0 auto;
+    width: 50%;
+    margin-top: 5px;
+    margin-left: 15px;
+  }
+   .bottomContainer{
+     margin: 0 auto;
+     flex-direction: column;
+    justify-content: flex-start;
+  }
+   /*지도 영역*/
+  .mapContainer{
+   flex: 1;
+   margin: 0 auto;
+   width: 50%;
+   height: 50vh;
+   margin-right: 15px;
+  }
+   
+  .board-right {
+  position: relative;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.map-search-box {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 10; /* 검색창을 지도 위로 올림 */
+  background: white;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  gap: 10px;
+}
+
+.map-search-box input {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.map-search-box button {
+  padding: 5px 10px;
+  border: none;
+  background-color: #333;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.map-search-box button:hover {
+  background-color: #555;
+}
+
+.map {
+  width: 100%;
+  height: 100vh;
+  border-radius: 5px;
+}
+
+.search-result {
+  position: absolute;
+  top: 30px;
+  left: 10px;
+  z-index: 9;
+  background: white;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-height: 60vh;
+  overflow-y: auto;
+  width: 30.4%;
+  padding: 10px;
+}
+
+.item {
+  margin-top: 20px;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.item .info h5 {
+  margin: 0;
+  padding: 0;
+}
+
+.item .info .jibun {
+  font-size: 0.8em;
+  color: #888;
+}
+
+.item .info .tel {
+  color: #0066ff;
+  font-size: 0.9em;
+}
+.searchPagination{
+	border: 1px solid black;
+}
+
+
+
+    

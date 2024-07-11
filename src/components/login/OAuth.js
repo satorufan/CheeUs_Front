@@ -36,7 +36,9 @@ const AuthProvider = ({ children }) => {
 
 	useEffect(()=>{
 		const tokenEmail = getJwtToken();
-		setEmail(jwtDecode(tokenEmail).email);
+		if (tokenEmail) {
+			setEmail(jwtDecode(tokenEmail).email);
+		}
 	}, []);
 
 	//쿠키에서 JWT 토큰 불러오기.
