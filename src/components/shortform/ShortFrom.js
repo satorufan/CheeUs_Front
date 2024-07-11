@@ -7,7 +7,7 @@ import CardCover from '@mui/joy/CardCover';
 import Typography from '@mui/joy/Typography';
 import Favorite from '@mui/icons-material/Favorite';
 import Visibility from '@mui/icons-material/Visibility';
-import './shortForm.css';
+import './shortForm.css'; // 해당 CSS 파일이 필요합니다.
 import BoardTop from '../board/BoardTop';
 
 // 예시 데이터
@@ -15,10 +15,10 @@ const exampleData = [
   {
     id: 1,
     author_id: 101,
-    author_name: 'John Doe', 
+    author_name: '뭐임마', 
     category: 1,
     title: '첫 번째 비디오 게시물',
-    content: '첫 번째 비디오 게시물 어쩌고 저쩌고으암;ㅏ험;ㅣㅏㅓㅇㅎ;미ㅏㅓㅇ;ㅣㅏ험ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ;ㅣㅏ머;',
+    content: '첫 번째 비디오 게시물 어쩌고 저쩌고',
     writeday: '2024-07-11',
     views: 50,
     like: 10,
@@ -86,10 +86,20 @@ const exampleData = [
 
 const ShortForm = () => {
   const [likedMap, setLikedMap] = useState({});
+  const [hoveredVideo, setHoveredVideo] = useState(null); // State to track hovered video URL
   const videoRefs = useRef({});
+
+  // 좋아요 클릭 처리
+  const handleLikeClick = (id) => {
+    setLikedMap(prevLikedMap => ({
+      ...prevLikedMap,
+      [id]: !prevLikedMap[id]
+    }));
+  };
 
   // 비디오 마우스 오버 시 재생
   const handleMouseEnter = (videoUrl) => {
+    setHoveredVideo(videoUrl);
     const videoElement = videoRefs.current[videoUrl];
     if (videoElement && videoElement.paused) {
       videoElement.play().catch(error => {
@@ -100,19 +110,12 @@ const ShortForm = () => {
 
   // 비디오 마우스 벗어날 시 정지 및 초기화
   const handleMouseLeave = (videoUrl) => {
+    setHoveredVideo(null);
     const videoElement = videoRefs.current[videoUrl];
     if (videoElement && !videoElement.paused) {
       videoElement.pause();
       videoElement.currentTime = 0;
     }
-  };
-
-  // 좋아요 클릭 처리
-  const handleLikeClick = (id) => {
-    setLikedMap(prevLikedMap => ({
-      ...prevLikedMap,
-      [id]: !prevLikedMap[id]
-    }));
   };
 
   // 비디오 요소들을 useRef를 통해 저장
@@ -124,28 +127,27 @@ const ShortForm = () => {
 
   return (
     <>
-    <BoardTop/>
-    <div className="shortform-container">
-      <div className="video-card-container">
+      <BoardTop />
+      <div className="shortform-container">
+        <div className="video-card-container">
           {exampleData.map((board) => (
             <Card
               key={board.id}
               variant="plain"
-              className="video-card" // 여기 수정됨: veido-card -> video-card
+              className="video-card"
               onMouseEnter={() => handleMouseEnter(board.videoUrl)}
               onMouseLeave={() => handleMouseLeave(board.videoUrl)}
             >
               <Box className="card-video">
-                <AspectRatio ratio="3/4">
+                <AspectRatio ratio="2/4">
                   <CardCover className="card-cover">
                     <video
                       id={board.videoUrl}
                       loop
                       muted
-                      poster={`https://assets.codepen.io/6093409/${board.id}.jpg`}
                       ref={el => videoRefs.current[board.videoUrl] = el}
-                      className="card-video video-element" // 여기 수정됨: video-element 클래스 추가
-                      controls
+                      className="card-video video-element"
+                      autoPlay={hoveredVideo === board.videoUrl} 
                     >
                       <source
                         src={board.videoUrl}
@@ -156,9 +158,9 @@ const ShortForm = () => {
                   </CardCover>
                 </AspectRatio>
               </Box>
-              <Typography className="video-content" sx={{ fontSize: 'sm', color: '#666' }}>
-                {board.content}
-              </Typography>
+              <div className="video-content">
+                {board.title}
+              </div>
               <Box className="card-content">
                 <Avatar
                   src={`https://images.unsplash.com/profile-${board.author_id}?dpr=2&auto=format&fit=crop&w=32&h=32&q=60&crop=faces&bg=fff`}
@@ -167,35 +169,29 @@ const ShortForm = () => {
                   className="card-avatar"
                 />
                 <div>
-                  <Typography sx={{ fontSize: 'sm', fontWeight: 'md' }}>
+                  <div className='short-author'>
                     {board.author_name}
-                  </Typography>
+                  </div>
                 </div>
-                <div className="card-icons">
-                  <Typography
-                    component="span"
-                    variant="body-xs"
-                    sx={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}
+                <div className="card-icons-container">
+                  <div
+                    className="card-icon-like"
                     onClick={() => handleLikeClick(board.id)}
                   >
                     <Favorite color={likedMap[board.id] ? 'error' : 'action'} />
                     {likedMap[board.id] ? board.like + 1 : board.like}
-                  </Typography>
-                  <Typography
-                    component="span"
-                    variant="body-xs"
-                    sx={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-                  >
+                  </div>
+                  <div className="card-icon">
                     <Visibility />
                     {board.views}
-                  </Typography>
+                  </div>
                 </div>
               </Box>
             </Card>
           ))}
         </div>
-        </div>
-        </>
+      </div>
+    </>
   );
 };
 

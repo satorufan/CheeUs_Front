@@ -7,8 +7,8 @@
 
 .video-card-container {
     display: grid;
-    width: 70vw;
-    grid-template-columns: repeat(3, 1fr);
+    width: 80vw;
+    grid-template-columns: repeat(4, 1fr);
     gap: 1rem;
     justify-items: center;
     justify-content: center;
@@ -67,26 +67,35 @@
     --Avatar-size: 2rem;
 }
 
-.card-icons {
-    margin-left: auto;
+.short-author,
+.video-content{
+    font-family: 'GwangyangTouching';
+}
+
+.card-icons-container {
     display: flex;
     gap: 0.5rem;
+    white-space:nowrap;
+    cursor: pointer;
 }
 
-.card-icons a {
-    font-weight: 500;
+.card-icon {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-size: 0.875rem; 
     color: #808080;
     transition: color 0.3s;
-    text-decoration: none;
-}
-
-.card-icons a:hover {
-    color: #ff0000;
 }
 
 .video-content {
     overflow: hidden;
     height: 50px;
+}
+
+.card-icon{
+    cursor:pointer; 
 }
 
 @media (max-width: 1200px) {
