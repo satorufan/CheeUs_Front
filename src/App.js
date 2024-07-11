@@ -7,21 +7,24 @@ import Login from './components/login/Login';
 import Header from './components/app/Header';
 import Footer from './components/app/Footer';
 import Profile from './components/profile/profile';
+import { AuthProvider } from './components/login/OAuth';
 
 function App() {
   return (
     <div className="App">
-      <BrowserRouter>
-        <Header/>
-        <Routes>
-          <Route path="/" element={<Main />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/main" element={<Main />} />
-          <Route path="*" element={<div>404</div>} />
-        </Routes>
-        <Footer/>
-      </BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter>
+          <Header/>
+          <Routes>
+            <Route path="/" element={<Main />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/main" element={<Main />} />
+            <Route path="*" element={<div>404</div>} />
+          </Routes>
+          <Footer/>
+        </BrowserRouter>
+      </AuthProvider>
     </div>
   );
 }

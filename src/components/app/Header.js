@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import Container from 'react-bootstrap/Container';
@@ -8,11 +8,13 @@ import Box from '@mui/material/Box';
 import Badge from '@mui/material/Badge';
 import MailIcon from '@mui/icons-material/Mail';
 import './header.css'; 
+import { AuthContext } from '../login/OAuth';
 
 function Header() {
 
     const [isLoggedIn, setIsLoggedIn] = useState(true); // 로그인 여부 확인
     const [isUnread, setIsUnread] = useState(true); // 채팅 읽지 않은 상태
+    const {memberEmail} = useContext(AuthContext);
 
     const handleLogout = () => {
       // 로그아웃 처리 함수 작성해야함
@@ -26,6 +28,7 @@ function Header() {
 
     return (
         <div className="header-container">
+          현재 사용자 | {memberEmail}
           <Navbar bg="#f2d420" expand="lg" style={{ backgroundColor: 'white' }}>
             <Container fluid className="header-box">
               <Navbar.Brand href="/main" className="header-logo">
@@ -45,7 +48,7 @@ function Header() {
                   <Nav.Link href="/event">이벤트</Nav.Link>
                   <Nav.Link href="/magazine">메거진</Nav.Link>
                   
-                  {isLoggedIn ? (
+                  {memberEmail ? (
                     <>
                       <Nav.Link href="/mypage">
                         <Stack direction="row" alignItems="center">
