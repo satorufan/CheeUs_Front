@@ -16,7 +16,7 @@ const ToastEditor = ({ content }) => {
     <div>
       <Box sx={{ m: 2 }}>
         <Editor
-          height="50vh"
+          height="96vh"
           placeholder="Please Enter Text."
           initialValue={content || ' '}
           ref={editorRef}
