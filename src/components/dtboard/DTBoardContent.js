@@ -1,7 +1,8 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const DTBoardContent = ({ posts, totalPosts, postsPerPage, paginate }) => {
-	
+  const navigate = useNavigate();
   const pageNumbers =[];
   
   for(let i = 1; i <= Math.ceil(totalPosts / postsPerPage); i++){ //Math.ceil로 계산한 값을 올림하여 필요한 페이지 수를 구한다.
@@ -28,7 +29,7 @@ const DTBoardContent = ({ posts, totalPosts, postsPerPage, paginate }) => {
             </a>
 		 ))}        
         </div>
-        <button className="write-button">게시글 작성</button>
+        <button className="write-button" onClick={()=>navigate('/dtboard/input')}>게시글 작성</button>
       </div>
     </div>
   );
