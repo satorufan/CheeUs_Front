@@ -18,6 +18,7 @@ import BoardPage from './components/board/BoardPage';
 import ShortForm from './components/shortform/ShortFrom';
 import InputFrom from './components/toast/InputForm';
 import FreeBoard from './components/freeboard/FreeBoard';
+import ChatPage from './components/chat/ChatPage';
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
             <Route path="/board" element={<BoardPage />} />
             <Route path="/board/shortform" element={<ShortForm />} />
             <Route path="/board/freeboard" element={<FreeBoard />} />
+            <Route path="/chatpage" element={<ChatPage />} />
             <Route path="/input" element={<InputFrom />} />
             <Route path="*" element={<div>404</div>} />
           </Routes>

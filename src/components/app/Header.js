@@ -62,7 +62,7 @@ function Header() {
                                           </Stack>
                                       )}
                                   </Nav.Link>
-                                  <Nav.Link onClick={handleReadMessage} href="/chat">
+                                  <Nav.Link onClick={handleReadMessage} href="/chatpage">
                                       {isNavExpanded ? (
                                           "채팅방"
                                       ) : (
