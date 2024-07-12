@@ -11,10 +11,12 @@ import { AuthContext } from '../login/OAuth';
 import './header.css';
 
 function Header() {
-    const [isLoggedIn, setIsLoggedIn] = useState(true); // 로그인 여부 확인
+    const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 여부 확인
     const [isUnread, setIsUnread] = useState(true); // 채팅 읽지 않은 상태
     const {memberEmail} = useContext(AuthContext);
     const [isNavExpanded, setIsNavExpanded] = useState(false); // Navbar 확장 상태 확인
+
+    console.log(memberEmail);
 
     const handleLogout = () => {
         // 로그아웃 처리 함수 작성해야함
@@ -56,7 +58,7 @@ function Header() {
                           {isLoggedIn ? (
                               <>
                                   <Nav.Link href="/mypage">
-                                      {isNavExpanded ? (
+                                      {memberEmail ? (
                                           "프로필"
                                       ) : (
                                           <Stack direction="row" alignItems="center">
@@ -65,7 +67,7 @@ function Header() {
                                       )}
                                   </Nav.Link>
                                   <Nav.Link onClick={handleReadMessage} href="/chat">
-                                      {isNavExpanded ? (
+                                      {memberEmail ? (
                                           "채팅방"
                                       ) : (
                                           <Box sx={{ color: 'action.active' }}>

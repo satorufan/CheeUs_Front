@@ -1,11 +1,12 @@
 // Login.js
 import React, { useState, useContext } from 'react';
-import { GOOGLE_AUTH_URL, KAKAO_AUTH_URL, NAVER_AUTH_URL } from './OAuth';
+import { AuthContext, GOOGLE_AUTH_URL, KAKAO_AUTH_URL, NAVER_AUTH_URL } from './OAuth';
 import kakaoLoginImage from '../images/kakao.png';
 import googleLoginImage from '../images/google.png';
 import naverLoginImage from '../images/naver.png';
 import './Login.css';
 import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const sweetalert = (title, contents, icon, confirmButtonText) => {
@@ -16,9 +17,11 @@ const Login = () => {
       confirmButtonText: confirmButtonText
     });
   };
+  const {requestSignIn, memberEmail} = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const handleLogin = () => {
-    sweetalert('로그인에 성공했습니다.', '', '', '확인');
+	requestSignIn();
   };
 
   return (
@@ -32,7 +35,7 @@ const Login = () => {
 				{/* <a  href = {GOOGLE_AUTH_URL} className = 'logo'>
 					<img src = {googleLoginImage} alt = "구글계정 로그인" />
 				</a><br/> */}
-				<a  href = {"http://localhost:8080/member/signIn"} className = 'logo'>
+				<a  href = {'http://localhost:8080/signIn'} className = 'logo'>
 					<img src = {googleLoginImage} alt = "구글계정 로그인" />
 				</a><br/>
 				<a  href = {NAVER_AUTH_URL} className='logo'>

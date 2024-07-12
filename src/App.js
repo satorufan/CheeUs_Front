@@ -6,6 +6,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Main from './components/main/Main';
 import Signup from './components/signup/Signup';
 import Login from './components/login/Login';
+import LoginCallback from './components/login/LoginCallback';
+import SignupCallback from './components/signup/SignupCallback';
 import Header from './components/app/Header';
 import Footer from './components/app/Footer';
 import MyProfilePage from './components/profile/MyProfilePage';
@@ -30,7 +32,9 @@ function App() {
           <Routes>
             <Route path="/" element={<Main />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/signupcallback" element={<SignupCallback />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/logincallback" element={<LoginCallback />} />
             <Route path="/mypage" element={<MyProfilePage />} />
             <Route path="/userprofile/:id" element={<UserProfilePage />} />
             <Route path="/main" element={<Main />} />
