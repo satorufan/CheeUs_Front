@@ -11,10 +11,11 @@ const Match = () => {
   const [locationOk, setLocationOk] = useState(null);
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [showMatchServiceModal, setShowMatchServiceModal] = useState(false);
-  const [showHelpModal, setShowHelpModal] = useState(false);  // 도움말 모달 상태
+  const [showHelpModal, setShowHelpModal] = useState(false);  
   const [userLocation, setUserLocation] = useState(null);
   const [matchServiceAgreed, setMatchServiceAgreed] = useState(false);
 
+  // tkd
   useEffect(() => {
     const checkLocationPermission = async () => {
       try {
@@ -146,17 +147,17 @@ const Match = () => {
           <h5>Chrome (데스크톱):</h5>
           <ol>
             <li>오른쪽 상단의 더 보기(세 개의 점 아이콘)를 클릭하고 '설정'을 선택합니다.</li>
-            <li>개인정보 및 보안을 클릭한 후, '사이트 설정' > '위치'를 찾아 'CheeUp'에 위치 접근 권한을 허용합니다.</li>
+            <li>개인정보 및 보안을 클릭한 후, '사이트 설정' → '위치'를 찾아 'CheeUp'에 위치 접근 권한을 허용합니다.</li>
           </ol>
           <h5>Safari (데스크톱):</h5>
           <ol>
-            <li>화면 상단의 Safari를 클릭하고 '설정' > '웹사이트'를 선택합니다.</li>
+            <li>화면 상단의 Safari를 클릭하고 '설정' → '웹사이트'를 선택합니다.</li>
             <li>'위치'를 찾아 'CheeUp'를 선택하고 '허용하기'를 클릭합니다.</li>
           </ol>
           <h5>Safari (iOS):</h5>
           <ol>
             <li>iOS 설정에서 '개인정보 보호'를 선택합니다.</li>
-            <li>'위치 서비스' > 'Safari'를 찾아 '앱을 사용하는 동안' 권한을 허용합니다.</li>
+            <li>'위치 서비스' → 'Safari'를 찾아 '앱을 사용하는 동안' 권한을 허용합니다.</li>
           </ol>
           <h5>Firefox (데스크톱):</h5>
           <ol>

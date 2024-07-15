@@ -9,6 +9,7 @@ import Login from './components/login/Login';
 import Header from './components/app/Header';
 import Footer from './components/app/Footer';
 import MyProfilePage from './components/profile/MyProfilePage';
+import EditProfile from './components/profile/EditProfile';
 import UserProfilePage from './components/profile/UserProfilePage';
 import Match from './components/match/Match';
 import DTBoard from './components/dtboard/DTBoard';
@@ -35,6 +36,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/mypage" element={<MyProfilePage />} />
             <Route path="/userprofile/:id" element={<UserProfilePage />} />
+            <Route path="/mypage/Edit/:id" element={<EditProfile />} />
             <Route path="/main" element={<Main />} />
             <Route path="/match" element={<Match />} />
             <Route path="/dtboard" element={<DTBoard />} />

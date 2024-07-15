@@ -63,8 +63,8 @@ const profiles = [
         "location": "Seattle",
         "intro": "Full-stack Developer 안녕하세요 선생님 안녕 친구야 인사하는 어린이 착한 어린이 아침해가 떴습니다 자리에서일어나서 세수하고 어쩌고 해야 착한 어린이",
         "popularity": 160,
-        "latitude": 47.6062,
-        "longitude": -122.3321,
+        "latitude": 35.6750,
+        "longitude": 126.7431,
         "confirmedlist" : [],
     },
     {
@@ -80,8 +80,8 @@ const profiles = [
         "location": "Chicago",
         "intro": "Data Scientist",
         "popularity": 190,
-        "latitude": 41.8781,
-        "longitude": -87.6298,
+        "latitude": 35.6857,
+        "longitude": 126.7114,
         "confirmedlist" : [],
     }
 ];

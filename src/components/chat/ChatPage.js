@@ -79,13 +79,13 @@ const ChatPage = () => {
             setMessageInput(''); // 메시지 입력 초기화
         } catch (error) {
             console.error('메시지를 불러오는 중 에러 발생:', error);
-            // Optional: You can handle specific error cases here if needed
+            
         }
     };
 
     const sendMessage = async () => {
         if (!selectedChat || !messageInput.trim()) {
-            console.log('Cannot send message: No chat selected or message input is empty.');
+            console.log('메세지 보낼 수 없음: No chat selected or message input is empty.');
             return;
         }
 
