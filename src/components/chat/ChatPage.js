@@ -1,15 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Search, ArrowUpward as ArrowUpwardIcon } from '@mui/icons-material';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './chatPage.css';
 import axios from 'axios';
+import io from 'socket.io-client';
 
 const ChatPage = () => {
     const [selectedChat, setSelectedChat] = useState(null); // 선택된 채팅방 상태
     const [chatRooms, setChatRooms] = useState([]); // 채팅방 목록 상태
     const [messageInput, setMessageInput] = useState(''); // 메시지 입력 상태
-    const [loggedInUserId, setLoggedInUserId] = useState(101);
+    const [showMessageInput, setShowMessageInput] = useState(false); // 메시지 입력 폼 보이기 여부 상태
+    const [socket, setSocket] = useState(null); // Socket.io 클라이언트 인스턴스
+    const scrollRef = useRef(null); // 채팅 스크롤 맨 아래로 이동을 위한 Ref
 
+    const loggedInUserId = 101;
+    
+    useEffect(() => {
+        // Socket.io 서버와의 연결 설정
+        const newSocket = io('http://localhost:8088'); // 소켓 서버의 URL에 맞게 설정
+        setSocket(newSocket);
+
+        return () => {
+            newSocket.disconnect(); // 컴포넌트 언마운트 시 소켓 연결 해제
+        };
+    }, []);
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [selectedChat]);
+ 
     useEffect(() => {
         const fetchChatRooms = async () => {
             try {
@@ -25,32 +44,82 @@ const ChatPage = () => {
         fetchChatRooms(); // 함수 호출하여 채팅방 목록 가져오기
     }, [loggedInUserId]); // 로그인된 사용자의 아이디가 변경될 때마다 실행
 
-    // 채팅방 클릭 시 처리하는 함수
-    const handlePersonClick = (roomId) => {
-        const selectedRoom = chatRooms.find(room => room.id === roomId);
-        setSelectedChat(selectedRoom);
+    useEffect(() => {
+        scrollToBottomOnRender(); // 초기 렌더링 시 맨 아래로 스크롤
+    }, []);
+
+    const scrollToBottom = () => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        }
     };
 
-    // 메시지 전송 처리 함수
+    const scrollToBottomOnRender = () => {
+        setTimeout(() => {
+            scrollToBottom();
+        }, 100); // setTimeout을 사용하여 다음 렌더링 사이클에서 실행되도록 함
+    };
+
+    const handlePersonClick = async (roomId) => {
+        try {
+            // 클릭된 채팅방 객체 찾기
+            const selectedRoom = chatRooms.find(room => room.roomId === roomId);
+
+            if (!selectedRoom) {
+                console.error(`roomId ${roomId}에 해당하는 채팅방을 찾을 수 없습니다.`);
+                return;
+            }
+
+            // 채팅방의 메시지 가져오기
+            const response = await axios.get(`http://localhost:8080/api/messages/${roomId}`);
+
+            // 선택된 채팅방 상태 업데이트
+            setSelectedChat({ ...selectedRoom, messages: response.data });
+            setShowMessageInput(true); // 메시지 입력 필드 보이기
+            setMessageInput(''); // 메시지 입력 초기화
+        } catch (error) {
+            console.error('메시지를 불러오는 중 에러 발생:', error);
+            // Optional: You can handle specific error cases here if needed
+        }
+    };
+
     const sendMessage = async () => {
-        if (!messageInput.trim()) return; // 메시지 입력이 없으면 함수 종료
+        if (!selectedChat || !messageInput.trim()) {
+            console.log('Cannot send message: No chat selected or message input is empty.');
+            return;
+        }
 
         const newMessage = {
             chat_room_id: selectedChat.roomId,
-            sender_id: selectedChat.member1, // 예시로, 실제로는 로그인한 사용자의 ID 사용해야 함
+            sender_id: loggedInUserId, // 현재 로그인한 사용자의 아이디
             message: messageInput,
             write_day: new Date().toISOString(),
             read: 0 // 예시로, 실제로는 메시지 읽음 상태를 적절히 처리해야 함
         };
 
         try {
-            const response = await axios.post('http://localhost:8080/api/messages', newMessage); // 백엔드 API로 메시지 전송
+            // 메시지를 백엔드 API로 전송하여 MongoDB에 저장
+            const response = await axios.post('http://localhost:8080/api/messages', newMessage);
+
+            // 저장된 메시지 데이터를 채팅방 데이터에 추가
+            setSelectedChat(prevChat => ({
+                ...prevChat,
+                messages: [...(prevChat.messages || []), newMessage] // Ensure messages array exists or initialize as empty
+            }));
+
+            // Socket.io를 통해 메시지 전송
+            socket.emit('sendMessage', newMessage);
+
             console.log('Message sent successfully:', response.data);
-            // 메시지 전송 후, 채팅창 초기화 또는 새로운 메시지를 목록에 추가할 수 있음
             setMessageInput(''); // 입력 필드 초기화
         } catch (error) {
             console.error('Error sending message:', error);
         }
+    };
+
+    const formatMessageTime = (writeDay) => {
+        const date = new Date(writeDay);
+        return `${date.getHours()}:${date.getMinutes()}`;
     };
 
     return (
@@ -66,13 +135,13 @@ const ChatPage = () => {
                             {chatRooms.map(room => (
                                 <li
                                     key={room.roomId}
-                                    className={`chat-person ${selectedChat && selectedChat.roomId === room.id ? 'chat-active' : ''}`}
-                                    onClick={() => handlePersonClick(room.id)}
+                                    className={`chat-person ${selectedChat && selectedChat.roomId === room.roomId ? 'chat-active' : ''}`}
+                                    onClick={() => handlePersonClick(room.roomId)}
                                 >
                                     <div className="d-flex align-items-center justify-content-between">
                                         <div className="d-flex align-items-center">
                                             <img src={`https://www.clarity-enhanced.net/wp-content/uploads/2020/06/profile-${room.member1}.jpg`} alt="" className="rounded-circle mr-3" />
-                                            <span className="chat-name">User {room.member1}</span>
+                                            <span className="chat-name">{room.member1 !== loggedInUserId ? room.member1 : room.member2}</span>
                                         </div>
                                         <span className="chat-time">2:09 PM</span>
                                     </div>
@@ -82,32 +151,37 @@ const ChatPage = () => {
                         </ul>
                     </div>
                     <div className="col-md-8 chat-right">
-                        <div className="chat-top">
-                            <span>To: <span className="chat-name">{selectedChat ? `User ${selectedChat.member1}` : 'Selected User'}</span></span>
-                        </div>
-                        {selectedChat &&
-                            <div className="chat active-chat" data-chat={`person${selectedChat.roomId}`}>
-                                {selectedChat.messages.map((message, index) => (
-                                    <div key={index} className={`chat-bubble ${message.senderId === selectedChat.member1 ? 'you' : 'me'}`}>
-                                        {message.message}
-                                        <span className="chat-time">{message.writeDay}</span>
+                    {selectedChat && (
+                            <React.Fragment>
+                                <div className="chat-top">
+                                    <span>To: <span className="chat-name">{`User ${selectedChat.member1 !== loggedInUserId ? selectedChat.member1 : selectedChat.member2}`}</span></span>
+                                </div>
+                                <div className="chat active-chat" data-chat={`person${selectedChat.roomId}`}>
+                                    {selectedChat.messages && selectedChat.messages.map((message, index) => (
+                                        <div key={index} className={`chat-bubble ${message.sender_id === loggedInUserId ? 'me' : 'you'}`}>
+                                            <div>{message.message}</div>
+                                            <span className="chat-time">{formatMessageTime(message.write_day)}</span>
+                                        </div>
+                                    ))}
+                                    <div ref={scrollRef}></div> 
+                                </div>
+                                {showMessageInput && ( 
+                                    <div className="chat-write d-flex align-items-center">
+                                        <input
+                                            type="text"
+                                            className="form-control flex-grow-1 chat-input"
+                                            placeholder="Type a message..."
+                                            value={messageInput}
+                                            onChange={(e) => setMessageInput(e.target.value)}
+                                            onKeyPress={(e) => {
+                                                if (e.key === 'Enter') sendMessage();
+                                            }}
+                                        />
+                                        <ArrowUpwardIcon className="send-icon" fontSize="large" onClick={sendMessage} />
                                     </div>
-                                ))}
-                            </div>
-                        }
-                        <div className="chat-write d-flex align-items-center">
-                            <input
-                                type="text"
-                                className="form-control flex-grow-1 chat-input"
-                                placeholder="Type a message..."
-                                value={messageInput}
-                                onChange={(e) => setMessageInput(e.target.value)}
-                                onKeyPress={(e) => {
-                                    if (e.key === 'Enter') sendMessage();
-                                }}
-                            />
-                            <ArrowUpwardIcon className="send-icon" fontSize="large" onClick={sendMessage} />
-                        </div>
+                                )}
+                            </React.Fragment>
+                        )}
                     </div>
                 </div>
             </div>

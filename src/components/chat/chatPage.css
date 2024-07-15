@@ -2,15 +2,16 @@
     --white: #ffffff;
     --light: #e0e0e0;
     --blue: #2196f3;
+    height: 100vh;
 }
 
 .chat-wrapper {
     position: relative;
     left: 50%;
     width: var(--wrapper);
-    height: 800px;
     transform: translateX(-50%);
-    overflow: hidden;
+    overflow-y: hidden;
+    margin-bottom :150px; 
 }
 
 .container {
@@ -18,7 +19,7 @@
     top: 50%;
     left: 50%;
     width: 80%;
-    height: 75%;
+    height: 100%;
     max-width: 1200px;
     background-color: var(--white);
     transform: translate(-50%, -50%);
@@ -98,6 +99,8 @@
     padding: 20px;
     display: flex;
     flex-direction: column;
+    height:70vh;
+    overflow-y: auto;
 }
 
 .chat-top .chat-name {
@@ -107,6 +110,9 @@
 
 .chat.active-chat {
     display: block;
+    height: 100vh;
+    overflow-y :auto;
+    margin:20px;
 }
 
 .chat-bubble {
@@ -127,6 +133,7 @@
 .chat-bubble.me {
     background-color: #f0f0f0;
     float: right;
+    margin-right:20px;
 }
 
 .chat-bubble .chat-time {
@@ -140,6 +147,7 @@
     display: flex;
     align-items: center;
     padding: 10px;
+    background-color: white;
 }
 
 .chat-write-link {
@@ -168,6 +176,8 @@
     background-color: var(--blue);
     color: #ffffff;
 }
+
+
 
 .chat-input[type="text"] {
     flex: 1;

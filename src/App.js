@@ -19,6 +19,7 @@ import ShortForm from './components/shortform/ShortFrom';
 import InputFrom from './components/toast/InputForm';
 import FreeBoard from './components/freeboard/FreeBoard';
 import ChatPage from './components/chat/ChatPage';
+import scoket from './server';
 
 function App() {
   return (
