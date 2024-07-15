@@ -8,23 +8,22 @@ import axios from 'axios';
 const loggedInUserId = 1;
 
 const Match = () => {
-  const [locationOk, setLocationOk] = useState(null); 
-  const [showModal, setShowModal] = useState(false); 
-  const [userLocation, setUserLocation] = useState(null); 
-  const [matchServiceAgreed, setMatchServiceAgreed] = useState(false); 
+  const [locationOk, setLocationOk] = useState(null);
+  const [showLocationModal, setShowLocationModal] = useState(false);
+  const [showMatchServiceModal, setShowMatchServiceModal] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);  // 도움말 모달 상태
+  const [userLocation, setUserLocation] = useState(null);
+  const [matchServiceAgreed, setMatchServiceAgreed] = useState(false);
 
   useEffect(() => {
     const checkLocationPermission = async () => {
       try {
         const user = profiles.find(profile => profile.id === loggedInUserId);
         if (user && user.location_ok === 1) {
-          // 위치 동의가 이미 허용된 경우
           requestGeoLocation(setUserLocation, setLocationOk);
         } else if (user && user.location_ok === 0) {
-          // 위치 동의는 했지만 GPS 요청을 거부한 경우
-          setShowModal(true);
+          setShowLocationModal(true);
         } else {
-          // 사용자 정보가 없는 경우
           setLocationOk(false);
         }
       } catch (error) {
@@ -33,35 +32,37 @@ const Match = () => {
       }
     };
 
-    // 컴포넌트가 마운트될 때 위치 동의 확인
     if (locationOk === null) {
       checkLocationPermission();
     }
   }, [locationOk]);
 
-  // 모달에서 동의 버튼 클릭
   const handleConfirm = () => {
-    setShowModal(false); 
-    setLocationOk(true); 
-    requestGeoLocation(setUserLocation, setLocationOk); // GPS 요청
-    updateLocationPermissionOnServer(); // 서버에 위치 정보 동의 업데이트 요청
+    setShowLocationModal(false);
+    setLocationOk(true);
+    requestGeoLocation(setUserLocation, setLocationOk);
+    updateLocationPermissionOnServer();
+    setShowMatchServiceModal(true); // 위치 정보 동의 후 1:1 매칭 서비스 동의 모달 표시
   };
 
-  // 모달에서 취소 버튼 클릭
   const handleCancel = () => {
-    setLocationOk(false); 
-    setShowModal(false);
+    setLocationOk(false);
+    setShowLocationModal(false);
   };
 
-  // 1:1 매칭 서비스 동의 모달에서 동의 버튼 클릭 시 처리
   const handleMatchServiceConfirm = () => {
     setMatchServiceAgreed(true);
-    updateMatchServiceAgreementOnServer(); // 서버에 매칭 서비스 동의 업데이트 요청
+    setShowMatchServiceModal(false);
+    updateMatchServiceAgreementOnServer();
   };
 
-  // 1:1 매칭 서비스 동의 모달에서 취소 버튼 클릭 시 처리
   const handleMatchServiceCancel = () => {
-    setMatchServiceAgreed(false); // 1:1 매칭 서비스 동의 거부 상태로 변경
+    setMatchServiceAgreed(false);
+    setShowMatchServiceModal(false);
+  };
+
+  const handleHelp = () => {
+    setShowHelpModal(true);
   };
 
   return (
@@ -73,7 +74,7 @@ const Match = () => {
       ) : locationOk && userLocation && !matchServiceAgreed ? (
         <div className="permissionMessage">
           <p>1:1 매칭 서비스를 사용하려면 동의해주세요.</p>
-          <Button variant="dark" onClick={() => setShowModal(true)}>
+          <Button variant="dark" onClick={() => setShowMatchServiceModal(true)}>
             동의하기
           </Button>
         </div>
@@ -92,14 +93,15 @@ const Match = () => {
               </div>
             </>
           )}
-          <Button variant="dark" onClick={() => setShowModal(true)}>
-            동의하기
-          </Button>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <Button variant="dark" onClick={() => setShowLocationModal(true)}>동의하기</Button>
+            <Button variant="dark" onClick={handleHelp}>도움말</Button>
+          </div>
         </div>
       )}
 
       {/* 위치 정보 동의 모달 */}
-      <Modal show={showModal} onHide={() => setShowModal(false)} style={{ fontFamily: "YeojuCeramic" }}>
+      <Modal show={showLocationModal} onHide={() => setShowLocationModal(false)} style={{ fontFamily: "YeojuCeramic" }}>
         <Modal.Header closeButton>
           <Modal.Title>위치 정보 동의</Modal.Title>
         </Modal.Header>
@@ -117,7 +119,7 @@ const Match = () => {
       </Modal>
 
       {/* 1:1 매칭 서비스 동의 모달 */}
-      <Modal show={!matchServiceAgreed && locationOk && userLocation} onHide={handleMatchServiceCancel} style={{ fontFamily: "YeojuCeramic" }}>
+      <Modal show={showMatchServiceModal} onHide={handleMatchServiceCancel} style={{ fontFamily: "YeojuCeramic" }}>
         <Modal.Header closeButton>
           <Modal.Title>1:1 매칭 서비스 사용 동의</Modal.Title>
         </Modal.Header>
@@ -133,41 +135,72 @@ const Match = () => {
           </Button>
         </Modal.Footer>
       </Modal>
+
+      {/* 도움말 모달 */}
+      <Modal show={showHelpModal} onHide={() => setShowHelpModal(false)} style={{ fontFamily: "YeojuCeramic", fontSize:"12px"}}>
+        <Modal.Header closeButton>
+          <Modal.Title>위치 권한 활성화 방법</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>아래는 다양한 브라우저에서 위치 권한을 활성화하는 방법입니다:</p>
+          <h5>Chrome (데스크톱):</h5>
+          <ol>
+            <li>오른쪽 상단의 더 보기(세 개의 점 아이콘)를 클릭하고 '설정'을 선택합니다.</li>
+            <li>개인정보 및 보안을 클릭한 후, '사이트 설정' > '위치'를 찾아 'CheeUp'에 위치 접근 권한을 허용합니다.</li>
+          </ol>
+          <h5>Safari (데스크톱):</h5>
+          <ol>
+            <li>화면 상단의 Safari를 클릭하고 '설정' > '웹사이트'를 선택합니다.</li>
+            <li>'위치'를 찾아 'CheeUp'를 선택하고 '허용하기'를 클릭합니다.</li>
+          </ol>
+          <h5>Safari (iOS):</h5>
+          <ol>
+            <li>iOS 설정에서 '개인정보 보호'를 선택합니다.</li>
+            <li>'위치 서비스' > 'Safari'를 찾아 '앱을 사용하는 동안' 권한을 허용합니다.</li>
+          </ol>
+          <h5>Firefox (데스크톱):</h5>
+          <ol>
+            <li>CheeUp.com으로 이동한 후, 웹사이트 URL 옆의 정보 아이콘을 클릭합니다.</li>
+            <li>'권한'에서 '위치'를 선택하고 필요한 권한을 설정합니다.</li>
+          </ol>
+        </Modal.Body>
+        <Modal.Footer style={{ borderTop: "none" }}>
+          <Button variant="secondary" onClick={() => setShowHelpModal(false)}>
+            닫기
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
 
 export default Match;
 
-// 브라우저에서 GPS 동의 요청
 const requestGeoLocation = (setUserLocation, setLocationOk) => {
   if ('geolocation' in navigator) {
     navigator.geolocation.getCurrentPosition(
       position => {
         console.log('사용자의 현재 위치:', position.coords);
-        // 위치 정보를 상태에 저장
         setUserLocation(position.coords);
         setLocationOk(true);
       },
       error => {
         console.error('위치 정보 요청 에러:', error);
-        setLocationOk(false); 
+        setLocationOk(false);
       }
     );
   } else {
     console.log('Geolocation 사용 불가능');
-    setLocationOk(false); 
+    setLocationOk(false);
   }
 };
 
-// 서버에 위치 정보 동의 업데이트 요청
 const updateLocationPermissionOnServer = async () => {
   try {
     const user = profiles.find(profile => profile.id === loggedInUserId);
     const updatedUser = { ...user, location_ok: 1 };
     console.log('서버에 위치 정보 동의 업데이트 요청:', updatedUser);
 
-     // url 설정하기
     const response = await axios.put(`https://your-server-api-url/updateLocationPermission/${loggedInUserId}`, updatedUser);
     console.log('서버 응답:', response.data);
   } catch (error) {
@@ -175,16 +208,14 @@ const updateLocationPermissionOnServer = async () => {
   }
 };
 
-// 서버에 매칭 서비스 동의 업데이트 요청 
 const updateMatchServiceAgreementOnServer = async () => {
   try {
     const user = profiles.find(profile => profile.id === loggedInUserId);
-    const updatedUser = { ...user, match_ok: 1 }; 
+    const updatedUser = { ...user, match_ok: 1 };
     console.log('서버에 매칭 서비스 동의 업데이트 요청:', updatedUser);
 
-    // url 설정하기
     const response = await axios.put(`https://your-server-api-url/updateMatchServiceAgreement/${loggedInUserId}`, updatedUser);
-    console.log('서버 응답:', response.data); // 서버에서 받은 응답 로그
+    console.log('서버 응답:', response.data);
   } catch (error) {
     console.error('서버 요청 에러:', error);
   }
