@@ -1,16 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { usePosts } from './PostContext';
 /* global kakao */
 const kakaokey = "cc91cb103ac5f5d244562ea0a92a3053"; // 카카오 API 키
 
-// 게시물 데이터
-const posts = [
-  { id: 1, title: '호수공원 벤치에서 맥주드실분', description: 'Menu description.', lat: 37.5665, lng: 126.9780 },
-  { id: 2, title: '다운타운에서 맥주 같이드실분', description: 'Menu description.', lat: 37.5700, lng: 126.9770 },
-  { id: 3, title: '피맥 조지실분 선착순 3명 구합니다', description: '피자네버슬립스-잠실점 | 2024.07.03 6:30pm', lat: 37.5700, lng: 126.9760 },
-  { id: 4, title: '곱소하실분 - 나루역 4출 4명', description: 'Menu description.', lat: 37.5730, lng: 126.9770 },
-];
-
-const DTBoardMap = () => {
+const InputMap = () => {
+  const { setSelectedPlace } = usePosts();
   const [map, setMap] = useState(null);
   const [searchInput, setSearchInput] = useState('');
   const [markers, setMarkers] = useState([]);
@@ -18,59 +12,35 @@ const DTBoardMap = () => {
   const [places, setPlaces] = useState([]);
 
   useEffect(() => {
-    // 카카오맵 스크립트 로드
     const script = document.createElement('script');
-    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaokey}&libraries=services,clusterer&autoload=false`; // clusterer 라이브러리 추가
+    script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaokey}&libraries=services,clusterer&autoload=false`;
     script.async = true;
+
     script.onload = () => {
-      if (window.kakao && window.kakao.maps) {
-        kakao.maps.load(() => {
-          const mapContainer = document.getElementById('map'); // 지도를 표시할 div
-          const mapOption = {
-            center: new kakao.maps.LatLng(37.5665, 126.9780), // 지도 중심 좌표
-            level: 3, // 지도 확대 레벨
-          };
-          const map = new kakao.maps.Map(mapContainer, mapOption); // 지도 생성
-          setMap(map);
+      try {
+        if (window.kakao && window.kakao.maps) {
+          kakao.maps.load(() => {
+            const mapContainer = document.getElementById('map');
+            const mapOption = {
+              center: new kakao.maps.LatLng(37.5665, 126.9780),
+              level: 3,
+            };
+            const map = new kakao.maps.Map(mapContainer, mapOption);
+            setMap(map);
 
-          // 지도 컨트롤러 기능 추가
-          const mapTypeControl = new kakao.maps.MapTypeControl();
-          map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
-          const zoomControl = new kakao.maps.ZoomControl();
-          map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
-
-          // 마커 클러스터러를 생성
-          const clusterer = new kakao.maps.MarkerClusterer({
-            map: map, // 마커들을 클러스터로 관리하고 표시할 지도 객체
-            averageCenter: false, // 클러스터의 중심을 평균 위치가 아닌 클릭한 위치로 설정
-            minLevel: 10 // 클러스터 할 최소 지도 레벨
+            const mapTypeControl = new kakao.maps.MapTypeControl();
+            map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
+            const zoomControl = new kakao.maps.ZoomControl();
+            map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
           });
-
-          // 게시물 위치에 마커 추가
-          const newMarkers = posts.map(post => {
-            if (post.lat && post.lng) {
-              const marker = new kakao.maps.Marker({
-                position: new kakao.maps.LatLng(post.lat, post.lng),
-              });
-
-              // 마커에 클릭 이벤트 추가 (예: 인포윈도우 표시)
-              const infowindow = new kakao.maps.InfoWindow({
-                content: generateInfoWindowContent(post),
-                removable: true
-              });
-              kakao.maps.event.addListener(marker, 'click', () => {
-                infowindow.open(map, marker);
-              });
-
-              return { marker, infowindow, post };
-            }
-            return null;
-          }).filter(markerObj => markerObj !== null);
-
-          // 클러스터러에 마커들을 추가
-          clusterer.addMarkers(newMarkers.map(markerObj => markerObj.marker));
-        });
+        }
+      } catch (error) {
+        console.error('카카오맵 스크립트 로드 중 오류 발생:', error);
       }
+    };
+
+    script.onerror = () => {
+      console.error('카카오맵 스크립트를 로드할 수 없습니다.');
     };
 
     document.head.appendChild(script);
@@ -79,28 +49,6 @@ const DTBoardMap = () => {
       document.head.removeChild(script);
     };
   }, []);
-
-  const generateInfoWindowContent = (post) => {
-    const relatedPosts = posts.filter(p => p.lat === post.lat && p.lng === post.lng);
-
-    let content = `
-      <div style="padding:10px; background-color:white; border-radius:5px; box-shadow: 0px 0px 10px rgba(0,0,0,0.5);">
-    `;
-
-    relatedPosts.forEach(p => {
-      content += `
-        <h3 style="margin:0; padding-bottom:5px; border-bottom:1px solid #ccc;">${p.title}</h3>
-        <p style="margin:5px 0;">${p.description}</p>
-        <button style="padding: 5px 10px; background-color: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">
-          같이 마시러 가기
-        </button>
-        <br>
-      `;
-    });
-
-    content += `</div>`;
-    return content;
-  };
 
   const handleSearch = () => {
     if (!map || searchInput === '') return;
@@ -120,23 +68,21 @@ const DTBoardMap = () => {
   };
 
   const displayPlaces = (places) => {
-    // 기존 마커 제거
     removeMarkers();
-
     const bounds = new kakao.maps.LatLngBounds();
     const newMarkers = places.map((place, index) => {
       const placePosition = new kakao.maps.LatLng(place.y, place.x);
-      const marker = addMarker(placePosition, index, place.place_name);
+      const { marker, infowindow } = addMarker(placePosition, index, place.place_name, place.address_name);
       bounds.extend(placePosition);
 
-      return { marker, infowindow: marker.infowindow };
+      return { marker, infowindow, place };
     });
 
     setMarkers(newMarkers);
     map.setBounds(bounds);
   };
 
-  const addMarker = (position, idx, title) => {
+  const addMarker = (position, idx, title, addressName) => {
     const imageSrc = 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_blue.png',
       imageSize = new kakao.maps.Size(36, 37),
       imgOptions = {
@@ -149,29 +95,38 @@ const DTBoardMap = () => {
         position: position,
         image: markerImage
       });
+       
 
     marker.setMap(map);
 
-    const infowindow = new kakao.maps.InfoWindow({ zIndex: 1 });
+    const content = '<div style="padding:5px;z-index:1;">' + title + '</div>';
+
+    const infowindow = new kakao.maps.InfoWindow({
+      content: content
+    });
+    
     kakao.maps.event.addListener(marker, 'mouseover', function () {
-      displayInfowindow(marker, title);
+      infowindow.open(map, marker);
+      const latlng = marker.getPosition();
+      const message = `위도 : ${latlng.getLat()}, 경도 : ${latlng.getLng()}, 장소명 : ${title}, 주소 : ${addressName}`;
+      console.log(message);
     });
 
     kakao.maps.event.addListener(marker, 'mouseout', function () {
       infowindow.close();
     });
 
-    return { marker, infowindow };
-  };
-
-  const displayInfowindow = (marker, title) => {
-    const content = '<div style="padding:5px;z-index:1;">' + title + '</div>';
-
-    const infowindow = new kakao.maps.InfoWindow({
-      content: content
+	kakao.maps.event.addListener(marker, 'click', function () {
+      const latlng = marker.getPosition();
+      setSelectedPlace({
+        lat: latlng.getLat(),
+        lng: latlng.getLng(),
+        title,
+        address: addressName,
+      });
     });
 
-    infowindow.open(map, marker);
+    return { marker, infowindow };
   };
 
   const removeMarkers = () => {
@@ -204,6 +159,17 @@ const DTBoardMap = () => {
     return fragment;
   };
 
+  const handleListItemClick = (index) => {
+    const markerObj = markers[index];
+    console.log('List item clicked, marker:', markerObj);
+    if (markerObj) {
+      kakao.maps.event.trigger(markerObj.marker, 'mouseover');
+      map.panTo(markerObj.marker.getPosition());
+    } else {
+      console.error('Marker object is undefined or null');
+    }
+  };
+
   return (
     <div className="board-right">
       <div className="map-search-box">
@@ -220,7 +186,7 @@ const DTBoardMap = () => {
       <div className="search-result">
         <ul id="placesList">
           {places.map((place, index) => (
-            <li key={index} className="item">
+            <li key={index} className="item" onClick={() => handleListItemClick(index)}>
               <span className={`markerbg marker_${index + 1}`}></span>
               <div className="info">
                 <h5>{place.place_name}</h5>
@@ -228,7 +194,7 @@ const DTBoardMap = () => {
                   (<span>{place.road_address_name}<br /><span className="jibun gray">{place.address_name}</span></span>) :
                   (<span>{place.address_name}</span>)
                 }
-                <span className="tel">{place.phone}</span>
+                <br/><span className="tel">{place.phone}</span>
               </div>
             </li>
           ))}
@@ -239,4 +205,4 @@ const DTBoardMap = () => {
   );
 };
 
-export default DTBoardMap;
+export default InputMap;
