@@ -55,7 +55,7 @@ function Header() {
                           <Nav.Link href="/event">이벤트</Nav.Link>
                           <Nav.Link href="/magazine">메거진</Nav.Link>
 
-                          {isLoggedIn ? (
+                          {memberEmail ? (
                               <>
                                   <Nav.Link href="/mypage">
                                       {memberEmail ? (
