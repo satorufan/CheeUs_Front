@@ -1,7 +1,7 @@
 :root {
     --white: #ffffff;
     --light: #e0e0e0;
-    --blue: #2196f3;
+    --pink: #FF6B6B;
     height: 100vh;
 }
 
@@ -11,7 +11,7 @@
     width: var(--wrapper);
     transform: translateX(-50%);
     overflow-y: hidden;
-    margin-bottom :150px; 
+    margin-bottom :20px; 
 }
 
 .container {

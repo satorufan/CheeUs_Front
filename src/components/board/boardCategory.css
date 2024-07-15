@@ -5,6 +5,7 @@
     align-items: center; 
     margin-top :50px;
     transition: all 0.3s ease;
+    margin-bottom: 50px;
 }
 
 .board-page-card {

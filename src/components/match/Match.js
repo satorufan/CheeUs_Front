@@ -66,7 +66,7 @@ const Match = () => {
   };
 
   return (
-    <div className="Match_container">
+    <div className="match_container">
       {locationOk === null ? (
         <div className="permissionMessage">
           <p>위치 정보 확인 중...</p>

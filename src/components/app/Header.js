@@ -33,7 +33,6 @@ function Header() {
 
     return (
       <div className="header-container">
-        현재 사용자 | {memberEmail}
           <Navbar bg="#f2d420" expand="lg" style={{ backgroundColor: 'white' }} expanded={isNavExpanded}>
               <Container fluid className="header-box">
                   <Navbar.Brand href="/main" className="header-logo">
