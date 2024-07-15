@@ -13,6 +13,8 @@ export const PostProvider = ({ children }) => {
     { id: 5, title: '참치 배터지게 드실분있나요?', description: 'Menu description.' },
   ]);
 
+ const [selectedPlace, setSelectedPlace] = useState(null);
+ 
   const addPost = (title, content) => {
     const newPost = {
       id: posts.length + 1,
@@ -23,8 +25,9 @@ export const PostProvider = ({ children }) => {
   };
 
   return (
-    <PostContext.Provider value={{ posts, addPost }}>
+    <PostContext.Provider value={{ posts, addPost, selectedPlace, setSelectedPlace }}>
       {children}
     </PostContext.Provider>
   );
+
 };
