@@ -1,20 +1,30 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const DTBoardContent = ({ posts, totalPosts, postsPerPage, paginate, onWriteButtonClick }) => {
   const pageNumbers =[];
+  const navigate = useNavigate();
+  
+  
   
   for(let i = 1; i <= Math.ceil(totalPosts / postsPerPage); i++){ //Math.ceil로 계산한 값을 올림하여 필요한 페이지 수를 구한다.
 	  pageNumbers.push(i);	//계산한 페이지 수를 1~n까지 구해 pageNumbers에 넣고 pagenation으로 연결해 표시한다.
   }
+  
+  const handlePostClick = (id) => {
+    navigate(`/dtboard/post/${id}`);
+  };
+  
   
   return (
     <div className="board-left">
       <h2>함께 마셔요 게시판</h2>
       <hr className="divider" />
       {posts.map((post) => (
-        <div key={post.id} className="post">
+        <div key={post.id} className="post" onClick={()=>handlePostClick(post.id)}>
           <h5>{post.title}</h5>
-          <p>{post.description}</p>
+          <p>{post.description}|{post.time}</p>
+          <p className='contentHidden'>{post.content}</p>
           <hr className="divider" />
         </div>
       ))}
