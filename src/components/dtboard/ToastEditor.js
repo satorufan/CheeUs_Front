@@ -6,13 +6,16 @@ import { Editor } from "@toast-ui/react-editor";
 const ToastEditor = forwardRef(({ content }, ref) => {
   const editorRef = useRef(null);
 
+  useImperativeHandle(ref, () => ({
+    getInstance: () => editorRef.current.getInstance(),
+  }));
 
   return (
     <div>
       <Box sx={{ m: 2 }}>
         <Editor
           height="96vh"
-          placeholder="내용을 입력해주세요."
+         //placeholder="내용을 입력해주세요."
           initialValue={content || ' '}
           ref={editorRef}
           previewStyle="vertical"
@@ -24,7 +27,7 @@ const ToastEditor = forwardRef(({ content }, ref) => {
             ["image", "link"],
           ]}
           usageStatistics={false}
-         // hideModeSwitch={true}
+          hideModeSwitch={true}
           language="ko-KR"
         />
       </Box>

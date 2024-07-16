@@ -1,44 +1,47 @@
-.inputContainer{
+  .inputContainer{
 	height: 100vh;
-	margin-bottom: 200px;
-}
-.topContainer{
+	margin-bottom: 120px;
+	background-color: #f9f9f9;
+  }
+  .topContainer{
 	z-index: 15;
 	display: flex;
 	height: 7vh;
 	margin-left: 23px;
 	padding: 8px;
-}
-.textareaHeader{
-	width: 68%;
-}
-.dateHeader{
-	z-index: 16;
-	width: 30%;
+	background-color: white;
+	background-color: #f9f9f9;
+  }
+  .textareaHeader{
+	width: 95%;
 	display: flex;
-	justify-content: flex-start;
+  }
+  .dateHeader{
+	z-index: 16;
+	width:35%;
+	display: flex;
+	justify-content: flex-end;
 	align-items: end;
-}
-.example-custom-input {
-  background-color: #777;
-  color: white;
-  cursor: pointer;
-  padding: 3px;
-  border-radius: 5px;
-  border : 2px solid #666;
-}
-.react-datepicker-time__header{
+  }
+  .example-custom-input {
+    background-color: #777;
+    color: white;
+    cursor: pointer;
+    padding: 3px;
+    border-radius: 5px;
+    border : 2px solid #666;
+  }
+  .react-datepicker-time__header{
 	height: 43px;
 	align-items: center;
 	display: flex;
 	justify-content: center;
-}
-.mapHeader{
-	width: 30%;
+  }
+  .mapHeader{
     background: transparent;
     padding: 0px;
     font-size: 1.5rem;
-    width: 100%;
+    width: 98%;
     resize: none;
     line-height: 1.5;
     outline: none;
@@ -48,15 +51,68 @@
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-end;
-}
-.mapping{
+	margin-left: 35px;
+  }
+  .mapping{
 	margin-left: 10px;
-}
-.contentContainer{
+  }
+  .contentContainer{
 	display: flex;
-	height: 98vh;
-}
-.textarea {
+	height: 98.5vh;
+	background-color: #f9f9f9;
+  }
+  .mypageContainer {
+  	flex: 1;
+  	z-index: 0;
+    margin: 0 auto;
+    width: 50%;
+    margin-top: 5px;
+    margin-left: 13px;
+  }
+  .contentHeader{
+	width: 100%;
+	display: flex;
+  }
+  .profileContainer{
+	display: flex;
+	width: 60%;
+	display: flex;
+	justify-content: flex-start;
+  }
+  .profile1{
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	margin-right: 5px;
+  }
+  .profile2{
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	margin-bottom: 5px;
+  }
+  .profileImg{
+	border-radius: 50%;
+	width : 35px;
+	height : 35px;
+    display: flex;
+    margin-left: 20px;
+  }
+  .dateHeader a{
+    font-weight: bold;
+    box-shadow: 0px 0px 2px 1px black;
+    border-radius: 5px;
+  }
+  .content{
+    margin-left: 30px;
+  }
+   .bottomContainer{
+    display: flex;
+    margin: 0 auto;
+    background-color: #f9f9f9;
+    height: 8vh;
+  }
+  .textarea {
     background: transparent;
     display: block;
     padding: 0px;
@@ -71,12 +127,23 @@
   }
   .buttonsWrap {
     display: flex;
-    align-items: right;
-    justify-content: space-between;
-    padding: 8px 0px;
-    margin: 8px 8px;
+    padding: 8px 6px;
+    width: 100%;
+  }
+  .buttonArea1{
+    display: flex;
+    justify-content: flex-start;
+    width: 50%;
+    margin-left: 30px;
+  }
+  .buttonArea2{
+    display: flex;
+    justify-content: flex-end;
+    width: 50%;
+    margin-right: 10px;
   }
   .backButton {
+    display: flex;
     font-size: 1.124rem;
     font-weight: bold;
     height: 2.5rem;
@@ -89,7 +156,7 @@
     display: flex;
     outline: none;
     color: white;
-    margin-left: 25px;
+    margin-left: 5px;
   }
   
   .arrowWrap {
@@ -122,19 +189,34 @@
     font-size: 1.125rem;
     margin-right: 25px;
   }
-  
-  .mypageContainer {
-  	flex: 1;
-  	z-index: 0;
-    margin: 0 auto;
-    width: 50%;
-    margin-top: 5px;
-    margin-left: 15px;
+  .modifyButton{
+    align-items: center;
+    display: flex;
+    font-weight: bold;
+    cursor: pointer;
+    outline: none;
+    border: none;
+    background-color: #12b886;
+    color: #ffffff;
+    border-radius: 4px;
+    padding: 0px 1.25rem;
+    height: 2.5rem;
+    font-size: 1.125rem;
   }
-   .bottomContainer{
-     margin: 0 auto;
-     flex-direction: column;
-    justify-content: flex-start;
+  .deleteButton{
+    align-items: center;
+    display: flex;
+    font-weight: bold;
+    cursor: pointer;
+    outline: none;
+    border: none;
+    background-color: #12b886;
+    color: #ffffff;
+    border-radius: 4px;
+    padding: 0px 1.25rem;
+    height: 2.5rem;
+    font-size: 1.125rem;
+    margin-left: 5px;
   }
    /*지도 영역*/
   .mapContainer{
@@ -196,7 +278,7 @@
   left: 10px;
   z-index: 9;
   background: white;
-  border-radius: 5px;
+  border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   max-height: 60vh;
   overflow-y: auto;
@@ -224,9 +306,31 @@
   color: #0066ff;
   font-size: 0.9em;
 }
-.searchPagination{
-	border: 1px solid black;
+.search-result #searchPagination {
+  display: flex;
+  justify-content: center; 
 }
 
+.search-result #searchPagination a {
+  color: black;
+  padding: 8px 16px;
+  text-decoration: none;
+  transition: background-color 0.3s;
+  margin: 2px 4px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
 
-    
+.search-result #searchPagination a:hover {
+  background-color: #ddd;
+}
+.hidden {
+  display: none;
+}
+.infowindow{
+	z-index: 1;
+	height: auto;
+	width: 260px;
+	padding: 5px;
+	
+}

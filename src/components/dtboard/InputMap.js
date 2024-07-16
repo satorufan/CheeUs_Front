@@ -156,7 +156,7 @@ const InputMap = () => {
       );
     }
 
-    return fragment;
+    return <div id="searchPagination">{fragment}</div>;
   };
 
   const handleListItemClick = (index) => {
@@ -199,7 +199,9 @@ const InputMap = () => {
             </li>
           ))}
         </ul>
-        <div id="searchPagination">{displayPagination()}</div>
+        <div id="searchPagination">
+        	{displayPagination()}
+        </div>
       </div>
     </div>
   );
