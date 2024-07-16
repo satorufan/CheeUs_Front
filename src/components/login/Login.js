@@ -26,7 +26,7 @@ const Login = () => {
     	<div className='login-box'>
     		<h2>CHEEUS 회원가입</h2>
     		<div>소셜 로그인으로 간편하게 가입할 수 있습니다.<br/><br/></div>
-				<a  href = {KAKAO_AUTH_URL}>
+				<a  href = {KAKAO_AUTH_URL} className = 'logo'>
 					<img src = {kakaoLoginImage} alt = "카카오계정 로그인"/>
 				</a><br/>
 				{/* <a  href = {GOOGLE_AUTH_URL} className = 'logo'>

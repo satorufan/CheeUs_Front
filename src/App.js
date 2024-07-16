@@ -13,6 +13,7 @@ import UserProfilePage from './components/profile/UserProfilePage';
 import Match from './components/match/Match';
 import DTBoard from './components/dtboard/DTBoard';
 import DTBInputForm from './components/dtboard/DTBInputForm';
+import PostDetail from './components/dtboard/PostDetail';
 import { PostProvider } from './components/dtboard/PostContext';
 import BoardPage from './components/board/BoardPage';
 import ShortForm from './components/shortform/ShortFrom';
@@ -39,6 +40,7 @@ function App() {
             <Route path="/match" element={<Match />} />
             <Route path="/dtboard" element={<DTBoard />} />
             <Route path="/dtboard/input" element={<DTBInputForm />} />
+            <Route path="/dtboard/post/:id" element={<PostDetail />} />
             <Route path="/board" element={<BoardPage />} />
             <Route path="/board/shortform" element={<ShortForm />} />
             <Route path="/board/freeboard" element={<FreeBoard />} />

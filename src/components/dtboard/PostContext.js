@@ -6,20 +6,25 @@ export const usePosts = () => useContext(PostContext);
 
 export const PostProvider = ({ children }) => {
   const [posts, setPosts] = useState([
-    { id: 1, title: '호수공원 벤치에서 맥주드실분', description: 'Menu description.' },
-    { id: 2, title: '다운타운에서 맥주 같이드실분', description: 'Menu description.' },
-    { id: 3, title: '피맥 조지실분 선착순 3명 구합니다', description: '피자네버슬립스-잠실점 | 2024.07.03 6:30pm' },
-    { id: 4, title: '곱소하실분 - 나루역 4출 4명', description: 'Menu description.' },
-    { id: 5, title: '참치 배터지게 드실분있나요?', description: 'Menu description.' },
+    { id: 1, title: '호수공원 벤치에서 맥주드실분', description: '잠실역 8번출구  ', lat: 37.5665, lng: 126.9780, time: ' 2024.07.01 6:30pm', content: 'content1' },
+    { id: 2, title: '다운타운에서 맥주 같이드실분', description: '다운타운 잠실점  ', lat: 37.5700, lng: 126.9770, time: ' 2024.07.02 6:30pm', content: 'content2' },
+    { id: 3, title: '피맥 조지실분 선착순 3명 구합니다', description: '피자네버슬립스-잠실점  ', lat: 37.5700, lng: 126.9760, time: ' 2024.07.03 6:30pm', content: 'content3' },
+    { id: 4, title: '곱소하실분 - 나루역 4출 4명', description: '잠실나루역 4번출구  ', lat: 37.5730, lng: 126.9770, time: ' 2024.07.04 6:30pm', content: 'content4' },
+    { id: 5, title: '참치 배터지게 드실분있나요?', description: '참치가좋다 잠실나루점  ', lat: 37.5700, lng: 126.9760, time: ' 2024.07.05 6:30pm', content: 'content5' },
   ]);
 
- const [selectedPlace, setSelectedPlace] = useState(null);
- 
-  const addPost = (title, content) => {
+  const [selectedPlace, setSelectedPlace] = useState(null);
+
+  const addPost = (title, content, time) => {
+    const placeDescription = selectedPlace ? `${selectedPlace.title} (${selectedPlace.address}) ` : '';
     const newPost = {
       id: posts.length + 1,
-      title: title,
-      description: content,
+      title,
+      description: placeDescription,
+      content,
+      time,
+      lat: selectedPlace?.lat || null,
+      lng: selectedPlace?.lng || null,
     };
     setPosts([...posts, newPost]);
   };
@@ -29,5 +34,4 @@ export const PostProvider = ({ children }) => {
       {children}
     </PostContext.Provider>
   );
-
 };
