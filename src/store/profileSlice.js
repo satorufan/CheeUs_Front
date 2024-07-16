@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import profiles from '../profileData'; // 경로 수정
+import axios from 'axios';
 
 const initialState = {
     userLocation: null,
@@ -12,12 +12,11 @@ const initialState = {
 // 사용자 프로필을 비동기적으로 가져오는 thunk
 export const fetchUserProfile = createAsyncThunk(
     'profile/fetchUserProfile',
-    async (userId) => {
-        const userProfile = profiles.find(profile => profile.id === userId);
-        if (!userProfile) {
-            throw new Error('Profile not found');
-        }
-        return userProfile;
+    async ({ serverUrl, memberEmail }) => {
+        const response = await axios.get(`${serverUrl}/profile`, {
+            params: { email: memberEmail }
+        });
+        return response.data;
     }
 );
 
