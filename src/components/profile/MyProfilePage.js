@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import ProfileCard from './ProfileCard';
-import { fetchUserProfile, selectUserProfile } from '../../store/profileSlice';
+import { fetchUserProfile, selectUserProfile } from '../../store/ProfileSlice';
 import './myProfilePage.css';
 
 const MyProfilePage = () => {
@@ -20,7 +20,7 @@ const MyProfilePage = () => {
     }
 
     const handleEditProfile = () => {
-        navigate(`/mypage/edit/${loggedInUserId}`); // Navigate to edit profile page
+        navigate(`/mypage/edit/${loggedInUserId}`); 
     };
 
     return (
