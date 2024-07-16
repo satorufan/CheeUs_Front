@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { Carousel, Modal } from 'react-bootstrap';
-import { updateUserLocation, likeProfile, unlikeProfile } from '../../store/profileSlice';
+import { updateUserLocation, likeProfile, unlikeProfile } from '../../store/ProfileSlice';
 import './profileCard.css';
 import { AuthContext } from '../login/OAuth';
 
@@ -111,7 +111,7 @@ const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
     };
 
     // 사진 배열
-    const photosToShow = profile.photos.map(photoId => `https://placehold.it/200x200?text=${photoId}`);
+    const photosToShow = profile.photos;
 
     let distanceToDisplay = '거리 알 수 없음';
 
