@@ -35,10 +35,9 @@ const PostDetailMap = ({ lat, lng, title, description }) => {
             const zoomControl = new kakao.maps.ZoomControl();
             map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
 
-            const content = `<div style="padding:5px;z-index:1;">${title}<br/>${description}</div>`;
+            const content = `<div class = 'infowindow'><${title}><br/>장소 : ${description}</div>`;
             const infowindow = new kakao.maps.InfoWindow({
               content: content,
-              removable: true,
             });
             infowindow.open(map, marker);
           });

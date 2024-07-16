@@ -64,6 +64,9 @@ const PostDetail = () => {
               <span className="arrowText">목록으로</span>
             </div>
           </button>
+          <button className = 'backButton'>
+          	채팅방
+          </button>
          </div>
          <div className = 'buttonArea2'>
           <button className="modifyButton" >

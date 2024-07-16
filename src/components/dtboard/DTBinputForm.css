@@ -134,11 +134,13 @@
     display: flex;
     justify-content: flex-start;
     width: 50%;
+    margin-left: 30px;
   }
   .buttonArea2{
     display: flex;
     justify-content: flex-end;
     width: 50%;
+    margin-right: 10px;
   }
   .backButton {
     display: flex;
@@ -154,7 +156,7 @@
     display: flex;
     outline: none;
     color: white;
-    margin-left: 25px;
+    margin-left: 5px;
   }
   
   .arrowWrap {
@@ -325,4 +327,10 @@
 .hidden {
   display: none;
 }
-    
+.infowindow{
+	z-index: 1;
+	height: auto;
+	width: 260px;
+	padding: 5px;
+	
+}
