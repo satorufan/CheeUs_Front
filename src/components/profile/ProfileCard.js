@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import axios from 'axios';
 import { Carousel, Modal } from 'react-bootstrap';
 import { updateUserLocation, likeProfile, unlikeProfile } from '../../store/profileSlice';
 import './profileCard.css';
 
-const ProfileCard = ({ profile, photos, loggedInUserId, showLikeButton }) => {
+const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
     const dispatch = useDispatch();
     const userLocation = useSelector((state) => state.profile.userLocation);
     const likedProfiles = useSelector((state) => state.profile.likedProfiles);
@@ -14,7 +13,6 @@ const ProfileCard = ({ profile, photos, loggedInUserId, showLikeButton }) => {
     const [modalIndex, setModalIndex] = useState(0);
 
     const isLiked = likedProfiles.includes(profile.id);
-    
 
     useEffect(() => {
         const getUserLocation = () => {
@@ -41,7 +39,6 @@ const ProfileCard = ({ profile, photos, loggedInUserId, showLikeButton }) => {
         getUserLocation();
     }, [dispatch]);
 
-
     // 나이 계산
     const calculateAge = (birth) => {
         const birthDate = new Date(birth.slice(0, 4), birth.slice(4, 6) - 1, birth.slice(6, 8));
@@ -55,7 +52,6 @@ const ProfileCard = ({ profile, photos, loggedInUserId, showLikeButton }) => {
 
         return age;
     };
-
 
     // 직선 거리 계산
     const calculateStraightDistance = (lat1, lon1, lat2, lon2) => {
@@ -99,14 +95,7 @@ const ProfileCard = ({ profile, photos, loggedInUserId, showLikeButton }) => {
     };
 
     // 사진 배열
-    let photosToShow = [];
-    if (Array.isArray(photos) && photos.length > 0) {
-        photosToShow = photos.map(photoId => `https://placehold.it/200x200?text=${photoId}`);
-    } else if (typeof photos === 'number') {
-        photosToShow = [`https://placehold.it/200x200?text=${photos}`];
-    } else {
-        photosToShow = [`https://placehold.it/200x200?text=No Photos`];
-    }
+    const photosToShow = profile.photos.map(photoId => `https://placehold.it/200x200?text=${photoId}`);
 
     let distanceToDisplay = '거리 알 수 없음';
 
@@ -115,7 +104,7 @@ const ProfileCard = ({ profile, photos, loggedInUserId, showLikeButton }) => {
         if (profile.id === loggedInUserId) {
             distanceToDisplay = '0 km';
         } else {
-            distanceToDisplay = `${calculateStraightDistance(userLocation.latitude, userLocation.longitude, profile.latitude, profile.longitude)} km`;
+            distanceToDisplay = `${calculateStraightDistance(userLocation.latitude, userLocation.longitude, parseFloat(profile.latitude), parseFloat(profile.longitude))} km`;
         }
     }
 
@@ -145,7 +134,7 @@ const ProfileCard = ({ profile, photos, loggedInUserId, showLikeButton }) => {
                             <li key={tag.trim()}>{tag.trim()}</li>
                         ))}
                         <li className="like-btn" onClick={handleLike}>
-                                {isLiked ? '❤️' : '🤍'} {profile.popularity}
+                            {isLiked ? '❤️' : '🤍'} {profile.popularity}
                         </li>
                     </ul>
                 </div>
