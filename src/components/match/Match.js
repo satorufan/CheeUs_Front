@@ -1,63 +1,89 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import TinderCards from './TinderCards';
-import profiles from '../../profileData';
 import { Modal, Button } from 'react-bootstrap';
 import './match.css';
+import {
+  setUserLocation,
+  setLocationDenied,
+  setMatchServiceAgreement,
+  selectProfiles,
+  selectLocationOk,
+  selectMatchServiceAgreed,
+} from '../../store/MatchSlice'; 
 import axios from 'axios';
 
 const loggedInUserId = 1;
 
 const Match = () => {
-  const [locationOk, setLocationOk] = useState(null);
-  const [showLocationModal, setShowLocationModal] = useState(false);
-  const [showMatchServiceModal, setShowMatchServiceModal] = useState(false);
-  const [showHelpModal, setShowHelpModal] = useState(false);  // 도움말 모달 상태
-  const [userLocation, setUserLocation] = useState(null);
-  const [matchServiceAgreed, setMatchServiceAgreed] = useState(false);
+  const dispatch = useDispatch();
+  const profiles = useSelector(selectProfiles);
+  const locationOk = useSelector(selectLocationOk);
+  const matchServiceAgreed = useSelector(selectMatchServiceAgreed);
+  const [userLocation, setUserLocationState] = React.useState(null);
+  const [showLocationModal, setShowLocationModal] = React.useState(false);
+  const [showMatchServiceModal, setShowMatchServiceModal] = React.useState(false);
+  const [showHelpModal, setShowHelpModal] = React.useState(false);
 
   useEffect(() => {
     const checkLocationPermission = async () => {
-      try {
-        const user = profiles.find(profile => profile.id === loggedInUserId);
-        if (user && user.location_ok === 1) {
-          requestGeoLocation(setUserLocation, setLocationOk);
-        } else if (user && user.location_ok === 0) {
-          setShowLocationModal(true);
-        } else {
-          setLocationOk(false);
-        }
-      } catch (error) {
-        console.error('위치 정보 확인 중 에러 발생: ', error);
-        setLocationOk(false);
+      const user = profiles.find(profile => profile.id === loggedInUserId);
+      if (user && user.location_ok === 1) {
+        requestGeoLocation();
+      } else if (user && user.location_ok === 0) {
+        setShowLocationModal(true);
+      } else {
+        dispatch(setLocationDenied());
       }
     };
 
     if (locationOk === null) {
       checkLocationPermission();
     }
-  }, [locationOk]);
+  }, [locationOk, profiles, dispatch]);
+
+  const requestGeoLocation = () => {
+    if ('geolocation' in navigator) {
+        navigator.geolocation.getCurrentPosition(
+            position => {
+                const { latitude, longitude } = position.coords; // 필요한 데이터만 추출
+                console.log('사용자의 현재 위치:', { latitude, longitude });
+                setUserLocationState(position.coords);
+                
+                // 직렬화 가능한 객체로 디스패치
+                dispatch(setUserLocation({ coords: { latitude, longitude } }));
+                
+                updateLocationPermissionOnServer();
+                setShowMatchServiceModal(true);
+            },
+            error => {
+                console.error('위치 정보 요청 에러:', error);
+                dispatch(setLocationDenied());
+            }
+        );
+    } else {
+        console.log('Geolocation 사용 불가능');
+        dispatch(setLocationDenied());
+    }
+};
 
   const handleConfirm = () => {
     setShowLocationModal(false);
-    setLocationOk(true);
-    requestGeoLocation(setUserLocation, setLocationOk);
-    updateLocationPermissionOnServer();
-    setShowMatchServiceModal(true); // 위치 정보 동의 후 1:1 매칭 서비스 동의 모달 표시
+    requestGeoLocation();
   };
 
   const handleCancel = () => {
-    setLocationOk(false);
     setShowLocationModal(false);
   };
 
   const handleMatchServiceConfirm = () => {
-    setMatchServiceAgreed(true);
+    dispatch(setMatchServiceAgreement(true));
     setShowMatchServiceModal(false);
     updateMatchServiceAgreementOnServer();
   };
 
   const handleMatchServiceCancel = () => {
-    setMatchServiceAgreed(false);
+    dispatch(setMatchServiceAgreement(false));
     setShowMatchServiceModal(false);
   };
 
@@ -65,8 +91,30 @@ const Match = () => {
     setShowHelpModal(true);
   };
 
+  const updateLocationPermissionOnServer = async () => {
+    try {
+      const user = profiles.find(profile => profile.id === loggedInUserId);
+      const updatedUser = { ...user, location_ok: 1 };
+      const response = await axios.put(`https://your-server-api-url/updateLocationPermission/${loggedInUserId}`, updatedUser);
+      console.log('서버 응답:', response.data);
+    } catch (error) {
+      console.error('서버 요청 에러:', error);
+    }
+  };
+
+  const updateMatchServiceAgreementOnServer = async () => {
+    try {
+      const user = profiles.find(profile => profile.id === loggedInUserId);
+      const updatedUser = { ...user, match_ok: 1 };
+      const response = await axios.put(`https://your-server-api-url/updateMatchServiceAgreement/${loggedInUserId}`, updatedUser);
+      console.log('서버 응답:', response.data);
+    } catch (error) {
+      console.error('서버 요청 에러:', error);
+    }
+  };
+
   return (
-    <div className="Match_container">
+    <div className="match_container">
       {locationOk === null ? (
         <div className="permissionMessage">
           <p>위치 정보 확인 중...</p>
@@ -146,17 +194,17 @@ const Match = () => {
           <h5>Chrome (데스크톱):</h5>
           <ol>
             <li>오른쪽 상단의 더 보기(세 개의 점 아이콘)를 클릭하고 '설정'을 선택합니다.</li>
-            <li>개인정보 및 보안을 클릭한 후, '사이트 설정' > '위치'를 찾아 'CheeUp'에 위치 접근 권한을 허용합니다.</li>
+            <li>개인정보 및 보안을 클릭한 후, '사이트 설정' → '위치'를 찾아 'CheeUp'에 위치 접근 권한을 허용합니다.</li>
           </ol>
           <h5>Safari (데스크톱):</h5>
           <ol>
-            <li>화면 상단의 Safari를 클릭하고 '설정' > '웹사이트'를 선택합니다.</li>
+            <li>화면 상단의 Safari를 클릭하고 '설정' → '웹사이트'를 선택합니다.</li>
             <li>'위치'를 찾아 'CheeUp'를 선택하고 '허용하기'를 클릭합니다.</li>
           </ol>
           <h5>Safari (iOS):</h5>
           <ol>
             <li>iOS 설정에서 '개인정보 보호'를 선택합니다.</li>
-            <li>'위치 서비스' > 'Safari'를 찾아 '앱을 사용하는 동안' 권한을 허용합니다.</li>
+            <li>'위치 서비스' → 'Safari'를 찾아 '앱을 사용하는 동안' 권한을 허용합니다.</li>
           </ol>
           <h5>Firefox (데스크톱):</h5>
           <ol>
@@ -175,48 +223,3 @@ const Match = () => {
 };
 
 export default Match;
-
-const requestGeoLocation = (setUserLocation, setLocationOk) => {
-  if ('geolocation' in navigator) {
-    navigator.geolocation.getCurrentPosition(
-      position => {
-        console.log('사용자의 현재 위치:', position.coords);
-        setUserLocation(position.coords);
-        setLocationOk(true);
-      },
-      error => {
-        console.error('위치 정보 요청 에러:', error);
-        setLocationOk(false);
-      }
-    );
-  } else {
-    console.log('Geolocation 사용 불가능');
-    setLocationOk(false);
-  }
-};
-
-const updateLocationPermissionOnServer = async () => {
-  try {
-    const user = profiles.find(profile => profile.id === loggedInUserId);
-    const updatedUser = { ...user, location_ok: 1 };
-    console.log('서버에 위치 정보 동의 업데이트 요청:', updatedUser);
-
-    const response = await axios.put(`https://your-server-api-url/updateLocationPermission/${loggedInUserId}`, updatedUser);
-    console.log('서버 응답:', response.data);
-  } catch (error) {
-    console.error('서버 요청 에러:', error);
-  }
-};
-
-const updateMatchServiceAgreementOnServer = async () => {
-  try {
-    const user = profiles.find(profile => profile.id === loggedInUserId);
-    const updatedUser = { ...user, match_ok: 1 };
-    console.log('서버에 매칭 서비스 동의 업데이트 요청:', updatedUser);
-
-    const response = await axios.put(`https://your-server-api-url/updateMatchServiceAgreement/${loggedInUserId}`, updatedUser);
-    console.log('서버 응답:', response.data);
-  } catch (error) {
-    console.error('서버 요청 에러:', error);
-  }
-};

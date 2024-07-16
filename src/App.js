@@ -6,9 +6,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Main from './components/main/Main';
 import Signup from './components/signup/Signup';
 import Login from './components/login/Login';
+import LoginCallback from './components/login/LoginCallback';
+import SignupCallback from './components/signup/SignupCallback';
 import Header from './components/app/Header';
 import Footer from './components/app/Footer';
 import MyProfilePage from './components/profile/MyProfilePage';
+import EditProfile from './components/profile/EditProfile';
 import UserProfilePage from './components/profile/UserProfilePage';
 import Match from './components/match/Match';
 import DTBoard from './components/dtboard/DTBoard';
@@ -32,9 +35,12 @@ function App() {
           <Routes>
             <Route path="/" element={<Main />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/signupcallback" element={<SignupCallback />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/logincallback" element={<LoginCallback />} />
             <Route path="/mypage" element={<MyProfilePage />} />
             <Route path="/userprofile/:id" element={<UserProfilePage />} />
+            <Route path="/mypage/Edit/:id" element={<EditProfile />} />
             <Route path="/main" element={<Main />} />
             <Route path="/match" element={<Match />} />
             <Route path="/dtboard" element={<DTBoard />} />

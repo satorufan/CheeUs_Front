@@ -1,38 +1,40 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
 import { Carousel, Modal } from 'react-bootstrap';
+import { updateUserLocation, likeProfile, unlikeProfile } from '../../store/ProfileSlice';
 import './profileCard.css';
+import { AuthContext } from '../login/OAuth';
 
-const ProfileCard = ({ profile, photos, loggedInUserId, showLikeButton }) => {
-    const [userLocation, setUserLocation] = useState(null);
+const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
+    const dispatch = useDispatch();
+    const userLocation = useSelector((state) => state.profile.userLocation);
+    const likedProfiles = useSelector((state) => state.profile.likedProfiles);
+
     const [showModal, setShowModal] = useState(false);
     const [modalIndex, setModalIndex] = useState(0);
     const [likes, setLikes] = useState(profile.popularity);
-    const [liked, setLiked] = useState(false); 
+    const [liked, setLiked] = useState(false);
+    const {serverUrl, memberEmail} = useContext(AuthContext);
 
-    // 사용자 위치 가져오기
+    const isLiked = likedProfiles.includes(profile.id);
+
     useEffect(() => {
+
         const getUserLocation = () => {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
-                    position => {
-                        setUserLocation({
+                    (position) => {
+                        const location = {
                             latitude: position.coords.latitude,
-                            longitude: position.coords.longitude
-                        });
-                        axios.post('http://localhost:3000/api/user/location', {
-                            latitude: position.coords.latitude,
-                            longitude: position.coords.longitude
-                        })
-                        .then(response => {
-                            console.log('위치 데이터 저장됨:', response.data);
-                        })
-                        .catch(error => {
-                            console.error('위치 데이터 저장 중 오류 발생:', error);
-                        });
+                            longitude: position.coords.longitude,
+                        };
+                        dispatch(updateUserLocation(location));
+                        console.log('위도:', location.latitude);
+                        console.log('경도:', location.longitude);
                     },
-                    error => {
-                        console.error('사용자 위치 가져오기 오류:', error);
+                    (error) => {
+                        console.error('위치 정보를 가져오는 데 실패했습니다:', error);
                     }
                 );
             } else {
@@ -42,6 +44,7 @@ const ProfileCard = ({ profile, photos, loggedInUserId, showLikeButton }) => {
 
         getUserLocation();
     }, []);
+
 
     // 프로필 좋아요 상태 초기화
     useEffect(() => {
@@ -63,27 +66,30 @@ const ProfileCard = ({ profile, photos, loggedInUserId, showLikeButton }) => {
         }
 
         return age;
+        
     };
 
-     // 직선 거리 계산
+    // 직선 거리 계산
     const calculateStraightDistance = (lat1, lon1, lat2, lon2) => {
-        const R = 6371;
+        const R = 6371; 
         const dLat = deg2rad(lat2 - lat1);
         const dLon = deg2rad(lon2 - lon1);
-        const a =
-            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
-            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        
+        const a = Math.sin(dLat / 2) ** 2 +
+                  Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+                  Math.sin(dLon / 2) ** 2;
+        
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         const distance = R * c;
-        return Math.round(distance * 10) / 10;
+        
+        return Math.round(distance * 10) / 10; 
     };
-
+    
     const deg2rad = (deg) => {
         return deg * (Math.PI / 180);
     };
 
-     // 이미지 클릭 시 모달
+    // 이미지 클릭 시 모달
     const handleImageClick = (index) => {
         setModalIndex(index);
         setShowModal(true);
@@ -96,50 +102,16 @@ const ProfileCard = ({ profile, photos, loggedInUserId, showLikeButton }) => {
     // 좋아요 버튼
     const handleLike = () => {
         if (showLikeButton) {
-            if (liked) {
-                // Unlike the profile
-                setLikes(likes - 1);
-                setLiked(false); // Mark profile as unliked
-                // Remove profile from likedProfiles in localStorage
-                const likedProfiles = JSON.parse(localStorage.getItem('likedProfiles')) || [];
-                const updatedLikedProfiles = likedProfiles.filter(id => id !== profile.id);
-                localStorage.setItem('likedProfiles', JSON.stringify(updatedLikedProfiles));
-
-                axios.delete(`http://localhost:3000/api/user/${profile.id}/like`)
-                    .then(response => {
-                        console.log('좋아요가 취소되었습니다:', response.data);
-                    })
-                    .catch(error => {
-                        console.error('좋아요 취소 중 오류 발생:', error);
-                    });
+            if (isLiked) {
+                dispatch(unlikeProfile(profile.id));
             } else {
-                // Like the profile
-                setLikes(likes + 1);
-                setLiked(true); // Mark profile as liked
-                // Update likedProfiles in localStorage
-                const likedProfiles = JSON.parse(localStorage.getItem('likedProfiles')) || [];
-                localStorage.setItem('likedProfiles', JSON.stringify([...likedProfiles, profile.id]));
-
-                axios.post(`http://localhost:3000/api/user/${profile.id}/like`, { likes: likes + 1 })
-                    .then(response => {
-                        console.log('좋아요가 업데이트되었습니다:', response.data);
-                    })
-                    .catch(error => {
-                        console.error('좋아요 업데이트 중 오류 발생:', error);
-                    });
+                dispatch(likeProfile(profile.id));
             }
         }
     };
 
     // 사진 배열
-    let photosToShow = [];
-    if (Array.isArray(photos) && photos.length > 0) {
-        photosToShow = photos.map(photoId => `https://placehold.it/200x200?text=${photoId}`);
-    } else if (typeof photos === 'number') {
-        photosToShow = [`https://placehold.it/200x200?text=${photos}`];
-    } else {
-        photosToShow = [`https://placehold.it/200x200?text=No Photos`];
-    }
+    const photosToShow = profile.photos;
 
     let distanceToDisplay = '거리 알 수 없음';
 
@@ -148,7 +120,7 @@ const ProfileCard = ({ profile, photos, loggedInUserId, showLikeButton }) => {
         if (profile.id === loggedInUserId) {
             distanceToDisplay = '0 km';
         } else {
-            distanceToDisplay = `${calculateStraightDistance(userLocation.latitude, userLocation.longitude, profile.latitude, profile.longitude)} km`;
+            distanceToDisplay = `${calculateStraightDistance(userLocation.latitude, userLocation.longitude, parseFloat(profile.latitude), parseFloat(profile.longitude))} km`;
         }
     }
 
@@ -174,11 +146,11 @@ const ProfileCard = ({ profile, photos, loggedInUserId, showLikeButton }) => {
                 <div className='profileIntro-tag'>
                     <div className="profileIntro">{profile.intro}</div>
                     <ul className="profile-tags">
-                        {profile.tags.split(',').map(tag => (
+                        {profile.tags ? profile.tags.split(',').map(tag => (
                             <li key={tag.trim()}>{tag.trim()}</li>
-                        ))}
+                        )) : ""}
                         <li className="like-btn" onClick={handleLike}>
-                                {liked ? '❤️' : '🤍'} {likes}
+                            {isLiked ? '❤️' : '🤍'} {profile.popularity}
                         </li>
                     </ul>
                 </div>
