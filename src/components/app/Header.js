@@ -79,8 +79,8 @@ function Header() {
                                           </Stack>
                                       )}
                                   </Nav.Link>
-                                  <Nav.Link onClick={handleReadMessage} href="/chat">
-                                      {isLoggedIn ? (
+                                  <Nav.Link onClick={handleReadMessage} href="/chatpage">
+                                      {isNavExpanded ? (
                                           "채팅방"
                                       ) : (
                                           <Box sx={{ color: 'action.active' }}>

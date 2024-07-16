@@ -191,6 +191,7 @@ const handleSwipeRight = async () => {
         </>
       )}
     </div>
+
   );
 };
 

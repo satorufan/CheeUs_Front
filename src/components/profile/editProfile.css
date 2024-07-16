@@ -1,0 +1,99 @@
+.edit-profile-container {
+    gap: 20px;
+    overflow: hidden;
+    justify-content: center;
+    align-items: stretch; 
+    margin: 0 auto;
+    max-width: 1200px;
+}
+
+.profile-info-box,
+.edit-photo-box {
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    width: 60%;
+    height: 80vh;
+    max-height: 500px;
+    overflow: hidden;
+    display: flex;
+    margin : 10px 20px;
+    flex-direction: column; 
+}
+
+.form-group.img {
+    display: flex;
+    align-items: center; 
+}
+
+.edit-profile-img {
+    margin-right: 10px; 
+}
+
+.edit-photo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    overflow: hidden;
+}
+
+.photo-container {
+    position: relative;
+    padding-top: 100%; 
+}
+
+.photo-box {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #f0f0f0; 
+    border: 1px dashed #ccc;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.photo-thumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.edit-photo-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #aaa;
+}
+
+.remove-photo {
+    background-color: rgba(0, 0, 0, 0); 
+    color:white; 
+    border: none; 
+    cursor: pointer; 
+    position: absolute; 
+    top: 5px;
+    right: 5px; 
+}
+
+.remove-photo:hover {
+    transition: 0.5s;
+    transform: scale(1.2);
+}
+
+.photo-container {
+    position: relative; 
+}
+
+.edit-button-container {
+    margin-top: 20px;
+    text-align: center; 
+    clear: both;
+}

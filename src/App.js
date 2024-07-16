@@ -11,6 +11,7 @@ import SignupCallback from './components/signup/SignupCallback';
 import Header from './components/app/Header';
 import Footer from './components/app/Footer';
 import MyProfilePage from './components/profile/MyProfilePage';
+import EditProfile from './components/profile/EditProfile';
 import UserProfilePage from './components/profile/UserProfilePage';
 import Match from './components/match/Match';
 import DTBoard from './components/dtboard/DTBoard';
@@ -21,6 +22,8 @@ import ShortForm from './components/shortform/ShortFrom';
 import InputFrom from './components/toast/InputForm';
 import FreeBoard from './components/freeboard/FreeBoard';
 import { AuthProvider } from './components/login/OAuth';
+import ChatPage from './components/chat/ChatPage';
+import scoket from './server';
 
 function App() {
   return (
@@ -37,6 +40,7 @@ function App() {
             <Route path="/logincallback" element={<LoginCallback />} />
             <Route path="/mypage" element={<MyProfilePage />} />
             <Route path="/userprofile/:id" element={<UserProfilePage />} />
+            <Route path="/mypage/Edit/:id" element={<EditProfile />} />
             <Route path="/main" element={<Main />} />
             <Route path="/match" element={<Match />} />
             <Route path="/dtboard" element={<DTBoard />} />
@@ -44,6 +48,7 @@ function App() {
             <Route path="/board" element={<BoardPage />} />
             <Route path="/board/shortform" element={<ShortForm />} />
             <Route path="/board/freeboard" element={<FreeBoard />} />
+            <Route path="/chatpage" element={<ChatPage />} />
             <Route path="/input" element={<InputFrom />} />
             <Route path="*" element={<div>404</div>} />
           </Routes>
