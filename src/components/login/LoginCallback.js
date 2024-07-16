@@ -16,25 +16,20 @@ const LoginCallback = () => {
         });
     };
 
-    const serverUrl = "http://localhost:8080";
-    const {requestSignIn, memberEmail, token} = useContext(AuthContext);
+    const {requestSignIn, serverUrl, token} = useContext(AuthContext);
     const navigate = useNavigate();
 
-    //로그인 처리
-    useEffect(()=>{
-        requestSignIn();
-    }, []);
 
-    // 유저 정보 찾기
+    // 로그인 처리 및 유저 정보 찾기
     useEffect(()=>{
         if (token) {
-            alert(token);
             axios.get(serverUrl + "/member/signIn", {params : {
                 email: jwtDecode(token).email
             }})
             .then((res=>{
                 //정보가 DB에 있으면 바로 로그인.
                 sweetalert(res.data.nickname + "님 환영합니다!", '','','확인');
+                requestSignIn();
                 navigate('/');
             }))
             .catch((err)=>{

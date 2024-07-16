@@ -1,17 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { Carousel, Modal } from 'react-bootstrap';
 import './profileCard.css';
+import { AuthContext } from '../login/OAuth';
 
 const ProfileCard = ({ profile, photos, loggedInUserId, showLikeButton }) => {
     const [userLocation, setUserLocation] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [modalIndex, setModalIndex] = useState(0);
     const [likes, setLikes] = useState(profile.popularity);
-    const [liked, setLiked] = useState(false); 
+    const [liked, setLiked] = useState(false);
+    const {serverUrl, memberEmail} = useContext(AuthContext);
 
     // 사용자 위치 가져오기
     useEffect(() => {
+
         const getUserLocation = () => {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
@@ -43,6 +46,7 @@ const ProfileCard = ({ profile, photos, loggedInUserId, showLikeButton }) => {
         getUserLocation();
     }, []);
 
+
     // 프로필 좋아요 상태 초기화
     useEffect(() => {
         const likedProfiles = JSON.parse(localStorage.getItem('likedProfiles')) || [];
@@ -63,6 +67,7 @@ const ProfileCard = ({ profile, photos, loggedInUserId, showLikeButton }) => {
         }
 
         return age;
+        
     };
 
      // 직선 거리 계산
@@ -174,9 +179,9 @@ const ProfileCard = ({ profile, photos, loggedInUserId, showLikeButton }) => {
                 <div className='profileIntro-tag'>
                     <div className="profileIntro">{profile.intro}</div>
                     <ul className="profile-tags">
-                        {profile.tags.split(',').map(tag => (
+                        {profile.tags ? profile.tags.split(',').map(tag => (
                             <li key={tag.trim()}>{tag.trim()}</li>
-                        ))}
+                        )) : ""}
                         <li className="like-btn" onClick={handleLike}>
                                 {liked ? '❤️' : '🤍'} {likes}
                         </li>

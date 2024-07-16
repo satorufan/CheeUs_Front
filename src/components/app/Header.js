@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import Container from 'react-bootstrap/Container';
@@ -9,18 +9,31 @@ import Badge from '@mui/material/Badge';
 import MailIcon from '@mui/icons-material/Mail';
 import { AuthContext } from '../login/OAuth';
 import './header.css';
+import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
 function Header() {
-    const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 여부 확인
+    const [isLoggedIn, setIsLoggedIn] = useState(''); // 로그인 여부 확인
     const [isUnread, setIsUnread] = useState(true); // 채팅 읽지 않은 상태
-    const {memberEmail} = useContext(AuthContext);
+    const {token, serverUrl, requestSignOut} = useContext(AuthContext);
     const [isNavExpanded, setIsNavExpanded] = useState(false); // Navbar 확장 상태 확인
 
-    console.log(memberEmail);
+    useEffect(()=>{
+        if (token) {
+            axios.get(serverUrl + "/profile", {params : {
+                email : jwtDecode(token).email
+            }})
+            .then((res)=>{
+                console.log(res);
+                setIsLoggedIn(res.data.email);
+            });
+        }
+    },[token]);
 
     const handleLogout = () => {
         // 로그아웃 처리 함수 작성해야함
         setIsLoggedIn(false); // 로그아웃
+        requestSignOut();
     };
 
     // 메시지 읽음 처리 함수
@@ -35,7 +48,7 @@ function Header() {
 
     return (
       <div className="header-container">
-        현재 사용자 | {memberEmail}
+        현재 사용자 | {isLoggedIn}
           <Navbar bg="#f2d420" expand="lg" style={{ backgroundColor: 'white' }} expanded={isNavExpanded}>
               <Container fluid className="header-box">
                   <Navbar.Brand href="/main" className="header-logo">
@@ -55,10 +68,10 @@ function Header() {
                           <Nav.Link href="/event">이벤트</Nav.Link>
                           <Nav.Link href="/magazine">메거진</Nav.Link>
 
-                          {memberEmail ? (
+                          {isLoggedIn ? (
                               <>
                                   <Nav.Link href="/mypage">
-                                      {memberEmail ? (
+                                      {isLoggedIn ? (
                                           "프로필"
                                       ) : (
                                           <Stack direction="row" alignItems="center">
@@ -67,7 +80,7 @@ function Header() {
                                       )}
                                   </Nav.Link>
                                   <Nav.Link onClick={handleReadMessage} href="/chat">
-                                      {memberEmail ? (
+                                      {isLoggedIn ? (
                                           "채팅방"
                                       ) : (
                                           <Box sx={{ color: 'action.active' }}>

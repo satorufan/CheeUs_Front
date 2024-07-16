@@ -15,6 +15,8 @@ const SignupCallback = () => {
             confirmButtonText: confirmButtonText
         });
     };
+    const [signUp, setUp] = useState(false);
+    const {token, requestSignIn} = useContext(AuthContext);
 
     const serverUrl = "http://localhost:8080";
     const navigate = useNavigate();
@@ -22,18 +24,26 @@ const SignupCallback = () => {
     const {memberProfileDetail} = callbackData.state || {};
 
     useEffect(()=>{
+        setUp(true);
+    },[]);
 
-        console.log(memberProfileDetail);
-        axios.post(serverUrl + '/member/signUp', memberProfileDetail)
-        .then((res)=>{
-            console.log(res);
-            navigate('/');
-        })
-        .catch((err)=>{
-            console.log(err);
-        })
+    useEffect(()=>{
 
-    })
+        console.log(token);
+        if (signUp) {
+            axios.post(serverUrl + '/member/signUp', memberProfileDetail)
+            .then((res)=>{
+                console.log(res);
+                sweetalert("환영합니다!", "", "", "확인");
+                requestSignIn();
+                navigate('/');
+            })
+            .catch((err)=>{
+                console.log(err);
+            });
+        }
+
+    }, [signUp])
 
     return (
         <div>

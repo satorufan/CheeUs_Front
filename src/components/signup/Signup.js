@@ -2,10 +2,9 @@
 import { useContext, useEffect, useState } from 'react';
 import './Signup.css';
 import { AuthContext } from '../login/OAuth';
-import axios from 'axios';
 import Swal from 'sweetalert2';
-import SignupCallback from './SignupCallback';
 import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 
 const Signup = () => {
   const sweetalert = (title, contents, icon, confirmButtonText) => {
@@ -31,7 +30,8 @@ const Signup = () => {
   const [intro, setIntro] = useState('');
   const [profileImage, setProfileImage] = useState(null);
   //발행한 토큰의 이메일 정보 불러오기
-  const {memberEmail} = useContext(AuthContext);
+  const {token} = useContext(AuthContext);
+  const memberEmail = jwtDecode(token).email;
 
   const buttonStyleMale = {
     backgroundColor: gender === 0 ? 'gray' : 'white', // 남자일 때는 파란색, 여자일 때는 분홍색
@@ -65,10 +65,14 @@ const Signup = () => {
 
     if (name == null) {
       sweetalert("이름을 입력해주세요!", '','','확인');
-    } else if (birth == null) {
-      sweetalert("생일을 입력해주세요!", '','','확인');
-    } else if (tel == null) {
-      sweetalert("전화번호를 입력해주세요!", '','','확인');
+    } else if (birth == null || 
+      birth.length != 8 || !/^\d*$/.test(birth)
+    ) {
+      sweetalert("생일을 정확히 입력해주세요!", '','','확인');
+    } else if (tel == null || 
+      tel.length != 11 || !/^\d*$/.test(tel)
+    ) {
+      sweetalert("전화번호를 정확히 입력해주세요!", '','','확인');
     } else if (nickname == null) {
       sweetalert("닉네임을 입력해주세요!", '','','확인');
     } else if (gender == null) {
@@ -116,14 +120,14 @@ const Signup = () => {
               <label>생년월일</label>
               <input 
               type="text"
-              placeholder="생년월일을 입력하세요" 
+              placeholder="생년월일을 입력하세요(ex. 20000101)" 
               value={birth}
               onChange={(event) => setBirth(event.target.value)}/>
             </div>
             <div className="form-group">
               <label>전화번호</label>
               <input type="text" 
-              placeholder="전화번호를 입력하세요" 
+              placeholder="전화번호를 입력하세요(ex. 01011112222)" 
               value={tel}
               onChange={(event) => setTel(event.target.value)}/>
             </div>

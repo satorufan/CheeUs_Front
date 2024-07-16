@@ -1,9 +1,7 @@
 //OAuth.js
 
-import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { createContext, useEffect, useState } from "react";
-import { Cookies } from "react-cookie";
 
 //카카오 로그인 //https://data-jj.tistory.com/53
 //구글 로그인 //https://velog.io/@049494/%EA%B5%AC%EA%B8%80-%EB%A1%9C%EA%B7%B8%EC%9D%B8
@@ -32,6 +30,7 @@ const AuthContext = createContext();
 const AuthProvider = ({ children }) => {
 	const [memberEmail, setEmail] = useState('');
 	const [token, setToken] = useState('');
+	const serverUrl = "http://localhost:8080";
 
 	useEffect(()=>{
 		const loadToken = getJwtToken();
@@ -41,9 +40,18 @@ const AuthProvider = ({ children }) => {
 		}
 	}, []);
 
+	//로그인
 	const requestSignIn = () => {
 		const loadToken = getJwtToken();
 		setToken(loadToken);
+		setEmail(jwtDecode(loadToken).email);
+	}
+
+	//로그아웃
+	const requestSignOut = () => {
+		setToken(null);
+		setEmail(null);
+		window.location.href = serverUrl+"/logout";
 	}
 
 	//쿠키에서 JWT 토큰 불러오기.
@@ -60,12 +68,14 @@ const AuthProvider = ({ children }) => {
 
 	return (
 	<AuthContext.Provider value={{ 
+		serverUrl,
 		memberEmail,
 		setEmail,
 		token,
 		setToken, 
 		getJwtToken, 
-		requestSignIn
+		requestSignIn,
+		requestSignOut
 		}}>
 		{children}
 	</AuthContext.Provider>
