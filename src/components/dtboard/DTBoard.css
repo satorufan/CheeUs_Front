@@ -38,7 +38,7 @@
 
 #map {
   width: 100%;
-  height: calc(100vh - 40px); /* 지도 높이 조정 */
+  height: 100vh; /* 지도 높이 조정 */
   border-radius: 20px;
 }
 

@@ -27,7 +27,14 @@ const DTBoardMap = ({ selectedPostId }) => {
           };
           const map = new kakao.maps.Map(mapContainer, mapOption); // 지도 생성
           setMap(map);
-
+		  
+		  if(navigator.geolocation){
+			  navigator.geolocation.getCurrentPosition((position)=>{
+				  const lat = position.coords.latitude;
+				  const lon = position.coords.longitude;
+				  map.setCenter(new kakao.maps.LatLng(lat, lon));
+			  });
+		  }
           // 지도 컨트롤러 기능 추가
           const mapTypeControl = new kakao.maps.MapTypeControl();
           map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
@@ -158,7 +165,7 @@ const DTBoardMap = ({ selectedPostId }) => {
         />
         <button onClick={handleSearch}>검색</button>
       </div>
-      <div id="map" style={{ width: '100%', height: '100vh' }}></div>
+      <div id="map" style={{  height: '100vh'}}></div>
     </div>
   );
 };
