@@ -9,10 +9,13 @@
     justify-content: space-between; 
     align-items: stretch; 
     margin: 0 auto;
+    font-family: 'GwangyangTouching';
+    
 }
 
+
 .free-detail-container {
-    width: 70vw; 
+    width: 60vw; 
     margin: 20px; 
     background-color: #fff;
     border-radius: 10px;
@@ -20,6 +23,7 @@
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
+
 }
 
 .free-detail-repl {
@@ -31,4 +35,27 @@
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
+}
+
+.detail-free-header {
+    display: flex;
+    justify-content: flex-end; 
+    margin-bottom: 10px; 
+}
+
+.detail-to-list {
+    padding: 5px 15px;
+    font-family: 'GwangyangTouching';
+    font-size: 15px;
+    border-radius: 50px;
+    background-color: white;
+    color: black;
+    margin: 20px 5% 20px 0;
+
+}
+
+@media (max-width: 768px) {
+    .free-detail-container {
+        width: 40vw;
+    }
 }
