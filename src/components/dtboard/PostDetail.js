@@ -24,11 +24,11 @@ const PostDetail = () => {
     <div className="inputContainer">
       <div className="topContainer">
         <div className="textareaHeader">
-          <div className = 'textarea'>{post.title}</div>
+          <div className = 'textareaBox'>{post.title}</div>
         </div>
         <div className="mapHeader">
           <div className="mapping">
-            장소 : {post.description}
+            장소 : {post.description}({post.address})
           </div>
         </div>
       </div>
@@ -49,11 +49,13 @@ const PostDetail = () => {
               </div>
           </div>
           <br/>        
-          <div className='content'>{post.content}</div>
+          <div className = 'contentBox'>
+            <div className='content'>{post.content}</div>
+          </div>
         </div>
-        <div className="mapContainer" >
-          <PostDetailMap lat={post.lat} lng={post.lng} title={post.title} description={post.description} />
-        </div>
+         <div className="detailMapContainer" >
+          <PostDetailMap lat={post.lat} lng={post.lng} title={post.title} description={post.description}/>
+         </div>
       </div>
       <div className="bottomContainer">
         <div className="buttonsWrap">

@@ -6,7 +6,7 @@
   .topContainer{
 	z-index: 15;
 	display: flex;
-	height: 7vh;
+	height: 70px;
 	margin-left: 23px;
 	padding: 8px;
 	background-color: white;
@@ -16,9 +16,21 @@
 	width: 95%;
 	display: flex;
   }
+    .textareaBox {
+	overflow: hidden;
+    background: transparent;
+    display: flex;
+    font-size: 2.5rem;
+    width: 100%;
+    resize: none;
+    outline: none;
+    border: none;
+    font-weight: bold;
+    color: #555;
+  }
   .dateHeader{
 	z-index: 16;
-	width:35%;
+	width:340px;
 	display: flex;
 	justify-content: flex-end;
 	align-items: end;
@@ -78,6 +90,8 @@
 	width: 60%;
 	display: flex;
 	justify-content: flex-start;
+	height: 35px;
+	margin-top: 3px;
   }
   .profile1{
 	display: flex;
@@ -89,22 +103,37 @@
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-end;
-	margin-bottom: 5px;
+	margin: 0 2px 2px 2px;
+  }
+  .profile2 a{
+	box-shadow: 1px 1px 1px 1px #999;
+	border-radius: 10px;
+	padding: 1px 2px;
   }
   .profileImg{
 	border-radius: 50%;
-	width : 35px;
-	height : 35px;
+	width : 32px;
+	height : 32px;
     display: flex;
     margin-left: 20px;
+    box-shadow: 1px 1px 1px 1px #999;
   }
   .dateHeader a{
+    display: flex;
     font-weight: bold;
-    box-shadow: 0px 0px 2px 1px black;
+    box-shadow: 1px 1px 1px 1px #999;
     border-radius: 5px;
   }
+  .contentBox{
+    box-shadow: 0px 0px 2px 1px #999;
+    height: 89%;
+    border-radius: 10px;
+    width: 95%;
+    margin-left: 25px;
+  }
   .content{
-    margin-left: 30px;
+    margin-left: 20px;
+    padding-top: 10px;
   }
    .bottomContainer{
     display: flex;
@@ -112,19 +141,7 @@
     background-color: #f9f9f9;
     height: 8vh;
   }
-  .textarea {
-    background: transparent;
-    display: block;
-    padding: 0px;
-    font-size: 2.75rem;
-    width: 100%;
-    resize: none;
-    line-height: 1.5;
-    outline: none;
-    border: none;
-    font-weight: bold;
-    color: #212529;
-  }
+
   .buttonsWrap {
     display: flex;
     padding: 8px 6px;
@@ -226,14 +243,22 @@
    height: 50vh;
    margin-right: 15px;
   }
-   
+  .detailMapContainer{
+   display: flex;
+   box-shadow: 0px 0px 2px 1px #999;
+   margin: 0 auto;
+   width: 50%;
+   height: 87.5vh;
+   margin-right: 15px;
+   border-radius: 20px;    
+   margin-top: 90px;
+   }
   .board-right {
-  position: relative;
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
+   position: relative;
+   background-color: white;
+   border-radius: 10px;
+   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+   }
 .map-search-box {
   position: absolute;
   top: 10px;

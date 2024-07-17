@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { selectBoards } from '../../store/BoardSlice';
 import DetailBoard from '../board/DetailBoard';
+import Repl from '../board/Repl';
+import './detailFreeBoard.css';
 
 const DetailFreeBoard = () => {
   const { id } = useParams();
@@ -13,8 +15,13 @@ const DetailFreeBoard = () => {
   if (!board) return <div>게시물을 찾을 수 없습니다.</div>;
 
   return (
-    <div className="detail-container">
-      <DetailBoard/>
+    <div className="detail-free-container">
+      <div className="free-detail-container">
+        <DetailBoard/>
+      </div>
+      <div className="free-detail-repl">
+        <Repl/>
+      </div>
     </div>
   );
 };
