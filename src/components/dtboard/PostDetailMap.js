@@ -55,7 +55,7 @@ const PostDetailMap = ({ lat, lng, title, description }) => {
   }, [lat, lng, title, description]);
 
   return (
-    <div id="map"></div>
+    <div id="map" style={{  height: '87.5vh'}}></div>
   );
 };
 

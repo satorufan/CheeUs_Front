@@ -48,7 +48,7 @@ function DTBInputForm() {
       <div className="topContainer">
         <div className="textareaHeader">
           <textarea
-            className="textarea"
+            className="textareaBox"
             placeholder="타이틀을 입력해주세요"
             value={title}
             onChange={onChangeTitleHandler}
