@@ -33,7 +33,7 @@ const EditProfile = ({ onClose = () => {} }) => {
     const [phoneNumber, setPhoneNumber] = useState('');
     const [locationConsent, setLocationConsent] = useState(0);
     const [matchingConsent, setMatchingConsent] = useState(0);
-    const [openConfirmModal, setOpenConfirmModal] = useState(false); // Confirmation modal state
+    const [openConfirmModal, setOpenConfirmModal] = useState(false); 
 
     useEffect(() => {
         if (profile) {
@@ -52,7 +52,7 @@ const EditProfile = ({ onClose = () => {} }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        setOpenConfirmModal(true); // Open confirmation modal
+        setOpenConfirmModal(true); 
     };
 
     const handleConfirmSubmit = () => {
@@ -70,8 +70,8 @@ const EditProfile = ({ onClose = () => {} }) => {
         dispatch(updateUserProfile(updatedProfile));
         onClose();
         console.log("저장된 프로필:", updatedProfile);
-        navigate('/main'); // Redirect to the main page
-        setOpenConfirmModal(false); // Close the confirmation modal
+        navigate('/main'); 
+        setOpenConfirmModal(false); 
     };
 
     const handleAvatarUpload = (event) => {

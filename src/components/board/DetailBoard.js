@@ -4,7 +4,8 @@ import { useSelector } from 'react-redux';
 import { selectBoards } from '../../store/BoardSlice';
 import './detailBoard.css'; 
 import Avatar from '@mui/material/Avatar';
-import { Button, Form } from 'react-bootstrap'; // Import Bootstrap components
+import { Button } from 'react-bootstrap';
+import { Favorite, Visibility, Bookmark } from '@mui/icons-material';
 
 const DetailBoard = () => {
   const { id } = useParams();
@@ -14,13 +15,14 @@ const DetailBoard = () => {
   const board = boards.find(b => b.id === parseInt(id));
   const [comments, setComments] = useState([]);
   const [commentText, setCommentText] = useState('');
+  const [liked, setLiked] = useState(false); // 좋아요 상태
+  const [scraped, setScraped] = useState(false); // 스크랩 상태
 
   useEffect(() => {
     if (!board) {
       return; 
     }
     
-    // Redirect based on category
     if (board.category === 1) {
       navigate(`/board/freeboard/detail/${id}`);
     } else if (board.category === 2) {
@@ -38,11 +40,18 @@ const DetailBoard = () => {
     }
   };
 
+  const handleLike = () => {
+    setLiked(!liked);
+  };
+
+  const handleScrap = () => {
+    setScraped(!scraped);
+  };
+
   if (!board) return <div>게시물을 찾을 수 없습니다.</div>;
 
   return (
     <div className="detail-container">
-      {/* Post Details Section */}
       <div className="detail-post">
         <div className="detail-avatar-container">
           <Avatar
@@ -58,15 +67,34 @@ const DetailBoard = () => {
         </div>
         <div className="detail-content-container">
           <p className="detail-content">{board.content}</p>
-        </div>
-        {board.photoes && (
+          {board.photoes && (
           <div className="detail-image-container">
             <img className="detail-image" src={board.photoes} alt={board.title} />
           </div>
         )}
-        <div className="detail-board-info">
-          <p>조회수: {board.views}</p>
-          <p>좋아요: {board.like}</p>
+        </div>
+       <div className="detail-board-info">
+          <div className="left-info">
+            <p>
+              <Bookmark 
+                color={scraped ? 'primary' : 'action'} 
+                onClick={handleScrap}
+                style={{ cursor: 'pointer' }}
+              /> 
+            </p>
+            <p>
+              <Favorite 
+                color={liked ? 'error' : 'action'} 
+                onClick={handleLike}
+              /> 
+              {liked ? board.like + 1 : board.like}
+            </p>
+          </div>
+          <div className="right-info">
+            <p>
+              <Visibility /> {board.views}
+            </p>
+          </div>
         </div>
         <Button 
           variant="primary" 
@@ -75,32 +103,6 @@ const DetailBoard = () => {
         >
           수정하기
         </Button>
-      </div>
-
-      {/* Comments Section */}
-      <div className="detail-comments-container">
-        <h5 className="mt-4">댓글</h5>
-        <Form onSubmit={handleAddComment} className="mb-3">
-          <Form.Group controlId="comment">
-            <Form.Control 
-              type="text" 
-              placeholder="댓글을 남겨주세요..." 
-              value={commentText}
-              onChange={(e) => setCommentText(e.target.value)}
-            />
-          </Form.Group>
-          <Button variant="success" type="submit">
-            댓글 추가
-          </Button>
-        </Form>
-
-        <div className="detail-comment-list">
-          {comments.map((comment, index) => (
-            <div key={index} className="detail-comment">
-              {comment}
-            </div>
-          ))}
-        </div>
       </div>
     </div>
   );
