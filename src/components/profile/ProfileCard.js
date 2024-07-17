@@ -127,7 +127,7 @@ const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
     return (
         <div className="profile-card">
             <Carousel>
-                {photosToShow.map((photo, index) => (
+                {photosToShow ?. photosToShow.map((photo, index) => (
                     <Carousel.Item key={index}>
                         <img
                             src={photo}
@@ -158,7 +158,7 @@ const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
             <Modal show={showModal} onHide={handleCloseModal} centered>
                 <Modal.Body>
                     <Carousel activeIndex={modalIndex} onSelect={(selectedIndex) => setModalIndex(selectedIndex)}>
-                        {photosToShow.map((photo, index) => (
+                        {photosToShow ?. photosToShow.map((photo, index) => (
                             <Carousel.Item key={index}>
                                 <img
                                     src={photo}
