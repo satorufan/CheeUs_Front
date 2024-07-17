@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import AspectRatio from '@mui/joy/AspectRatio';
@@ -10,7 +10,8 @@ import Favorite from '@mui/icons-material/Favorite';
 import Visibility from '@mui/icons-material/Visibility';
 import BoardTop from '../board/BoardTop';
 import { selectBoards, toggleLike, selectLikedMap } from '../../store/BoardSlice';
-import './freeBoard.css'; 
+import Pagination from '@mui/material/Pagination';
+import './freeBoard.css';
 
 const FreeBoard = () => {
   const dispatch = useDispatch();
@@ -18,12 +19,27 @@ const FreeBoard = () => {
   const boards = useSelector(selectBoards);
   const likedMap = useSelector(selectLikedMap);
 
+  const itemsPerPage = 5;
+  const [currentPage, setCurrentPage] = useState(1);
+
   const handleLikeClick = (id) => {
     dispatch(toggleLike(id));
   };
 
   const handleCardClick = (id) => {
-    navigate(`/board/freeboard/detail/${id}`); // 상세 페이지로 이동
+    navigate(`/board/freeboard/detail/${id}`);
+  };
+
+  const handleCreatePost = () => {
+    navigate('/board/freeboard/wirte');
+  };
+
+  const totalPages = Math.ceil(boards.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentBoards = boards.slice(startIndex, startIndex + itemsPerPage);
+
+  const handleChange = (event, value) => {
+    setCurrentPage(value);
   };
 
   return (
@@ -31,14 +47,14 @@ const FreeBoard = () => {
       <BoardTop />
       <div className="freeboard-container">
         <div className="freeboard-card-container">
-          {boards
+          {currentBoards
             .filter(board => board.category === 1) 
             .map((board) => (
               <Card
                 key={board.id}
                 variant="plain"
                 className="freeboard-card"
-                onClick={() => handleCardClick(board.id)} // 클릭 시 상세 페이지로 이동
+                onClick={() => handleCardClick(board.id)}
               >
                 <Box className="card-video">
                   <AspectRatio ratio="4/3">
@@ -100,6 +116,31 @@ const FreeBoard = () => {
             ))}
         </div>
       </div>
+      <div className="create-post-container">
+          <button onClick={handleCreatePost} className="create-post-button">
+            게시글 작성
+          </button>
+        </div>
+
+        <Pagination
+          count={totalPages}
+          page={currentPage}
+          onChange={handleChange}
+          variant="outlined"
+          sx={{
+            '& .MuiPaginationItem-root': {
+              color: 'black', 
+            },
+            '& .MuiPaginationItem-root.Mui-selected': {
+              backgroundColor: 'black', 
+              color: 'white',
+            },
+            '& .MuiPaginationItem-root:hover': {
+              backgroundColor: 'rgba(0, 0, 0, 0.1)', 
+            },
+          }}
+          className="pagination"
+        />
     </>
   );
 };

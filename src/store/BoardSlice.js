@@ -8,7 +8,7 @@ const initialState = {
       author_name: "티라노사우르스",
       category: 1,
       title: "첫 번째 게시물",
-      content: "첫 번째 게시물 내용입니다.",
+      content: "첫 번째 게시물 내용입니다.agdagadgadgadsdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddagdadagaeadgadgadgadgadgadgadgadgadgadgadgadadgadgadagd",
       writeday: "2024-07-11",
       views: 50,
       like: 10,

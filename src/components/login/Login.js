@@ -11,10 +11,10 @@ const Login = () => {
 	const {token, requestSignOut} = useContext(AuthContext);
 	
 	const loginBtn = () => {
-		//if(token) {
-		//	console.log(token);
+		if(token) {
+			console.log(token);
 			requestSignOut();
-		//}
+		}
 		
 		window.location.href = "http://localhost:8080/signIn";
 	}
