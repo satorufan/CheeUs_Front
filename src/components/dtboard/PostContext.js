@@ -12,12 +12,24 @@ export const PostProvider = ({ children }) => {
   useEffect(() => {
     axios.get('http://localhost:8080/dtBoard/')
         .then(response => setPosts(response.data))
-        .catch(error => console.error(error));
+        .catch(error => console.error('Error loading list', error));
   }, []);
 
   const deletePost = (id) => {
+    axios.delete(`http://localhost:8080/dtBoard/delete/${id}`)
+        .then(() => {
+          setPosts(posts.filter(post => post.id !== id));
+        })
+        .catch(error => {
+          console.error('Error deleting post:', error);
+        });
+  };
+
+  /*
+  const deletePost = (id) => {
     setPosts(posts.filter((post) => post.id !== id));
   };
+   */
 
   const addPost = (title, content, time) => {
 
@@ -25,7 +37,7 @@ export const PostProvider = ({ children }) => {
     const placeAddress = selectedPlace.address
     const newPost = {
       title,
-      description: placeDescription,
+      location: placeDescription,
       content,
       time,
       lat: selectedPlace?.lat || null,
