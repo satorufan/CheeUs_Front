@@ -97,6 +97,32 @@ const initialState = {
       media: 'V',
       videoUrl: 'https://assets.codepen.io/6093409/river.mp4',
     },
+    {
+      id: 8,
+      author_id: 'rbfl8484@gmail.com',
+      author_name: "안녕",
+      category: 3,
+      title: "맥주 빨리마시기 대회",
+      content: "맥주를 빨리마시면 숙취를 얻습니다.",
+      writeday: "2024-07-09",
+      views: 20,
+      like: 8,
+      repl_cnt: 1,
+      photoes: "",
+    },
+    {
+      id: 9,
+      author_id: 105,
+      author_name: "빙그레",
+      category: 3,
+      title: "바나나 막걸리 먹으면",
+      content: "나한테 바나나?그래서 말걸리?",
+      writeday: "2024-07-09",
+      views: 20,
+      like: 8,
+      repl_cnt: 1,
+      photoes: "",
+    },
   ],
   likedMap: {},
 };
@@ -105,8 +131,17 @@ const initialState = {
 export const addBoard = createAsyncThunk(
   'board/addBoard',
   async (boardData) => {
-    //axios 넣기
-    return boardData;
+    const formData = new FormData();
+    formData.append('title', boardData.title);
+    formData.append('content', boardData.content);
+    formData.append('videoFile', boardData.videoFile); // 파일 추가
+
+    const response = await axios.post('http://localhost:8080/boards', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
   }
 );
 

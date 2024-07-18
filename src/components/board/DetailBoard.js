@@ -36,18 +36,8 @@ const DetailBoard = () => {
     } else if (board.category === 2) {
       navigate(`/board/shortform/detail/${id}`);
     } else if (board.category === 3) {
-      navigate(`/board/event/detail/${id}`);
+      navigate(`/board/eventboard/detail/${id}`);
     }
-
-    // 디코딩된 토큰 정보 콘솔 출력
-    console.log('디코딩된 토큰 정보:', decodedToken);
-
-    // 작성자 정보 콘솔 출력
-    console.log('작성자 정보:', {
-      email: decodedToken?.email,
-      author_id: board?.author_id,
-      name: board?.author_name
-    });
 
   }, [board, id, navigate, decodedToken]);
 
@@ -170,7 +160,7 @@ const DetailBoard = () => {
 
               {board.category === 3 && (
                 <button
-                  onClick={() => navigate(`/board/event/edit/${id}`)}
+                  onClick={() => navigate(`/board/eventboard/edit/${id}`)}
                   className="detail-edit-btn"
                 >
                   수정하기
