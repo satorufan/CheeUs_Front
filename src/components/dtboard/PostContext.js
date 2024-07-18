@@ -14,7 +14,9 @@ export const PostProvider = ({ children }) => {
   ]);
 
   const [selectedPlace, setSelectedPlace] = useState(null);
-
+  const deletePost = (id) => {
+    setPosts(posts.filter((post) => post.id !== id));
+  };
   const addPost = (title, content, time) => {
     const placeDescription = selectedPlace ? `${selectedPlace.title}` : '선택한 장소가 없습니다.';
     const placeAddress = selectedPlace.address
@@ -32,7 +34,7 @@ export const PostProvider = ({ children }) => {
   };
 
   return (
-    <PostContext.Provider value={{ posts, addPost, selectedPlace, setSelectedPlace }}>
+    <PostContext.Provider value={{ posts, addPost, selectedPlace, setSelectedPlace, deletePost }}>
       {children}
     </PostContext.Provider>
   );
