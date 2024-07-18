@@ -19,7 +19,7 @@ const FreeBoard = () => {
   const boards = useSelector(selectBoards);
   const likedMap = useSelector(selectLikedMap);
 
-  const itemsPerPage = 5;
+  const itemsPerPage =8;
   const [currentPage, setCurrentPage] = useState(1);
 
   const handleLikeClick = (id) => {
@@ -31,12 +31,15 @@ const FreeBoard = () => {
   };
 
   const handleCreatePost = () => {
-    navigate('/board/freeboard/wirte');
+    navigate('/board/freeboard/write');
   };
 
-  const totalPages = Math.ceil(boards.length / itemsPerPage);
+  //페이지네이션
+  const filteredBoards = boards.filter(board => board.category === 1);
+
+  const totalPages = Math.ceil(filteredBoards.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentBoards = boards.slice(startIndex, startIndex + itemsPerPage);
+  const currentBoards = filteredBoards.slice(startIndex, startIndex + itemsPerPage);
 
   const handleChange = (event, value) => {
     setCurrentPage(value);
