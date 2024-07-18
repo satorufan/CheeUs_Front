@@ -28,6 +28,10 @@ import FreeBoard from './components/freeboard/FreeBoard';
 import DetailFreeBoard from './components/freeboard/DetailFreeBoard';
 import WriteFreeBoard from './components/freeboard/WriteFreeBoard';
 import EditFreeBoard from './components/freeboard/EditFreeBoard';
+import EventBoard from './components/eventboard/EventBoard';
+import DetailEventBoard from './components/eventboard/DetailEventBoard';
+import WriteEventBoard from './components/eventboard/WriteEventBoard';
+import EditEventBoard from './components/eventboard/EditEventBoard';
 import DetailShortForm from './components/shortform/DetailShortForm';
 import { AuthProvider } from './components/login/OAuth';
 import ChatPage from './components/chat/ChatPage';
@@ -62,8 +66,12 @@ function App() {
             <Route path="/board/shortform/edit/:id" element={<EditShortForm />} />
             <Route path="/board/freeboard" element={<FreeBoard />} />
             <Route path="/board/freeboard/detail/:id" element={<DetailFreeBoard />} />
-            <Route path="/board/freeboard/wirte" element={<WriteFreeBoard />} />
+            <Route path="/board/freeboard/write" element={<WriteFreeBoard />} />
             <Route path="/board/freeboard/edit/:id" element={<EditFreeBoard />} />
+            <Route path="/board/eventboard" element={<EventBoard />} />
+            <Route path="/board/eventboard/detail/:id" element={<DetailEventBoard />} />
+            <Route path="/board/eventboard/write" element={<WriteEventBoard />} />
+            <Route path="/board/eventboard/edit/:id" element={<EditEventBoard />} />
             <Route path="/chatpage" element={<ChatPage />} />
             <Route path="/input" element={<InputFrom />} />
             <Route path="*" element={<div>404</div>} />

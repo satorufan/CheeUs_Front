@@ -72,7 +72,7 @@ function Header() {
                                             <Stack direction="row" alignItems="center">
                                                 <Avatar
                                                     alt="User Avatar"
-                                                    src={userProfile.photo || `${process.env.PUBLIC_URL}/images/default-avatar.jpg`}
+                                                    src={userProfile && typeof userProfile.photo === 'string' ? userProfile.photo : `${process.env.PUBLIC_URL}/images/default-avatar.jpg`}
                                                     sx={{ width: 32, height: 32 }}
                                                 />
                                             </Stack>
