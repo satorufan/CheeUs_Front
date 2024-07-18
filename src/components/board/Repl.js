@@ -4,6 +4,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import NearMeIcon from '@mui/icons-material/NearMe';
 import './repl.css';
 
+// 틀만 만든거!!!
+
 function Repl() {
     const [comments, setComments] = useState([]); // 댓글 상태
     const [commentText, setCommentText] = useState(''); // 댓글 입력 텍스트
@@ -34,7 +36,7 @@ function Repl() {
                     replies: [],
                     user: { 
                         profilePic: 'https://via.placeholder.com/30', 
-                        nickname: 'User1' 
+                        nickname: 'User1'  // 가상
                     } 
                 }
             ]);
@@ -50,7 +52,7 @@ function Repl() {
                 content: replyText[commentIndex], 
                 user: { 
                     profilePic: 'https://via.placeholder.com/30', 
-                    nickname: 'User2' 
+                    nickname: 'User2' // 가상
                 } 
             });
             setComments(updatedComments);

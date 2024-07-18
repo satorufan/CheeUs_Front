@@ -20,9 +20,14 @@ import PostDetail from './components/dtboard/PostDetail';
 import { PostProvider } from './components/dtboard/PostContext';
 import BoardPage from './components/board/BoardPage';
 import ShortForm from './components/shortform/ShortFrom';
+import WriteShortForm from './components/shortform/WriteShortForm.js'
+import EditShortForm from './components/shortform/EditShortForm'
 import InputFrom from './components/toast/InputForm';
 import FreeBoard from './components/freeboard/FreeBoard';
 import DetailFreeBoard from './components/freeboard/DetailFreeBoard';
+import WriteFreeBoard from './components/freeboard/WriteFreeBoard';
+import EditFreeBoard from './components/freeboard/EditFreeBoard';
+import DetailShortForm from './components/shortform/DetailShortForm';
 import { AuthProvider } from './components/login/OAuth';
 import ChatPage from './components/chat/ChatPage';
 import scoket from './server';
@@ -50,8 +55,13 @@ function App() {
             <Route path="/dtboard/post/:id" element={<PostDetail />} />
             <Route path="/board" element={<BoardPage />} />
             <Route path="/board/shortform" element={<ShortForm />} />
+            <Route path="/board/shortform/detail/:id" element={<DetailShortForm />} />
+            <Route path="/board/shortform/Write" element={<WriteShortForm />} />
+            <Route path="/board/shortform/edit/:id" element={<EditShortForm />} />
             <Route path="/board/freeboard" element={<FreeBoard />} />
             <Route path="/board/freeboard/detail/:id" element={<DetailFreeBoard />} />
+            <Route path="/board/freeboard/wirte" element={<WriteFreeBoard />} />
+            <Route path="/board/freeboard/edit/:id" element={<EditFreeBoard />} />
             <Route path="/chatpage" element={<ChatPage />} />
             <Route path="/input" element={<InputFrom />} />
             <Route path="*" element={<div>404</div>} />
