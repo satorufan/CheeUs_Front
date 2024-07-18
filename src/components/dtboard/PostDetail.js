@@ -54,7 +54,6 @@ const PostDetail = () => {
     };
 
 
-
   return (
     <div className="inputContainer">
       <div className="topContainer">
@@ -63,7 +62,7 @@ const PostDetail = () => {
         </div>
         <div className="mapHeader">
           <div className="mapping">
-            장소 : {post.description}({post.address})
+            장소 : {post.location}({post.address})
           </div>
         </div>
       </div>
@@ -89,7 +88,7 @@ const PostDetail = () => {
           </div>
         </div>
          <div className="detailMapContainer" >
-          <PostDetailMap lat={post.lat} lng={post.lng} title={post.title} description={post.description}/>
+          <PostDetailMap latitude={post.latitude} longitude={post.longitude} title={post.title} location={post.location}/>
          </div>
       </div>
       <div className="bottomContainer">

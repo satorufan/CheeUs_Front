@@ -80,7 +80,7 @@ function DTBInputForm() {
                 	<a> </a>
                    {selectedPlace.title} ({selectedPlace.address})
                   	<span className="hidden">
-                    	{selectedPlace.lat} {selectedPlace.lng}
+                    	{selectedPlace.latitude} {selectedPlace.longitude}
                   	</span>
                 </>
               ) : (
