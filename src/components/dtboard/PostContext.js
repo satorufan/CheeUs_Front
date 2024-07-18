@@ -8,9 +8,8 @@ export const usePosts = () => useContext(PostContext);
 export const PostProvider = ({ children }) => {
   const [posts, setPosts] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState(null);
-
   useEffect(() => {
-    axios.get('http://localhost:8080/board/')
+    axios.get('http://localhost:8080/dtBoard/')
         .then(response => setPosts(response.data))
         .catch(error => console.error(error));
   }, []);
@@ -25,7 +24,7 @@ export const PostProvider = ({ children }) => {
       lat: selectedPlace?.lat || null,
       lng: selectedPlace?.lng || null,
     };
-    axios.post('http://localhost:8080/board/insert', newPost)
+    axios.post('http://localhost:8080/dtBoard/insert', newPost)
         .then(() => {
           setPosts([...posts, newPost]);
         })
