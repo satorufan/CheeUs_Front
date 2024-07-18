@@ -1,5 +1,5 @@
-import React, { useState, useRef, forwardRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useRef, forwardRef, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { BsArrowLeft } from 'react-icons/bs';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import ToastEditor from './ToastEditor';
@@ -11,13 +11,23 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { ko } from 'date-fns/locale';
 import { format } from 'date-fns';
 
-function DTBInputForm() {
+function PostModify() {
+  const { modifyPost, selectedPlace, posts } = usePosts();
+  const { id } = useParams();
+  const post = posts.find((post) => post.id === parseInt(id));
+  const navigate = useNavigate();
+  const editorRef = useRef();
   const [startDate, setStartDate] = useState(new Date());
   const [title, setTitle] = useState('');
   const [time, setTime] = useState(format(new Date(), ' yyyy.MM.dd HH:mm'));
-  const editorRef = useRef();
-  const navigate = useNavigate();
-  const { addPost, selectedPlace } = usePosts();
+
+  useEffect(() => {
+    if (post) {
+      setTitle(post.title);
+      setTime(post.time);
+      setStartDate(new Date(post.time)); // Assuming post.time is a valid date string
+    }
+  }, [post]);
 
   const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => {
     const formattedValue = format(startDate, '약속시간 : yyyy.MM.dd') + ' ' + format(startDate, 'HH:mm');
@@ -31,8 +41,8 @@ function DTBInputForm() {
   const onSubmitHandler = async () => {
     if (title === '') return;
     const content = editorRef.current.getInstance().getMarkdown(); // content를 getInstance().getMarkdown()으로 받아옴
-    addPost(title, content, time);
-    navigate('/dtboard', {replace: true}); // 게시글 작성 후 게시판으로 이동
+    modifyPost(title, content, time);
+    navigate('/dtboard'); // 게시글 작성 후 게시판으로 이동
   };
 
   const onExitHandler = () => {
@@ -49,39 +59,38 @@ function DTBInputForm() {
         <div className="textareaHeader">
           <textarea
             className="textareaBox"
-            placeholder="타이틀을 입력해주세요"
+            placeholder=""
             value={title}
             onChange={onChangeTitleHandler}
           />
-         <div className="dateHeader">
-          <DatePicker
-            locale={ko}
-            selected={startDate}
-            onChange={(date) => {
-              setStartDate(date);
-              setTime(format(date, ' yyyy.MM.dd HH:mm'));
-            }}
-            dateFormat=" yyyy.MM.dd HH:mm"
-            showTimeSelect
-            timeFormat="HH:mm"
-            timeIntervals={15}
-            timeCaption="시간"
-            customInput={<ExampleCustomInput />}
-          />
+          <div className="dateHeader">
+            <DatePicker
+              locale={ko}
+              selected={startDate}
+              onChange={(date) => {
+                setStartDate(date);
+                setTime(format(date, ' yyyy.MM.dd HH:mm'));
+              }}
+              dateFormat=" yyyy.MM.dd HH:mm"
+              showTimeSelect
+              timeFormat="HH:mm"
+              timeIntervals={15}
+              timeCaption="시간"
+              customInput={<ExampleCustomInput />}
+            />
+          </div>
         </div>
-        </div>
-
         <div className="mapHeader">
           <div className="mapping">
             장소 :
             <a>
               {selectedPlace ? (
                 <>
-                	<a> </a>
-                   {selectedPlace.title} ({selectedPlace.address})
-                  	<span className="hidden">
-                    	{selectedPlace.latitude} {selectedPlace.longitude}
-                  	</span>
+                  <a> </a>
+                  {selectedPlace.title} ({selectedPlace.address})
+                  <span className="hidden">
+                    {selectedPlace.latitude} {selectedPlace.longitude}
+                  </span>
                 </>
               ) : (
                 ' 지도정보'
@@ -101,23 +110,23 @@ function DTBInputForm() {
       </div>
       <div className="bottomContainer">
         <div className="buttonsWrap">
-         <div className = 'buttonArea1'>
-          <button className="backButton" onClick={onExitHandler}>
-            <div className="arrowWrap">
-              <BsArrowLeft className="arrow" />
-              <span className="arrowText">나가기</span>
-            </div>
-          </button>
-         </div>
-         <div className='buttonArea2'>
-          <button className="submitButton" onClick={onSubmitHandler}>
-            제출하기
-          </button>
-         </div>
+          <div className='buttonArea1'>
+            <button className="backButton" onClick={onExitHandler}>
+              <div className="arrowWrap">
+                <BsArrowLeft className="arrow" />
+                <span className="arrowText">나가기</span>
+              </div>
+            </button>
+          </div>
+          <div className='buttonArea2'>
+            <button className="submitButton" onClick={onSubmitHandler}>
+              제출하기
+            </button>
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-export default DTBInputForm;
+export default PostModify;

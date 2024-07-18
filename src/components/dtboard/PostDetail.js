@@ -19,8 +19,9 @@ const PostDetail = () => {
   if (!post) return <div>Post not found</div>;
 
   const onExitHandler = () => {
-    navigate('/dtboard');
+    navigate('/dtBoard');
   };
+
   const onDeleteHandler = () => {
     Swal.fire({
       title: '정말 삭제하시겠습니까?',
@@ -33,10 +34,11 @@ const PostDetail = () => {
       if (result.value) {
         deletePost(post.id);
         Swal.fire('Deleted', '삭제 완료', 'success');
-        navigate('/dtboard');
+        navigate('/dtBoard');
       }
     });
   };
+
   const onModifyHandler = () =>{
 	Swal.fire({
       title:'정말 수정하시겠습니까?',
@@ -45,15 +47,12 @@ const PostDetail = () => {
       confirmButtonColor:'#48088A',
       confirmButtonText:'확인',
       cancelButtonText:'취소',
-      
       }).then((result) => {
             if (result.value){
-                navigate(`/dtboard/post/${id}`);
+                navigate(`/dtboard/postModify/${id}`);
             }
         });
     };
-
-
 
   return (
     <div className="inputContainer">
@@ -63,7 +62,7 @@ const PostDetail = () => {
         </div>
         <div className="mapHeader">
           <div className="mapping">
-            장소 : {post.description}({post.address})
+            장소 : {post.location}({post.address})
           </div>
         </div>
       </div>
@@ -76,7 +75,7 @@ const PostDetail = () => {
 	          	  <img className = 'profileImg' src= {profileImg} alt='Profile'/>
 	          	</div>
 	          	<div className = 'profile2'>
-	          	  <a>닉네임</a>
+	          	  <a>{post.authorId}</a>
 	          	</div>
 	          </div>
 	          <div className="dateHeader">
@@ -89,7 +88,7 @@ const PostDetail = () => {
           </div>
         </div>
          <div className="detailMapContainer" >
-          <PostDetailMap lat={post.lat} lng={post.lng} title={post.title} description={post.description}/>
+          <PostDetailMap latitude={post.latitude} longitude={post.longitude} title={post.title} location={post.location}/>
          </div>
       </div>
       <div className="bottomContainer">

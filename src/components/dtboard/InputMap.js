@@ -119,8 +119,8 @@ const InputMap = () => {
 	kakao.maps.event.addListener(marker, 'click', function () {
       const latlng = marker.getPosition();
       setSelectedPlace({
-        lat: latlng.getLat(),
-        lng: latlng.getLng(),
+        latitude: latlng.getLat(),
+        longitude: latlng.getLng(),
         title,
         address: addressName,
       });

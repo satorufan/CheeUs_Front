@@ -30,9 +30,9 @@ const DTBoardMap = ({ selectedPostId }) => {
 		  
 		  if(navigator.geolocation){
 			  navigator.geolocation.getCurrentPosition((position)=>{
-				  const lat = position.coords.latitude;
-				  const lon = position.coords.longitude;
-				  map.setCenter(new kakao.maps.LatLng(lat, lon));
+				  const latitude = position.coords.latitude;
+				  const longitude = position.coords.longitude;
+				  map.setCenter(new kakao.maps.LatLng(latitude, longitude));
 			  });
 		  }
           // 지도 컨트롤러 기능 추가
@@ -50,9 +50,9 @@ const DTBoardMap = ({ selectedPostId }) => {
 
           // 게시물 위치에 마커 추가
           const newMarkers = posts.map(post => {
-            if (post.lat && post.lng) {
+            if (post.latitude && post.longitude) {
               const marker = new kakao.maps.Marker({
-                position: new kakao.maps.LatLng(post.lat, post.lng),
+                position: new kakao.maps.LatLng(post.latitude, post.longitude),
               });
 
               // 마커에 클릭 이벤트 추가 (예: 인포윈도우 표시)
@@ -89,7 +89,7 @@ const DTBoardMap = ({ selectedPostId }) => {
       const selectedMarkerObj = markers.find(markerObj => markerObj.post.id === selectedPostId);
       if (selectedMarkerObj) {
         selectedMarkerObj.infowindow.open(map, selectedMarkerObj.marker);
-        map.panTo(new kakao.maps.LatLng(selectedMarkerObj.post.lat, selectedMarkerObj.post.lng));
+        map.panTo(new kakao.maps.LatLng(selectedMarkerObj.post.latitude, selectedMarkerObj.post.longitude));
       }
     }
   }, [selectedPostId, markers]);
@@ -118,7 +118,7 @@ const DTBoardMap = ({ selectedPostId }) => {
   };
 
   const generateInfoWindowContent = (post) => {
-    const relatedPosts = posts.filter(p => p.lat === post.lat && p.lng === post.lng);
+    const relatedPosts = posts.filter(p => p.latitude === post.latitude && p.longitude === post.longitude);
 
     let content = `
       <div style="padding:10px; background-color:white; border-radius:5px; box-shadow: 0px 0px 10px rgba(0,0,0,0.5);">
@@ -127,7 +127,7 @@ const DTBoardMap = ({ selectedPostId }) => {
     relatedPosts.forEach(p => {
       content += `
         <h3 style="margin:0; padding-bottom:5px; border-bottom:1px solid #ccc;width: auto;">${p.title}</h3>
-        <p style="margin:5px 0;">${p.description}</p>
+        <p style="margin:5px 0;">${p.location}</p>
         <button data-id="${p.id}" style="padding: 5px 10px; background-color: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;" >
           같이 마시러 가기
         </button>
