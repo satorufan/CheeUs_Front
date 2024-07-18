@@ -4,25 +4,27 @@ import { useSelector } from 'react-redux';
 import { selectBoards } from '../../store/BoardSlice';
 import './detailBoard.css'; 
 import Avatar from '@mui/material/Avatar';
-import { Button } from 'react-bootstrap';
 import { Favorite, Visibility, Bookmark } from '@mui/icons-material';
+import { AuthContext } from '../login/OAuth'; // AuthContext 가져오기
 
 const DetailBoard = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const boards = useSelector(selectBoards);
-  
+  const { user } = React.useContext(AuthContext); // 현재 사용자 정보 가져오기
+
   const board = boards.find(b => b.id === parseInt(id));
   const [comments, setComments] = useState([]);
   const [commentText, setCommentText] = useState('');
-  const [liked, setLiked] = useState(false); // 좋아요 상태
-  const [scraped, setScraped] = useState(false); // 스크랩 상태
+  const [liked, setLiked] = useState(false);
+  const [scraped, setScraped] = useState(false);
 
   useEffect(() => {
     if (!board) {
       return; 
     }
-    
+
+    // 게시물 카테고리에 따라 경로 변경
     if (board.category === 1) {
       navigate(`/board/freeboard/detail/${id}`);
     } else if (board.category === 2) {
@@ -48,6 +50,11 @@ const DetailBoard = () => {
     setScraped(!scraped);
   };
 
+  const handleDelete = () => {
+    // 삭제 로직 구현 
+    console.log('게시물이 삭제되었습니다.');
+  };
+
   if (!board) return <div>게시물을 찾을 수 없습니다.</div>;
 
   return (
@@ -68,12 +75,12 @@ const DetailBoard = () => {
         <div className="detail-content-container">
           <p className="detail-content">{board.content}</p>
           {board.photoes && (
-          <div className="detail-image-container">
-            <img className="detail-image" src={board.photoes} alt={board.title} />
-          </div>
-        )}
+            <div className="detail-image-container">
+              <img className="detail-image" src={board.photoes} alt={board.title} />
+            </div>
+          )}
         </div>
-       <div className="detail-board-info">
+        <div className="detail-board-info">
           <div className="left-info">
             <p>
               <Bookmark 
@@ -96,13 +103,44 @@ const DetailBoard = () => {
             </p>
           </div>
         </div>
-        <Button 
-          variant="primary" 
-          onClick={() => navigate(`/board/edit/${id}`)}
-          className="mt-3"
-        >
-          수정하기
-        </Button>
+        <div className="detail-edit-container">
+          {/* 로그인 사용자와 작성자가 같을 경우 수정 버튼 표시 나중에 주석처리 한걸로 수정하기*/}
+          {/*
+          {user && (user.email === board.author_email || true) && (
+            <>
+              <button
+                onClick={() => navigate(`/board/edit/${id}`)}
+                className="detail-edit-btn"
+              >
+                수정하기
+              </button>
+              <button
+                onClick={handleDelete}
+                className="detail-edit-btn"
+              >
+                삭제하기
+              </button>
+            </>
+          )}
+          */}
+
+          {true && (
+            <>
+              <button
+                onClick={() => navigate(`/board/edit/${id}`)}
+                className="detail-edit-btn"
+              >
+                수정하기
+              </button>
+              <button
+                onClick={handleDelete}
+                className="detail-edit-btn"
+              >
+                삭제하기
+              </button>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -15,7 +15,9 @@ export const PostProvider = ({ children }) => {
   }, []);
 
   const addPost = (title, content, time) => {
-    const placeDescription = selectedPlace ? `${selectedPlace.title} (${selectedPlace.address}) ` : '';
+
+    const placeDescription = selectedPlace ? `${selectedPlace.title}` : '선택한 장소가 없습니다.';
+    const placeAddress = selectedPlace.address
     const newPost = {
       title,
       description: placeDescription,
