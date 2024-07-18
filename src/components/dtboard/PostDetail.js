@@ -48,7 +48,7 @@ const PostDetail = () => {
       
       }).then((result) => {
             if (result.value){
-                navigate(`/dtboard/post/${id}`);
+                navigate(`/dtboard/postModify/${id}`);
             }
         });
     };

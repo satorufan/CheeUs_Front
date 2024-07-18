@@ -1,3 +1,4 @@
+import { id } from 'date-fns/locale';
 import React, { createContext, useContext, useState } from 'react';
 
 const PostContext = createContext();
@@ -14,9 +15,7 @@ export const PostProvider = ({ children }) => {
   ]);
 
   const [selectedPlace, setSelectedPlace] = useState(null);
-  const deletePost = (id) => {
-    setPosts(posts.filter((post) => post.id !== id));
-  };
+
   const addPost = (title, content, time) => {
     const placeDescription = selectedPlace ? `${selectedPlace.title}` : '선택한 장소가 없습니다.';
     const placeAddress = selectedPlace.address
@@ -32,9 +31,29 @@ export const PostProvider = ({ children }) => {
     };
     setPosts([...posts, newPost]);
   };
+  
+  const deletePost = (id) => {
+    setPosts(posts.filter((post) => post.id !== id));
+  };
+  
+  const modifyPost = (title, content, time) => {
+    const placeDescription = selectedPlace ? `${selectedPlace.title}` : '선택한 장소가 없습니다.';
+    const placeAddress = selectedPlace.address
+    const modifiedPost = {
+      id: id,
+      title,
+      description: placeDescription,
+      content,
+      address : placeAddress,
+      time,
+      lat: selectedPlace?.lat || null,
+      lng: selectedPlace?.lng || null,
+    };
+    setPosts([posts.filter((post) => post.id !== id), modifiedPost]);
+  };
 
   return (
-    <PostContext.Provider value={{ posts, addPost, selectedPlace, setSelectedPlace, deletePost }}>
+    <PostContext.Provider value={{ posts, addPost, modifyPost, selectedPlace, setSelectedPlace, deletePost }}>
       {children}
     </PostContext.Provider>
   );
