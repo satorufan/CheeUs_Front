@@ -182,7 +182,7 @@ const InputMap = () => {
         />
         <button onClick={handleSearch}>검색</button>
       </div>
-      <div id="map" className="map" ></div>
+      <div id="map" className="map"  style={{  height: '96vh'}}></div>
       <div className="search-result">
         <ul id="placesList">
           {places.map((place, index) => (

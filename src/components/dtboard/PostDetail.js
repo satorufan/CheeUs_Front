@@ -7,18 +7,52 @@ import '@toast-ui/editor/dist/toastui-editor.css';
 import './DTBinputForm.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import profileImg from '../images/google.png'
+import Swal from 'sweetalert2';
 
 const PostDetail = () => {
   const { id } = useParams();
-  const { posts } = usePosts();
+  const { posts, deletePost } = usePosts();
   const post = posts.find((post) => post.id === parseInt(id));
   const navigate = useNavigate();
-
+ 
+  
   if (!post) return <div>Post not found</div>;
 
   const onExitHandler = () => {
     navigate('/dtboard');
   };
+  const onDeleteHandler = () => {
+    Swal.fire({
+      title: '정말 삭제하시겠습니까?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#48088A',
+      confirmButtonText: '확인',
+      cancelButtonText: '취소',
+    }).then((result) => {
+      if (result.value) {
+        deletePost(post.id);
+        Swal.fire('Deleted', '삭제 완료', 'success');
+        navigate('/dtboard');
+      }
+    });
+  };
+  const onModifyHandler = () =>{
+	Swal.fire({
+      title:'정말 수정하시겠습니까?',
+      icon:'question',
+      showCancelButton : true,
+      confirmButtonColor:'#48088A',
+      confirmButtonText:'확인',
+      cancelButtonText:'취소',
+      
+      }).then((result) => {
+            if (result.value){
+                navigate(`/dtboard/post/${id}`);
+            }
+        });
+    };
+
 
   return (
     <div className="inputContainer">
@@ -71,10 +105,10 @@ const PostDetail = () => {
           </button>
          </div>
          <div className = 'buttonArea2'>
-          <button className="modifyButton" >
+          <button className="modifyButton" onClick = {onModifyHandler}>
             글 수정
           </button>
-          <button className="deleteButton" >
+          <button className="deleteButton" onClick ={onDeleteHandler}>
             글 삭제
           </button>
          </div>

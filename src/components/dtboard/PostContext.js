@@ -8,11 +8,16 @@ export const usePosts = () => useContext(PostContext);
 export const PostProvider = ({ children }) => {
   const [posts, setPosts] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState(null);
+
   useEffect(() => {
     axios.get('http://localhost:8080/dtBoard/')
         .then(response => setPosts(response.data))
         .catch(error => console.error(error));
   }, []);
+
+  const deletePost = (id) => {
+    setPosts(posts.filter((post) => post.id !== id));
+  };
 
   const addPost = (title, content, time) => {
 
@@ -34,7 +39,7 @@ export const PostProvider = ({ children }) => {
   };
 
   return (
-    <PostContext.Provider value={{ posts, addPost, selectedPlace, setSelectedPlace }}>
+    <PostContext.Provider value={{ posts, addPost, selectedPlace, setSelectedPlace, deletePost }}>
       {children}
     </PostContext.Provider>
   );
