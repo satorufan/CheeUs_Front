@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { id } from 'date-fns/locale';
 import axios from "axios";
 
 const PostContext = createContext();
@@ -10,11 +9,11 @@ export const PostProvider = ({ children }) => {
   const [posts, setPosts] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState(null);
 
-  // useEffect(() => {
-  //   axios.get('http://localhost:8080/dtBoard/')
-  //       .then(response => setPosts(response.data))
-  //       .catch(error => console.error('Error loading list', error));
-  // }, []);
+  useEffect(() => {
+    axios.get('http://localhost:8080/dtBoard/')
+        .then(response => setPosts(response.data))
+        .catch(error => console.error('리스트 로딩 중 오류 발생', error));
+  }, []);
 
   const deletePost = (id) => {
     axios.delete(`http://localhost:8080/dtBoard/delete/${id}`)
@@ -22,20 +21,13 @@ export const PostProvider = ({ children }) => {
           setPosts(posts.filter(post => post.id !== id));
         })
         .catch(error => {
-          console.error('Error deleting post:', error);
+          console.error('게시물 삭제 중 오류 발생:', error);
         });
   };
 
-  /*
-  const deletePost = (id) => {
-    setPosts(posts.filter((post) => post.id !== id));
-  };
-   */
-
   const addPost = (title, content, time) => {
-
     const placeDescription = selectedPlace ? `${selectedPlace.title}` : '선택한 장소가 없습니다.';
-    const placeAddress = selectedPlace.address
+    const placeAddress = selectedPlace?.address || '';
     const newPost = {
       title,
       location: placeDescription,
@@ -50,27 +42,25 @@ export const PostProvider = ({ children }) => {
         })
         .catch(error => console.error(error));
   };
-  
-  // useEffect(() => {
-  //   axios.get('http://localhost:8080/dtBoard/')
-  //       .then(response => setPosts(response.data))
-  //       .catch(error => console.error('Error loading list', error));
-  // }, []);
-  
-  const modifyPost = (title, content, time) => {
+
+  const modifyPost = (id, title, content, time) => {
     const placeDescription = selectedPlace ? `${selectedPlace.title}` : '선택한 장소가 없습니다.';
-    const placeAddress = selectedPlace.address
+    const placeAddress = selectedPlace?.address || '';
     const modifiedPost = {
-      id: id,
+      id,
       title,
       location: placeDescription,
       content,
-      address : placeAddress,
+      address: placeAddress,
       time,
       latitude: selectedPlace?.latitude || null,
       longitude: selectedPlace?.longitude || null,
     };
-    setPosts([posts.filter((post) => post.id !== id), modifiedPost]);
+    axios.put(`http://localhost:8080/dtBoard/update/${id}`, modifiedPost)
+        .then(() => {
+          setPosts(posts.map(post => (post.id === id ? modifiedPost : post)));
+        })
+        .catch(error => console.error(error));
   };
 
   return (

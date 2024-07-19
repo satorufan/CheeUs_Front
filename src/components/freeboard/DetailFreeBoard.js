@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { selectBoards } from '../../store/BoardSlice';
@@ -14,6 +14,11 @@ const DetailFreeBoard = () => {
   // 게시물 찾기
   const board = boards.find(b => b.id === parseInt(id) && b.category === 1);
 
+  // useCallback 훅을 사용하여 handleNavigate 함수 최적화
+  const handleNavigate = useCallback(() => {
+    navigate('/board/freeboard');
+  }, [navigate]);
+
   // 게시물이 없을 경우
   if (!board) return <div>게시물을 찾을 수 없습니다.</div>;
 
@@ -23,7 +28,7 @@ const DetailFreeBoard = () => {
       <div className="detail-free-header">
         <button
           className="detail-to-list"
-          onClick={() => navigate('/board/freeboard')}
+          onClick={handleNavigate}
         >
           자유게시판 목록
         </button>

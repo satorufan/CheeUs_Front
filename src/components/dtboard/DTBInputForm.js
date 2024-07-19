@@ -14,7 +14,7 @@ import { format } from 'date-fns';
 function DTBInputForm() {
   const [startDate, setStartDate] = useState(new Date());
   const [title, setTitle] = useState('');
-  const [time, setTime] = useState(format(new Date(), ' yyyy.MM.dd HH:mm'));
+  const [time, setTime] = useState(format(new Date(), 'yyyy.MM.dd HH:mm'));
   const editorRef = useRef();
   const navigate = useNavigate();
   const { addPost, selectedPlace } = usePosts();
@@ -32,7 +32,7 @@ function DTBInputForm() {
     if (title === '') return;
     const content = editorRef.current.getInstance().getMarkdown(); // content를 getInstance().getMarkdown()으로 받아옴
     addPost(title, content, time);
-    navigate('/dtboard', {replace: true}); // 게시글 작성 후 게시판으로 이동
+    navigate('/dtboard'); // 게시글 작성 후 게시판으로 이동
   };
 
   const onExitHandler = () => {
@@ -59,9 +59,9 @@ function DTBInputForm() {
             selected={startDate}
             onChange={(date) => {
               setStartDate(date);
-              setTime(format(date, ' yyyy.MM.dd HH:mm'));
+              setTime(format(date, 'yyyy.MM.dd HH:mm'));
             }}
-            dateFormat=" yyyy.MM.dd HH:mm"
+            dateFormat="yyyy.MM.dd HH:mm"
             showTimeSelect
             timeFormat="HH:mm"
             timeIntervals={15}
@@ -118,6 +118,6 @@ function DTBInputForm() {
       </div>
     </div>
   );
-}
+};
 
 export default DTBInputForm;
