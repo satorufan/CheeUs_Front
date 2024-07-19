@@ -16,11 +16,15 @@ export const fetchUserProfile = createAsyncThunk(
         const response = await axios.get(`${serverUrl}/profile`, {
             params: { email: memberEmail }
         });
+        console.log(response);
         return response.data;
     }
 );
 
-const profileSlice = createSlice({
+// 프로필 사진 가져오기
+export const fetchUserPhotos = createAsyncThunk();
+
+const ProfileSlice = createSlice({
     name: 'profile',
     initialState,
     reducers: {
@@ -68,10 +72,10 @@ export const {
     unlikeProfile,
     setLikedProfiles,
     updateUserProfile,
-} = profileSlice.actions;
+} = ProfileSlice.actions;
 
 export const selectUserProfile = (state) => state.profile.userProfile;
 export const selectProfileStatus = (state) => state.profile.status;
 export const selectProfileError = (state) => state.profile.error;
 
-export default profileSlice.reducer;
+export default ProfileSlice.reducer;

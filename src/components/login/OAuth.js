@@ -1,5 +1,6 @@
 //OAuth.js
 
+import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { createContext, useEffect, useState } from "react";
 
@@ -36,7 +37,14 @@ const AuthProvider = ({ children }) => {
 		const loadToken = getJwtToken();
 		if (loadToken) {
 			setToken(loadToken);
-			setEmail(jwtDecode(loadToken).email);
+			axios.get(serverUrl + "/member/signIn", {params : {
+				email : jwtDecode(loadToken).email
+			}}).then((res)=>{
+				console.log(res);
+				setEmail(jwtDecode(loadToken).email);
+			}).catch((err)=>{
+				console.log(err);
+			});
 		}
 	}, []);
 
@@ -52,6 +60,7 @@ const AuthProvider = ({ children }) => {
 		setToken(null);
 		setEmail(null);
 		window.location.href = serverUrl+"/logout";
+		console.log("로그아웃")
 	}
 
 	//쿠키에서 JWT 토큰 불러오기.

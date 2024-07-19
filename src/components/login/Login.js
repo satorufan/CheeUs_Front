@@ -1,5 +1,5 @@
 // Login.js
-import React, { useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import { AuthContext, GOOGLE_AUTH_URL, KAKAO_AUTH_URL, NAVER_AUTH_URL } from './OAuth';
 import kakaoLoginImage from '../images/kakao.png';
 import googleLoginImage from '../images/google.png';
@@ -8,14 +8,11 @@ import './Login.css';
 
 const Login = () => {
 
-	const {token, requestSignOut} = useContext(AuthContext);
+	const {requestSignOut} = useContext(AuthContext);
 	
 	const loginBtn = () => {
-		if(token) {
-			console.log(token);
-			requestSignOut();
-		}
-		
+		requestSignOut();
+		console.log("로그인");
 		window.location.href = "http://localhost:8080/signIn";
 	}
 

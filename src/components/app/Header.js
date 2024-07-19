@@ -26,6 +26,9 @@ function Header() {
             .then((res)=>{
                 console.log(res);
                 setIsLoggedIn(res.data.email);
+            })
+            .catch((err)=>{
+                console.log(err);
             });
         }
     },[token]);

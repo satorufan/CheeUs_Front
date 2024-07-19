@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Carousel, Modal } from 'react-bootstrap';
 import { updateUserLocation, likeProfile, unlikeProfile } from '../../store/ProfileSlice';
 import './profileCard.css';
+import noimage from "../images/noimage.jpg";
 import { AuthContext } from '../login/OAuth';
 
 const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
@@ -127,7 +128,7 @@ const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
     return (
         <div className="profile-card">
             <Carousel>
-                {photosToShow.map((photo, index) => (
+                {photosToShow ? photosToShow.map((photo, index) => (
                     <Carousel.Item key={index}>
                         <img
                             src={photo}
@@ -136,7 +137,13 @@ const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
                             onClick={() => handleImageClick(index)}
                         />
                     </Carousel.Item>
-                ))}
+                )) : (
+                    <img
+                        src={noimage}
+                        alt={`${profile.nickname}의 프로필`}
+                        className="profile-image"
+                    />
+                )}
             </Carousel>
             <div className="profile-details">
                 <h3>{profile.nickname} <span>&nbsp;{calculateAge(profile.birth)}세</span></h3>
@@ -158,7 +165,7 @@ const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
             <Modal show={showModal} onHide={handleCloseModal} centered>
                 <Modal.Body>
                     <Carousel activeIndex={modalIndex} onSelect={(selectedIndex) => setModalIndex(selectedIndex)}>
-                        {photosToShow.map((photo, index) => (
+                        {photosToShow ?. photosToShow.map((photo, index) => (
                             <Carousel.Item key={index}>
                                 <img
                                     src={photo}
