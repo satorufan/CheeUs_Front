@@ -30,6 +30,7 @@ function PostModify() {
       if (editorRef.current && editorRef.current.getInstance()) {
         editorRef.current.getInstance().setMarkdown(post.content);
       }
+      
     }
   }, [post]);
 
@@ -50,7 +51,7 @@ function PostModify() {
       title: "게시물이 수정되었습니다!",
       icon: "success",
     }).then(() => {
-      navigate('/dtboard');
+      navigate(`/dtboard/post/${id}`, {replace: true});
     });
   };
 

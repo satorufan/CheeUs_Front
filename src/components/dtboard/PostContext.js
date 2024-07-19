@@ -56,7 +56,7 @@ export const PostProvider = ({ children }) => {
       latitude: selectedPlace?.latitude || null,
       longitude: selectedPlace?.longitude || null,
     };
-    axios.put(`http://localhost:8080/dtBoard/update/${id}`, modifiedPost)
+    axios.put(`http://localhost:8080/dtBoard/update`, modifiedPost)
         .then(() => {
           setPosts(posts.map(post => (post.id === id ? modifiedPost : post)));
         })
