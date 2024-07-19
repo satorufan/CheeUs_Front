@@ -15,15 +15,15 @@ const ChatPage = () => {
 
     const loggedInUserId = 101;
     
-    useEffect(() => {
-        // Socket.io 서버와의 연결 설정
-        const newSocket = io('http://localhost:8088'); // 소켓 서버의 URL에 맞게 설정
-        setSocket(newSocket);
+    // useEffect(() => {
+    //     // Socket.io 서버와의 연결 설정
+    //     const newSocket = io('http://localhost:8088'); // 소켓 서버의 URL에 맞게 설정
+    //     setSocket(newSocket);
 
-        return () => {
-            newSocket.disconnect(); // 컴포넌트 언마운트 시 소켓 연결 해제
-        };
-    }, []);
+    //     return () => {
+    //         newSocket.disconnect(); // 컴포넌트 언마운트 시 소켓 연결 해제
+    //     };
+    // }, []);
 
     useEffect(() => {
         scrollToBottom();
