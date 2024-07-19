@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate, useLocation } from 'react-router-dom';
 import AspectRatio from '@mui/joy/AspectRatio';
 import Avatar from '@mui/joy/Avatar';
 import Box from '@mui/joy/Box';
@@ -7,75 +9,49 @@ import CardCover from '@mui/joy/CardCover';
 import Favorite from '@mui/icons-material/Favorite';
 import Visibility from '@mui/icons-material/Visibility';
 import BoardTop from '../board/BoardTop';
-import './freeBoard.css'; // CSS 파일 import
-
-// 예시 데이터
-const exampleData = {
-  "board": [
-    {
-      "id": 1,
-      "author_id": 101,
-      "author_name": "티라노사우르스",  // 예시 데이터에 작성자 이름 추가
-      "category": 1,
-      "title": "첫 번째 게시물",
-      "content": "첫 번째 게시물 내용입니다.첫 번째 게시물 내용입니다.첫 번째 게시물 내용입니다.첫 번째 게시물 내용입니다.첫 번째 게시물 내용입니다.첫 번째 게시물 내용입니다.첫 번째 게시물 내용입니다.첫 번째 게시물 내용입니다.첫 번째 게시물 내용입니다.",
-      "writeday": "2024-07-11",
-      "views": 50,
-      "like": 10,
-      "repl_cnt": 3,
-      "photoes": "https://www.w3schools.com/w3images/mac.jpg" // 이미지 URL 추가
-    },
-    {
-      "id": 2,
-      "author_id": 102,
-      "author_name": "Jane Smith",  // 예시 데이터에 작성자 이름 추가
-      "category": 1,
-      "title": "두 번째 게시물",
-      "content": "두 번째 게시물 내용입니다.",
-      "writeday": "2024-07-10",
-      "views": 30,
-      "like": 5,
-      "repl_cnt": 2,
-      "photoes": "" // 빈 이미지 URL
-    },
-    {
-      "id": 3,
-      "author_id": 103,
-      "author_name": "Michael Johnson",  // 예시 데이터에 작성자 이름 추가
-      "category": 2,
-      "title": "세 번째 게시물",
-      "content": "세 번째 게시물 내용입니다.",
-      "writeday": "2024-07-09",
-      "views": 20,
-      "like": 8,
-      "repl_cnt": 1,
-      "photoes": "" // 빈 이미지 URL
-    },
-    {
-      "id": 4,
-      "author_id": 104,
-      "author_name": "Emily Brown",  // 예시 데이터에 작성자 이름 추가
-      "category": 2,
-      "title": "네 번째 게시물",
-      "content": "네 번째 게시물 내용입니다.",
-      "writeday": "2024-07-08",
-      "views": 25,
-      "like": 6,
-      "repl_cnt": 2,
-      "photoes": "https://www.w3schools.com/html/frenchfood.jpg" // 이미지 URL 추가
-    }
-  ]
-};
+import { selectBoards, toggleLike, selectLikedMap, filterBoards, setSearchQuery, selectFilteredBoards } from '../../store/BoardSlice';
+import Pagination from '@mui/material/Pagination';
+import './freeBoard.css';
 
 const FreeBoard = () => {
-  const [likedMap, setLikedMap] = useState({});
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  const boards = useSelector(selectBoards);
+  const likedMap = useSelector(selectLikedMap);
+  const filteredBoards = useSelector(selectFilteredBoards);
+  
+  const itemsPerPage = 8;
+  const [currentPage, setCurrentPage] = useState(1);
 
-  // 좋아요 클릭 처리
+  // URL 쿼리에서 검색어를 읽어와 상태에 설정
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const query = params.get('search') || '';
+    dispatch(setSearchQuery(query)); // 검색어를 상태에 설정
+    dispatch(filterBoards()); // 검색어에 따라 필터링
+  }, [location.search, dispatch]);
+
   const handleLikeClick = (id) => {
-    setLikedMap(prevLikedMap => ({
-      ...prevLikedMap,
-      [id]: !prevLikedMap[id]
-    }));
+    dispatch(toggleLike(id));
+  };
+
+  const handleCardClick = (id) => {
+    navigate(`/board/freeboard/detail/${id}`);
+  };
+
+  const handleCreatePost = () => {
+    navigate('/board/freeboard/write');
+  };
+
+  // 페이지네이션
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentBoards = filteredBoards.filter(board => board.category === 1).slice(startIndex, startIndex + itemsPerPage);
+  const totalPages = Math.ceil(filteredBoards.filter(board => board.category === 1).length / itemsPerPage);
+
+  const handleChange = (event, value) => {
+    setCurrentPage(value);
   };
 
   return (
@@ -83,11 +59,12 @@ const FreeBoard = () => {
       <BoardTop />
       <div className="freeboard-container">
         <div className="freeboard-card-container">
-          {exampleData.board.map((board) => (
+          {currentBoards.map((board) => (
             <Card
               key={board.id}
               variant="plain"
               className="freeboard-card"
+              onClick={() => handleCardClick(board.id)}
             >
               <Box className="card-video">
                 <AspectRatio ratio="4/3">
@@ -126,12 +103,15 @@ const FreeBoard = () => {
                 <div>
                   <div className="card-author-name">
                     {board.author_name}
-                  </div >
+                  </div>
                 </div>
                 <div className="card-icons-container">
                   <div
                     className="card-icon-like"
-                    onClick={() => handleLikeClick(board.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleLikeClick(board.id);
+                    }}
                   >
                     <Favorite color={likedMap[board.id] ? 'error' : 'action'} />
                     {likedMap[board.id] ? board.like + 1 : board.like}
@@ -146,6 +126,30 @@ const FreeBoard = () => {
           ))}
         </div>
       </div>
+      <div className="create-post-container">
+        <button onClick={handleCreatePost} className="create-post-button">
+          게시글 작성
+        </button>
+      </div>
+      <Pagination
+        count={totalPages}
+        page={currentPage}
+        onChange={handleChange}
+        variant="outlined"
+        sx={{
+          '& .MuiPaginationItem-root': {
+            color: 'black',
+          },
+          '& .MuiPaginationItem-root.Mui-selected': {
+            backgroundColor: 'black',
+            color: 'white',
+          },
+          '& .MuiPaginationItem-root:hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.1)',
+          },
+        }}
+        className="pagination"
+      />
     </>
   );
 };

@@ -1,196 +1,183 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate, useLocation } from 'react-router-dom';
 import AspectRatio from '@mui/joy/AspectRatio';
 import Avatar from '@mui/joy/Avatar';
 import Box from '@mui/joy/Box';
 import Card from '@mui/joy/Card';
 import CardCover from '@mui/joy/CardCover';
-import Typography from '@mui/joy/Typography';
 import Favorite from '@mui/icons-material/Favorite';
 import Visibility from '@mui/icons-material/Visibility';
-import './shortForm.css'; // 해당 CSS 파일이 필요합니다.
 import BoardTop from '../board/BoardTop';
-
-// 예시 데이터
-const exampleData = [
-  {
-    id: 1,
-    author_id: 101,
-    author_name: '뭐임마', 
-    category: 1,
-    title: '첫 번째 비디오 게시물',
-    content: '첫 번째 비디오 게시물 어쩌고 저쩌고',
-    writeday: '2024-07-11',
-    views: 50,
-    like: 10,
-    repl_cnt: 3,
-    media: 'V', 
-    videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' 
-  },
-  {
-    id: 2,
-    author_id: 102,
-    author_name: 'Jane Smith', 
-    category: 1,
-    title: '두 번째 비디오 게시물',
-    content: '두 번째 비디오 게시물', 
-    writeday: '2024-07-10',
-    views: 30,
-    like: 5,
-    repl_cnt: 2,
-    media: 'V',
-    videoUrl: 'https://www.w3schools.com/html/movie.mp4'
-  },
-  {
-    id: 3,
-    author_id: 103,
-    author_name: 'Michael Johnson', 
-    category: 2,
-    title: '세 번째 비디오 게시물',
-    content: '세 번째 비디오 게시물', 
-    writeday: '2024-07-09',
-    views: 20,
-    like: 8,
-    repl_cnt: 1,
-    media: 'V',
-    videoUrl: 'https://assets.codepen.io/6093409/river.mp4'
-  },
-  {
-    id: 4,
-    author_id: 103,
-    author_name: 'Michael Johnson', 
-    category: 2,
-    title: '네 번째 비디오 게시물',
-    content: '네 번째 비디오 게시물', 
-    writeday: '2024-07-09',
-    views: 25,
-    like: 6,
-    repl_cnt: 2,
-    media: 'V',
-    videoUrl: 'https://assets.codepen.io/6093409/river.mp4'
-  },
-  {
-    id: 5,
-    author_id: 103,
-    author_name: 'Michael Johnson', 
-    category: 2,
-    title: '다섯 번째 비디오 게시물',
-    content: '다섯 번째 비디오 게시물', 
-    writeday: '2024-07-09',
-    views: 18,
-    like: 7,
-    repl_cnt: 1,
-    media: 'V',
-    videoUrl: 'https://assets.codepen.io/6093409/river.mp4'
-  }
-];
+import Pagination from '@mui/material/Pagination';
+import { selectBoards, toggleLike, selectLikedMap, filterBoards, setSearchQuery, selectFilteredBoards } from '../../store/BoardSlice';
+import './shortForm.css';
 
 const ShortForm = () => {
-  const [likedMap, setLikedMap] = useState({});
-  const [hoveredVideo, setHoveredVideo] = useState(null); // State to track hovered video URL
-  const videoRefs = useRef({});
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  const boards = useSelector(selectBoards);
+  const likedMap = useSelector(selectLikedMap);
+  const filteredBoards = useSelector(selectFilteredBoards);
+  const searchQuery = useSelector(state => state.board.searchQuery);
 
-  // 좋아요 클릭 처리
+  const itemsPerPage = 8;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hoveredBoard, setHoveredBoard] = useState(null);
+  const boardRefs = useRef({});
+
+  // URL 쿼리에서 검색어를 읽어와 상태에 설정
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const query = params.get('search') || '';
+    dispatch(setSearchQuery(query)); // 검색어를 상태에 설정
+    dispatch(filterBoards()); // 검색어에 따라 필터링
+  }, [location.search, dispatch]);
+
   const handleLikeClick = (id) => {
-    setLikedMap(prevLikedMap => ({
-      ...prevLikedMap,
-      [id]: !prevLikedMap[id]
-    }));
+    dispatch(toggleLike(id));
   };
 
-  // 비디오 마우스 오버 시 재생
+  const handleCreatePost = () => {
+    navigate('/board/shortform/write');
+  };
+
   const handleMouseEnter = (videoUrl) => {
-    setHoveredVideo(videoUrl);
-    const videoElement = videoRefs.current[videoUrl];
-    if (videoElement && videoElement.paused) {
-      videoElement.play().catch(error => {
+    setHoveredBoard(videoUrl);
+    const boardElement = boardRefs.current[videoUrl];
+    if (boardElement && boardElement.paused) {
+      boardElement.play().catch(error => {
         console.error('비디오 플레이 실패 :', error);
       });
     }
   };
 
-  // 비디오 마우스 벗어날 시 정지 및 초기화
+  // 페이지네이션
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentBoards = filteredBoards.filter(board => board.category === 2).slice(startIndex, startIndex + itemsPerPage);
+  const totalPages = Math.ceil(filteredBoards.filter(board => board.category === 2).length / itemsPerPage);
+
+  const handleChange = (event, value) => {
+    setCurrentPage(value);
+  };
+
   const handleMouseLeave = (videoUrl) => {
-    setHoveredVideo(null);
-    const videoElement = videoRefs.current[videoUrl];
-    if (videoElement && !videoElement.paused) {
-      videoElement.pause();
-      videoElement.currentTime = 0;
+    setHoveredBoard(null);
+    const boardElement = boardRefs.current[videoUrl];
+    if (boardElement && !boardElement.paused) {
+      boardElement.pause();
+      boardElement.currentTime = 0;
     }
   };
 
-  // 비디오 요소들을 useRef를 통해 저장
   useEffect(() => {
-    exampleData.forEach(board => {
-      videoRefs.current[board.videoUrl] = document.getElementById(board.videoUrl);
+    boards.forEach(board => {
+      boardRefs.current[board.videoUrl] = document.getElementById(board.videoUrl);
     });
-  }, []);
+  }, [boards]);
+
+  const handleCardClick = (id) => {
+    navigate(`/board/shortform/detail/${id}`);
+  };
 
   return (
     <>
       <BoardTop />
       <div className="shortform-container">
         <div className="video-card-container">
-          {exampleData.map((board) => (
-            <Card
-              key={board.id}
-              variant="plain"
-              className="video-card"
-              onMouseEnter={() => handleMouseEnter(board.videoUrl)}
-              onMouseLeave={() => handleMouseLeave(board.videoUrl)}
-            >
-              <Box className="card-video">
-                <AspectRatio ratio="2/4">
-                  <CardCover className="card-cover">
-                    <video
-                      id={board.videoUrl}
-                      loop
-                      muted
-                      ref={el => videoRefs.current[board.videoUrl] = el}
-                      className="card-video video-element"
-                      autoPlay={hoveredVideo === board.videoUrl} 
+          {currentBoards.map((board) => (
+            board.category === 2 && ( // 카테고리가 2인 경우에만 렌더링
+              <Card
+                key={board.id}
+                variant="plain"
+                className="video-card"
+                onMouseEnter={() => handleMouseEnter(board.videoUrl)}
+                onMouseLeave={() => handleMouseLeave(board.videoUrl)}
+                onClick={() => handleCardClick(board.id)}
+              >
+                <Box className="card-video">
+                  <AspectRatio ratio="2/4">
+                    <CardCover className="card-cover">
+                      <video
+                        id={board.videoUrl}
+                        loop
+                        muted
+                        ref={el => boardRefs.current[board.videoUrl] = el}
+                        className="card-video video-element"
+                        autoPlay={hoveredBoard === board.videoUrl}
+                      >
+                        <source
+                          src={board.videoUrl}
+                          type="video/mp4"
+                        />
+                        Your browser does not support the video tag.
+                      </video>
+                    </CardCover>
+                  </AspectRatio>
+                </Box>
+                <div className="video-content">
+                  {board.title}
+                </div>
+                <Box className="card-content">
+                  <Avatar
+                    src={`https://images.unsplash.com/profile-${board.author_id}?dpr=2&auto=format&fit=crop&w=32&h=32&q=60&crop=faces&bg=fff`}
+                    size="sm"
+                    sx={{ '--Avatar-size': '1.5rem' }}
+                    className="card-avatar"
+                  />
+                  <div>
+                    <div className='short-author'>
+                      {board.author_name}
+                    </div>
+                  </div>
+                  <div className="card-icons-container">
+                    <div
+                      className="card-icon-like"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleLikeClick(board.id);
+                      }}
                     >
-                      <source
-                        src={board.videoUrl}
-                        type="video/mp4"
-                      />
-                      Your browser does not support the video tag.
-                    </video>
-                  </CardCover>
-                </AspectRatio>
-              </Box>
-              <div className="video-content">
-                {board.title}
-              </div>
-              <Box className="card-content">
-                <Avatar
-                  src={`https://images.unsplash.com/profile-${board.author_id}?dpr=2&auto=format&fit=crop&w=32&h=32&q=60&crop=faces&bg=fff`}
-                  size="sm"
-                  sx={{ '--Avatar-size': '1.5rem' }}
-                  className="card-avatar"
-                />
-                <div>
-                  <div className='short-author'>
-                    {board.author_name}
+                      <Favorite color={likedMap[board.id] ? 'error' : 'action'} />
+                      {likedMap[board.id] ? board.like + 1 : board.like}
+                    </div>
+                    <div className="card-icon">
+                      <Visibility />
+                      {board.views}
+                    </div>
                   </div>
-                </div>
-                <div className="card-icons-container">
-                  <div
-                    className="card-icon-like"
-                    onClick={() => handleLikeClick(board.id)}
-                  >
-                    <Favorite color={likedMap[board.id] ? 'error' : 'action'} />
-                    {likedMap[board.id] ? board.like + 1 : board.like}
-                  </div>
-                  <div className="card-icon">
-                    <Visibility />
-                    {board.views}
-                  </div>
-                </div>
-              </Box>
-            </Card>
+                </Box>
+              </Card>
+            )
           ))}
         </div>
       </div>
+      <div className="create-post-container">
+        <button onClick={handleCreatePost} className="create-post-button">
+          게시글 작성
+        </button>
+      </div>
+      <Pagination
+        count={totalPages}
+        page={currentPage}
+        onChange={handleChange}
+        variant="outlined"
+        sx={{
+          '& .MuiPaginationItem-root': {
+            color: 'black',
+          },
+          '& .MuiPaginationItem-root.Mui-selected': {
+            backgroundColor: 'black',
+            color: 'white',
+          },
+          '& .MuiPaginationItem-root:hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.1)',
+          },
+        }}
+        className="pagination"
+      />
     </>
   );
 };

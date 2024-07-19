@@ -27,7 +27,7 @@ const Login = () => {
 					{/* <a  href = {GOOGLE_AUTH_URL} className = 'logo'>
 						<img src = {googleLoginImage} alt = "구글계정 로그인" />
 					</a><br/> */}
-					<a style={{cursor : 'pointer'}}	className = 'logo'>
+					<a  style={{cursor : 'pointer'}}	className = 'logo'>
 						<img src = {googleLoginImage} alt = "구글계정 로그인" onClick={loginBtn} />
 					</a><br/>
 					<a  href = {NAVER_AUTH_URL} className='logo'>

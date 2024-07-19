@@ -17,11 +17,22 @@ import Match from './components/match/Match';
 import DTBoard from './components/dtboard/DTBoard';
 import DTBInputForm from './components/dtboard/DTBInputForm';
 import PostDetail from './components/dtboard/PostDetail';
+import PostModify from './components/dtboard/PostModify';
 import { PostProvider } from './components/dtboard/PostContext';
 import BoardPage from './components/board/BoardPage';
 import ShortForm from './components/shortform/ShortFrom';
+import WriteShortForm from './components/shortform/WriteShortForm.js'
+import EditShortForm from './components/shortform/EditShortForm'
 import InputFrom from './components/toast/InputForm';
 import FreeBoard from './components/freeboard/FreeBoard';
+import DetailFreeBoard from './components/freeboard/DetailFreeBoard';
+import WriteFreeBoard from './components/freeboard/WriteFreeBoard';
+import EditFreeBoard from './components/freeboard/EditFreeBoard';
+import EventBoard from './components/eventboard/EventBoard';
+import DetailEventBoard from './components/eventboard/DetailEventBoard';
+import WriteEventBoard from './components/eventboard/WriteEventBoard';
+import EditEventBoard from './components/eventboard/EditEventBoard';
+import DetailShortForm from './components/shortform/DetailShortForm';
 import { AuthProvider } from './components/login/OAuth';
 import ChatPage from './components/chat/ChatPage';
 import scoket from './server';
@@ -47,9 +58,20 @@ function App() {
             <Route path="/dtboard" element={<DTBoard />} />
             <Route path="/dtboard/input" element={<DTBInputForm />} />
             <Route path="/dtboard/post/:id" element={<PostDetail />} />
+            <Route path="/dtboard/postModify/:id" element={<PostModify />} />
             <Route path="/board" element={<BoardPage />} />
             <Route path="/board/shortform" element={<ShortForm />} />
+            <Route path="/board/shortform/detail/:id" element={<DetailShortForm />} />
+            <Route path="/board/shortform/Write" element={<WriteShortForm />} />
+            <Route path="/board/shortform/edit/:id" element={<EditShortForm />} />
             <Route path="/board/freeboard" element={<FreeBoard />} />
+            <Route path="/board/freeboard/detail/:id" element={<DetailFreeBoard />} />
+            <Route path="/board/freeboard/write" element={<WriteFreeBoard />} />
+            <Route path="/board/freeboard/edit/:id" element={<EditFreeBoard />} />
+            <Route path="/board/eventboard" element={<EventBoard />} />
+            <Route path="/board/eventboard/detail/:id" element={<DetailEventBoard />} />
+            <Route path="/board/eventboard/write" element={<WriteEventBoard />} />
+            <Route path="/board/eventboard/edit/:id" element={<EditEventBoard />} />
             <Route path="/chatpage" element={<ChatPage />} />
             <Route path="/input" element={<InputFrom />} />
             <Route path="*" element={<div>404</div>} />

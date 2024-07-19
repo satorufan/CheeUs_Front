@@ -32,7 +32,7 @@ function DTBInputForm() {
     if (title === '') return;
     const content = editorRef.current.getInstance().getMarkdown(); // content를 getInstance().getMarkdown()으로 받아옴
     addPost(title, content, time);
-    navigate('/dtboard'); // 게시글 작성 후 게시판으로 이동
+    navigate('/dtboard', {replace: true}); // 게시글 작성 후 게시판으로 이동
   };
 
   const onExitHandler = () => {
@@ -48,7 +48,7 @@ function DTBInputForm() {
       <div className="topContainer">
         <div className="textareaHeader">
           <textarea
-            className="textarea"
+            className="textareaBox"
             placeholder="타이틀을 입력해주세요"
             value={title}
             onChange={onChangeTitleHandler}
@@ -80,7 +80,7 @@ function DTBInputForm() {
                 	<a> </a>
                    {selectedPlace.title} ({selectedPlace.address})
                   	<span className="hidden">
-                    	{selectedPlace.lat} {selectedPlace.lng}
+                    	{selectedPlace.latitude} {selectedPlace.longitude}
                   	</span>
                 </>
               ) : (

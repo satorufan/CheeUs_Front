@@ -16,12 +16,11 @@ const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
     const [modalIndex, setModalIndex] = useState(0);
     const [likes, setLikes] = useState(profile.popularity);
     const [liked, setLiked] = useState(false);
-    const {serverUrl, memberEmail} = useContext(AuthContext);
+    const { serverUrl, memberEmail } = useContext(AuthContext);
 
     const isLiked = likedProfiles.includes(profile.id);
 
     useEffect(() => {
-
         const getUserLocation = () => {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
@@ -31,21 +30,16 @@ const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
                             longitude: position.coords.longitude,
                         };
                         dispatch(updateUserLocation(location));
-                        console.log('위도:', location.latitude);
-                        console.log('경도:', location.longitude);
                     },
                     (error) => {
                         console.error('위치 정보를 가져오는 데 실패했습니다:', error);
                     }
                 );
-            } else {
-                console.error('Geolocation이 지원되지 않습니다');
             }
         };
 
         getUserLocation();
-    }, []);
-
+    }, [dispatch]);
 
     // 프로필 좋아요 상태 초기화
     useEffect(() => {
@@ -67,25 +61,24 @@ const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
         }
 
         return age;
-        
     };
 
     // 직선 거리 계산
     const calculateStraightDistance = (lat1, lon1, lat2, lon2) => {
-        const R = 6371; 
+        const R = 6371;
         const dLat = deg2rad(lat2 - lat1);
         const dLon = deg2rad(lon2 - lon1);
-        
+
         const a = Math.sin(dLat / 2) ** 2 +
                   Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
                   Math.sin(dLon / 2) ** 2;
-        
+
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         const distance = R * c;
-        
-        return Math.round(distance * 10) / 10; 
+
+        return Math.round(distance * 10) / 10;
     };
-    
+
     const deg2rad = (deg) => {
         return deg * (Math.PI / 180);
     };
@@ -111,8 +104,8 @@ const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
         }
     };
 
-    // 사진 배열
-    const photosToShow = profile.photos;
+    // 사진 배열 안전하게 초기화
+    const photosToShow = profile.photos || [];
 
     let distanceToDisplay = '거리 알 수 없음';
 
@@ -121,28 +114,35 @@ const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
         if (profile.id === loggedInUserId) {
             distanceToDisplay = '0 km';
         } else {
-            distanceToDisplay = `${calculateStraightDistance(userLocation.latitude, userLocation.longitude, parseFloat(profile.latitude), parseFloat(profile.longitude))} km`;
+            distanceToDisplay = `${calculateStraightDistance(
+                userLocation.latitude,
+                userLocation.longitude,
+                parseFloat(profile.latitude),
+                parseFloat(profile.longitude)
+            )} km`;
         }
     }
 
     return (
         <div className="profile-card">
             <Carousel>
-                {photosToShow ? photosToShow.map((photo, index) => (
-                    <Carousel.Item key={index}>
-                        <img
-                            src={photo}
-                            alt={`${profile.nickname}의 프로필`}
-                            className="profile-image"
-                            onClick={() => handleImageClick(index)}
-                        />
+                {photosToShow.length > 0 ? (
+                    photosToShow.map((photo, index) => (
+                        <Carousel.Item key={index}>
+                            <img
+                                src={photo}
+                                alt={`${profile.nickname}의 프로필`}
+                                className="profile-image"
+                                onClick={() => handleImageClick(index)}
+                            />
+                        </Carousel.Item>
+                    ))
+                ) : (
+                    <Carousel.Item>
+                        <div className="no-photo">
+                            사진이 등록되지 않은 사용자입니다.
+                        </div>
                     </Carousel.Item>
-                )) : (
-                    <img
-                        src={noimage}
-                        alt={`${profile.nickname}의 프로필`}
-                        className="profile-image"
-                    />
                 )}
             </Carousel>
             <div className="profile-details">
