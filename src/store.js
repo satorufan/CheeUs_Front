@@ -3,6 +3,7 @@ import profileReducer from './store/ProfileSlice';
 import matchReducer from './store/MatchSlice';
 import boardReducer from './store/BoardSlice';
 import chatReducer from './store/ChatSlice';
+import commentReducer from './store/CommentSlice';
 
 const store = configureStore({
     reducer: {
@@ -10,6 +11,7 @@ const store = configureStore({
         match: matchReducer,
         board: boardReducer,
         chat: chatReducer,
+        comments: commentReducer,
     },
 });
 

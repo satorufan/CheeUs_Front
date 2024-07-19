@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, BrowserRouter } from 'react-router-dom';
 import './App.css';
 import './fonts/fonts.css';
@@ -34,8 +34,9 @@ import WriteEventBoard from './components/eventboard/WriteEventBoard';
 import EditEventBoard from './components/eventboard/EditEventBoard';
 import DetailShortForm from './components/shortform/DetailShortForm';
 import { AuthProvider } from './components/login/OAuth';
-import ChatPage from './components/chat/ChatPage';
 import scoket from './server';
+
+const ChatPage = lazy(() => import('./components/chat/ChatPage'));
 
 function App() {
   return (
@@ -44,38 +45,40 @@ function App() {
       <BrowserRouter>
         <PostProvider>
           <Header />
-          <Routes>
-            <Route path="/" element={<Main />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/signupcallback" element={<SignupCallback />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/logincallback" element={<LoginCallback />} />
-            <Route path="/mypage" element={<MyProfilePage />} />
-            <Route path="/userprofile/:id" element={<UserProfilePage />} />
-            <Route path="/mypage/Edit/:id" element={<EditProfile />} />
-            <Route path="/main" element={<Main />} />
-            <Route path="/match" element={<Match />} />
-            <Route path="/dtboard" element={<DTBoard />} />
-            <Route path="/dtboard/input" element={<DTBInputForm />} />
-            <Route path="/dtboard/post/:id" element={<PostDetail />} />
-            <Route path="/dtboard/postModify/:id" element={<PostModify />} />
-            <Route path="/board" element={<BoardPage />} />
-            <Route path="/board/shortform" element={<ShortForm />} />
-            <Route path="/board/shortform/detail/:id" element={<DetailShortForm />} />
-            <Route path="/board/shortform/Write" element={<WriteShortForm />} />
-            <Route path="/board/shortform/edit/:id" element={<EditShortForm />} />
-            <Route path="/board/freeboard" element={<FreeBoard />} />
-            <Route path="/board/freeboard/detail/:id" element={<DetailFreeBoard />} />
-            <Route path="/board/freeboard/write" element={<WriteFreeBoard />} />
-            <Route path="/board/freeboard/edit/:id" element={<EditFreeBoard />} />
-            <Route path="/board/eventboard" element={<EventBoard />} />
-            <Route path="/board/eventboard/detail/:id" element={<DetailEventBoard />} />
-            <Route path="/board/eventboard/write" element={<WriteEventBoard />} />
-            <Route path="/board/eventboard/edit/:id" element={<EditEventBoard />} />
-            <Route path="/chatpage" element={<ChatPage />} />
-            <Route path="/input" element={<InputFrom />} />
-            <Route path="*" element={<div>404</div>} />
-          </Routes>
+            <Suspense fallback={<div>Loading...</div>}>
+            <Routes>
+              <Route path="/" element={<Main />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/signupcallback" element={<SignupCallback />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/logincallback" element={<LoginCallback />} />
+              <Route path="/mypage" element={<MyProfilePage />} />
+              <Route path="/userprofile/:id" element={<UserProfilePage />} />
+              <Route path="/mypage/Edit/:id" element={<EditProfile />} />
+              <Route path="/main" element={<Main />} />
+              <Route path="/match" element={<Match />} />
+              <Route path="/dtboard" element={<DTBoard />} />
+              <Route path="/dtboard/input" element={<DTBInputForm />} />
+              <Route path="/dtboard/post/:id" element={<PostDetail />} />
+              <Route path="/dtboard/postModify/:id" element={<PostModify />} />
+              <Route path="/board" element={<BoardPage />} />
+              <Route path="/board/shortform" element={<ShortForm />} />
+              <Route path="/board/shortform/detail/:id" element={<DetailShortForm />} />
+              <Route path="/board/shortform/Write" element={<WriteShortForm />} />
+              <Route path="/board/shortform/edit/:id" element={<EditShortForm />} />
+              <Route path="/board/freeboard" element={<FreeBoard />} />
+              <Route path="/board/freeboard/detail/:id" element={<DetailFreeBoard />} />
+              <Route path="/board/freeboard/write" element={<WriteFreeBoard />} />
+              <Route path="/board/freeboard/edit/:id" element={<EditFreeBoard />} />
+              <Route path="/board/eventboard" element={<EventBoard />} />
+              <Route path="/board/eventboard/detail/:id" element={<DetailEventBoard />} />
+              <Route path="/board/eventboard/write" element={<WriteEventBoard />} />
+              <Route path="/board/eventboard/edit/:id" element={<EditEventBoard />} />
+              <Route path="/chatpage" element={<ChatPage />} />
+              <Route path="/input" element={<InputFrom />} />
+              <Route path="*" element={<div>404</div>} />
+            </Routes>
+            </Suspense>
           <Footer />
         </PostProvider>
       </BrowserRouter>
