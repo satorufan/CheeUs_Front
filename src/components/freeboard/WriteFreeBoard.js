@@ -53,7 +53,7 @@ const WriteFreeBoard = () => {
 
     // author_id와 author_name 설정
     const authorId = decodedToken?.email;
-    const authorName = userProfile.name;
+    const authorName = userProfile.name; 
 
     const newBoard = {
       id: newId,

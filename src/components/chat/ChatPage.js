@@ -1,15 +1,16 @@
+
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Nav } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './chatPage.css';
-import axios from 'axios';
 import io from 'socket.io-client';
-import { setSelectedChat, setChatRooms, setMessageInput, setShowMessageInput, setActiveKey } from '../../store/ChatSlice';
+import { fetchChatRooms, setSelectedChat, setMessageInput, setShowMessageInput, setActiveKey, appendMessageToChat, updateLastMessageInChatRooms } from '../../store/ChatSlice';
 import ChatList from './ChatList';
 import ChatWindow from './ChatWindow';
 import { jwtDecode } from 'jwt-decode';
 import { AuthContext } from '../login/OAuth';
+import axios from 'axios';
 
 const ChatPage = () => {
     const dispatch = useDispatch();
@@ -19,46 +20,47 @@ const ChatPage = () => {
     const chatRooms = useSelector(state => state.chat.chatRooms);
     const messageInput = useSelector(state => state.chat.messageInput);
     const showMessageInput = useSelector(state => state.chat.showMessageInput);
+    const chatStatus = useSelector(state => state.chat.status);
+    const chatError = useSelector(state => state.chat.error);
 
-    const { token } = useContext(AuthContext); // Context에서 JWT 토큰 가져오기
+    const { token } = useContext(AuthContext);
     const socket = useRef(null);
 
-    // 사용자 ID 상태 변수
     const [loggedInUserId, setLoggedInUserId] = useState(null);
 
     useEffect(() => {
         if (token) {
             try {
                 const decodedToken = jwtDecode(token);
-                setLoggedInUserId(decodedToken.userId); // 또는 decodedToken.sub 등 사용자 ID를 나타내는 적절한 속성
-                console.log('Logged in user ID:', decodedToken.email);
+                setLoggedInUserId(decodedToken.email);
             } catch (error) {
-                console.error('Error decoding token:', error);
+                console.error('토큰 디코딩 중 에러 발생:', error);
             }
-        } else {
-            console.log('Token is not available');
         }
     }, [token]);
 
     useEffect(() => {
-        socket.current = io('http://localhost:8088');
+        socket.current = io('http://localhost:8888'); // 서버 URL
+    
+        const handleReceiveMessage = (message) => {
+            console.log('Received message:', message);
+            dispatch(appendMessageToChat(message));
+            dispatch(updateLastMessageInChatRooms(message));
+        };
+    
+        // 이벤트 핸들러 등록
+        socket.current.on('receiveMessage', handleReceiveMessage);
+    
         return () => {
+            // 컴포넌트 언마운트 시 핸들러 제거
+            socket.current.off('receiveMessage', handleReceiveMessage);
             socket.current.disconnect();
         };
-    }, []);
+    }, [dispatch]);
 
     useEffect(() => {
         if (loggedInUserId) {
-            const fetchChatRooms = async () => {
-                try {
-                    const response = await axios.get('http://localhost:8088/api/chatRooms');
-                    const filteredRooms = response.data.filter(room => room.member1 === loggedInUserId || room.member2 === loggedInUserId);
-                    dispatch(setChatRooms(filteredRooms));
-                } catch (error) {
-                    console.error('Error fetching chat rooms:', error);
-                }
-            };
-            fetchChatRooms();
+            dispatch(fetchChatRooms(loggedInUserId));
         }
     }, [loggedInUserId, dispatch]);
 
@@ -79,8 +81,17 @@ const ChatPage = () => {
                 console.error(`roomId ${roomId}에 해당하는 채팅방을 찾을 수 없습니다.`);
                 return;
             }
-            const response = await axios.get(`http://localhost:8080/api/messages/${roomId}`);
-            dispatch(setSelectedChat({ ...selectedRoom, messages: response.data }));
+            const response = await axios.get(`http://localhost:8889/api/messages/${roomId}`);
+
+            const messages = response.data.map(message => {
+                const date = new Date(message.write_day);
+                return {
+                    ...message,
+                    write_day: !isNaN(date) ? date.toISOString() : new Date().toISOString()
+                };
+            });
+
+            dispatch(setSelectedChat({ ...selectedRoom, messages }));
             dispatch(setShowMessageInput(true));
             dispatch(setMessageInput(''));
         } catch (error) {
@@ -90,10 +101,10 @@ const ChatPage = () => {
 
     const sendMessage = async () => {
         if (!selectedChat || !messageInput.trim() || !loggedInUserId) {
-            console.log('메세지 보낼 수 없음: No chat selected, message input is empty, or user ID is missing.');
+            console.log('Cannot send message: No selected chat, empty input, or missing user ID.');
             return;
         }
-
+        
         const newMessage = {
             chat_room_id: selectedChat.roomId,
             sender_id: loggedInUserId,
@@ -101,15 +112,12 @@ const ChatPage = () => {
             write_day: new Date().toISOString(),
             read: 0
         };
-
+    
+        // 소켓으로 메시지 전송
+        socket.current.emit('sendMessage', newMessage);
+        
         try {
-            await axios.post('http://localhost:8080/api/messages', newMessage);
-            dispatch(setSelectedChat(prevChat => ({
-                ...prevChat,
-                messages: [...(prevChat.messages || []), newMessage]
-            })));
-            socket.current.emit('sendMessage', newMessage);
-            console.log('Message sent successfully');
+            await axios.post('http://localhost:8889/api/messages', newMessage);
             dispatch(setMessageInput(''));
         } catch (error) {
             console.error('Error sending message:', error);
@@ -120,6 +128,7 @@ const ChatPage = () => {
         const date = new Date(writeDay);
         return `${date.getHours()}:${date.getMinutes()}`;
     };
+
 
     return (
         <div className="chat-container">

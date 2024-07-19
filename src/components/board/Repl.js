@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { TextField } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import NearMeIcon from '@mui/icons-material/NearMe';
 import { fetchComments, addComment, deleteComment } from '../../store/CommentSlice';
+import { AuthContext } from '../login/OAuth'; // AuthContext 가져오기
+import {jwtDecode} from "jwt-decode"; // jwt-decode 패키지 import
 import './repl.css';
+import { fetchUserProfile, selectUserProfile } from '../../store/ProfileSlice';
 
 function Repl({ boardId }) {
     const dispatch = useDispatch();
@@ -12,6 +15,16 @@ function Repl({ boardId }) {
     const [commentText, setCommentText] = useState('');
     const [replyText, setReplyText] = useState({});
     const [showReplyInput, setShowReplyInput] = useState({});
+    const { token } = useContext(AuthContext);
+    const userProfile = useSelector(selectUserProfile);
+
+    let decodedToken = {};
+    if (token) {
+      decodedToken = jwtDecode(token);
+    }
+
+    const loggedInUserId = decodedToken?.email;
+    const replNickname= userProfile.nickname; // 백에서 닉네임 조인해서 가져와서 다시 처리 해봅시다
 
     useEffect(() => {
         if (boardId) {
@@ -20,7 +33,7 @@ function Repl({ boardId }) {
     }, [dispatch, boardId]);
 
     useEffect(() => {
-        console.log('Comments:', comments); // 상태 확인
+        console.log('Comments:', comments); 
     }, [comments]);
 
     const handleInputChange = (e) => {
@@ -39,7 +52,7 @@ function Repl({ boardId }) {
         if (commentText.trim() !== '') {
             const newComment = {
                 board_id: boardId,
-                repl_author_id: 201,
+                repl_author_id: loggedInUserId, // 로그인한 사용자 ID 사용
                 group: 1,
                 writeday: new Date().toISOString().split('T')[0],
                 repl_content: commentText,
@@ -53,7 +66,7 @@ function Repl({ boardId }) {
         if (replyText[commentId]?.trim() !== '') {
             const reply = {
                 board_id: boardId,
-                repl_author_id: 202,
+                repl_author_id: loggedInUserId, // 로그인한 사용자 ID 사용
                 group: 1,
                 writeday: new Date().toISOString().split('T')[0],
                 repl_content: replyText[commentId],
@@ -104,16 +117,18 @@ function Repl({ boardId }) {
                         <div className="detail-comment">
                             <div className="comment-user-info">
                                 <img src={'https://via.placeholder.com/30'} alt="Profile" className="reply-profile-pic" />
-                                <span className="reply-nickname">User{comment.repl_author_id}</span>
+                                <span className="reply-nickname">{replNickname}</span>
                             </div>
                             <div className="comment-content">
                                 <span>{comment.content}</span>
-                                <button
-                                    className="delete-button button-no-style"
-                                    onClick={() => handleDeleteComment(comment.id)}
-                                >
-                                    <DeleteIcon />
-                                </button>
+                                {comment.repl_author_id === loggedInUserId && ( // 조건부 렌더링
+                                    <button
+                                        className="delete-button button-no-style"
+                                        onClick={() => handleDeleteComment(comment.id)}
+                                    >
+                                        <DeleteIcon />
+                                    </button>
+                                )}
                             </div>
                         </div>
 
@@ -123,16 +138,18 @@ function Repl({ boardId }) {
                                     <div className="detail-reply">
                                         <div className="reply-user-info">
                                             <img src={'https://via.placeholder.com/30'} alt="Profile" className="reply-profile-pic" />
-                                            <span className="reply-nickname">User{reply.repl_author_id}</span>
+                                            <span className="reply-nickname">{reply.repl_author_id}</span>
                                         </div>
                                         <div className="reply-content">
                                             <span>{reply.content}</span>
-                                            <button
-                                                className="delete-button button-no-style"
-                                                onClick={() => handleDeleteReply(reply.id)}
-                                            >
-                                                <DeleteIcon />
-                                            </button>
+                                            {reply.repl_author_id === loggedInUserId && ( // 조건부 렌더링
+                                                <button
+                                                    className="delete-button button-no-style"
+                                                    onClick={() => handleDeleteReply(reply.id)}
+                                                >
+                                                    <DeleteIcon />
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
