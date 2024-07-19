@@ -14,7 +14,7 @@ const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
 
     const [showModal, setShowModal] = useState(false);
     const [modalIndex, setModalIndex] = useState(0);
-    const [likes, setLikes] = useState(profile.popularity);
+    //const [likes, setLikes] = useState(profile.popularity);
     const [liked, setLiked] = useState(false);
     const { serverUrl, memberEmail } = useContext(AuthContext);
 
@@ -106,6 +106,7 @@ const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
 
     // 사진 배열 안전하게 초기화
     const photosToShow = profile.photos || [];
+    console.log(photosToShow);
 
     let distanceToDisplay = '거리 알 수 없음';
 
@@ -146,7 +147,7 @@ const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
                 )}
             </Carousel>
             <div className="profile-details">
-                <h3>{profile.nickname} <span>&nbsp;{calculateAge(profile.birth)}세</span></h3>
+                <h3>{profile.nickname} <span>&nbsp;{calculateAge(profile.profile.birth)}세</span></h3>
                 <div className="location-like">
                     <div>{distanceToDisplay}</div>
                 </div>
@@ -157,7 +158,7 @@ const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
                             <li key={tag.trim()}>{tag.trim()}</li>
                         )) : ""}
                         <li className="like-btn" onClick={handleLike}>
-                            {isLiked ? '❤️' : '🤍'} {profile.popularity}
+                            {isLiked ? '❤️' : '🤍'} {/*profile.popularity*/ 100}
                         </li>
                     </ul>
                 </div>
@@ -165,7 +166,7 @@ const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
             <Modal show={showModal} onHide={handleCloseModal} centered>
                 <Modal.Body>
                     <Carousel activeIndex={modalIndex} onSelect={(selectedIndex) => setModalIndex(selectedIndex)}>
-                        {photosToShow ?. photosToShow.map((photo, index) => (
+                        {photosToShow.length > 0 ? photosToShow.map((photo, index) => (
                             <Carousel.Item key={index}>
                                 <img
                                     src={photo}
@@ -173,7 +174,7 @@ const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
                                     className="d-block w-100"
                                 />
                             </Carousel.Item>
-                        ))}
+                        )) : null}
                     </Carousel>
                 </Modal.Body>
             </Modal>

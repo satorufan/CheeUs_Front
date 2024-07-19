@@ -28,6 +28,7 @@ const MyProfilePage = () => {
 
     useEffect(() => {
         dispatch(fetchUserProfile({ serverUrl, memberEmail }));
+        console.log(userProfile);
     }, [dispatch, serverUrl, memberEmail]);
 
     useEffect(() => {

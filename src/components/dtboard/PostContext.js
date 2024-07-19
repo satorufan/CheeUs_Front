@@ -10,11 +10,11 @@ export const PostProvider = ({ children }) => {
   const [posts, setPosts] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState(null);
 
-  useEffect(() => {
-    axios.get('http://localhost:8080/dtBoard/')
-        .then(response => setPosts(response.data))
-        .catch(error => console.error('Error loading list', error));
-  }, []);
+  // useEffect(() => {
+  //   axios.get('http://localhost:8080/dtBoard/')
+  //       .then(response => setPosts(response.data))
+  //       .catch(error => console.error('Error loading list', error));
+  // }, []);
 
   const deletePost = (id) => {
     axios.delete(`http://localhost:8080/dtBoard/delete/${id}`)
@@ -51,11 +51,11 @@ export const PostProvider = ({ children }) => {
         .catch(error => console.error(error));
   };
   
-  useEffect(() => {
-    axios.get('http://localhost:8080/dtBoard/')
-        .then(response => setPosts(response.data))
-        .catch(error => console.error('Error loading list', error));
-  }, []);
+  // useEffect(() => {
+  //   axios.get('http://localhost:8080/dtBoard/')
+  //       .then(response => setPosts(response.data))
+  //       .catch(error => console.error('Error loading list', error));
+  // }, []);
   
   const modifyPost = (title, content, time) => {
     const placeDescription = selectedPlace ? `${selectedPlace.title}` : '선택한 장소가 없습니다.';
