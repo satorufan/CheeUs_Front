@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { Search } from '@mui/icons-material';
 import './boardTop.css';
 
 const chipData = [
@@ -11,12 +12,22 @@ const chipData = [
 function BoardTop() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const handleNavigation = (path) => {
-    navigate(path);
+  // URL 쿼리에서 검색어를 읽어와 상태에 설정
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const query = params.get('search') || '';
+    setSearchQuery(query);
+  }, [location.search]);
+
+  // 검색어 변경 시 URL 업데이트
+  const handleSearchChange = (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    navigate(`${location.pathname}?search=${query}`);
   };
 
-  // 현재 경로에 따라 제목 설정
   const getBoardTitle = () => {
     switch (location.pathname) {
       case '/board/freeboard':
@@ -30,15 +41,33 @@ function BoardTop() {
     }
   };
 
+  const shouldShowSearch = () => {
+    return ['/board/freeboard', '/board/shortform', '/board/eventboard'].includes(location.pathname);
+  };
+
   return (
     <div>
-      <div className="board-page-top">{getBoardTitle()}</div>
+      <div className="board-page-top">
+        {getBoardTitle()}
+        {shouldShowSearch() && (
+          <div className="board-top">
+            <input
+              type="text"
+              className="board-search"
+              placeholder="Search"
+              value={searchQuery}
+              onChange={handleSearchChange} // 입력 시 검색어 업데이트 및 URL 변경
+            />
+            <Search className="search-icon" />
+          </div>
+        )}
+      </div>
       <div className="category-container">
         {chipData.map((data, index) => (
           <button
             className="chip-name"
             key={index}
-            onClick={() => handleNavigation(data.path)}
+            onClick={() => navigate(data.path)}
           >
             {data.label}
           </button>

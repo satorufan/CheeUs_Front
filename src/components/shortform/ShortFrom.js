@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import AspectRatio from '@mui/joy/AspectRatio';
 import Avatar from '@mui/joy/Avatar';
 import Box from '@mui/joy/Box';
@@ -10,20 +10,31 @@ import Favorite from '@mui/icons-material/Favorite';
 import Visibility from '@mui/icons-material/Visibility';
 import BoardTop from '../board/BoardTop';
 import Pagination from '@mui/material/Pagination';
-import { selectBoards, toggleLike, selectLikedMap } from '../../store/BoardSlice';
+import { selectBoards, toggleLike, selectLikedMap, filterBoards, setSearchQuery, selectFilteredBoards } from '../../store/BoardSlice';
 import './shortForm.css';
 
 const ShortForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+  
   const boards = useSelector(selectBoards);
   const likedMap = useSelector(selectLikedMap);
-  const [hoveredBoard, setHoveredBoard] = useState(null);
-  const boardRefs = useRef({});
-
+  const filteredBoards = useSelector(selectFilteredBoards);
+  const searchQuery = useSelector(state => state.board.searchQuery);
 
   const itemsPerPage = 8;
   const [currentPage, setCurrentPage] = useState(1);
+  const [hoveredBoard, setHoveredBoard] = useState(null);
+  const boardRefs = useRef({});
+
+  // URL 쿼리에서 검색어를 읽어와 상태에 설정
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const query = params.get('search') || '';
+    dispatch(setSearchQuery(query)); // 검색어를 상태에 설정
+    dispatch(filterBoards()); // 검색어에 따라 필터링
+  }, [location.search, dispatch]);
 
   const handleLikeClick = (id) => {
     dispatch(toggleLike(id));
@@ -42,12 +53,11 @@ const ShortForm = () => {
       });
     }
   };
-  //페이지네이션
-  const filteredBoards = boards.filter(board => board.category === 2);
 
-  const totalPages = Math.ceil(filteredBoards.length / itemsPerPage);
+  // 페이지네이션
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentBoards = filteredBoards.slice(startIndex, startIndex + itemsPerPage);
+  const currentBoards = filteredBoards.filter(board => board.category === 2).slice(startIndex, startIndex + itemsPerPage);
+  const totalPages = Math.ceil(filteredBoards.filter(board => board.category === 2).length / itemsPerPage);
 
   const handleChange = (event, value) => {
     setCurrentPage(value);
@@ -77,7 +87,7 @@ const ShortForm = () => {
       <BoardTop />
       <div className="shortform-container">
         <div className="video-card-container">
-          {boards.map((board) => (
+          {currentBoards.map((board) => (
             board.category === 2 && ( // 카테고리가 2인 경우에만 렌더링
               <Card
                 key={board.id}
@@ -143,31 +153,31 @@ const ShortForm = () => {
             )
           ))}
         </div>
-      </div><div className="create-post-container">
-          <button onClick={handleCreatePost} className="create-post-button">
-            게시글 작성
-          </button>
-        </div>
-
-        <Pagination
-          count={totalPages}
-          page={currentPage}
-          onChange={handleChange}
-          variant="outlined"
-          sx={{
-            '& .MuiPaginationItem-root': {
-              color: 'black', 
-            },
-            '& .MuiPaginationItem-root.Mui-selected': {
-              backgroundColor: 'black', 
-              color: 'white',
-            },
-            '& .MuiPaginationItem-root:hover': {
-              backgroundColor: 'rgba(0, 0, 0, 0.1)', 
-            },
-          }}
-          className="pagination"
-        />
+      </div>
+      <div className="create-post-container">
+        <button onClick={handleCreatePost} className="create-post-button">
+          게시글 작성
+        </button>
+      </div>
+      <Pagination
+        count={totalPages}
+        page={currentPage}
+        onChange={handleChange}
+        variant="outlined"
+        sx={{
+          '& .MuiPaginationItem-root': {
+            color: 'black',
+          },
+          '& .MuiPaginationItem-root.Mui-selected': {
+            backgroundColor: 'black',
+            color: 'white',
+          },
+          '& .MuiPaginationItem-root:hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.1)',
+          },
+        }}
+        className="pagination"
+      />
     </>
   );
 };

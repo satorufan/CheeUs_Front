@@ -124,8 +124,19 @@ const initialState = {
       photoes: "",
     },
   ],
+  filteredBoards: [], // 필터링된 게시물 목록
+  searchQuery: '', // 검색어 상태
   likedMap: {},
 };
+
+// 게시물 목록을 가져오는 thunk
+export const fetchBoards = createAsyncThunk(
+  'board/fetchBoards',
+  async () => {
+    const response = await axios.get('http://localhost:8080/boards');
+    return response.data;
+  }
+);
 
 // 게시물 추가를 위한 thunk
 export const addBoard = createAsyncThunk(
@@ -134,7 +145,7 @@ export const addBoard = createAsyncThunk(
     const formData = new FormData();
     formData.append('title', boardData.title);
     formData.append('content', boardData.content);
-    formData.append('videoFile', boardData.videoFile); // 파일 추가
+    formData.append('videoFile', boardData.videoFile);
 
     const response = await axios.post('http://localhost:8080/boards', formData, {
       headers: {
@@ -151,7 +162,7 @@ export const updateBoard = createAsyncThunk(
   async (updatedBoard) => {
     const { id, ...updatedData } = updatedBoard;
     const response = await axios.put(`http://localhost:8080/boards/${id}`, updatedData);
-    return response.data; // 업데이트된 게시물 데이터 반환
+    return response.data;
   }
 );
 
@@ -166,26 +177,44 @@ const boardSlice = createSlice({
     deleteBoard(state, action) {
       const id = action.payload;
       state.boards = state.boards.filter(board => board.id !== id); // 게시물 삭제
+      state.filteredBoards = state.filteredBoards.filter(board => board.id !== id); // 필터링된 게시물 목록에서도 삭제
+    },
+    setSearchQuery(state, action) {
+      state.searchQuery = action.payload; // 검색어 업데이트
+    },
+    filterBoards(state) {
+      const query = state.searchQuery.toLowerCase();
+      state.filteredBoards = state.boards.filter(board =>
+        board.title.toLowerCase().includes(query) ||
+        board.content.toLowerCase().includes(query)
+      );
     },
   },
   extraReducers: (builder) => {
     builder
+      .addCase(fetchBoards.fulfilled, (state, action) => {
+        state.boards = action.payload; // 게시물 목록 업데이트
+        state.filteredBoards = action.payload; // 초기 필터링된 게시물 목록 설정
+      })
       .addCase(addBoard.fulfilled, (state, action) => {
         state.boards.push(action.payload); // 새로운 게시물 추가
+        state.filteredBoards.push(action.payload); // 새로운 게시물도 필터링 목록에 추가
       })
       .addCase(updateBoard.fulfilled, (state, action) => {
         const updatedBoard = action.payload;
         const index = state.boards.findIndex(board => board.id === updatedBoard.id);
         if (index !== -1) {
           state.boards[index] = updatedBoard; // 업데이트된 게시물로 변경
-          console.log('게시물이 업데이트되었습니다:', updatedBoard); // 콘솔에 수정 내역 출력
+          state.filteredBoards[index] = updatedBoard; // 필터링된 게시물 목록도 업데이트
         }
       });
   },
 });
 
-export const { toggleLike, deleteBoard } = boardSlice.actions;
+export const { toggleLike, deleteBoard, setSearchQuery, filterBoards } = boardSlice.actions;
 export const selectBoards = (state) => state.board.boards;
+export const selectFilteredBoards = (state) => state.board.filteredBoards;
+export const selectSearchQuery = (state) => state.board.searchQuery;
 export const selectLikedMap = (state) => state.board.likedMap;
 
 export default boardSlice.reducer;
