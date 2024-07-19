@@ -1,4 +1,4 @@
-import React, { useState, useRef, forwardRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, forwardRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { BsArrowLeft } from 'react-icons/bs';
 import '@toast-ui/editor/dist/toastui-editor.css';
@@ -10,6 +10,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { ko } from 'date-fns/locale';
 import { format } from 'date-fns';
+import swal from 'sweetalert';
 
 function PostModify() {
   const { modifyPost, selectedPlace, posts } = usePosts();
@@ -25,7 +26,10 @@ function PostModify() {
     if (post) {
       setTitle(post.title);
       setTime(post.time);
-      setStartDate(new Date(post.time)); // Assuming post.time is a valid date string
+      setStartDate(new Date(post.time));
+      if (editorRef.current && editorRef.current.getInstance()) {
+        editorRef.current.getInstance().setMarkdown(post.content);
+      }
     }
   }, [post]);
 
@@ -41,8 +45,13 @@ function PostModify() {
   const onSubmitHandler = async () => {
     if (title === '') return;
     const content = editorRef.current.getInstance().getMarkdown(); // content를 getInstance().getMarkdown()으로 받아옴
-    modifyPost(title, content, time);
-    navigate('/dtboard'); // 게시글 작성 후 게시판으로 이동
+    modifyPost(id, title, content, time);
+    swal({
+      title: "게시물이 수정되었습니다!",
+      icon: "success",
+    }).then(() => {
+      navigate('/dtboard');
+    });
   };
 
   const onExitHandler = () => {

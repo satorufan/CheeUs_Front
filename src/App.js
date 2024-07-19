@@ -35,7 +35,7 @@ import EditEventBoard from './components/eventboard/EditEventBoard';
 import DetailShortForm from './components/shortform/DetailShortForm';
 import { AuthProvider } from './components/login/OAuth';
 import ChatPage from './components/chat/ChatPage';
-import scoket from './server';
+//import scoket from './server';
 
 function App() {
   return (

@@ -14,7 +14,7 @@ import { format } from 'date-fns';
 function DTBInputForm() {
   const [startDate, setStartDate] = useState(new Date());
   const [title, setTitle] = useState('');
-  const [time, setTime] = useState(format(new Date(), ' yyyy.MM.dd HH:mm'));
+  const [time, setTime] = useState(format(new Date(), 'yyyy.MM.dd HH:mm'));
   const editorRef = useRef();
   const navigate = useNavigate();
   const { addPost, selectedPlace } = usePosts();
@@ -59,9 +59,9 @@ function DTBInputForm() {
             selected={startDate}
             onChange={(date) => {
               setStartDate(date);
-              setTime(format(date, ' yyyy.MM.dd HH:mm'));
+              setTime(format(date, 'yyyy.MM.dd HH:mm'));
             }}
-            dateFormat=" yyyy.MM.dd HH:mm"
+            dateFormat="yyyy.MM.dd HH:mm"
             showTimeSelect
             timeFormat="HH:mm"
             timeIntervals={15}
