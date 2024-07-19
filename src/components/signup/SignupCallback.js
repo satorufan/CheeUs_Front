@@ -21,7 +21,7 @@ const SignupCallback = () => {
     const serverUrl = "http://localhost:8080";
     const navigate = useNavigate();
     const callbackData = useLocation();
-    const {memberProfileDetail} = callbackData.state || {};
+    const {memberProfileDetail, imageFiles} = callbackData.state || {};
 
     useEffect(()=>{
         setUp(true);
@@ -29,14 +29,29 @@ const SignupCallback = () => {
 
     useEffect(()=>{
 
-        console.log(token);
         if (signUp) {
-            axios.post(serverUrl + '/member/signUp', memberProfileDetail)
+            
+            const formData = new FormData();
+
+            // formData에 JSON 객체를 보내려면 아래처럼 해야함.
+            formData.append("memberProfileDetail",
+                new Blob([JSON.stringify(memberProfileDetail)], 
+                {type: 'application/json'})
+            );
+
+            imageFiles.forEach(async (files, index) => {
+                formData.append("photos", files);
+                formData.append("email", jwtDecode(token).email + "/" + index);
+            });
+
+            axios.post(serverUrl + '/member/signUp', formData, {
+                headers : {
+                    'Content-Type': 'multipart/form-data'
+                }
+            })
             .then((res)=>{
-                console.log(res);
-                sweetalert("환영합니다!", "", "", "확인");
                 requestSignIn();
-                navigate('/');
+                navigate("/logincallback");
             })
             .catch((err)=>{
                 console.log(err);

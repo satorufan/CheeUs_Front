@@ -1,7 +1,8 @@
 .freeboard-container {
     width: 100vw;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     margin-top: 30px;
 }
 
@@ -11,8 +12,7 @@
     grid-template-columns: repeat(4, 1fr);
     gap: 1rem;
     justify-items: center;
-    justify-content: center;
-    margin-bottom: 120px;
+    margin-bottom: 20px; 
 }
 
 .freeboard-card {
@@ -60,15 +60,16 @@
     white-space: normal;
     font-family: 'GwangyangTouching';
     font-size: 12px;
-    margin-bottom:10px;
+    white-space: normal;
+  overflow-wrap: break-word;
 }
 
 .card-content {
     display: flex;
     gap: 1rem;
     align-items: center;
-    padding: 0rem;
-    margin-bottom: 0px;
+    padding: 0;
+    margin-bottom: 0;
     font-family: 'GwangyangTouching';
 }
 
@@ -80,7 +81,7 @@
     display: flex;
     gap: 0.5rem;
     cursor: pointer;
-    white-space:nowrap;
+    white-space: nowrap;
 }
 
 .card-icon {
@@ -93,10 +94,6 @@
     transition: color 0.3s;
 }
 
-
-
-
-
 @media (max-width: 1200px) {
     .freeboard-card-container {
         grid-template-columns: repeat(2, 1fr);
@@ -105,6 +102,45 @@
 
 @media (max-width: 768px) {
     .freeboard-card-container {
-        grid-template-columns: repeat(1, 1fr);
+        grid-template-columns: 1fr;
     }
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.pagination button {
+    margin: 0 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.create-post-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px; 
+}
+
+.create-post-button {
+    padding: 10px 15px;
+    background-color: #000000;
+    color: white;
+    border : solid 2px black;
+    cursor: pointer;
+    border-radius: 10px; 
+    transition: background-color 0.3s ease;
+    font-family: 'GwangyangTouching';
+    justify-content: flex-end;
+    margin-right : 8vw;
+
+}
+
+.create-post-button:hover {
+    background-color: #ffffff;
+    color:black;
+    border : solid 2px black;
+    
 }

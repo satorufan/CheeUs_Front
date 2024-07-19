@@ -2,8 +2,9 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { Carousel, Modal } from 'react-bootstrap';
-import { updateUserLocation, likeProfile, unlikeProfile } from '../../store/profileSlice';
+import { updateUserLocation, likeProfile, unlikeProfile } from '../../store/ProfileSlice';
 import './profileCard.css';
+import noimage from "../images/noimage.jpg";
 import { AuthContext } from '../login/OAuth';
 
 const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
@@ -13,14 +14,13 @@ const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
 
     const [showModal, setShowModal] = useState(false);
     const [modalIndex, setModalIndex] = useState(0);
-    const [likes, setLikes] = useState(profile.popularity);
+    //const [likes, setLikes] = useState(profile.popularity);
     const [liked, setLiked] = useState(false);
-    const {serverUrl, memberEmail} = useContext(AuthContext);
+    const { serverUrl, memberEmail } = useContext(AuthContext);
 
     const isLiked = likedProfiles.includes(profile.id);
 
     useEffect(() => {
-
         const getUserLocation = () => {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
@@ -30,21 +30,16 @@ const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
                             longitude: position.coords.longitude,
                         };
                         dispatch(updateUserLocation(location));
-                        console.log('위도:', location.latitude);
-                        console.log('경도:', location.longitude);
                     },
                     (error) => {
                         console.error('위치 정보를 가져오는 데 실패했습니다:', error);
                     }
                 );
-            } else {
-                console.error('Geolocation이 지원되지 않습니다');
             }
         };
 
         getUserLocation();
-    }, []);
-
+    }, [dispatch]);
 
     // 프로필 좋아요 상태 초기화
     useEffect(() => {
@@ -66,25 +61,24 @@ const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
         }
 
         return age;
-        
     };
 
     // 직선 거리 계산
     const calculateStraightDistance = (lat1, lon1, lat2, lon2) => {
-        const R = 6371; 
+        const R = 6371;
         const dLat = deg2rad(lat2 - lat1);
         const dLon = deg2rad(lon2 - lon1);
-        
+
         const a = Math.sin(dLat / 2) ** 2 +
                   Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
                   Math.sin(dLon / 2) ** 2;
-        
+
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         const distance = R * c;
-        
-        return Math.round(distance * 10) / 10; 
+
+        return Math.round(distance * 10) / 10;
     };
-    
+
     const deg2rad = (deg) => {
         return deg * (Math.PI / 180);
     };
@@ -110,8 +104,9 @@ const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
         }
     };
 
-    // 사진 배열
-    const photosToShow = profile.photos.map(photoId => `https://placehold.it/200x200?text=${photoId}`);
+    // 사진 배열 안전하게 초기화
+    const photosToShow = profile.photos || [];
+    console.log(photosToShow);
 
     let distanceToDisplay = '거리 알 수 없음';
 
@@ -120,26 +115,39 @@ const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
         if (profile.id === loggedInUserId) {
             distanceToDisplay = '0 km';
         } else {
-            distanceToDisplay = `${calculateStraightDistance(userLocation.latitude, userLocation.longitude, parseFloat(profile.latitude), parseFloat(profile.longitude))} km`;
+            distanceToDisplay = `${calculateStraightDistance(
+                userLocation.latitude,
+                userLocation.longitude,
+                parseFloat(profile.latitude),
+                parseFloat(profile.longitude)
+            )} km`;
         }
     }
 
     return (
         <div className="profile-card">
             <Carousel>
-                {photosToShow.map((photo, index) => (
-                    <Carousel.Item key={index}>
-                        <img
-                            src={photo}
-                            alt={`${profile.nickname}의 프로필`}
-                            className="profile-image"
-                            onClick={() => handleImageClick(index)}
-                        />
+                {photosToShow.length > 0 ? (
+                    photosToShow.map((photo, index) => (
+                        <Carousel.Item key={index}>
+                            <img
+                                src={photo}
+                                alt={`${profile.nickname}의 프로필`}
+                                className="profile-image"
+                                onClick={() => handleImageClick(index)}
+                            />
+                        </Carousel.Item>
+                    ))
+                ) : (
+                    <Carousel.Item>
+                        <div className="no-photo">
+                            사진이 등록되지 않은 사용자입니다.
+                        </div>
                     </Carousel.Item>
-                ))}
+                )}
             </Carousel>
             <div className="profile-details">
-                <h3>{profile.nickname} <span>&nbsp;{calculateAge(profile.birth)}세</span></h3>
+                <h3>{profile.nickname} <span>&nbsp;{calculateAge(profile.profile.birth)}세</span></h3>
                 <div className="location-like">
                     <div>{distanceToDisplay}</div>
                 </div>
@@ -150,7 +158,7 @@ const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
                             <li key={tag.trim()}>{tag.trim()}</li>
                         )) : ""}
                         <li className="like-btn" onClick={handleLike}>
-                            {isLiked ? '❤️' : '🤍'} {profile.popularity}
+                            {isLiked ? '❤️' : '🤍'} {/*profile.popularity*/ 100}
                         </li>
                     </ul>
                 </div>
@@ -158,7 +166,7 @@ const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
             <Modal show={showModal} onHide={handleCloseModal} centered>
                 <Modal.Body>
                     <Carousel activeIndex={modalIndex} onSelect={(selectedIndex) => setModalIndex(selectedIndex)}>
-                        {photosToShow.map((photo, index) => (
+                        {photosToShow.length > 0 ? photosToShow.map((photo, index) => (
                             <Carousel.Item key={index}>
                                 <img
                                     src={photo}
@@ -166,7 +174,7 @@ const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
                                     className="d-block w-100"
                                 />
                             </Carousel.Item>
-                        ))}
+                        )) : null}
                     </Carousel>
                 </Modal.Body>
             </Modal>

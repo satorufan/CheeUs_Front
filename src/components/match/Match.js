@@ -1,69 +1,116 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import TinderCards from './TinderCards';
-import profiles from '../../profileData';
 import { Modal, Button } from 'react-bootstrap';
 import './match.css';
+import {
+  setUserLocation,
+  setLocationDenied,
+  setMatchServiceAgreement,
+  selectProfiles,
+  selectLocationOk,
+  selectMatchServiceAgreed,
+} from '../../store/MatchSlice'; 
 import axios from 'axios';
 
 const loggedInUserId = 1;
 
 const Match = () => {
-  const [locationOk, setLocationOk] = useState(null);
-  const [showLocationModal, setShowLocationModal] = useState(false);
-  const [showMatchServiceModal, setShowMatchServiceModal] = useState(false);
-  const [showHelpModal, setShowHelpModal] = useState(false);  
-  const [userLocation, setUserLocation] = useState(null);
-  const [matchServiceAgreed, setMatchServiceAgreed] = useState(false);
+  const dispatch = useDispatch();
+  const profiles = useSelector(selectProfiles);
+  const locationOk = useSelector(selectLocationOk);
+  const matchServiceAgreed = useSelector(selectMatchServiceAgreed);
+  const [userLocation, setUserLocationState] = React.useState(null);
+  const [showLocationModal, setShowLocationModal] = React.useState(false);
+  const [showMatchServiceModal, setShowMatchServiceModal] = React.useState(false);
+  const [showHelpModal, setShowHelpModal] = React.useState(false);
 
-  // tkd
   useEffect(() => {
     const checkLocationPermission = async () => {
-      try {
-        const user = profiles.find(profile => profile.id === loggedInUserId);
-        if (user && user.location_ok === 1) {
-          requestGeoLocation(setUserLocation, setLocationOk);
-        } else if (user && user.location_ok === 0) {
-          setShowLocationModal(true);
-        } else {
-          setLocationOk(false);
-        }
-      } catch (error) {
-        console.error('위치 정보 확인 중 에러 발생: ', error);
-        setLocationOk(false);
+      const user = profiles.find(profile => profile.id === loggedInUserId);
+      if (user && user.location_ok === 1) {
+        requestGeoLocation();
+      } else if (user && user.location_ok === 0) {
+        setShowLocationModal(true);
+      } else {
+        dispatch(setLocationDenied());
       }
     };
 
     if (locationOk === null) {
       checkLocationPermission();
     }
-  }, [locationOk]);
+  }, [locationOk, profiles, dispatch]);
+
+  const requestGeoLocation = () => {
+    if ('geolocation' in navigator) {
+        navigator.geolocation.getCurrentPosition(
+            position => {
+                const { latitude, longitude } = position.coords; // 필요한 데이터만 추출
+                console.log('사용자의 현재 위치:', { latitude, longitude });
+                setUserLocationState(position.coords);
+                
+                // 직렬화 가능한 객체로 디스패치
+                dispatch(setUserLocation({ coords: { latitude, longitude } }));
+                
+                updateLocationPermissionOnServer();
+                setShowMatchServiceModal(true);
+            },
+            error => {
+                console.error('위치 정보 요청 에러:', error);
+                dispatch(setLocationDenied());
+            }
+        );
+    } else {
+        console.log('Geolocation 사용 불가능');
+        dispatch(setLocationDenied());
+    }
+};
 
   const handleConfirm = () => {
     setShowLocationModal(false);
-    setLocationOk(true);
-    requestGeoLocation(setUserLocation, setLocationOk);
-    updateLocationPermissionOnServer();
-    setShowMatchServiceModal(true); // 위치 정보 동의 후 1:1 매칭 서비스 동의 모달 표시
+    requestGeoLocation();
   };
 
   const handleCancel = () => {
-    setLocationOk(false);
     setShowLocationModal(false);
   };
 
   const handleMatchServiceConfirm = () => {
-    setMatchServiceAgreed(true);
+    dispatch(setMatchServiceAgreement(true));
     setShowMatchServiceModal(false);
     updateMatchServiceAgreementOnServer();
   };
 
   const handleMatchServiceCancel = () => {
-    setMatchServiceAgreed(false);
+    dispatch(setMatchServiceAgreement(false));
     setShowMatchServiceModal(false);
   };
 
   const handleHelp = () => {
     setShowHelpModal(true);
+  };
+
+  const updateLocationPermissionOnServer = async () => {
+    try {
+      const user = profiles.find(profile => profile.id === loggedInUserId);
+      const updatedUser = { ...user, location_ok: 1 };
+      const response = await axios.put(`https://your-server-api-url/updateLocationPermission/${loggedInUserId}`, updatedUser);
+      console.log('서버 응답:', response.data);
+    } catch (error) {
+      console.error('서버 요청 에러:', error);
+    }
+  };
+
+  const updateMatchServiceAgreementOnServer = async () => {
+    try {
+      const user = profiles.find(profile => profile.id === loggedInUserId);
+      const updatedUser = { ...user, match_ok: 1 };
+      const response = await axios.put(`https://your-server-api-url/updateMatchServiceAgreement/${loggedInUserId}`, updatedUser);
+      console.log('서버 응답:', response.data);
+    } catch (error) {
+      console.error('서버 요청 에러:', error);
+    }
   };
 
   return (
@@ -176,48 +223,3 @@ const Match = () => {
 };
 
 export default Match;
-
-const requestGeoLocation = (setUserLocation, setLocationOk) => {
-  if ('geolocation' in navigator) {
-    navigator.geolocation.getCurrentPosition(
-      position => {
-        console.log('사용자의 현재 위치:', position.coords);
-        setUserLocation(position.coords);
-        setLocationOk(true);
-      },
-      error => {
-        console.error('위치 정보 요청 에러:', error);
-        setLocationOk(false);
-      }
-    );
-  } else {
-    console.log('Geolocation 사용 불가능');
-    setLocationOk(false);
-  }
-};
-
-const updateLocationPermissionOnServer = async () => {
-  try {
-    const user = profiles.find(profile => profile.id === loggedInUserId);
-    const updatedUser = { ...user, location_ok: 1 };
-    console.log('서버에 위치 정보 동의 업데이트 요청:', updatedUser);
-
-    const response = await axios.put(`https://your-server-api-url/updateLocationPermission/${loggedInUserId}`, updatedUser);
-    console.log('서버 응답:', response.data);
-  } catch (error) {
-    console.error('서버 요청 에러:', error);
-  }
-};
-
-const updateMatchServiceAgreementOnServer = async () => {
-  try {
-    const user = profiles.find(profile => profile.id === loggedInUserId);
-    const updatedUser = { ...user, match_ok: 1 };
-    console.log('서버에 매칭 서비스 동의 업데이트 요청:', updatedUser);
-
-    const response = await axios.put(`https://your-server-api-url/updateMatchServiceAgreement/${loggedInUserId}`, updatedUser);
-    console.log('서버 응답:', response.data);
-  } catch (error) {
-    console.error('서버 요청 에러:', error);
-  }
-};

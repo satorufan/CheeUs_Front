@@ -119,8 +119,8 @@ const InputMap = () => {
 	kakao.maps.event.addListener(marker, 'click', function () {
       const latlng = marker.getPosition();
       setSelectedPlace({
-        lat: latlng.getLat(),
-        lng: latlng.getLng(),
+        latitude: latlng.getLat(),
+        longitude: latlng.getLng(),
         title,
         address: addressName,
       });
@@ -156,7 +156,7 @@ const InputMap = () => {
       );
     }
 
-    return fragment;
+    return <div id="searchPagination">{fragment}</div>;
   };
 
   const handleListItemClick = (index) => {
@@ -182,7 +182,7 @@ const InputMap = () => {
         />
         <button onClick={handleSearch}>검색</button>
       </div>
-      <div id="map" className="map" ></div>
+      <div id="map" className="map"  style={{  height: '96vh'}}></div>
       <div className="search-result">
         <ul id="placesList">
           {places.map((place, index) => (
@@ -199,7 +199,9 @@ const InputMap = () => {
             </li>
           ))}
         </ul>
-        <div id="searchPagination">{displayPagination()}</div>
+        <div id="searchPagination">
+        	{displayPagination()}
+        </div>
       </div>
     </div>
   );
