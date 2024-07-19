@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { fetchComments, addComment, deleteComment, updateComment } from './CommentSlice';
 
 const initialState = {
   boards: [
@@ -207,6 +208,31 @@ const boardSlice = createSlice({
           state.boards[index] = updatedBoard; // 업데이트된 게시물로 변경
           state.filteredBoards[index] = updatedBoard; // 필터링된 게시물 목록도 업데이트
         }
+      })
+      .addCase(fetchComments.fulfilled, (state, action) => {
+        const { boardId, comments } = action.payload;
+        const board = state.boards.find(board => board.id === boardId);
+        if (board) {
+          board.repl_cnt = comments.length; // 댓글 수 업데이트
+        }
+      })
+      .addCase(addComment.fulfilled, (state, action) => {
+        const { boardId } = action.payload;
+        const board = state.boards.find(board => board.id === boardId);
+        if (board) {
+          board.repl_cnt += 1; // 댓글 추가에 따라 댓글 수 증가
+        }
+      })
+      .addCase(deleteComment.fulfilled, (state, action) => {
+        const commentId = action.payload;
+        state.boards.forEach(board => {
+          if (board.repl_cnt > 0) {
+            board.repl_cnt -= 1; // 댓글 삭제에 따라 댓글 수 감소
+          }
+        });
+      })
+      .addCase(updateComment.fulfilled, (state, action) => {
+        // 댓글 업데이트와 관련된 게시물 상태 업데이트는 현재 필요 없음
       });
   },
 });

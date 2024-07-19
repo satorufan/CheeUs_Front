@@ -1,85 +1,82 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { TextField } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import NearMeIcon from '@mui/icons-material/NearMe';
+import { fetchComments, addComment, deleteComment } from '../../store/CommentSlice';
 import './repl.css';
 
-// 틀만 만든거!!!
+function Repl({ boardId }) {
+    const dispatch = useDispatch();
+    const comments = useSelector(state => state.comments.comments[boardId] || []);
+    const [commentText, setCommentText] = useState('');
+    const [replyText, setReplyText] = useState({});
+    const [showReplyInput, setShowReplyInput] = useState({});
 
-function Repl() {
-    const [comments, setComments] = useState([]); // 댓글 상태
-    const [commentText, setCommentText] = useState(''); // 댓글 입력 텍스트
-    const [replyText, setReplyText] = useState({}); // 대댓글 입력 텍스트
-    const [showReplyInput, setShowReplyInput] = useState({}); // 대댓글 입력 표시 상태
+    useEffect(() => {
+        if (boardId) {
+            dispatch(fetchComments(boardId));
+        }
+    }, [dispatch, boardId]);
 
-    // 댓글 입력 변경 핸들러
+    useEffect(() => {
+        console.log('Comments:', comments); // 상태 확인
+    }, [comments]);
+
     const handleInputChange = (e) => {
         setCommentText(e.target.value);
     };
 
-    // 대댓글 입력 변경 핸들러
-    const handleReplyChange = (commentIndex, e) => {
-        setReplyText({
-            ...replyText,
-            [commentIndex]: e.target.value,
-        });
+    const handleReplyChange = (commentId, e) => {
+        setReplyText(prevState => ({
+            ...prevState,
+            [commentId]: e.target.value,
+        }));
     };
 
-    // 댓글 추가 핸들러
     const handleAddComment = (e) => {
         e.preventDefault();
         if (commentText.trim() !== '') {
-            setComments([
-                ...comments,
-                { 
-                    content: commentText, 
-                    replies: [],
-                    user: { 
-                        profilePic: 'https://via.placeholder.com/30', 
-                        nickname: 'User1'  // 가상
-                    } 
-                }
-            ]);
+            const newComment = {
+                board_id: boardId,
+                repl_author_id: 201,
+                group: 1,
+                writeday: new Date().toISOString().split('T')[0],
+                repl_content: commentText,
+            };
+            dispatch(addComment(newComment));
             setCommentText('');
         }
     };
 
-    // 대댓글 추가 핸들러
-    const handleAddReply = (commentIndex) => {
-        if (replyText[commentIndex]?.trim() !== '') {
-            const updatedComments = [...comments];
-            updatedComments[commentIndex].replies.push({ 
-                content: replyText[commentIndex], 
-                user: { 
-                    profilePic: 'https://via.placeholder.com/30', 
-                    nickname: 'User2' // 가상
-                } 
-            });
-            setComments(updatedComments);
-            setReplyText({ ...replyText, [commentIndex]: '' });
-            setShowReplyInput({ ...showReplyInput, [commentIndex]: false });
+    const handleAddReply = (commentId) => {
+        if (replyText[commentId]?.trim() !== '') {
+            const reply = {
+                board_id: boardId,
+                repl_author_id: 202,
+                group: 1,
+                writeday: new Date().toISOString().split('T')[0],
+                repl_content: replyText[commentId],
+            };
+            dispatch(addComment(reply));
+            setReplyText(prevState => ({ ...prevState, [commentId]: '' }));
+            setShowReplyInput(prevState => ({ ...prevState, [commentId]: false }));
         }
     };
 
-    // 댓글 삭제 핸들러
-    const handleDeleteComment = (index) => {
-        const updatedComments = comments.filter((_, i) => i !== index);
-        setComments(updatedComments);
+    const handleDeleteComment = (commentId) => {
+        dispatch(deleteComment(commentId));
     };
 
-    // 대댓글 삭제 핸들러
-    const handleDeleteReply = (commentIndex, replyIndex) => {
-        const updatedComments = [...comments];
-        updatedComments[commentIndex].replies = updatedComments[commentIndex].replies.filter((_, i) => i !== replyIndex);
-        setComments(updatedComments);
+    const handleDeleteReply = (replyId) => {
+        dispatch(deleteComment(replyId));
     };
 
-    // 대댓글 입력 토글 핸들러
-    const toggleReplyInput = (commentIndex) => {
-        setShowReplyInput({
-            ...showReplyInput,
-            [commentIndex]: !showReplyInput[commentIndex],
-        });
+    const toggleReplyInput = (commentId) => {
+        setShowReplyInput(prevState => ({
+            ...prevState,
+            [commentId]: !prevState[commentId],
+        }));
     };
 
     return (
@@ -102,18 +99,18 @@ function Repl() {
             </form>
 
             <div className="detail-comment-list">
-                {comments.map((comment, commentIndex) => (
-                    <div key={commentIndex} className="comment-container">
+                {comments.map(comment => (
+                    <div key={comment.id} className="comment-container">
                         <div className="detail-comment">
                             <div className="comment-user-info">
-                                <img src={comment.user.profilePic} alt="Profile" className="reply-profile-pic" />
-                                <span className="reply-nickname">{comment.user.nickname}</span>
+                                <img src={'https://via.placeholder.com/30'} alt="Profile" className="reply-profile-pic" />
+                                <span className="reply-nickname">User{comment.repl_author_id}</span>
                             </div>
                             <div className="comment-content">
                                 <span>{comment.content}</span>
-                                <button 
+                                <button
                                     className="delete-button button-no-style"
-                                    onClick={() => handleDeleteComment(commentIndex)}
+                                    onClick={() => handleDeleteComment(comment.id)}
                                 >
                                     <DeleteIcon />
                                 </button>
@@ -121,44 +118,44 @@ function Repl() {
                         </div>
 
                         <div className="detail-reply-list">
-                            {comment.replies.map((reply, replyIndex) => (
-                                <div key={replyIndex} className="detail-reply">
-                                    <div className="comment-user-info">
-                                        <img src={reply.user.profilePic} alt="Profile" className="reply-profile-pic" />
-                                        <span className="reply-nickname">{reply.user.nickname}</span>
-                                    </div>
-                                    <div className="comment-content">
-                                        <span>{reply.content}</span>
-                                        <button
-                                            className="delete-button button-no-style"
-                                            onClick={() => handleDeleteReply(commentIndex, replyIndex)}
-                                        >
-                                            <DeleteIcon />
-                                        </button>
+                            {comment.replies && comment.replies.map(reply => (
+                                <div key={reply.id} className="reply-container">
+                                    <div className="detail-reply">
+                                        <div className="reply-user-info">
+                                            <img src={'https://via.placeholder.com/30'} alt="Profile" className="reply-profile-pic" />
+                                            <span className="reply-nickname">User{reply.repl_author_id}</span>
+                                        </div>
+                                        <div className="reply-content">
+                                            <span>{reply.content}</span>
+                                            <button
+                                                className="delete-button button-no-style"
+                                                onClick={() => handleDeleteReply(reply.id)}
+                                            >
+                                                <DeleteIcon />
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             ))}
                         </div>
 
                         <div style={{ textAlign: 'right' }}>
-                            {!showReplyInput[commentIndex] && (
-                                <span
-                                    onClick={() => toggleReplyInput(commentIndex)}
-                                    className="reply-arrow"
-                                    style={{ cursor: 'pointer' }}
-                                >
-                                    {comment.replies.length === 0 ? '댓글쓰기' : '댓글쓰기'}
-                                </span>
-                            )}
+                            <span
+                                onClick={() => toggleReplyInput(comment.id)}
+                                className="reply-arrow"
+                                style={{ cursor: 'pointer' }}
+                            >
+                                {showReplyInput[comment.id] ? '닫기' : '댓글쓰기'}
+                            </span>
                         </div>
 
-                        {showReplyInput[commentIndex] && (
+                        {showReplyInput[comment.id] && (
                             <div className="reply-form">
                                 <TextField
                                     variant="outlined"
                                     placeholder="대댓글을 남겨주세요..."
-                                    value={replyText[commentIndex] || ''}
-                                    onChange={(e) => handleReplyChange(commentIndex, e)}
+                                    value={replyText[comment.id] || ''}
+                                    onChange={(e) => handleReplyChange(comment.id, e)}
                                     fullWidth
                                     multiline
                                     minRows={1}
@@ -166,7 +163,7 @@ function Repl() {
                                 />
                                 <button
                                     className="send-button button-no-style"
-                                    onClick={() => handleAddReply(commentIndex)}
+                                    onClick={() => handleAddReply(comment.id)}
                                 >
                                     <NearMeIcon />
                                 </button>
