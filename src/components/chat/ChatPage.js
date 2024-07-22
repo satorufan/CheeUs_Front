@@ -56,9 +56,9 @@ const ChatPage = () => {
             console.log('Received message:', message);
             dispatch(appendMessageToChat(message));
             if (activeKey === 'one') {
-                dispatch(updateLastMessageInChatRooms(message));
+                dispatch(updateLastMessageInChatRooms({ roomId: message.chat_room_id, message }));
             } else {
-                dispatch(updateLastMessageInTogetherChatRooms(message));
+                dispatch(updateLastMessageInTogetherChatRooms({ roomId: message.room_id, message }));
             }
         };
 
@@ -78,6 +78,13 @@ const ChatPage = () => {
             dispatch(fetchTogetherChatRooms()); // 단체 채팅방 데이터 요청
         }
     }, [loggedInUserId, dispatch]);
+
+    useEffect(() => {
+        // activeKey가 변경될 때 selectedChat 초기화
+        dispatch(setSelectedChat({ messages: [] })); // 기본값 설정
+        dispatch(setMessageInput(''));
+        dispatch(setShowMessageInput(false));
+    }, [activeKey, dispatch]);
 
     useEffect(() => {
         scrollToBottom();
@@ -207,15 +214,19 @@ const ChatPage = () => {
                                     />
                                 </div>
                                 <div className="col-md-8 chat-right">
-                                    <ChatWindow
-                                        selectedChat={selectedChat}
-                                        messageInput={messageInput}
-                                        showMessageInput={showMessageInput}
-                                        formatMessageTime={formatMessageTime}
-                                        scrollRef={scrollRef}
-                                        sendMessage={sendMessage}
-                                        setMessageInput={(input) => dispatch(setMessageInput(input))}
-                                    />
+                                    {selectedChat && selectedChat.messages ? (
+                                        <ChatWindow
+                                            selectedChat={selectedChat}
+                                            messageInput={messageInput}
+                                            showMessageInput={showMessageInput}
+                                            formatMessageTime={formatMessageTime}
+                                            scrollRef={scrollRef}
+                                            sendMessage={sendMessage}
+                                            setMessageInput={(input) => dispatch(setMessageInput(input))}
+                                        />
+                                    ) : (
+                                        <div>채팅방을 선택하세요.</div>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -233,15 +244,19 @@ const ChatPage = () => {
                                     />
                                 </div>
                                 <div className="col-md-8 chat-right">
-                                    <ChatWindow
-                                        selectedChat={selectedChat}
-                                        messageInput={messageInput}
-                                        showMessageInput={showMessageInput}
-                                        formatMessageTime={formatMessageTime}
-                                        scrollRef={scrollRef}
-                                        sendMessage={sendMessage}
-                                        setMessageInput={(input) => dispatch(setMessageInput(input))}
-                                    />
+                                    {selectedChat && selectedChat.messages ? (
+                                        <ChatWindow
+                                            selectedChat={selectedChat}
+                                            messageInput={messageInput}
+                                            showMessageInput={showMessageInput}
+                                            formatMessageTime={formatMessageTime}
+                                            scrollRef={scrollRef}
+                                            sendMessage={sendMessage}
+                                            setMessageInput={(input) => dispatch(setMessageInput(input))}
+                                        />
+                                    ) : (
+                                        <div>채팅방을 선택하세요.</div>
+                                    )}
                                 </div>
                             </div>
                         </div>

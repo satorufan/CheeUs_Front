@@ -44,9 +44,8 @@ const ChatWindow = ({
     };
 
     const getProfileImageSrc = () => {
-        if (!selectedChat) return '';
         const profileUserId = getOtherUserId();
-        return `https://www.clarity-enhanced.net/wp-content/uploads/2020/06/profile-${profileUserId}.jpg`;
+        return profileUserId ? `https://www.clarity-enhanced.net/wp-content/uploads/2020/06/profile-${profileUserId}.jpg` : '';
     };
 
     const getDisplayName = () => {
@@ -56,7 +55,7 @@ const ChatWindow = ({
 
     return (
         <>
-            {selectedChat && (
+            {selectedChat ? (
                 <>
                     <div className="chat-top">
                         <div className="d-flex align-items-center">
@@ -73,15 +72,19 @@ const ChatWindow = ({
                         </div>
                     </div>
                     <div className="chat active-chat" data-chat={`person${selectedChat.roomId}`}>
-                        {selectedChat.messages && selectedChat.messages.map((message, index) => (
-                            <div
-                                key={index}
-                                className={`chat-bubble ${isSender(message.sender_id) ? 'me' : 'you'}`}
-                            >
-                                <div>{message.message}</div>
-                                <span className="chat-time">{formatMessageTime(message.write_day)}</span>
-                            </div>
-                        ))}
+                        {selectedChat.messages && selectedChat.messages.length > 0 ? (
+                            selectedChat.messages.map((message, index) => (
+                                <div
+                                    key={index}
+                                    className={`chat-bubble ${isSender(message.sender_id) ? 'me' : 'you'}`}
+                                >
+                                    <div>{message.message}</div>
+                                    <span className="chat-time">{formatMessageTime(message.write_day)}</span>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="no-messages">채팅방을 선택하세요</div>
+                        )}
                         <div ref={scrollRef}></div>
                     </div>
                     {showMessageInput && (
@@ -104,6 +107,8 @@ const ChatWindow = ({
                         </div>
                     )}
                 </>
+            ) : (
+                <div>채팅방을 선택하세요.</div>
             )}
         </>
     );

@@ -55,7 +55,7 @@ export const fetchTogetherChatRooms = createAsyncThunk(
                     ...room,
                     lastMessage: lastMessage ? {
                         ...lastMessage,
-                        write_day: new Date(lastMessage.write_day)
+                        write_day: new Date(lastMessage.write_day) // write_day를 Date 객체로 변환
                     } : null
                 };
             }));
@@ -94,22 +94,16 @@ const chatSlice = createSlice({
             }
         },
         updateLastMessageInChatRooms(state, action) {
-            const roomIndex = state.chatRooms.findIndex(room => room.roomId === state.selectedChat.roomId);
-            if (roomIndex !== -1) {
-                state.chatRooms[roomIndex] = {
-                    ...state.chatRooms[roomIndex],
-                    lastMessage: action.payload
-                };
-            }
+            const { roomId, message } = action.payload;
+            state.chatRooms = state.chatRooms.map(room => 
+                room.roomId === roomId ? { ...room, lastMessage: message } : room
+            );
         },
         updateLastMessageInTogetherChatRooms(state, action) {
-            const roomIndex = state.togetherChatRooms.findIndex(room => room.together_id === action.payload.chat_room_id); // `together_id` 사용
-            if (roomIndex !== -1) {
-                state.togetherChatRooms[roomIndex] = {
-                    ...state.togetherChatRooms[roomIndex],
-                    lastMessage: action.payload
-                };
-            }
+            const { roomId, message } = action.payload;
+            state.togetherChatRooms = state.togetherChatRooms.map(room => 
+                room.roomId === roomId ? { ...room, lastMessage: message } : room
+            );
         }
     },
     extraReducers: (builder) => {
@@ -139,6 +133,14 @@ const chatSlice = createSlice({
     }
 });
 
-export const { setSelectedChat, setMessageInput, setShowMessageInput, setActiveKey, appendMessageToChat, updateLastMessageInChatRooms, updateLastMessageInTogetherChatRooms } = chatSlice.actions;
+export const { 
+    setSelectedChat, 
+    setMessageInput, 
+    setShowMessageInput, 
+    setActiveKey, 
+    appendMessageToChat, 
+    updateLastMessageInChatRooms, 
+    updateLastMessageInTogetherChatRooms 
+} = chatSlice.actions;
 
 export default chatSlice.reducer;
