@@ -23,6 +23,24 @@ const initialState = {
             ],
           }
         ],
+        5: [
+        {
+            id: 8,
+            board_id: 5,
+            repl_author_id: 'rbfl8484@gmail.com',
+            content: '이것은 초기 댓글입니다.',
+            writeday: new Date().toISOString().split('T')[0], // 오늘 날짜
+            replies: [
+                {
+                id: 8,
+                board_id: 5,
+                repl_author_id: 202,
+                content: '이것은 초기 대댓글입니다.',
+                writeday: new Date().toISOString().split('T')[0], // 오늘 날짜
+                }
+            ],
+            }
+        ],
       },
     };
 

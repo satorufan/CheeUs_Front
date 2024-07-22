@@ -47,6 +47,7 @@ const ProfileCard = ({ profileInfo, loggedInUserId, showLikeButton }) => {
 
     // 나이 계산
     const calculateAge = (birth) => {
+        if (!birth) return '나이 알 수 없음';
         const birthDate = new Date(birth.slice(0, 4), birth.slice(4, 6) - 1, birth.slice(6, 8));
         const today = new Date();
         let age = today.getFullYear() - birthDate.getFullYear();
@@ -142,7 +143,7 @@ const ProfileCard = ({ profileInfo, loggedInUserId, showLikeButton }) => {
                 )}
             </Carousel>
             <div className="profile-details">
-                <h3>{profileInfo.profile.nickname} <span>&nbsp;{calculateAge(profileInfo.profile.birth)}세</span></h3>
+            <h3>{profileInfo.profile.nickname} <span>&nbsp;{calculateAge(profileInfo.profile.birth)}세</span></h3>
                 <div className="location-like">
                     <div>{distanceToDisplay}</div>
                 </div>

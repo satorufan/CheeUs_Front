@@ -3,8 +3,8 @@ import { usePosts } from './PostContext';
 /* global kakao */
 const kakaokey = "cc91cb103ac5f5d244562ea0a92a3053"; // 카카오 API 키
 
-const InputMap = () => {
-  const { setSelectedPlace } = usePosts();
+const InputMap = ({ isEditing }) => {
+  const { selectedPlace, setSelectedPlace } = usePosts();
   const [map, setMap] = useState(null);
   const [searchInput, setSearchInput] = useState('');
   const [markers, setMarkers] = useState([]);
@@ -32,6 +32,11 @@ const InputMap = () => {
             map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
             const zoomControl = new kakao.maps.ZoomControl();
             map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
+
+            // 수정 모드일 때 마커 설정
+            if (isEditing && selectedPlace) {
+              setMarkerOnMap(selectedPlace, map);
+            }
           });
         }
       } catch (error) {
@@ -49,6 +54,19 @@ const InputMap = () => {
       document.head.removeChild(script);
     };
   }, []);
+
+  useEffect(() => {
+    if (isEditing && selectedPlace && map) {
+      setMarkerOnMap(selectedPlace, map);
+    }
+  }, [isEditing, selectedPlace, map]);
+
+  const setMarkerOnMap = (place, mapInstance) => {
+    const placePosition = new kakao.maps.LatLng(place.latitude, place.longitude);
+    const { marker } = addMarker(placePosition, 0, place.title, place.address);
+    mapInstance.setCenter(placePosition);
+    setMarkers([{ marker }]);
+  };
 
   const handleSearch = () => {
     if (!map || searchInput === '') return;
@@ -95,7 +113,6 @@ const InputMap = () => {
         position: position,
         image: markerImage
       });
-       
 
     marker.setMap(map);
 
@@ -104,7 +121,7 @@ const InputMap = () => {
     const infowindow = new kakao.maps.InfoWindow({
       content: content
     });
-    
+
     kakao.maps.event.addListener(marker, 'mouseover', function () {
       infowindow.open(map, marker);
       const latlng = marker.getPosition();
@@ -116,7 +133,7 @@ const InputMap = () => {
       infowindow.close();
     });
 
-	kakao.maps.event.addListener(marker, 'click', function () {
+    kakao.maps.event.addListener(marker, 'click', function () {
       const latlng = marker.getPosition();
       setSelectedPlace({
         latitude: latlng.getLat(),
@@ -182,7 +199,7 @@ const InputMap = () => {
         />
         <button onClick={handleSearch}>검색</button>
       </div>
-      <div id="map" className="map"  style={{  height: '96vh'}}></div>
+      <div id="map" className="map" style={{ height: '96vh' }}></div>
       <div className="search-result">
         <ul id="placesList">
           {places.map((place, index) => (
@@ -194,13 +211,13 @@ const InputMap = () => {
                   (<span>{place.road_address_name}<br /><span className="jibun gray">{place.address_name}</span></span>) :
                   (<span>{place.address_name}</span>)
                 }
-                <br/><span className="tel">{place.phone}</span>
+                <br /><span className="tel">{place.phone}</span>
               </div>
             </li>
           ))}
         </ul>
         <div id="searchPagination">
-        	{displayPagination()}
+          {displayPagination()}
         </div>
       </div>
     </div>

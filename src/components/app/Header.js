@@ -12,6 +12,7 @@ import './header.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUserProfile, selectProfileStatus, selectUserProfile } from '../../store/ProfileSlice';
 import { jwtDecode } from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
 
 function Header() {
     const [isUnread, setIsUnread] = useState(true); // 채팅 읽지 않은 상태
@@ -40,6 +41,12 @@ function Header() {
     const handleNavToggle = () => {
         setIsNavExpanded(!isNavExpanded);
     };
+   const navigate = useNavigate();
+   const handleLinkClick = (e) => {
+     e.preventDefault();
+     navigate('/dtboard');
+     window.location.reload();
+   };
 
     const isLoggedIn = userProfile !== null;
 
@@ -59,7 +66,7 @@ function Header() {
                     <Navbar.Collapse id="navbarNav">
                         <Nav className="ms-auto">
                             <Nav.Link href="/match">둘이 마셔요</Nav.Link>
-                            <Nav.Link href="/dtboard">함께 마셔요</Nav.Link>
+                            <Nav.Link href="/dtboard" onClick = {handleLinkClick}>함께 마셔요</Nav.Link>
                             <Nav.Link href="/board">게시판</Nav.Link>
                             <Nav.Link href="/event">이벤트</Nav.Link>
                             <Nav.Link href="/magazine">메거진</Nav.Link>
