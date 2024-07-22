@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import ProfileCard from './ProfileCard';
 import { fetchUserProfile } from '../../store/ProfileSlice';
@@ -8,6 +8,7 @@ import './userProfilePage.css';
 const UserProfilePage = () => {
     const { id } = useParams();
     const userId = parseInt(id, 10);
+    const userEmail = useLocation();
     const loggedInUserId = 1; // 가상 로그인
     const dispatch = useDispatch();
     const navigate = useNavigate();

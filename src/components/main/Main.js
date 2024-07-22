@@ -1,8 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './main.css';
 import Carousel from 'react-bootstrap/Carousel';
+import Swal from 'sweetalert2';
+import { useLocation } from 'react-router-dom';
 
 function Main() {
+  const sweetalert = (title, contents, icon, confirmButtonText) => {
+    Swal.fire({
+        title: title,
+        text: contents,
+        icon: icon,
+        confirmButtonText: confirmButtonText
+    });
+  };
+  const nickname = useLocation();
+  
+  useEffect(()=>{
+    if(nickname.state) {
+      sweetalert(nickname.state.logined + "님 환영합니다." ,"","","확인");
+    }
+  }, [nickname]);
+
   return (
     <div className="main-container">
       <div className="video-background">

@@ -40,7 +40,6 @@ const AuthProvider = ({ children }) => {
 			axios.get(serverUrl + "/member/signIn", {params : {
 				email : jwtDecode(loadToken).email
 			}}).then((res)=>{
-				console.log(res);
 				setEmail(jwtDecode(loadToken).email);
 			}).catch((err)=>{
 				console.log(err);

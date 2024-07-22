@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateUserProfile, selectUserProfile } from '../../store/ProfileSlice';
+import { updateUserProfile, selectUserProfile, updateUserProfileThunk } from '../../store/ProfileSlice';
 import './editProfile.css';
 import Avatar from '@mui/joy/Avatar';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
@@ -14,12 +14,24 @@ import Button from '@mui/material/Button';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../login/OAuth';
+import Swal from 'sweetalert2';
 
 const availableTags = [
     '소주', '맥주', '양주', '막걸리', '칵테일', '하이볼', '차분하게', '신나게', '시끄럽게', '가성비 술집', '예쁜 술집'
 ];
 
 const EditProfile = ({ onClose = () => {} }) => {
+    const sweetalert = (title, contents, icon, confirmButtonText) => {
+        Swal.fire({
+            title: title,
+            text: contents,
+            icon: icon,
+            confirmButtonText: confirmButtonText
+        });
+    };
+
+    const {serverUrl} = useContext(AuthContext);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const profile = useSelector(selectUserProfile);
@@ -28,25 +40,29 @@ const EditProfile = ({ onClose = () => {} }) => {
     const [intro, setIntro] = useState('');
     const [tags, setTags] = useState([]);
     const [photos, setPhotos] = useState([]);
+    const [imageFiles, setImageFiles] = useState([]);
     const [photo, setPhoto] = useState('');
     const [openTagModal, setOpenTagModal] = useState(false);
     const [phoneNumber, setPhoneNumber] = useState('');
     const [locationConsent, setLocationConsent] = useState(0);
     const [matchingConsent, setMatchingConsent] = useState(0);
-    const [openConfirmModal, setOpenConfirmModal] = useState(false); 
-
+    const [openConfirmModal, setOpenConfirmModal] = useState(false);
+    
     useEffect(() => {
         if (profile) {
-            setNickname(profile.nickname);
-            setIntro(profile.intro);
-            setTags(typeof profile.tags === 'string' 
-                ? profile.tags.split(',').map(tag => tag.trim()) 
+            setNickname(profile.profile.nickname);
+            setIntro(profile.profile.intro);
+            setTags(typeof profile.profile.tags === 'string' 
+                ? profile.profile.tags.split('/').map(tag => tag.trim()) 
                 : []);
-            setPhotos(profile.photos || []);
-            setPhoto(profile.photo);
-            setPhoneNumber(profile.tel || '');
-            setLocationConsent(profile.location_ok);
-            setMatchingConsent(profile.match_ok);
+            setPhotos(profile.imageBlob || []);
+            profile.imageBlob.map((image) => {
+                setImageFiles([...imageFiles, image]);
+            });
+            setPhoto(profile.profile.photo);
+            setPhoneNumber(profile.profile.tel || '');
+            setLocationConsent(profile.profile.locationOk);
+            setMatchingConsent(profile.profile.matchOk);
         }
     }, [profile]);
 
@@ -56,22 +72,46 @@ const EditProfile = ({ onClose = () => {} }) => {
     };
 
     const handleConfirmSubmit = () => {
-        const updatedProfile = {
-            ...profile,
-            nickname,
-            intro,
-            tags,
-            photos,
-            tel: phoneNumber,
-            location_ok: locationConsent,
-            match_ok: matchingConsent,
-        };
+        if (photos.length == 0) {
+            sweetalert("프로필 사진 한 장 이상 추가하여야 합니다", '','','확인');
+          } else {
 
-        dispatch(updateUserProfile(updatedProfile));
-        onClose();
-        console.log("저장된 프로필:", updatedProfile);
-        navigate('/main'); 
-        setOpenConfirmModal(false); 
+            var tagsString = "";
+            if (tags) tags.map((tag, index)=>{
+            tagsString += index == tags.length-1 ? tag : tag + "/";
+            });
+            console.log(tagsString);
+
+            const updateUserProfileInfo = {
+                birth : profile.profile.birth,
+                email : profile.profile.email,
+                gender : profile.profile.gender,
+                intro : intro,
+                latitude : null,
+                longitude : null,
+                location : null,
+                locationOk : locationConsent,
+                matchOk : matchingConsent,
+                name : profile.profile.name,
+                nickname : profile.profile.nickname,
+                photo : photos.length,
+                tags : tags.length > 0 ? tagsString : null,
+                tel : profile.profile.tel
+            }
+            const updateUserProfilePhotos = photos;
+
+            const updateUserProfile = {
+                profile : updateUserProfileInfo,
+                imageBlob : updateUserProfilePhotos
+            }
+
+            dispatch(updateUserProfileThunk({serverUrl, updateUserProfile}));
+            onClose();
+            console.log("저장된 프로필:", updateUserProfile);
+            navigate('/mypage'); 
+            setOpenConfirmModal(false); 
+            window.location.reload();
+        }
     };
 
     const handleAvatarUpload = (event) => {
@@ -144,7 +184,7 @@ const EditProfile = ({ onClose = () => {} }) => {
                         />
                         <label htmlFor="file-input">
                             <Avatar
-                                src={photo}
+                                src={photos[0]}
                                 size="medium"
                                 sx={{ width: 40, height: 40 }}
                                 className="edit-profile-img"
@@ -162,7 +202,7 @@ const EditProfile = ({ onClose = () => {} }) => {
                         />
                     </div>
                     <div className="edit-form-group">
-                        <button onClick={handleOpenTagModal} variant="outlined" className='edit-tags-btn'>
+                        <button type='button' onClick={handleOpenTagModal} variant="outlined" className='edit-tags-btn'>
                             음주 선호 태그
                         </button>
                         <div className="edit-tag-container">
@@ -214,24 +254,29 @@ const EditProfile = ({ onClose = () => {} }) => {
                                     style={{ display: 'none' }}
                                     id={`photo-input-${index}`}
                                 />
-                                <div className="edit-photos" onClick={() => handleAddPhoto(index)}>
+                                <div className="edit-photos">
                                     {photos[index] ? (
                                         <>
                                             <img src={photos[index]} alt={`Photo ${index + 1}`} className="edit-photo-thumbnail" />
                                             <button
-                                                className="edit-remove-photo"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleRemovePhoto(index);
-                                                }}
+                                            type="button"
+                                            className="add-remove-photo"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleRemovePhoto(index);
+                                            }}
                                             >
-                                                <RemoveCircleOutlineIcon />
+                                            <RemoveCircleOutlineIcon />
                                             </button>
                                         </>
-                                    ) : (
-                                        <div className="edit-photo-placeholder">
-                                            <AddCircleOutlineIcon />
-                                        </div>
+                                        ) : (
+                                        <>
+                                            {index === 0 || photos[index - 1] ? (
+                                            <div className="add-photo-placeholder" onClick={() => handleAddPhoto(index)}>
+                                                <AddCircleOutlineIcon />
+                                            </div>
+                                            ) : null}
+                                        </>
                                     )}
                                 </div>
                             </div>

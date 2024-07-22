@@ -5,6 +5,12 @@ import { AuthContext } from '../login/OAuth';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import Swal from 'sweetalert2';
+import Chip from '@mui/material/Chip';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
@@ -12,6 +18,10 @@ import { updateUserLocation } from '../../store/ProfileSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
 const Signup = () => {
+  const availableTags = [
+    '소주', '맥주', '양주', '막걸리', '칵테일', '하이볼', '차분하게', '신나게', '시끄럽게', '가성비 술집', '예쁜 술집'
+  ];
+
   const sweetalert = (title, contents, icon, confirmButtonText) => {
     Swal.fire({
       title: title,
@@ -31,14 +41,20 @@ const Signup = () => {
   const [nickname, setNickname] = useState('');
   const [nicknameChecked, setNicknameChecked] = useState(false);
   const [gender, setGender] = useState();
+  const [locationDetail, setLocation] = useState({});
   const [isLocationChecked, setIsLocationChecked] = useState(false);
   const [isMatchingChecked, setIsMatchingChecked] = useState(false);
   const [isAgreementChecked, setIsAgreementChecked] = useState(false);	
   const [intro, setIntro] = useState('');
+  // 태그
+  const [tags, setTags] = useState([]);
+  const [openTagModal, setOpenTagModal] = useState(false);
+  const [openConfirmModal, setOpenConfirmModal] = useState(false);
+  // 이미지
   const [photos, setPhotos] = useState([]); //썸네일
   const [imageFiles, setImageFiles] = useState([]); //실제로 저장될 이미지파일
   //발행한 토큰의 이메일 정보 불러오기
-  const {token} = useContext(AuthContext);
+  const {token, serverUrl} = useContext(AuthContext);
 
 
   const buttonStyleMale = {
@@ -49,15 +65,6 @@ const Signup = () => {
     backgroundColor: gender === 1 ? 'gray' : 'white',
     color : 'black'
   };
-  
-  const sendPhotos = async () => {
-    try {
-      console.log('Upload successful');
-    } catch (error) {
-
-      console.error('Error uploading files:', error);
-    }
-  }
 
   // photos에 입력받은 사진 임시 저장
   const handleUploadPhoto = (index) => (event) => {
@@ -95,9 +102,15 @@ const Signup = () => {
 
   const nicknameCheck = (nickname) => {
     //axios 들어갈 자리
-
+    axios.get(serverUrl + '/profile/checkNickname', {params : {
+      nickname : nickname
+    }}).then((res) => {
+      sweetalert("사용가능한 닉네임입니다." ,"","","확인");
+      setNicknameChecked(true);
+    }).catch((err)=>{
+      sweetalert(err.response.data.message ,"","","확인");
+    });
     //
-    setNicknameChecked(true);
   }
 
   // 위치 정보 불러오기
@@ -110,8 +123,10 @@ const Signup = () => {
                     longitude: position.coords.longitude,
                 };
                 dispatch(updateUserLocation(location));
-                console.log('위도:', location.latitude.toString());
-                console.log('경도:', location.longitude);
+                setLocation({
+                  latitude : location.latitude,
+                  longitude : location.longitude
+                });
             },
             (error) => {
                 console.error('위치 정보를 가져오는 데 실패했습니다:', error);
@@ -121,6 +136,28 @@ const Signup = () => {
         console.error('Geolocation이 지원되지 않습니다');
     }
   };
+
+  // 태그 모달
+  const handleOpenTagModal = () => {
+    setOpenTagModal(true);
+  };
+  const handleCloseTagModal = () => {
+    setOpenTagModal(false);
+  };
+  const handleTagToggle = (tag) => {
+    setTags((prevTags) => 
+        prevTags.includes(tag)
+            ? prevTags.filter((t) => t !== tag)
+            : [...prevTags, tag]
+    );
+  };
+  const handleTagSubmit = () => {
+    var tagsString = "";
+    tags.map((tag)=>{
+      tagsString += tag + "/";
+    });
+    return tagsString;
+  }
 
   // 제출 - 회원가입 요청
   const handleComplete = async (event) => {
@@ -152,6 +189,7 @@ const Signup = () => {
       if (isLocationChecked) {
         getUserLocation();
       }
+      
       const memberProfileDetail = {
         email : jwtDecode(token).email,
         name : name,
@@ -160,9 +198,10 @@ const Signup = () => {
         tel : tel,
         nickname : nickname,
         gender : gender,
+        tags : tags ? handleTagSubmit() : null,
         locationOk : isLocationChecked,
-        latitude : userLocation ? userLocation.latitude.toString() : null,
-        longitude : userLocation ? userLocation.longitude.toString() : null,
+        latitude : isLocationChecked ? locationDetail.latitude.toString() : null,
+        longitude : isLocationChecked ? locationDetail.longitude.toString() : null,
         matchOk : isMatchingChecked,
         intro : intro
       };
@@ -187,7 +226,6 @@ const Signup = () => {
                             onChange={handleUploadPhoto(index)}
                             style={{ display: 'none' }}
                             id={`photo-input-${index}`}
-                            multiple
                         />
                         <div className="add-photos" >
                             {photos[index] ? (
@@ -216,8 +254,6 @@ const Signup = () => {
                         </div>
                     </div>
                   ))}
-                  
-                  <button type="button" onClick={sendPhotos}>전송</button>
               </div>
             </div>
           </div>
@@ -273,14 +309,21 @@ const Signup = () => {
               </div>
             </div>
             <div className="form-group">
-              <label>음주 취향 태그</label>
-              <input type="text" placeholder="+ 음주 취향 태그 추가" />
+                <button type="button" onClick={handleOpenTagModal} variant="outlined" className='edit-tags-btn'>
+                    음주 선호 태그
+                </button>
+                <div className="edit-tag-container">
+                    {tags.map((tag) => (
+                        <Chip
+                            key={tag}
+                            label={tag}
+                            onDelete={() => handleTagToggle(tag)}
+                            variant="outlined"
+                            className="edit-tag-chip"
+                        />
+                    ))}
+                </div>
             </div>
-            {/* <div className="form-group">
-              <label>프로필 사진</label>
-              <input type="file" onChange={handleImageChange} />
-              {profileImage && <img src={profileImage} alt="프로필 사진" className="profile-image" />}
-            </div> */}
             
           </div>
         </div>
@@ -299,7 +342,10 @@ const Signup = () => {
 	              	<input 
 	                  type="checkbox" 
 	                  checked={isLocationChecked} 
-	                  onChange={() => setIsLocationChecked(!isLocationChecked)}
+	                  onChange={() => {
+                      setIsLocationChecked(!isLocationChecked)
+                      getUserLocation()
+                    }}
 	                />
 	              </label>
 	              <label className='agreement'>
@@ -320,6 +366,44 @@ const Signup = () => {
 	              </label>
                 
             </div>
+            {/* 태그 모달 */}
+            <Dialog open={openTagModal} onClose={handleCloseTagModal}>
+                <DialogTitle>음주 선호 태그</DialogTitle>
+                <DialogContent>
+                    <div className="edit-tag-selection">
+                        {availableTags.map((tag) => (
+                            <Chip
+                                key={tag}
+                                label={tag}
+                                onClick={() => handleTagToggle(tag)}
+                                variant={tags.includes(tag) ? "filled" : "outlined"}
+                                className="edit-tag-chip"
+                            />
+                        ))}
+                    </div>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseTagModal} color="primary">
+                        닫기
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Confirmation Modal */}
+            <Dialog open={openConfirmModal} onClose={() => setOpenConfirmModal(false)}>
+                <DialogTitle>확인</DialogTitle>
+                <DialogContent>
+                    <p>프로필을 저장하시겠습니까?</p>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenConfirmModal(false)} color="primary">
+                        취소
+                    </Button>
+                    {/* <Button onClick={handleTagsConfirm} color="primary">
+                        저장
+                    </Button> */}
+                </DialogActions>
+            </Dialog>
             <div className="submit-area">
       			<button type="submit" className="submit-button" >Submit</button>
               </div>

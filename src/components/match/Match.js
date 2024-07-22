@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import TinderCards from './TinderCards';
 import { Modal, Button } from 'react-bootstrap';
@@ -10,12 +10,15 @@ import {
   selectProfiles,
   selectLocationOk,
   selectMatchServiceAgreed,
+  fetchUserProfiles,
 } from '../../store/MatchSlice'; 
 import axios from 'axios';
+import { AuthContext } from '../login/OAuth';
 
 const loggedInUserId = 1;
 
 const Match = () => {
+  const {serverUrl} = useContext(AuthContext);
   const dispatch = useDispatch();
   const profiles = useSelector(selectProfiles);
   const locationOk = useSelector(selectLocationOk);
@@ -26,21 +29,24 @@ const Match = () => {
   const [showHelpModal, setShowHelpModal] = React.useState(false);
 
   useEffect(() => {
-    const checkLocationPermission = async () => {
-      const user = profiles.find(profile => profile.id === loggedInUserId);
-      if (user && user.location_ok === 1) {
-        requestGeoLocation();
-      } else if (user && user.location_ok === 0) {
-        setShowLocationModal(true);
-      } else {
-        dispatch(setLocationDenied());
-      }
-    };
+    dispatch(fetchUserProfiles({serverUrl}));
+    if (profiles) {
+      const checkLocationPermission = async () => {
+        const user = profiles.find(profile => profile.id === loggedInUserId);
+        if (user && user.location_ok === 1) {
+          requestGeoLocation();
+        } else if (user && user.location_ok === 0) {
+          setShowLocationModal(true);
+        } else {
+          dispatch(setLocationDenied());
+        }
+      };
 
-    if (locationOk === null) {
-      checkLocationPermission();
+      if (locationOk === null) {
+        checkLocationPermission();
+      }
     }
-  }, [locationOk, profiles, dispatch]);
+  }, [locationOk, dispatch]);
 
   const requestGeoLocation = () => {
     if ('geolocation' in navigator) {

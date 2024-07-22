@@ -2,19 +2,10 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '../login/OAuth';
 import { useLocation, useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 
 const SignupCallback = () => {
-    const sweetalert = (title, contents, icon, confirmButtonText) => {
-        Swal.fire({
-            title: title,
-            text: contents,
-            icon: icon,
-            confirmButtonText: confirmButtonText
-        });
-    };
     const [signUp, setUp] = useState(false);
     const {token, requestSignIn} = useContext(AuthContext);
 

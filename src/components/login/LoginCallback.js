@@ -28,9 +28,9 @@ const LoginCallback = () => {
             }})
             .then((res=>{
                 //정보가 DB에 있으면 바로 로그인.
-                sweetalert(res.data.nickname + "님 환영합니다!", '','','확인');
                 requestSignIn();
-                navigate('/');
+                navigate('/', {state : {logined : res.data.nickname}});
+                window.location.reload();
             }))
             .catch((err)=>{
                 //없으면 에러 메시지와 함께, 회원가입 페이지로 이동

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useContext, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import TinderCard from 'react-tinder-card';
 import ProfileCard from '../profile/ProfileCard';
@@ -16,6 +16,8 @@ import {
   decrementIndex, 
   resetIndex 
 } from '../../store/MatchSlice';
+import axios from 'axios';
+import { AuthContext } from '../login/OAuth';
 
 const loggedInUserId = 1;
 
@@ -27,6 +29,7 @@ const TinderCards = () => {
   const [showMessages, setShowMessages] = React.useState([]);
 
   useEffect(() => {
+    console.log(profiles);
     const filteredProfiles = profiles.filter(profile => 
       profile.location_ok === 1 && 
       profile.match_ok === 1 && 

@@ -11,13 +11,37 @@ const initialState = {
     userProfile: null,
     locationOk: null,
     matchServiceAgreed: false,
-    profiles: profiles,
+    profiles: null,
     status: 'idle',
     error: null,
     shuffledProfiles: [],
     currentIndex: 0,
     showMessages: [],
 };
+
+// 타 멤버 프로필을 가져오는 thunk
+export const fetchUserProfiles = createAsyncThunk(
+    'match/fetchUserProfiles',
+    async ({serverUrl}) => {
+        
+        // 타 멤버 프로필 불러오기
+        const response = await axios.get(`${serverUrl}/match`);
+        console.log(response);
+        
+        const imageBlob = [];
+        for(let i=0 ; i < response.data.profile.photo ; i ++){
+            imageBlob.push("data:" + response.data.imageType[i]
+                + ";base64," + response.data.imageBlob[i] );
+        }
+
+        const profile = {
+            profile : response.data.profile,
+            imageBlob : imageBlob
+        };
+
+        return profile; // 프로필 데이터 반환
+    }
+);
 
 export const updateLocationPermission = createAsyncThunk(
     'match/updateLocationPermission',
@@ -93,6 +117,9 @@ const matchSlice = createSlice({
             .addCase(updateMatchServiceAgreement.fulfilled, (state, action) => {
                 state.userProfile = action.payload;
                 state.matchServiceAgreed = true;
+            })
+            .addCase(fetchUserProfiles.fulfilled, (state, action) => {
+                state.profiles = action.payload;
             });
     },
 });

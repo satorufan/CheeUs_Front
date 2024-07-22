@@ -10,7 +10,7 @@ import MailIcon from '@mui/icons-material/Mail';
 import { AuthContext } from '../login/OAuth';
 import './header.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchUserProfile, selectUserProfile } from '../../store/ProfileSlice';
+import { fetchUserProfile, selectProfileStatus, selectUserProfile } from '../../store/ProfileSlice';
 import { jwtDecode } from 'jwt-decode';
 
 function Header() {
@@ -19,6 +19,7 @@ function Header() {
     const [isNavExpanded, setIsNavExpanded] = useState(false); // Navbar 확장 상태 확인
 
     const userProfile = useSelector(selectUserProfile); // Redux에서 사용자 프로필 가져오기
+    const profileStatus = useSelector(selectProfileStatus);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -63,7 +64,7 @@ function Header() {
                             <Nav.Link href="/event">이벤트</Nav.Link>
                             <Nav.Link href="/magazine">메거진</Nav.Link>
 
-                            {isLoggedIn ? (
+                            {isLoggedIn && profileStatus !== "loading" ? (
                                 <>
                                     <Nav.Link href="/mypage">
                                         {isNavExpanded ? (
@@ -101,7 +102,7 @@ function Header() {
                                 <Nav.Link href="/login">
                                     {isNavExpanded ? (
                                         "Log-In"
-                                    ) : (
+                                    ) : profileStatus === "loading" ? <></> : (
                                         <button type="button" className="btn btn-light header-login-btn">Log-In</button>
                                     )}
                                 </Nav.Link>

@@ -14,20 +14,74 @@ const initialState = {
 export const fetchUserProfile = createAsyncThunk(
     'profile/fetchUserProfile',
     async ({ serverUrl, memberEmail }) => {
-        const response = await axios.get(`${serverUrl}/profile`, {
-            params: { email: memberEmail }
-        });
-        console.log(response.data);
-        return response.data; // 프로필 데이터 반환
+        
+        if (memberEmail) {
+            const response = await axios.get(`${serverUrl}/profile`, {
+                params: { email: memberEmail }
+            });
+            
+            const imageBlob = [];
+            for(let i=0 ; i < response.data.profile.photo ; i ++){
+                imageBlob.push("data:" + response.data.imageType[i]
+                    + ";base64," + response.data.imageBlob[i] );
+            }
+
+            const profile = {
+                profile : response.data.profile,
+                imageBlob : imageBlob
+            };
+
+            return profile; // 프로필 데이터 반환
+            // return response.data; // 프로필 데이터 반환
+        }
     }
 );
 
 // 사용자 프로필 업데이트 thunk
 export const updateUserProfileThunk = createAsyncThunk(
     'profile/updateUserProfile',
-    async ({ serverUrl, profile }) => {
-        const response = await axios.put(`${serverUrl}/profile`, profile);
-        return response.data; // 업데이트된 프로필 데이터 반환
+    async ({ serverUrl, updateUserProfile }) => {
+        const formData = new FormData();
+
+        formData.append("memberProfileDetail",
+            new Blob([JSON.stringify(updateUserProfile.profile)], 
+            {type: 'application/json'})
+        );
+
+        updateUserProfile.imageBlob.forEach((files, index) => {
+
+            var byteCharacters = atob(files.split(',')[1]);
+            var byteNumbers = new Array(byteCharacters.length);
+            for (var i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            var byteArray = new Uint8Array(byteNumbers);
+            var blob = new Blob([byteArray], { type: files.split(':')[1].split(';')[0] });
+
+            formData.append("photos", blob);
+            formData.append("email", updateUserProfile.profile.email + "/" + index);
+        });
+
+        const response = await axios.post(serverUrl + '/profile/edit', formData, {
+            headers : {
+                'Content-Type': 'multipart/form-data'
+            }
+        }).catch((err)=>{
+            console.log(err);
+        })
+
+        const imageBlob = [];
+            for(let i=0 ; i < response.data.profile.photo ; i ++){
+                imageBlob.push("data:" + response.data.imageType[i]
+                    + ";base64," + response.data.imageBlob[i] );
+            }
+
+        const profile = {
+            profile : response.data.profile,
+            imageBlob : imageBlob
+        };
+
+        return profile; // 프로필 데이터 반환
     }
 );
 

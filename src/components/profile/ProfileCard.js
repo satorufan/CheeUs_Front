@@ -1,13 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
-import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { Carousel, Modal } from 'react-bootstrap';
 import { updateUserLocation, likeProfile, unlikeProfile } from '../../store/ProfileSlice';
 import './profileCard.css';
-import noimage from "../images/noimage.jpg";
-import { AuthContext } from '../login/OAuth';
 
-const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
+const ProfileCard = ({ profileInfo, loggedInUserId, showLikeButton }) => {
     const dispatch = useDispatch();
     const userLocation = useSelector((state) => state.profile.userLocation);
     const likedProfiles = useSelector((state) => state.profile.likedProfiles);
@@ -16,9 +13,8 @@ const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
     const [modalIndex, setModalIndex] = useState(0);
     //const [likes, setLikes] = useState(profile.popularity);
     const [liked, setLiked] = useState(false);
-    const { serverUrl, memberEmail } = useContext(AuthContext);
 
-    const isLiked = likedProfiles.includes(profile.id);
+    const isLiked = likedProfiles.includes(profileInfo.profile.email);
 
     useEffect(() => {
         const getUserLocation = () => {
@@ -44,10 +40,10 @@ const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
     // 프로필 좋아요 상태 초기화
     useEffect(() => {
         const likedProfiles = JSON.parse(localStorage.getItem('likedProfiles')) || [];
-        if (likedProfiles.includes(profile.id)) {
+        if (likedProfiles.includes(profileInfo.profile.email)) {
             setLiked(true);
         }
-    }, [profile.id]);
+    }, [profileInfo.email]);
 
     // 나이 계산
     const calculateAge = (birth) => {
@@ -97,29 +93,28 @@ const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
     const handleLike = () => {
         if (showLikeButton) {
             if (isLiked) {
-                dispatch(unlikeProfile(profile.id));
+                dispatch(unlikeProfile(profileInfo.profile.id));
             } else {
-                dispatch(likeProfile(profile.id));
+                dispatch(likeProfile(profileInfo.profile.id));
             }
         }
     };
 
     // 사진 배열 안전하게 초기화
-    const photosToShow = profile.photos || [];
-    console.log(photosToShow);
+    const photosToShow = profileInfo.imageBlob || [];
 
     let distanceToDisplay = '거리 알 수 없음';
 
     // 사용자 위치가 있으면 거리 계산
     if (userLocation) {
-        if (profile.id === loggedInUserId) {
+        if (profileInfo.profile.email === loggedInUserId) {
             distanceToDisplay = '0 km';
         } else {
             distanceToDisplay = `${calculateStraightDistance(
                 userLocation.latitude,
                 userLocation.longitude,
-                parseFloat(profile.latitude),
-                parseFloat(profile.longitude)
+                parseFloat(profileInfo.latitude),
+                parseFloat(profileInfo.longitude)
             )} km`;
         }
     }
@@ -132,7 +127,7 @@ const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
                         <Carousel.Item key={index}>
                             <img
                                 src={photo}
-                                alt={`${profile.nickname}의 프로필`}
+                                alt={`${profileInfo.profile.nickname}의 프로필`}
                                 className="profile-image"
                                 onClick={() => handleImageClick(index)}
                             />
@@ -147,14 +142,14 @@ const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
                 )}
             </Carousel>
             <div className="profile-details">
-                <h3>{profile.nickname} <span>&nbsp;{calculateAge(profile.profile.birth)}세</span></h3>
+                <h3>{profileInfo.profile.nickname} <span>&nbsp;{calculateAge(profileInfo.profile.birth)}세</span></h3>
                 <div className="location-like">
                     <div>{distanceToDisplay}</div>
                 </div>
                 <div className='profileIntro-tag'>
-                    <div className="profileIntro">{profile.intro}</div>
+                    <div className="profileIntro">{profileInfo.profile.intro}</div>
                     <ul className="profile-tags">
-                        {profile.tags ? profile.tags.split(',').map(tag => (
+                        {profileInfo.profile.tags ? profileInfo.profile.tags.split('/').map(tag => (
                             <li key={tag.trim()}>{tag.trim()}</li>
                         )) : ""}
                         <li className="like-btn" onClick={handleLike}>
@@ -170,7 +165,7 @@ const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
                             <Carousel.Item key={index}>
                                 <img
                                     src={photo}
-                                    alt={`확대된 ${profile.nickname}의 프로필`}
+                                    alt={`확대된 ${profileInfo.profile.nickname}의 프로필`}
                                     className="d-block w-100"
                                 />
                             </Carousel.Item>
