@@ -39,24 +39,24 @@ const ChatPage = () => {
         }
     }, [token]);
 
-    useEffect(() => {
-        socket.current = io('http://localhost:8888'); // 서버 URL
+    // useEffect(() => {
+    //     socket.current = io('http://localhost:8888'); // 서버 URL
     
-        const handleReceiveMessage = (message) => {
-            console.log('Received message:', message);
-            dispatch(appendMessageToChat(message));
-            dispatch(updateLastMessageInChatRooms(message));
-        };
+    //     const handleReceiveMessage = (message) => {
+    //         console.log('Received message:', message);
+    //         dispatch(appendMessageToChat(message));
+    //         dispatch(updateLastMessageInChatRooms(message));
+    //     };
     
-        // 이벤트 핸들러 등록
-        socket.current.on('receiveMessage', handleReceiveMessage);
+    //     // 이벤트 핸들러 등록
+    //     socket.current.on('receiveMessage', handleReceiveMessage);
     
-        return () => {
-            // 컴포넌트 언마운트 시 핸들러 제거
-            socket.current.off('receiveMessage', handleReceiveMessage);
-            socket.current.disconnect();
-        };
-    }, [dispatch]);
+    //     return () => {
+    //         // 컴포넌트 언마운트 시 핸들러 제거
+    //         socket.current.off('receiveMessage', handleReceiveMessage);
+    //         socket.current.disconnect();
+    //     };
+    // }, [dispatch]);
 
     useEffect(() => {
         if (loggedInUserId) {
