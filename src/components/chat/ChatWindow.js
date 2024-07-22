@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { ArrowUpward as ArrowUpwardIcon } from '@mui/icons-material';
-import {jwtDecode} from 'jwt-decode'; 
+import { jwtDecode } from 'jwt-decode';
 import { AuthContext } from '../login/OAuth';
 
 const ChatWindow = ({
@@ -12,7 +12,6 @@ const ChatWindow = ({
     sendMessage,
     setMessageInput,
 }) => {
-
     const { token } = useContext(AuthContext);
     const [loggedInUserId, setLoggedInUserId] = useState(null);
 
@@ -27,27 +26,33 @@ const ChatWindow = ({
         }
     }, [token]);
 
-    // 메시지가 로그인한 사용자의 것인지 확인하는 함수
+    useEffect(() => {
+        scrollToBottom();
+    }, [selectedChat]);
+
+    const scrollToBottom = () => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        }
+    };
+
     const isSender = (senderId) => senderId === loggedInUserId;
 
-    // 상대방의 아이디를 반환하는 함수
     const getOtherUserId = () => {
         if (!selectedChat) return null;
         return selectedChat.member1 === loggedInUserId ? selectedChat.member2 : selectedChat.member1;
     };
 
-    // 프로필 이미지의 URL을 반환하는 함수
     const getProfileImageSrc = () => {
         if (!selectedChat) return '';
         const profileUserId = getOtherUserId();
         return `https://www.clarity-enhanced.net/wp-content/uploads/2020/06/profile-${profileUserId}.jpg`;
     };
 
-    const [otherUserId, setOtherUserId] = useState(getOtherUserId());
-
-    useEffect(() => {
-        setOtherUserId(getOtherUserId());
-    }, [selectedChat, loggedInUserId]);
+    const getDisplayName = () => {
+        if (!selectedChat) return 'Loading...';
+        return selectedChat.togetherId ? selectedChat.togetherId : getOtherUserId();
+    };
 
     return (
         <>
@@ -55,13 +60,15 @@ const ChatWindow = ({
                 <>
                     <div className="chat-top">
                         <div className="d-flex align-items-center">
-                            <img 
-                                src={getProfileImageSrc()} 
-                                alt={otherUserId ? `Profile of User ${otherUserId}` : 'Profile'}
-                                className="profile-img rounded-circle mr-3"
-                            />
+                            {!selectedChat.togetherId && (
+                                <img 
+                                    src={getProfileImageSrc()} 
+                                    alt={`Profile of User ${getOtherUserId()}`}
+                                    className="profile-img rounded-circle mr-3"
+                                />
+                            )}
                             <span className="chat-name">
-                                {otherUserId || 'Loading...'}
+                                {getDisplayName()}
                             </span>
                         </div>
                     </div>
@@ -82,7 +89,7 @@ const ChatWindow = ({
                             <input
                                 type="text"
                                 className="form-control flex-grow-1 chat-input"
-                                placeholder="Type a message..."
+                                placeholder="메시지를 입력하세요..."
                                 value={messageInput}
                                 onChange={(e) => setMessageInput(e.target.value)}
                                 onKeyPress={(e) => {

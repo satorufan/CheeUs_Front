@@ -6,11 +6,9 @@
   align-items: center;
   text-align: center;
   z-index: 1;
-  height: 75vh;
+  height: 70vh;
   overflow: hidden;
 }
-
-
 
 .cardContainer {
   width: 100%;
@@ -63,7 +61,7 @@
 .swipeButtons .close_button {
   color: #FF6B6B;
   position: fixed;
-  top : 60%;
+  top : 52%;
   left : 18%;
   border : solid 3px #FF6B6B;
   border-radius: 50px;
@@ -76,7 +74,7 @@
 .swipeButtons .favorite_button {
   color: #2d8636;
   position: fixed;
-  top : 60%;
+  top : 52%;
   right : 18%;
   border : solid 3px #2d8636;
   border-radius: 50px;
@@ -102,7 +100,7 @@
 
 .show-nope{
   position: fixed;
-  top : 50%;
+  top : 40%;
   left : 15%;
   font-family: 'Tokki';
   font-size : 50px;
@@ -111,7 +109,7 @@
 
 .show-like{
   position: fixed;
-  top : 50%;
+  top : 40%;
   right : 15%;
   font-family: 'Tokki';
   font-size : 50px;
