@@ -13,7 +13,7 @@ import { format } from 'date-fns';
 import swal from 'sweetalert';
 
 function PostModify() {
-  const { modifyPost, selectedPlace, posts } = usePosts();
+  const { modifyPost, selectedPlace, posts, setSelectedPlace } = usePosts();
   const { id } = useParams();
   const post = posts.find((post) => post.id === parseInt(id));
   const navigate = useNavigate();
@@ -27,12 +27,17 @@ function PostModify() {
       setTitle(post.title);
       setTime(post.time);
       setStartDate(new Date(post.time));
+      setSelectedPlace({
+        title: post.location,
+        address: post.address,
+        latitude: post.latitude,
+        longitude: post.longitude
+      });
       if (editorRef.current && editorRef.current.getInstance()) {
         editorRef.current.getInstance().setMarkdown(post.content);
       }
-      
     }
-  }, [post]);
+  }, [post, setSelectedPlace]);
 
   const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => {
     const formattedValue = format(startDate, '약속시간 : yyyy.MM.dd') + ' ' + format(startDate, 'HH:mm');
@@ -51,12 +56,14 @@ function PostModify() {
       title: "게시물이 수정되었습니다!",
       icon: "success",
     }).then(() => {
-      navigate(`/dtboard/post/${id}`, {replace: true});
+      navigate(`/dtboard/post/${id}`);
+      window.location.reload();
     });
   };
 
   const onExitHandler = () => {
     navigate('/dtboard');
+    window.location.reload();
   };
 
   const onChangeTitleHandler = (e) => {
@@ -115,7 +122,7 @@ function PostModify() {
           <ToastEditor ref={editorRef} />
         </div>
         <div className="mapContainer">
-          <InputMap />
+          <InputMap isEditing={true} />
         </div>
       </div>
       <div className="bottomContainer">
