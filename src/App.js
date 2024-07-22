@@ -34,7 +34,7 @@ import WriteEventBoard from './components/eventboard/WriteEventBoard';
 import EditEventBoard from './components/eventboard/EditEventBoard';
 import DetailShortForm from './components/shortform/DetailShortForm';
 import { AuthProvider } from './components/login/OAuth';
-//import scoket from './server';
+import scoket from './server';
 
 const ChatPage = lazy(() => import('./components/chat/ChatPage'));
 
