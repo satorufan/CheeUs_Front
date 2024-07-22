@@ -33,10 +33,12 @@ function DTBInputForm() {
     const content = editorRef.current.getInstance().getMarkdown(); // content를 getInstance().getMarkdown()으로 받아옴
     addPost(title, content, time);
     navigate('/dtboard'); // 게시글 작성 후 게시판으로 이동
+    window.location.reload();
   };
 
   const onExitHandler = () => {
     navigate('/dtboard');
+    window.location.reload();
   };
 
   const onChangeTitleHandler = (e) => {
@@ -96,7 +98,7 @@ function DTBInputForm() {
           <ToastEditor ref={editorRef} />
         </div>
         <div className="mapContainer">
-          <InputMap />
+          <InputMap isEditing={false} />
         </div>
       </div>
       <div className="bottomContainer">

@@ -26,33 +26,30 @@ export const PostProvider = ({ children }) => {
   };
 
   const addPost = (title, content, time) => {
-    const placeDescription = selectedPlace ? `${selectedPlace.title}` : '선택한 장소가 없습니다.';
-    const placeAddress = selectedPlace?.address || '';
     const newPost = {
       title,
-      location: placeDescription,
       content,
       time,
+      location: selectedPlace ? selectedPlace.title : '선택한 장소가 없습니다.',
+      address: selectedPlace?.address || '',
       latitude: selectedPlace?.latitude || null,
       longitude: selectedPlace?.longitude || null,
     };
     axios.post('http://localhost:8080/dtBoard/insert', newPost)
-        .then(() => {
-          setPosts([...posts, newPost]);
-        })
-        .catch(error => console.error(error));
+      .then(response => {
+        setPosts([...posts, { ...newPost, id: response.data.id }]); // 서버에서 반환된 id 사용
+      })
+      .catch(error => console.error(error));
   };
 
   const modifyPost = (id, title, content, time) => {
-    const placeDescription = selectedPlace ? `${selectedPlace.title}` : '선택한 장소가 없습니다.';
-    const placeAddress = selectedPlace?.address || '';
     const modifiedPost = {
       id,
       title,
-      location: placeDescription,
       content,
-      address: placeAddress,
       time,
+      location: selectedPlace ? selectedPlace.title : '선택한 장소가 없습니다.',
+      address: selectedPlace?.address || '',
       latitude: selectedPlace?.latitude || null,
       longitude: selectedPlace?.longitude || null,
     };
