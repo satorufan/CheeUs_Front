@@ -57,6 +57,7 @@ const TinderCards = () => {
   const swiped = (direction, profileId, index) => {
     const newShowMessages = [...showMessages];
     newShowMessages[index] = direction === 'right' ? 'LIKE' : 'NOPE';
+    setShowMessages(newShowMessages); // 상태 업데이트
     dispatch(updateConfirmedList(profileId));
     dispatch(decrementIndex());
     console.log(`Confirmedlist updated for profileId ${profileId}:`, shuffledProfiles[index].confirmedlist);
@@ -98,8 +99,6 @@ const TinderCards = () => {
       ) : (
         <>
           <div className='cardContainer'>
-            <div className="show-like">LIKE!</div>
-            <div className="show-nope">NOPE!</div>
             {shuffledProfiles.map((profile, index) => (
               <TinderCard
                 ref={childRefs[index]}
@@ -123,9 +122,11 @@ const TinderCards = () => {
           {canSwipe && (
             <div className='swipeButtons'>
               <IconButton onClick={handleSwipeLeft} disabled={!canSwipe}>
+                <div className="show-nope">Nope!</div>
                 <CloseIcon fontSize='large' className="close_button" />
               </IconButton>
               <IconButton onClick={handleSwipeRight} disabled={!canSwipe}>
+                <div className="show-like">Like!</div>
                 <FavoriteIcon fontSize='large' className="favorite_button" />
               </IconButton>
             </div>
