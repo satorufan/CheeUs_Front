@@ -7,7 +7,7 @@ import './profileCard.css';
 import noimage from "../images/noimage.jpg";
 import { AuthContext } from '../login/OAuth';
 
-const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
+const ProfileCard = ({ profile = {}, loggedInUserId, showLikeButton }) => {
     const dispatch = useDispatch();
     const userLocation = useSelector((state) => state.profile.userLocation);
     const likedProfiles = useSelector((state) => state.profile.likedProfiles);
@@ -51,6 +51,7 @@ const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
 
     // 나이 계산
     const calculateAge = (birth) => {
+        if (!birth) return '나이 알 수 없음';
         const birthDate = new Date(birth.slice(0, 4), birth.slice(4, 6) - 1, birth.slice(6, 8));
         const today = new Date();
         let age = today.getFullYear() - birthDate.getFullYear();
@@ -106,7 +107,7 @@ const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
 
     // 사진 배열 안전하게 초기화
     const photosToShow = profile.photos || [];
-    console.log(photosToShow);
+    //console.log(photosToShow);
 
     let distanceToDisplay = '거리 알 수 없음';
 
@@ -147,7 +148,7 @@ const ProfileCard = ({ profile, loggedInUserId, showLikeButton }) => {
                 )}
             </Carousel>
             <div className="profile-details">
-                <h3>{profile.nickname} <span>&nbsp;{calculateAge(profile.profile.birth)}세</span></h3>
+            <h3>{profile.nickname} <span>&nbsp;{calculateAge(profile.birth)}세</span></h3>
                 <div className="location-like">
                     <div>{distanceToDisplay}</div>
                 </div>
