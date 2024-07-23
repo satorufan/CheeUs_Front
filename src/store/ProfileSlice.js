@@ -19,7 +19,6 @@ export const fetchUserProfile = createAsyncThunk(
             const response = await axios.get(`${serverUrl}/profile`, {
                 params: { email: memberEmail }
             });
-            
             const imageBlob = [];
             for(let i=0 ; i < response.data.profile.photo ; i ++){
                 imageBlob.push("data:" + response.data.imageType[i]
@@ -27,7 +26,10 @@ export const fetchUserProfile = createAsyncThunk(
             }
 
             const profile = {
-                profile : response.data.profile,
+                profile : { 
+                    ...response.data.profile,
+                    popularity : response.data.popularity
+                },
                 imageBlob : imageBlob
             };
 
@@ -66,9 +68,7 @@ export const updateUserProfileThunk = createAsyncThunk(
             headers : {
                 'Content-Type': 'multipart/form-data'
             }
-        }).catch((err)=>{
-            console.log(err);
-        })
+        }).then((res)=>window.location.reload()).catch((err)=>{console.log(err)});
 
         const imageBlob = [];
             for(let i=0 ; i < response.data.profile.photo ; i ++){

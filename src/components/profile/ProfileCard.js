@@ -3,18 +3,27 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Carousel, Modal } from 'react-bootstrap';
 import { updateUserLocation, likeProfile, unlikeProfile } from '../../store/ProfileSlice';
 import './profileCard.css';
+import axios from 'axios';
+import { AuthContext } from '../login/OAuth';
 
 const ProfileCard = ({ profileInfo, loggedInUserId, showLikeButton }) => {
     const dispatch = useDispatch();
     const userLocation = useSelector((state) => state.profile.userLocation);
-    const likedProfiles = useSelector((state) => state.profile.likedProfiles);
 
+    const {serverUrl, memberEmail} = useContext(AuthContext);
     const [showModal, setShowModal] = useState(false);
     const [modalIndex, setModalIndex] = useState(0);
-    //const [likes, setLikes] = useState(profile.popularity);
-    const [liked, setLiked] = useState(false);
 
-    const isLiked = likedProfiles.includes(profileInfo.profile.email);
+    // 기존 Like
+    // const likedProfiles = useSelector((state) => state.profile.likedProfiles);
+    // const [liked, setLiked] = useState(false);
+    // const isLiked = likedProfiles.includes(profileInfo.profile.email);
+
+    // 새로 작성한 Like
+    const [likes, setLikes] = useState(profileInfo.profile.popularity);
+    const [isLiked, setIsLiked] = useState(likes.includes(memberEmail));
+    const [likeCnt, setLikeCnt] = useState(likes.length);
+    console.log(profileInfo);
 
     useEffect(() => {
         const getUserLocation = () => {
@@ -41,7 +50,7 @@ const ProfileCard = ({ profileInfo, loggedInUserId, showLikeButton }) => {
     useEffect(() => {
         const likedProfiles = JSON.parse(localStorage.getItem('likedProfiles')) || [];
         if (likedProfiles.includes(profileInfo.profile.email)) {
-            setLiked(true);
+            setIsLiked(true);
         }
     }, [profileInfo.email]);
 
@@ -90,15 +99,30 @@ const ProfileCard = ({ profileInfo, loggedInUserId, showLikeButton }) => {
         setShowModal(false);
     };
 
-    // 좋아요 버튼
+    // 좋아요 버튼 기존
+    // const handleLike = () => {
+    //     if (showLikeButton) {
+    //         if (isLiked) {
+    //             dispatch(unlikeProfile(profileInfo.profile.id));
+    //         } else {
+    //             dispatch(likeProfile(profileInfo.profile.id));
+    //         }
+    //     }
+    // };
+
+    // 좋아요 버튼 새 로직
     const handleLike = () => {
-        if (showLikeButton) {
-            if (isLiked) {
-                dispatch(unlikeProfile(profileInfo.profile.id));
-            } else {
-                dispatch(likeProfile(profileInfo.profile.id));
-            }
+        console.log("like!")
+        axios.post(serverUrl + "/profile/addLike", {
+            email : profileInfo.profile.email,
+            liker : memberEmail
+        });
+        if (isLiked) {
+            setLikeCnt(()=>likeCnt - 1);
+        } else {
+            setLikeCnt(()=>likeCnt + 1);
         }
+        setIsLiked(!isLiked);
     };
 
     // 사진 배열 안전하게 초기화
@@ -108,14 +132,15 @@ const ProfileCard = ({ profileInfo, loggedInUserId, showLikeButton }) => {
 
     // 사용자 위치가 있으면 거리 계산
     if (userLocation) {
+        console.log(userLocation);
         if (profileInfo.profile.email === loggedInUserId) {
             distanceToDisplay = '0 km';
         } else {
             distanceToDisplay = `${calculateStraightDistance(
                 userLocation.latitude,
                 userLocation.longitude,
-                parseFloat(profileInfo.latitude),
-                parseFloat(profileInfo.longitude)
+                parseFloat(profileInfo.profile.latitude),
+                parseFloat(profileInfo.profile.longitude)
             )} km`;
         }
     }
@@ -154,7 +179,7 @@ const ProfileCard = ({ profileInfo, loggedInUserId, showLikeButton }) => {
                             <li key={tag.trim()}>{tag.trim()}</li>
                         )) : ""}
                         <li className="like-btn" onClick={handleLike}>
-                            {isLiked ? '❤️' : '🤍'} {/*profile.popularity*/ 100}
+                            {isLiked ? '❤️' : '🤍'} {likeCnt}
                         </li>
                     </ul>
                 </div>

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import './main.css';
 import Carousel from 'react-bootstrap/Carousel';
 import Swal from 'sweetalert2';

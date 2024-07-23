@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import TinderCard from 'react-tinder-card';
 import ProfileCard from '../profile/ProfileCard';
@@ -24,21 +24,27 @@ const loggedInUserId = 1;
 const TinderCards = () => {
   const dispatch = useDispatch();
   const profiles = useSelector(selectProfiles);
+  const [profileCards, setCards] = useState([]);
   const shuffledProfiles = useSelector(selectShuffledProfiles);
   const currentIndex = useSelector(selectCurrentIndex);
   const [showMessages, setShowMessages] = React.useState([]);
+  const {memberEmail} = useContext(AuthContext);
 
   useEffect(() => {
-    console.log(profiles);
-    const filteredProfiles = profiles.filter(profile => 
-      profile.location_ok === 1 && 
-      profile.match_ok === 1 && 
-      !profile.confirmedlist.includes(loggedInUserId) && 
-      profile.id !== loggedInUserId
-    );
+    if (profiles.length > 0) {
+      const filteredProfiles = profiles.filter(profile =>
+        profile.profile.locationOk === true && 
+        profile.profile.matchOk === true && 
+        //!profile.confirmedlist.includes(loggedInUserId) && 
+        profile.profile.email !== memberEmail
+      );
+      console.log(filteredProfiles);
+      setCards([...filteredProfiles]);
 
-    const shuffled = shuffleArray(filteredProfiles);
-    dispatch(setShuffledProfiles(shuffled));
+      const shuffled = shuffleArray(filteredProfiles);
+      // dispatch(setShuffledProfiles(shuffled));
+      dispatch(setShuffledProfiles(shuffled));
+    }
   }, [dispatch, profiles]);
 
   const shuffleArray = (array) => {
@@ -103,17 +109,17 @@ const TinderCards = () => {
           <div className='cardContainer'>
             <div className="show-like">LIKE!</div>
             <div className="show-nope">NOPE!</div>
-            {shuffledProfiles.map((profile, index) => (
+            {profileCards.length > 0 ? profileCards.map((profile, index) => (
               <TinderCard
                 ref={childRefs[index]}
                 className='swipe'
-                key={profile.id}
-                onSwipe={(dir) => swiped(dir, profile.id, index)}
-                onCardLeftScreen={() => outOfFrame(profile.id, index)}
+                key={profile.profile.email}
+                onSwipe={(dir) => swiped(dir, profile.profile.email, index)}
+                onCardLeftScreen={() => outOfFrame(profile.profile.email, index)}
                 preventSwipe={['up', 'down']}
               >
                 <div className="card">
-                  <ProfileCard profile={profile} />
+                  <ProfileCard profileInfo={profile} />
                   {showMessages[index] && (
                     <div className={`infoText ${showMessages[index] === 'LIKE' ? 'like' : 'nope'}`}>
                       {showMessages[index]}
@@ -121,7 +127,7 @@ const TinderCards = () => {
                   )}
                 </div>
               </TinderCard>
-            ))}
+            )) : <></>}
           </div>
           {canSwipe && (
             <div className='swipeButtons'>

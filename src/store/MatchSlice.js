@@ -11,7 +11,7 @@ const initialState = {
     userProfile: null,
     locationOk: null,
     matchServiceAgreed: false,
-    profiles: null,
+    profiles: [],
     status: 'idle',
     error: null,
     shuffledProfiles: [],
@@ -26,20 +26,27 @@ export const fetchUserProfiles = createAsyncThunk(
         
         // 타 멤버 프로필 불러오기
         const response = await axios.get(`${serverUrl}/match`);
-        console.log(response);
+
+        const profiles = [];
         
-        const imageBlob = [];
-        for(let i=0 ; i < response.data.profile.photo ; i ++){
-            imageBlob.push("data:" + response.data.imageType[i]
-                + ";base64," + response.data.imageBlob[i] );
-        }
+        response.data.map((data)=>{
+            const imageBlob = [];
 
-        const profile = {
-            profile : response.data.profile,
-            imageBlob : imageBlob
-        };
+            for(let i=0 ; i < data.profile.photo ; i ++){
+                imageBlob.push("data:" + data.imageType[i]
+                    + ";base64," + data.imageBlob[i] );
+            }
 
-        return profile; // 프로필 데이터 반환
+            profiles.push({
+                profile : {
+                    ...data.profile,
+                    popularity : data.popularity
+                },
+                imageBlob : imageBlob
+            })
+        })
+
+        return profiles; // 프로필 데이터 반환
     }
 );
 
@@ -65,7 +72,7 @@ export const updateMatchServiceAgreement = createAsyncThunk(
     }
 );
 
-const matchSlice = createSlice({
+const MatchSlice = createSlice({
     name: 'match',
     initialState,
     reducers: {
@@ -120,14 +127,13 @@ const matchSlice = createSlice({
             })
             .addCase(fetchUserProfiles.fulfilled, (state, action) => {
                 state.profiles = action.payload;
+            })
+            .addCase(fetchUserProfiles.rejected, (state, action) => {
+                state.error = action.error.message;
             });
     },
 });
 
-export const selectProfiles = (state) => state.match.profiles;
-export const selectShuffledProfiles = (state) => state.match.shuffledProfiles;
-export const selectCurrentIndex = (state) => state.match.currentIndex;
-export const selectShowMessages = (state) => state.match.showMessages;
 
 export const {
     setUserLocation,
@@ -138,11 +144,16 @@ export const {
     decrementIndex,
     resetIndex,
     updateConfirmedList,
-} = matchSlice.actions;
+} = MatchSlice.actions;
+
+export const selectProfiles = (state) => state.match.profiles;
+export const selectShuffledProfiles = (state) => state.match.shuffledProfiles;
+export const selectCurrentIndex = (state) => state.match.currentIndex;
+export const selectShowMessages = (state) => state.match.showMessages;
 
 export const selectUserLocation = (state) => state.match.userLocation;
 export const selectLocationOk = (state) => state.match.locationOk;
 export const selectMatchServiceAgreed = (state) => state.match.matchServiceAgreed;
 export const selectUserProfile = (state) => state.match.userProfile;
 
-export default matchSlice.reducer;
+export default MatchSlice.reducer;

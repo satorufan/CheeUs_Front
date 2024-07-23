@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchUserProfile, selectProfileStatus, selectUserProfile } from '../../store/ProfileSlice';
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
+import { fetchUserProfiles, selectProfiles } from '../../store/MatchSlice';
 
 function Header() {
     const [isUnread, setIsUnread] = useState(true); // 채팅 읽지 않은 상태
@@ -20,6 +21,7 @@ function Header() {
     const [isNavExpanded, setIsNavExpanded] = useState(false); // Navbar 확장 상태 확인
 
     const userProfile = useSelector(selectUserProfile); // Redux에서 사용자 프로필 가져오기
+    const profiles = useSelector(selectProfiles);
     const profileStatus = useSelector(selectProfileStatus);
     const dispatch = useDispatch();
 
@@ -27,6 +29,7 @@ function Header() {
         if (token) {
             const memberEmail = jwtDecode(token).email;
             dispatch(fetchUserProfile({ serverUrl, memberEmail }));
+            dispatch(fetchUserProfiles({serverUrl}));
         }
     }, [token, dispatch, serverUrl]);
 

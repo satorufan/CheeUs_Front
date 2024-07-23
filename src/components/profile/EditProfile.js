@@ -80,7 +80,6 @@ const EditProfile = ({ onClose = () => {} }) => {
             if (tags) tags.map((tag, index)=>{
             tagsString += index == tags.length-1 ? tag : tag + "/";
             });
-            console.log(tagsString);
 
             const updateUserProfileInfo = {
                 birth : profile.profile.birth,
@@ -108,9 +107,8 @@ const EditProfile = ({ onClose = () => {} }) => {
             dispatch(updateUserProfileThunk({serverUrl, updateUserProfile}));
             onClose();
             console.log("저장된 프로필:", updateUserProfile);
-            navigate('/mypage'); 
-            setOpenConfirmModal(false); 
-            window.location.reload();
+            navigate('/mypage');
+            setOpenConfirmModal(false);
         }
     };
 
