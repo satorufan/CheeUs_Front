@@ -108,13 +108,9 @@ const TinderCards = () => {
       ) : (
         <>
           <div className='cardContainer'>
-<<<<<<< HEAD
             <div className="show-like">LIKE!</div>
             <div className="show-nope">NOPE!</div>
             {profileCards.length > 0 ? profileCards.map((profile, index) => (
-=======
-            {shuffledProfiles.map((profile, index) => (
->>>>>>> c7546cbd2cdb0f37b3a56b98807fd335ce888f34
               <TinderCard
                 ref={childRefs[index]}
                 className='swipe'
