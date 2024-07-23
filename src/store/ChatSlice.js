@@ -5,6 +5,7 @@ import axios from 'axios';
 const initialState = {
     selectedChat: null,
     chatRooms: [],
+    togetherChatRooms: [],
     messageInput: '',
     showMessageInput: false,
     activeKey: 'one',
@@ -12,26 +13,57 @@ const initialState = {
     error: null
 };
 
-// 채팅방을 가져오는 비동기 Thunk
+// 1:1 채팅방을 가져오는 비동기 Thunk
 export const fetchChatRooms = createAsyncThunk(
     'chat/fetchChatRooms',
     async (userId) => {
-        const response = await axios.get('http://localhost:8889/api/chatRooms');
-        const chatRooms = response.data.filter(room => room.member1 === userId || room.member2 === userId);
-        
-        const chatRoomsWithMessages = await Promise.all(chatRooms.map(async (room) => {
-            const messagesResponse = await axios.get(`http://localhost:8889/api/messages/${room.roomId}`);
-            const lastMessage = messagesResponse.data[messagesResponse.data.length - 1];
-            return {
-                ...room,
-                lastMessage: lastMessage ? {
-                    ...lastMessage,
-                    write_day: new Date(lastMessage.write_day)
-                } : null
-            };
-        }));
+        try {
+            const response = await axios.get('http://localhost:8889/api/chatRooms');
+            const chatRooms = response.data.filter(room => room.member1 === userId || room.member2 === userId);
 
-        return chatRoomsWithMessages;
+            const chatRoomsWithMessages = await Promise.all(chatRooms.map(async (room) => {
+                const messagesResponse = await axios.get(`http://localhost:8889/api/messages/${room.roomId}`);
+                const lastMessage = messagesResponse.data[messagesResponse.data.length - 1];
+                return {
+                    ...room,
+                    lastMessage: lastMessage ? {
+                        ...lastMessage,
+                        write_day: new Date(lastMessage.write_day)
+                    } : null
+                };
+            }));
+
+            return chatRoomsWithMessages;
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
+);
+
+// 단체 채팅방을 가져오는 비동기 Thunk
+export const fetchTogetherChatRooms = createAsyncThunk(
+    'together/fetchChatRooms',
+    async () => {
+        try {
+            const response = await axios.get('http://localhost:8889/api/togetherChatRooms');
+            const chatRooms = response.data;
+
+            const chatRoomsWithMessages = await Promise.all(chatRooms.map(async (room) => {
+                const messagesResponse = await axios.get(`http://localhost:8889/api/togetherMessages/${room.together_id}`);
+                const lastMessage = messagesResponse.data[messagesResponse.data.length - 1];
+                return {
+                    ...room,
+                    lastMessage: lastMessage ? {
+                        ...lastMessage,
+                        write_day: new Date(lastMessage.write_day) // write_day를 Date 객체로 변환
+                    } : null
+                };
+            }));
+
+            return chatRoomsWithMessages;
+        } catch (error) {
+            throw new Error(error.message);
+        }
     }
 );
 
@@ -43,7 +75,7 @@ const chatSlice = createSlice({
             const chatData = action.payload;
             chatData.messages = chatData.messages.map(message => ({
                 ...message,
-                write_day: message.write_day
+                write_day: new Date(message.write_day)
             }));
             state.selectedChat = chatData;
         },
@@ -62,13 +94,16 @@ const chatSlice = createSlice({
             }
         },
         updateLastMessageInChatRooms(state, action) {
-            const roomIndex = state.chatRooms.findIndex(room => room.roomId === state.selectedChat.roomId);
-            if (roomIndex !== -1) {
-                state.chatRooms[roomIndex] = {
-                    ...state.chatRooms[roomIndex],
-                    lastMessage: action.payload
-                };
-            }
+            const { roomId, message } = action.payload;
+            state.chatRooms = state.chatRooms.map(room => 
+                room.roomId === roomId ? { ...room, lastMessage: message } : room
+            );
+        },
+        updateLastMessageInTogetherChatRooms(state, action) {
+            const { roomId, message } = action.payload;
+            state.togetherChatRooms = state.togetherChatRooms.map(room => 
+                room.roomId === roomId ? { ...room, lastMessage: message } : room
+            );
         }
     },
     extraReducers: (builder) => {
@@ -83,10 +118,29 @@ const chatSlice = createSlice({
             .addCase(fetchChatRooms.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.error.message;
+            })
+            .addCase(fetchTogetherChatRooms.pending, (state) => {
+                state.status = 'loading';
+            })
+            .addCase(fetchTogetherChatRooms.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                state.togetherChatRooms = action.payload;
+            })
+            .addCase(fetchTogetherChatRooms.rejected, (state, action) => {
+                state.status = 'failed';
+                state.error = action.error.message;
             });
     }
 });
 
-export const { setSelectedChat, setMessageInput, setShowMessageInput, setActiveKey, appendMessageToChat, updateLastMessageInChatRooms } = chatSlice.actions;
+export const { 
+    setSelectedChat, 
+    setMessageInput, 
+    setShowMessageInput, 
+    setActiveKey, 
+    appendMessageToChat, 
+    updateLastMessageInChatRooms, 
+    updateLastMessageInTogetherChatRooms 
+} = chatSlice.actions;
 
 export default chatSlice.reducer;
