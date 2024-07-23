@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { ArrowUpward as ArrowUpwardIcon } from '@mui/icons-material';
-import { jwtDecode } from 'jwt-decode';
+import React, { useEffect, useContext, useState } from 'react';
 import { AuthContext } from '../login/OAuth';
+import { jwtDecode } from 'jwt-decode';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import './chatPage.css';
 
 const ChatWindow = ({
     selectedChat,
@@ -11,6 +12,7 @@ const ChatWindow = ({
     scrollRef,
     sendMessage,
     setMessageInput,
+    activeKey
 }) => {
     const { token } = useContext(AuthContext);
     const [loggedInUserId, setLoggedInUserId] = useState(null);
@@ -27,7 +29,9 @@ const ChatWindow = ({
     }, [token]);
 
     useEffect(() => {
-        scrollToBottom();
+        if (selectedChat) {
+            scrollToBottom();
+        }
     }, [selectedChat]);
 
     const scrollToBottom = () => {
@@ -53,37 +57,52 @@ const ChatWindow = ({
         return selectedChat.togetherId ? selectedChat.togetherId : getOtherUserId();
     };
 
+    const getDefaultMessage = () => {
+        if (activeKey === 'one') {
+            return selectedChat ? '스와이프가 통하면 둘이 한 잔 해요!' : '채팅방을 선택하세요.';
+        } else {
+            return '여럿이 먹는 술이 더 꿀맛!';
+        }
+    };
+
+    const renderProfileImage = () => {
+        if (selectedChat && !selectedChat.togetherId && activeKey === 'one') {
+            return (
+                <img 
+                    src={getProfileImageSrc()} 
+                    alt={`Profile of User ${getOtherUserId()}`}
+                    className="profile-img rounded-circle mr-3"
+                />
+            );
+        }
+        return null;
+    };
+
     return (
         <>
-            {selectedChat ? (
+            {selectedChat || activeKey === 'together' ? (
                 <>
                     <div className="chat-top">
                         <div className="d-flex align-items-center">
-                            {!selectedChat.togetherId && (
-                                <img 
-                                    src={getProfileImageSrc()} 
-                                    alt={`Profile of User ${getOtherUserId()}`}
-                                    className="profile-img rounded-circle mr-3"
-                                />
-                            )}
+                            {renderProfileImage()}
                             <span className="chat-name">
                                 {getDisplayName()}
                             </span>
                         </div>
                     </div>
-                    <div className="chat active-chat" data-chat={`person${selectedChat.roomId}`}>
-                        {selectedChat.messages && selectedChat.messages.length > 0 ? (
+                    <div className="chat active-chat" data-chat={`person${selectedChat ? selectedChat.roomId : ''}`}>
+                        {selectedChat && selectedChat.messages && selectedChat.messages.length > 0 ? (
                             selectedChat.messages.map((message, index) => (
                                 <div
                                     key={index}
-                                    className={`chat-bubble ${isSender(message.sender_id) ? 'me' : 'you'}`}
+                                    className={`chat-bubble ${isSender(message.senderId) ? 'me' : 'you'}`}
                                 >
                                     <div>{message.message}</div>
                                     <span className="chat-time">{formatMessageTime(message.write_day)}</span>
                                 </div>
                             ))
                         ) : (
-                            <div className="no-messages">채팅방을 선택하세요</div>
+                            <div className="no-messages">{getDefaultMessage()}</div>
                         )}
                         <div ref={scrollRef}></div>
                     </div>
@@ -108,7 +127,7 @@ const ChatWindow = ({
                     )}
                 </>
             ) : (
-                <div>채팅방을 선택하세요.</div>
+                <div>{getDefaultMessage()}</div>
             )}
         </>
     );

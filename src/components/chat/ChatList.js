@@ -2,34 +2,49 @@ import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { Search } from '@mui/icons-material';
 import { jwtDecode } from 'jwt-decode';
 import { AuthContext } from '../login/OAuth';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchChatRooms, fetchTogetherChatRooms } from '../../store/ChatSlice';
 
-const ChatList = ({ chatRooms, selectedChat, handlePersonClick, isTogether }) => {
+const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
     const { token } = useContext(AuthContext);
     const [loggedInUserId, setLoggedInUserId] = useState(null);
+    const dispatch = useDispatch();
     const updatedChatRooms = useSelector(state => state.chat.chatRooms);
     const updatedTogetherChatRooms = useSelector(state => state.chat.togetherChatRooms);
+    const status = useSelector(state => state.chat.status);
+    const error = useSelector(state => state.chat.error);
 
     useEffect(() => {
         if (token) {
             try {
                 const decodedToken = jwtDecode(token);
                 setLoggedInUserId(decodedToken.email);
-            } catch (error) {
-                console.error('Token decoding error:', error);
+                dispatch(fetchChatRooms(decodedToken.email)).catch(err => {
+                    console.error('Failed to fetch chat rooms:', err);
+                });
+                dispatch(fetchTogetherChatRooms()).catch(err => {
+                    console.error('Failed to fetch together chat rooms:', err);
+                });
+            } catch (err) {
+                console.error('Token decoding error:', err);
             }
         }
-    }, [token]);
+    }, [token, dispatch]);
+
+    useEffect(() => {
+        console.log('업데이트된 1:1 채팅방:', updatedChatRooms);
+        console.log('업데이트된 단체 채팅방:', updatedTogetherChatRooms);
+    }, [updatedChatRooms, updatedTogetherChatRooms]);
 
     const getProfileImage = useCallback((memberId) => {
-        return `https://www.clarity-enhanced.net/wp-content/uploads/2020/06/profile-${memberId}.jpg`;
+        return `https://www.example.com/profiles/${memberId}.jpg`;
     }, []);
 
     const formatDate = (dateString) => {
-        if (!dateString) return '메시지 없음'; // 메시지 데이터가 없는 경우
+        if (!dateString) return '메시지가 없습니다'; 
 
         const date = new Date(dateString);
-        if (isNaN(date.getTime())) return '유효하지 않은 날짜'; // 유효하지 않은 날짜
+        if (isNaN(date.getTime())) return '잘못된 날짜';
 
         const now = new Date();
         const diff = now - date;
@@ -44,8 +59,7 @@ const ChatList = ({ chatRooms, selectedChat, handlePersonClick, isTogether }) =>
     };
 
     const getLastMessage = (room) => {
-        const lastMessage = room.lastMessage || { message: '메시지 없음', write_day: new Date().toISOString() };
-        return lastMessage;
+        return room.lastMessage || { message: '메시지가 없습니다', write_day: new Date().toISOString() };
     };
 
     const isUserInChat = (room) => {
@@ -55,6 +69,14 @@ const ChatList = ({ chatRooms, selectedChat, handlePersonClick, isTogether }) =>
 
     const currentChatRooms = isTogether ? updatedTogetherChatRooms : updatedChatRooms;
 
+    if (status === 'loading') {
+        return <div>로딩 중...</div>;
+    }
+
+    if (status === 'failed') {
+        return <div>오류 발생: {error}</div>;
+    }
+
     return (
         <>
             <div className="chat-top d-flex align-items-center">
@@ -62,38 +84,42 @@ const ChatList = ({ chatRooms, selectedChat, handlePersonClick, isTogether }) =>
                 <Search className="search-icon ml-2" />
             </div>
             <ul className="chat-people list-unstyled">
-                {currentChatRooms.length > 0 ? currentChatRooms.filter(isUserInChat).map(room => {
-                    const lastMessage = getLastMessage(room);
-                    return (
-                        <li
-                            key={room.roomId}
-                            className={`chat-person ${selectedChat && selectedChat.roomId === room.roomId ? 'chat-active' : ''}`}
-                            onClick={() => handlePersonClick(room.roomId)}
-                        >
-                            <div className="d-flex align-items-center justify-content-between">
-                                <div className="d-flex align-items-center">
-                                    {!isTogether && (
-                                        <img
-                                            src={getProfileImage(room.member1)}
-                                            alt={`${room.member1}의 프로필`}
-                                            className="rounded-circle mr-3"
-                                            style={{ width: '40px', height: '40px' }}
-                                        />
-                                    )}
-                                    <span className="chat-name">
-                                        {isTogether ? `${room.togetherId}` : (room.member1 !== loggedInUserId ? room.member1 : room.member2)}
+                {currentChatRooms && currentChatRooms.length > 0 ? (
+                    currentChatRooms.filter(isUserInChat).map(room => {
+                        const lastMessage = getLastMessage(room);
+                        return (
+                            <li
+                                key={room.roomId}
+                                className={`chat-person ${selectedChat && selectedChat.roomId === room.roomId ? 'chat-active' : ''}`}
+                                onClick={() => handlePersonClick(room.roomId)}
+                            >
+                                <div className="d-flex align-items-center justify-content-between">
+                                    <div className="d-flex align-items-center">
+                                        {!isTogether && (
+                                            <img
+                                                src={getProfileImage(room.member1)}
+                                                alt={`${room.member1}의 프로필`}
+                                                className="rounded-circle mr-3"
+                                                style={{ width: '40px', height: '40px' }}
+                                            />
+                                        )}
+                                        <span className="chat-name">
+                                            {isTogether ? `${room.togetherId}` : (room.member1 !== loggedInUserId ? room.member1 : room.member2)}
+                                        </span>
+                                    </div>
+                                    <span className="chat-time">
+                                        {formatDate(lastMessage.write_day)}
                                     </span>
                                 </div>
-                                <span className="chat-time">
-                                    {formatDate(lastMessage.write_day)}
-                                </span>
-                            </div>
-                            <p className="chat-preview mt-1">
-                                {lastMessage.message}
-                            </p>
-                        </li>
-                    );
-                }) : <li className="no-messages">채팅이 없습니다</li>}
+                                <p className="chat-preview mt-1">
+                                    {lastMessage.message}
+                                </p>
+                            </li>
+                        );
+                    })
+                ) : (
+                    <li className="no-messages">채팅이 없습니다</li>
+                )}
             </ul>
         </>
     );
