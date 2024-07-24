@@ -103,7 +103,7 @@ const ChatWindow = ({
                             selectedChat.messages.map((message, index) => (
                                 <div
                                     key={index}
-                                    className={`chat-bubble ${isSender(message.senderd) ? 'me' : 'you'}`}
+                                    className={`chat-bubble ${isSender(message.sender_id) ? 'me' : 'you'}`}
                                 >
                                     <div>{message.message}</div>
                                     <span className="chat-time">{formatMessageTime(message.write_day)}</span>
