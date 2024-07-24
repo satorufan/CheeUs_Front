@@ -11,9 +11,7 @@ const Login = () => {
 	const {serverUrl, requestSignOut} = useContext(AuthContext);
 	
 	const loginBtn = (registrationId) => {
-		alert(registrationId);
 		requestSignOut();
-		console.log("로그인");
 		window.location.href = `${serverUrl}/oauth2/authorization/${registrationId}`;
 	}
 
