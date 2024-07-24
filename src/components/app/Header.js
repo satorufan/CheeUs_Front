@@ -51,8 +51,24 @@ function Header() {
      window.location.reload();
    };
 
-   const springSecurity = () => {
-    axios.get(serverUrl + "/member/signIn", {params : {email : jwtDecode(token).email}})
+   const springSecurity = async() => {
+    await axios.post(serverUrl + "/member/signIn", {
+        params : {
+            email : jwtDecode(token).email
+        }
+    }, {
+        headers : {
+            "Authorization" : `Bearer ${token}`
+        },
+        withCredentials : true
+    })
+    .then((res)=>{
+        console.log(res);
+        console.log(jwtDecode(token).email);
+    })
+    .catch((err)=>console.log(err));
+    // axios.get(serverUrl + "/oauth2/authorization/google").then((res)=>{console.log(res)}).catch((err)=>console.log(err));
+    // axios.get(serverUrl + "/signIn").then((res)=>{console.log(res)}).catch((err)=>console.log(err));
    }
 
     const isLoggedIn = userProfile !== null;

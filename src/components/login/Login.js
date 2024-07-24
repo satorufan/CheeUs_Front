@@ -8,12 +8,13 @@ import './Login.css';
 
 const Login = () => {
 
-	const {requestSignOut} = useContext(AuthContext);
+	const {serverUrl, requestSignOut} = useContext(AuthContext);
 	
-	const loginBtn = () => {
+	const loginBtn = (registrationId) => {
+		alert(registrationId);
 		requestSignOut();
 		console.log("로그인");
-		window.location.href = "http://localhost:8080/signIn";
+		window.location.href = `${serverUrl}/oauth2/authorization/${registrationId}`;
 	}
 
 	return (
@@ -21,17 +22,17 @@ const Login = () => {
 			<div className='login-box'>
 				<h2>CHEEUS 회원가입</h2>
 				<div>소셜 로그인으로 간편하게 가입할 수 있습니다.<br/><br/></div>
-					<a  href = {KAKAO_AUTH_URL} className = 'logo'>
-						<img src = {kakaoLoginImage} alt = "카카오계정 로그인"/>
+					<a  style={{cursor : 'pointer'}}	className = 'logo'>
+						<img src = {kakaoLoginImage} alt = "카카오계정 로그인" onClick={()=>loginBtn("kakao")} />
 					</a><br/>
 					{/* <a  href = {GOOGLE_AUTH_URL} className = 'logo'>
 						<img src = {googleLoginImage} alt = "구글계정 로그인" />
 					</a><br/> */}
 					<a  style={{cursor : 'pointer'}}	className = 'logo'>
-						<img src = {googleLoginImage} alt = "구글계정 로그인" onClick={loginBtn} />
+						<img src = {googleLoginImage} alt = "구글계정 로그인" onClick={()=>loginBtn("google")} />
 					</a><br/>
-					<a  href = {NAVER_AUTH_URL} className='logo'>
-						<img src = {naverLoginImage} alt = "구글계정 로그인" />
+					<a  style={{cursor : 'pointer'}}	className='logo'>
+						<img src = {naverLoginImage} alt = "네이버 계정 로그인" onClick={()=>loginBtn("naver")} />
 					</a><br/><br/>
 				<div>
 					<hr className="divider" />
