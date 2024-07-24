@@ -14,6 +14,7 @@ import { fetchUserProfile, selectProfileStatus, selectUserProfile } from '../../
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 import { fetchUserProfiles, selectProfiles } from '../../store/MatchSlice';
+import axios from 'axios';
 
 function Header() {
     const [isUnread, setIsUnread] = useState(true); // 채팅 읽지 않은 상태
@@ -29,7 +30,6 @@ function Header() {
         if (token) {
             const memberEmail = jwtDecode(token).email;
             dispatch(fetchUserProfile({ serverUrl, memberEmail }));
-            dispatch(fetchUserProfiles({serverUrl}));
         }
     }, [token, dispatch, serverUrl]);
 
@@ -51,10 +51,15 @@ function Header() {
      window.location.reload();
    };
 
+   const springSecurity = () => {
+    axios.get(serverUrl + "/member/signIn", {params : {email : jwtDecode(token).email}})
+   }
+
     const isLoggedIn = userProfile !== null;
 
     return (
         <div className="header-container">
+            <button onClick={springSecurity}>스프링시큐리티 테스트 버튼</button>
             <Navbar bg="#f2d420" expand="lg" style={{ backgroundColor: 'white' }} expanded={isNavExpanded}>
                 <Container fluid className="header-box">
                     <Navbar.Brand href="/main" className="header-logo">
