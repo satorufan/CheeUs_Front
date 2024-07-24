@@ -37,6 +37,10 @@ import { AuthProvider } from './components/login/OAuth';
 //import scoket from './server';
 import AdminDashboard from './admin';
 import Magazine from './components/magazine/Magazine';
+import PopUp from './components/magazine/PopUp';
+import Recipe from './components/magazine/Recipe';
+import Tmi from './components/magazine/Tmi';
+import Recomend from './components/magazine/Recomend';
 
 const ChatPage = lazy(() => import('./components/chat/ChatPage'));
 
@@ -80,6 +84,10 @@ function App() {
               <Route path="/input" element={<InputFrom />} />
               <Route path="/admin/*" element={<AdminDashboard />} />
               <Route path="/magazine" element={<Magazine/>} />
+              <Route path="/magazine/popup" element={<PopUp/>} />              
+              <Route path="/magazine/recipe" element={<Recipe/>} />              
+              <Route path="/magazine/tmi" element={<Tmi/>} />              
+              <Route path="/magazine/Recomend" element={<Recomend/>} />              
               <Route path="*" element={<div>404</div>} />
             </Routes>
             </Suspense>

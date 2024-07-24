@@ -7,7 +7,7 @@ import './Magazine.css';
 
 const Magazine = () =>{
   return (
-    <div className="board-pagelist-container">
+    <div className="magazine-pagelist-container">
       <MagazineTop/>
       <MagazineCategory />
     </div>

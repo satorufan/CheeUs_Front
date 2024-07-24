@@ -1,4 +1,4 @@
-.board-category-container {
+.magazine-category-container {
     display: flex;
     font-family: 'GwangyangTouching';
     justify-content: center;
@@ -8,10 +8,10 @@
     margin-bottom: 50px;
 }
 
-.board-page-card {
+.magazine-page-card {
     box-shadow: 0px 10px 15px -3px rgba(0, 0, 0, 0.1);
     cursor: pointer;
-    height: 20rem;
+    height: 30rem;
     width: 10rem;
     border-radius: 2rem;
     margin: 10px;
@@ -23,7 +23,7 @@
     transition: transform 0.3s ease, box-shadow 0.3s ease
 }
 
-.board-page-card.active {
+.magazine-page-card.active {
     width: 40rem;
     transform: scale(1.02);
     transform: margin(1);
@@ -31,7 +31,7 @@
     box-shadow: 0px 20px 30px -6px rgba(0, 0, 0, 0.3);
 }
 
-.board-page-content {
+.magazine-page-content {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
@@ -40,11 +40,11 @@
     transition: all var(--animation-time) linear;
 }
 
-.board-page-card.active .board-page-content {
+.magazine-page-card.active .magazine-page-content {
     transform: scale(1);
 }
 
-.board-page-detail {
+.magazine-page-detail {
     margin-top: 0.75rem;
     height : 30%;
     margin-left: 2rem;
@@ -53,21 +53,21 @@
     opacity: 0;
 }
 
-.board-page-card.active .board-page-detail {
+.magazine-page-card.active .magazine-page-detail {
     opacity: 1;
     margin-left: 0;
     background-color: rgba(11, 11, 11, 0.5);
     padding-top:3%;
 }
 
-.board-page-card.active .board-page-detail .board-page-title,
-.board-page-card.active .board-page-detail .board-page-title-content {
+.magazine-page-card.active .magazine-page-detail .magazine-page-title,
+.magazine-page-card.active .magazine-page-detail .magazine-page-title-content {
     margin-left: 1.5rem;
 
 }
 
 
-.board-page-bg {
+.magazine-page-bg {
     height: 20rem;
     width: 4rem;
     box-shadow: inset 0px -20px 100px 10px rgba(0, 0, 0, 0.7);
@@ -79,7 +79,7 @@
     transition: all var(--animation-time) linear;
 }
 
-.board-page-card.active .board-page-bg {
+.magazine-page-card.active .magazine-page-bg {
     width: 30rem;
     transform: scale(1);
 }

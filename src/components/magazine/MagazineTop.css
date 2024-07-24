@@ -1,5 +1,5 @@
 
-.board-page-top {
+.magazine-page-top {
     background-color: black;
     width: 100vw;
     height: 50px;
@@ -12,14 +12,14 @@
     position: relative;
 }
 
-.board-top {
+.magazine-top {
     display: flex;
     align-items: center;
     position: absolute; 
     right: 20px; 
 }
 
-.board-search {
+.magazine-search {
     padding: 5px;
     font-size: 14px;
     flex: 1;
@@ -31,7 +31,7 @@
     font-weight: 400;
 }
 
-.board-search-icon {
+.magazine-search-icon {
     font-size: 20px;
     color: white;
     margin-left: 8px;
