@@ -36,6 +36,7 @@ import DetailShortForm from './components/shortform/DetailShortForm';
 import { AuthProvider } from './components/login/OAuth';
 //import scoket from './server';
 import AdminDashboard from './admin';
+import Magazine from './components/magazine/Magazine';
 
 const ChatPage = lazy(() => import('./components/chat/ChatPage'));
 
@@ -78,6 +79,7 @@ function App() {
               <Route path="/chatpage" element={<ChatPage />} />
               <Route path="/input" element={<InputFrom />} />
               <Route path="/admin/*" element={<AdminDashboard />} />
+              <Route path="/magazine" element={<Magazine/>} />
               <Route path="*" element={<div>404</div>} />
             </Routes>
             </Suspense>

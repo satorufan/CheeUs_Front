@@ -1,29 +1,35 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ArrowOutwardIcon from '@mui/icons-material/ArrowOutward';
-import "./boardCategory.css";
+import "./MagazineCategory.css";
 
-function BoardCategory() {
+function MagazineCategory() {
     const [activeIndex, setActiveIndex] = useState(0);
     const navigate = useNavigate();
 
     const cards = [
         {
-            bgImage: "/images/community.jpg",
-            title: "자유게시판",
-            description: "열린 대화의 장!",
+            bgImage: "/images/popup.jpg",
+            title: "이달의 POP-UP",
+            description: "이번달에 열리는 술 POP-UP을 소개합니다.",
             path: "/board/freeboard"
         },
         {
-            bgImage: "/images/shortform.jpg",
-            title: "숏폼 게시판",
-            description: "숏폼으로 전하는 알코올 팁!",
+            bgImage: "/images/tmi.jpg",
+            title: "술 TMI",
+            description: " 이 술에는 말이야.. 전해져오는 이야기가 있지..",
             path: "/board/shortform"
         },
         {
-            bgImage: "/images/event.jpg",
-            title: "이벤트 게시판",
-            description: "어떤 이벤트가 기다리고 있을까?",
+            bgImage: "/images/recipe.jpg",
+            title: "섞어섞어 Recipe",
+            description: "섞고~ 섞고~ 돌리고! 섞고~",
+            path: "/board/eventboard"
+        },
+        {
+            bgImage: "/images/recomend.jpg",
+            title: "이주의 술집추천",
+            description: "이주의 핫한 술집은 어딜까?",
             path: "/board/eventboard"
         },
     ];
@@ -57,4 +63,4 @@ function BoardCategory() {
     );
 }
 
-export default BoardCategory;
+export default MagazineCategory;
