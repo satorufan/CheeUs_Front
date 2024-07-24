@@ -48,18 +48,27 @@ const ChatPage = () => {
     }, [token]);
 
     useEffect(() => {
-        socket.current = io('http://localhost:8888'); // 서버 URL
+        socket.current = io('http://localhost:8888'); 
     
         const handleReceiveMessage = (message) => {
             console.log('Received message:', message);
-            dispatch(appendMessageToChat(message));
-    
-            if (activeKey === 'one') {
-                dispatch(updateLastMessageInChatRooms({ roomId: message.chat_room_id, message }));
-            } else {
-                dispatch(updateLastMessageInTogetherChatRooms({ roomId: message.room_id, message }));
+
+        // 현재 활성화된 탭에 따라 채팅방 목록의 마지막 메시지를 업데이트
+        if (activeKey === 'one') {
+            dispatch(updateLastMessageInChatRooms({ roomId: message.chat_room_id, message }));
+        } else if (activeKey === 'together') {
+            dispatch(updateLastMessageInTogetherChatRooms({ roomId: message.room_id, message }));
+        }
+
+        // UI 업데이트는 선택된 채팅방이 있는 경우에만
+        if (selectedChat && selectedChat.roomId) {
+            if (activeKey === 'one' && message.chat_room_id === selectedChat.roomId) {
+                dispatch(appendMessageToChat(message));
+            } else if (activeKey === 'together' && message.room_id === selectedChat.roomId) {
+                dispatch(appendMessageToChat(message));
             }
-        };
+        }
+    };
     
         socket.current.on('receiveMessage', handleReceiveMessage);
     
@@ -67,7 +76,8 @@ const ChatPage = () => {
             socket.current.off('receiveMessage', handleReceiveMessage);
             socket.current.disconnect();
         };
-    }, [dispatch, activeKey]);
+    }, [dispatch, activeKey, selectedChat]);
+
 
     useEffect(() => {
         if (loggedInUserId) {
@@ -142,7 +152,7 @@ const ChatPage = () => {
         }
 
         const newMessage = {
-            senderId: loggedInUserId,
+            sender_id: loggedInUserId,
             message: messageInput,
             write_day: new Date().toISOString(),
             read: 0,

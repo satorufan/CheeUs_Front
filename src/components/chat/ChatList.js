@@ -77,6 +77,7 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
         return <div>오류 발생: {error}</div>;
     }
 
+
     return (
         <>
             <div className="chat-top d-flex align-items-center">

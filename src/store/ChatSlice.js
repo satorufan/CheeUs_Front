@@ -139,7 +139,7 @@ const chatSlice = createSlice({
                     }
                 } : room
             );
-        }
+        },
     },
     extraReducers: (builder) => {
         builder
