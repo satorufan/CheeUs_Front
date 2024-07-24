@@ -4,10 +4,10 @@ import { Search } from '@mui/icons-material';
 import './MagazineTop.css';
 
 const chipData = [
-  { label: '이달의 POP-UP', path: '/board/freeboard' },
-  { label: '술 TMI', path: '/board/shortform' },
-  { label: '섞어섞어 Recipe', path: '/board/eventboard' },
-  { label: '이주의 술집추천', path: '/board/eventboard' },
+  { label: '이달의 POP-UP', path: '/magazine/popup' },
+  { label: '술 TMI', path: '/magazine/tmi' },
+  { label: '섞어섞어 Recipe', path: '/magazine/recipe' },
+  { label: '이주의 술집추천', path: '/magazine/recomend' },
 ];
 
 function MagazineTop() {
@@ -29,15 +29,15 @@ function MagazineTop() {
     navigate(`${location.pathname}?search=${query}`);
   };
 
-  const getBoardTitle = () => {
+  const getmagazineTitle = () => {
     switch (location.pathname) {
-      case '/board/freeboard':
+      case '/magazine/popUp':
         return '이달의 POP-UP';
-      case '/board/shortform':
+      case '/magazine/tmi':
         return '술 TMI';
-      case '/board/eventboard':
+      case '/magazine/recipe':
         return '섞어섞어 Recipe';
-      case '/board/eventboard':
+      case '/magazine/recomend':
         return '이주의 술집추천';
       default:
         return 'Chee Us 메거진';
@@ -45,18 +45,18 @@ function MagazineTop() {
   };
 
   const shouldShowSearch = () => {
-    return ['/board/freeboard', '/board/shortform', '/board/eventboard'].includes(location.pathname);
+    return ['/magazine/popup', '/magazine/tmi', '/magazine/recipe','/magazine/recomend'].includes(location.pathname);
   };
 
   return (
     <div>
-      <div className="board-page-top">
-        {getBoardTitle()}
+      <div className="magazine-page-top">
+        {getmagazineTitle()}
         {shouldShowSearch() && (
-          <div className="board-top">
+          <div className="magazine-top">
             <input
               type="text"
-              className="board-search"
+              className="magazine-search"
               placeholder="Search"
               value={searchQuery}
               onChange={handleSearchChange} // 입력 시 검색어 업데이트 및 URL 변경
