@@ -59,7 +59,7 @@ const ChatWindow = ({
 
     const getDefaultMessage = () => {
         if (activeKey === 'one') {
-            return selectedChat ? '스와이프가 통하면 둘이 한 잔 해요!' : '채팅방을 선택하세요.';
+            return '조용하게 둘이 한 잔?';
         } else {
             return '여럿이 먹는 술이 더 꿀맛!';
         }
@@ -78,24 +78,32 @@ const ChatWindow = ({
         return null;
     };
 
+    if (!selectedChat) {
+        return (
+            <div className="no-chat">
+                {getDefaultMessage()}
+            </div>
+        );
+    }
+
     return (
         <>
-            {selectedChat || activeKey === 'together' ? (
+            {activeKey === 'together' || selectedChat ? (
                 <>
                     <div className="chat-top">
                         <div className="d-flex align-items-center">
-                            {renderProfileImage()}
+                            {!selectedChat && renderProfileImage()}
                             <span className="chat-name">
                                 {getDisplayName()}
                             </span>
                         </div>
                     </div>
-                    <div className="chat active-chat" data-chat={`person${selectedChat ? selectedChat.roomId : ''}`}>
-                        {selectedChat && selectedChat.messages && selectedChat.messages.length > 0 ? (
+                    <div className="chat active-chat" data-chat={`person${selectedChat.roomId}`}>
+                        {selectedChat.messages && selectedChat.messages.length > 0 ? (
                             selectedChat.messages.map((message, index) => (
                                 <div
                                     key={index}
-                                    className={`chat-bubble ${isSender(message.senderId) ? 'me' : 'you'}`}
+                                    className={`chat-bubble ${isSender(message.senderd) ? 'me' : 'you'}`}
                                 >
                                     <div>{message.message}</div>
                                     <span className="chat-time">{formatMessageTime(message.write_day)}</span>
@@ -127,7 +135,7 @@ const ChatWindow = ({
                     )}
                 </>
             ) : (
-                <div>{getDefaultMessage()}</div>
+                <div className="no-chat">{getDefaultMessage()}</div>
             )}
         </>
     );
