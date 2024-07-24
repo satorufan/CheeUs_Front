@@ -10,6 +10,7 @@ import {
   selectProfiles,
   selectLocationOk,
   selectMatchServiceAgreed,
+  fetchUserProfiles,
 } from '../../store/MatchSlice'; 
 import axios from 'axios';
 import { AuthContext } from '../login/OAuth';
@@ -19,9 +20,8 @@ const loggedInUserId = 1;
 
 const Match = () => {
   const dispatch = useDispatch();
-  const {memberEmail} = useContext(AuthContext);
+  const {memberEmail, serverUrl} = useContext(AuthContext);
   const userProfile = useSelector(selectUserProfile);
-  console.log(userProfile);
   const profiles = useSelector(selectProfiles);
   //const locationOk = useSelector(selectLocationOk);
   //const matchServiceAgreed = useSelector(selectMatchServiceAgreed);
@@ -31,6 +31,8 @@ const Match = () => {
   const [showHelpModal, setShowHelpModal] = React.useState(false);
 
   useEffect(() => {
+    
+    dispatch(fetchUserProfiles({serverUrl}));
     if (profiles && memberEmail) {
       const checkLocationPermission = async () => {
         const user = profiles.find(profile => profile.profile.email === memberEmail);

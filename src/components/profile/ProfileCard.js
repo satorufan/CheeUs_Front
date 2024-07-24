@@ -23,7 +23,6 @@ const ProfileCard = ({ profileInfo, loggedInUserId, showLikeButton }) => {
     const [likes, setLikes] = useState(profileInfo.profile.popularity);
     const [isLiked, setIsLiked] = useState(likes.includes(memberEmail));
     const [likeCnt, setLikeCnt] = useState(likes.length);
-    console.log(profileInfo);
 
     useEffect(() => {
         const getUserLocation = () => {
@@ -132,7 +131,6 @@ const ProfileCard = ({ profileInfo, loggedInUserId, showLikeButton }) => {
 
     // 사용자 위치가 있으면 거리 계산
     if (userLocation) {
-        console.log(userLocation);
         if (profileInfo.profile.email === loggedInUserId) {
             distanceToDisplay = '0 km';
         } else {

@@ -38,7 +38,6 @@ const TinderCards = () => {
         //!profile.confirmedlist.includes(loggedInUserId) && 
         profile.profile.email !== memberEmail
       );
-      console.log(filteredProfiles);
       setCards([...filteredProfiles]);
 
       const shuffled = shuffleArray(filteredProfiles);
@@ -108,8 +107,6 @@ const TinderCards = () => {
       ) : (
         <>
           <div className='cardContainer'>
-            <div className="show-like">LIKE!</div>
-            <div className="show-nope">NOPE!</div>
             {profileCards.length > 0 ? profileCards.map((profile, index) => (
               <TinderCard
                 ref={childRefs[index]}
