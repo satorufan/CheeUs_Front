@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Search } from '@mui/icons-material';
-import './MagazineTop.css';
+import './EventTop.css';
 
 const chipData = [
-  { label: '이달의 POP-UP', path: '/magazine/popup' },
-  { label: '술 TMI', path: '/magazine/tmi' },
-  { label: '섞어섞어 Recipe', path: '/magazine/recipe' },
-  { label: '이주의 술집추천', path: '/magazine/recomend' },
+  { label: '전체 이벤트', path: '/event/eventAll' },
+  { label: '진행중인 이벤트', path: '/event/eventNow' },
+  { label: '종료된 이벤트', path: '/event/eventEnd' },
 ];
 
-function MagazineTop() {
+function EventTop() {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchQuery, setSearchQuery] = useState('');
@@ -29,46 +28,32 @@ function MagazineTop() {
     navigate(`${location.pathname}?search=${query}`);
   };
 
-  const getmagazineTitle = () => {
-    if (location.pathname.match(/^\/magazine\/detail\/popup\/\d+$/)) {
-      return '이달의 POP-UP';
-    }
-    if (location.pathname.match(/^\/magazine\/detail\/tmi\/\d+$/)) {
-      return '술 TMI';
-    }
-    if (location.pathname.match(/^\/magazine\/detail\/recipe\/\d+$/)) {
-      return '섞어섞어 Recipe';
-    }
-    if (location.pathname.match(/^\/magazine\/detail\/recomend\/\d+$/)) {
-      return '이주의 술집추천';
-    }
+  const geteventTitle = () => {
     switch (location.pathname) {
-      case '/magazine/popup':
-        return '이달의 POP-UP';
-      case '/magazine/tmi':
-        return '술 TMI';
-      case '/magazine/recipe':
-        return '섞어섞어 Recipe';
-      case '/magazine/recomend':
-        return '이주의 술집추천';
+      case '/event/eventAll':
+        return '전체 이벤트';
+      case '/event/eventNow':
+        return '진행중인 이벤트';
+      case '/event/eventEnd':
+        return '종료된 이벤트';
       default:
-        return 'Chee Us 메거진';
+        return 'Chee Us 이벤트';
     }
   };
 
   const shouldShowSearch = () => {
-    return ['/magazine/popup', '/magazine/tmi', '/magazine/recipe', '/magazine/recomend'].includes(location.pathname);
+    return ['/event/eventAll', '/event/eventNow', '/event/eventEnd'].includes(location.pathname);
   };
 
   return (
     <div>
-      <div className="magazine-page-top">
-        {getmagazineTitle()}
+      <div className="event-page-top">
+        {geteventTitle()}
         {shouldShowSearch() && (
-          <div className="magazine-top">
+          <div className="event-top">
             <input
               type="text"
-              className="magazine-search"
+              className="event-search"
               placeholder="Search"
               value={searchQuery}
               onChange={handleSearchChange} // 입력 시 검색어 업데이트 및 URL 변경
@@ -92,4 +77,4 @@ function MagazineTop() {
   );
 }
 
-export default MagazineTop;
+export default EventTop;

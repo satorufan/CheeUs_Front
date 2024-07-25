@@ -9,7 +9,7 @@ const Magazine = () =>{
   return (
     <div className="magazine-pagelist-container">
       <MagazineTop/>
-      <MagazineCategory />
+      <MagazineCategory/>
     </div>
   );
 };

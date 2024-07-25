@@ -11,17 +11,17 @@ import MagazineTop from "./MagazineTop";
 import Pagination from '@mui/material/Pagination';
 import './Magazine.css';
 
-const initialBoards = [
+const initialMagazines = [
   {
     id: 1,
-    title: "이번주 가장핫판 성수 Label5 팝업!",
-    content: "이번주 가장핫판 성수 Label5 팝업!",
+    title: "이번주 가장핫한 성수 Label5 팝업!",
+    content: "이번주 가장핫한 성수 Label5 팝업!",
     photoes: "/images/popup1.jpg",
     author_id: 1,
     author_name: "관리자",
     like: 17,
     views: 151,
-    category: 1
+    category: 'popup'
   },
   {
     id: 2,
@@ -32,7 +32,7 @@ const initialBoards = [
     author_name: "관리자",
     like: 21,
     views: 78,
-    category: 1
+    category: 'popup'
   },
   {
     id: 3,
@@ -43,7 +43,7 @@ const initialBoards = [
     author_name: "관리자",
     like: 5,
     views: 37,
-    category: 1
+    category: 'popup'
   },
   {
     id: 4,
@@ -54,7 +54,7 @@ const initialBoards = [
     author_name: "관리자",
     like: 34,
     views: 97,
-    category: 1
+    category: 'popup'
   },
   {
     id: 5,
@@ -65,7 +65,7 @@ const initialBoards = [
     author_name: "관리자",
     like: 55,
     views: 138,
-    category: 1
+    category: 'popup'
   },
 ];
 
@@ -75,7 +75,7 @@ const PopUp = () => {
   
   const itemsPerPage = 8;
   const [currentPage, setCurrentPage] = useState(1);
-  const [boards, setBoards] = useState(initialBoards);
+  const [magazines, setMagazines] = useState(initialMagazines); // 초기화 시 dummyData 사용
   const [searchQuery, setSearchQuery] = useState('');
 
   // URL 쿼리에서 검색어를 읽어와 상태에 설정
@@ -85,19 +85,14 @@ const PopUp = () => {
     setSearchQuery(query);
   }, [location.search]);
 
-  // 게시물 추가 함수
-  const addBoard = (newBoard) => {
-    setBoards([...boards, newBoard]);
-  };
-
   const handleCardClick = (id) => {
-    navigate(`/board/magazineContent/detail/${id}`);
+    navigate(`/magazine/detail/popup/${id}`);
   };
 
   // 페이지네이션
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentBoards = boards.filter(board => board.category === 1 && (board.title.includes(searchQuery) || board.content.includes(searchQuery))).slice(startIndex, startIndex + itemsPerPage);
-  const totalPages = Math.ceil(boards.filter(board => board.category === 1 && (board.title.includes(searchQuery) || board.content.includes(searchQuery))).length / itemsPerPage);
+  const currentMagazines = magazines.filter(magazine => magazine.category === 'popup' && (magazine.title.includes(searchQuery) || magazine.content.includes(searchQuery))).slice(startIndex, startIndex + itemsPerPage);
+  const totalPages = Math.ceil(magazines.filter(magazine => magazine.category === 'popup' && (magazine.title.includes(searchQuery) || magazine.content.includes(searchQuery))).length / itemsPerPage);
 
   const handleChange = (event, value) => {
     setCurrentPage(value);
@@ -108,30 +103,30 @@ const PopUp = () => {
       <MagazineTop/>
       <div className="magazineContent-container">
         <div className="magazineContent-card-container">
-          {currentBoards.map((board) => (
+          {currentMagazines.map((magazine) => (
             <Card
-              key={board.id}
+              key={magazine.id}
               variant="plain"
               className="magazineContent-card"
-              onClick={() => handleCardClick(board.id)}
+              onClick={() => handleCardClick(magazine.id)}
             >
               <Box className="card-video">
                 <AspectRatio ratio="4/3">
-                  {board.photoes ? (
+                  {magazine.photoes ? (
                     <CardCover className="card-cover">
                       <img
-                        src={board.photoes}
+                        src={magazine.photoes}
                         alt="게시물 사진"
                         className="card-photo"
                       />
                       <div className="card-overlay-text">
-                        {board.content}
+                        {magazine.content}
                       </div>
                     </CardCover>
                   ) : (
                     <CardCover className="card-cover">
                       <div className="content-text">
-                        {board.content}
+                        {magazine.content}
                       </div>
                     </CardCover>
                   )}
@@ -139,29 +134,29 @@ const PopUp = () => {
               </Box>
               <Box>
                 <div className="magazineContent-title">
-                  {board.title}
+                  {magazine.title}
                 </div>
               </Box>
               <Box className="card-content">
                 <Avatar
-                  src={`https://images.unsplash.com/profile-${board.author_id}?dpr=2&auto=format&fit=crop&w=32&h=32&q=60&crop=faces&bg=fff`}
+                  src={`https://images.unsplash.com/profile-${magazine.author_id}?dpr=2&auto=format&fit=crop&w=32&h=32&q=60&crop=faces&bg=fff`}
                   size="sm"
                   sx={{ '--Avatar-size': '1.5rem' }}
                   className="card-avatar"
                 />
                 <div>
                   <div className="card-author-name">
-                    {board.author_name}
+                    {magazine.author_name}
                   </div>
                 </div>
                 <div className="card-icons-container">
                   <div className="card-icon">
                     <Favorite color="action" />
-                    {board.like}
+                    {magazine.like}
                   </div>
                   <div className="card-icon">
                     <Visibility />
-                    {board.views}
+                    {magazine.views}
                   </div>
                 </div>
               </Box>

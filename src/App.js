@@ -41,6 +41,12 @@ import PopUp from './components/magazine/PopUp';
 import Recipe from './components/magazine/Recipe';
 import Tmi from './components/magazine/Tmi';
 import Recomend from './components/magazine/Recomend';
+import MagazineDetail from './components/magazine/MagazineDetail';
+import Event from './components/event/Event';
+import EventAll from './components/event/EventAll';
+import EventNow from './components/event/EventNow';
+import EventEnd from './components/event/EventEnd';
+import EventDetail from './components/event/EventDetail';
 
 const ChatPage = lazy(() => import('./components/chat/ChatPage'));
 
@@ -88,7 +94,13 @@ function App() {
               <Route path="/magazine/recipe" element={<Recipe/>} />              
               <Route path="/magazine/tmi" element={<Tmi/>} />              
               <Route path="/magazine/Recomend" element={<Recomend/>} />              
+              <Route path="/magazine/detail/:category/:id" element={<MagazineDetail />} />
+              <Route path="/event" element={<Event/>} />              
+              <Route path="/event/eventAll" element={<EventAll/>} />              
+              <Route path="/event/eventNow" element={<EventNow/>} />              
+              <Route path="/event/eventEnd" element={<EventEnd/>} />              
               <Route path="*" element={<div>404</div>} />
+              <Route path="/event/detail/:category/:id" element={<EventDetail />} />
             </Routes>
             </Suspense>
           <Footer />
