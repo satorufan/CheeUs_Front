@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import TinderCards from './TinderCards';
 import { Modal, Button } from 'react-bootstrap';
@@ -11,8 +11,9 @@ import {
   selectLocationOk,
   selectMatchServiceAgreed,
   fetchUserProfiles,
-} from '../../store/MatchSlice'; 
-import axios from 'axios';
+  updateLocationPermission,
+  updateMatchServiceAgreement
+} from '../../store/MatchSlice';
 import { AuthContext } from '../login/OAuth';
 import { selectUserProfile } from '../../store/ProfileSlice';
 
@@ -20,62 +21,64 @@ const loggedInUserId = 1;
 
 const Match = () => {
   const dispatch = useDispatch();
-  const {memberEmail, serverUrl} = useContext(AuthContext);
+  const { memberEmail, serverUrl } = useContext(AuthContext);
   const userProfile = useSelector(selectUserProfile);
   const profiles = useSelector(selectProfiles);
-  //const locationOk = useSelector(selectLocationOk);
-  //const matchServiceAgreed = useSelector(selectMatchServiceAgreed);
-  const [userLocation, setUserLocationState] = React.useState(true);
-  const [showLocationModal, setShowLocationModal] = React.useState(false);
-  const [showMatchServiceModal, setShowMatchServiceModal] = React.useState(false);
-  const [showHelpModal, setShowHelpModal] = React.useState(false);
+  const locationOk = useSelector(selectLocationOk);
+  const matchServiceAgreed = useSelector(selectMatchServiceAgreed);
+
+  const [showLocationModal, setShowLocationModal] = useState(false);
+  const [showMatchServiceModal, setShowMatchServiceModal] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
 
   useEffect(() => {
-    
-    dispatch(fetchUserProfiles({serverUrl}));
+    dispatch(fetchUserProfiles({ serverUrl }));
+  }, [dispatch, serverUrl]);
+
+  useEffect(() => {
     if (profiles && memberEmail) {
-      const checkLocationPermission = async () => {
-        const user = profiles.find(profile => profile.profile.email === memberEmail);
-        
-        if (user && user.profile.locationOk === 1) {
+      const user = profiles.find(profile => profile.profile.email === memberEmail);
+      
+      if (user) {
+        if (user.profile.locationOk === 1) {
           requestGeoLocation();
-        } else if (user && user.location_ok === 0) {
+        } else if (user.profile.locationOk === 0) {
           setShowLocationModal(true);
         } else {
           dispatch(setLocationDenied());
         }
-      };
-
-      if (userProfile.profile.locationOk === null) {
-        checkLocationPermission();
       }
     }
-  }, [userProfile, dispatch, profiles]);
+  }, [profiles, memberEmail, dispatch]);
 
   const requestGeoLocation = () => {
     if ('geolocation' in navigator) {
-        navigator.geolocation.getCurrentPosition(
-            position => {
-                const { latitude, longitude } = position.coords; // 필요한 데이터만 추출
-                console.log('사용자의 현재 위치:', { latitude, longitude });
-                setUserLocationState(position.coords);
-                
-                // 직렬화 가능한 객체로 디스패치
-                dispatch(setUserLocation({ coords: { latitude, longitude } }));
-                
-                updateLocationPermissionOnServer();
-                setShowMatchServiceModal(true);
-            },
-            error => {
-                console.error('위치 정보 요청 에러:', error);
-                dispatch(setLocationDenied());
-            }
-        );
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          const { latitude, longitude } = position.coords;
+          console.log('사용자의 현재 위치:', { latitude, longitude });
+          dispatch(setUserLocation({ coords: { latitude, longitude } }));
+          updateLocationPermissionOnServer();
+          setShowMatchServiceModal(true);
+        },
+        error => {
+          console.error('위치 정보 요청 에러:', error);
+          dispatch(setLocationDenied());
+        }
+      );
     } else {
-        console.log('Geolocation 사용 불가능');
-        dispatch(setLocationDenied());
+      console.log('Geolocation 사용 불가능');
+      dispatch(setLocationDenied());
     }
-};
+  };
+
+  const updateLocationPermissionOnServer = () => {
+    dispatch(updateLocationPermission({ serverUrl, userId: loggedInUserId }));
+  };
+
+  const updateMatchServiceAgreementOnServer = () => {
+    dispatch(updateMatchServiceAgreement({ serverUrl, userId: loggedInUserId }));
+  };
 
   const handleConfirm = () => {
     setShowLocationModal(false);
@@ -101,65 +104,47 @@ const Match = () => {
     setShowHelpModal(true);
   };
 
-  const updateLocationPermissionOnServer = async () => {
-    try {
-      const user = profiles.find(profile => profile.profile.email === memberEmail);
-      const updatedUser = { ...user, location_ok: 1 };
-      const response = await axios.put(`https://your-server-api-url/updateLocationPermission/${loggedInUserId}`, updatedUser);
-      console.log('서버 응답:', response.data);
-    } catch (error) {
-      console.error('서버 요청 에러:', error);
-    }
-  };
-
-  const updateMatchServiceAgreementOnServer = async () => {
-    try {
-      const user = profiles.find(profile => profile.profile.email === memberEmail);
-      const updatedUser = { ...user, match_ok: 1 };
-      const response = await axios.put(`https://your-server-api-url/updateMatchServiceAgreement/${loggedInUserId}`, updatedUser);
-      console.log('서버 응답:', response.data);
-    } catch (error) {
-      console.error('서버 요청 에러:', error);
-    }
-  };
-
   return (
     <div className="match_container">
-      {userProfile ? (userProfile.profile.locationOk === null ? (
-        <div className="permissionMessage">
-          <p>위치 정보 확인 중...</p>
-        </div>
-      ) : userProfile.profile.locationOk && userLocation && !userProfile.profile.matchOk ? (
-        <div className="permissionMessage">
-          <p>1:1 매칭 서비스를 사용하려면 동의해주세요.</p>
-          <Button variant="dark" onClick={() => setShowMatchServiceModal(true)}>
-            동의하기
-          </Button>
-        </div>
-      ) : userProfile.profile.locationOk && userLocation && userProfile.profile.matchOk ? (
-        <TinderCards profiles={profiles} />
+      {userProfile ? (
+        userProfile.profile.locationOk === null ? (
+          <div className="permissionMessage">
+            <p>위치 정보 확인 중...</p>
+          </div>
+        ) : locationOk && !matchServiceAgreed ? (
+          <div className="permissionMessage">
+            <p>1:1 매칭 서비스를 사용하려면 동의해주세요.</p>
+            <Button variant="dark" onClick={() => setShowMatchServiceModal(true)}>
+              동의하기
+            </Button>
+          </div>
+        ) : locationOk && matchServiceAgreed ? (
+          <TinderCards profiles={profiles} />
+        ) : (
+          <div className="permissionMessage">
+            <p>매칭 서비스를 사용하려면 위치 정보 제공에 동의해야 합니다.</p>
+            {userProfile.profile.locationOk === false && (
+              <>
+                <div>
+                  현재 위치 정보가 <span>차단</span>되어 있습니다.
+                </div>
+                <div>
+                  주소창 왼쪽의 <span>ⓘ</span> 버튼을 눌러 위치 권한을 <span>허용</span>한 후 다시 시도해주세요.
+                </div>
+              </>
+            )}
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <Button variant="dark" onClick={() => setShowLocationModal(true)}>동의하기</Button>
+              <Button variant="dark" onClick={handleHelp}>도움말</Button>
+            </div>
+          </div>
+        )
       ) : (
         <div className="permissionMessage">
-          <p>매칭 서비스를 사용하려면 위치 정보 제공에 동의해야 합니다.</p>
-          {userProfile ?. userProfile.profile.locationOk === false && (
-            <>
-              <div>
-                현재 위치 정보가 <span>차단</span>되어 있습니다.
-              </div>
-              <div>
-                주소창 왼쪽의 <span>ⓘ</span> 버튼을 눌러 위치 권한을 <span>허용</span>한 후 다시 시도해주세요.
-              </div>
-            </>
-          )}
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <Button variant="dark" onClick={() => setShowLocationModal(true)}>동의하기</Button>
-            <Button variant="dark" onClick={handleHelp}>도움말</Button>
-          </div>
+          <p>잠시만 기다려주세요...</p>
         </div>
-      )) :  (<div className="permissionMessage">
-              <p>잠시만 기다려주세요...</p>
-            </div>)}
-
+      )}
+  
       {/* 위치 정보 동의 모달 */}
       <Modal show={showLocationModal} onHide={() => setShowLocationModal(false)} style={{ fontFamily: "YeojuCeramic" }}>
         <Modal.Header closeButton>
@@ -177,7 +162,7 @@ const Match = () => {
           </Button>
         </Modal.Footer>
       </Modal>
-
+  
       {/* 1:1 매칭 서비스 동의 모달 */}
       <Modal show={showMatchServiceModal} onHide={handleMatchServiceCancel} style={{ fontFamily: "YeojuCeramic" }}>
         <Modal.Header closeButton>
@@ -195,9 +180,9 @@ const Match = () => {
           </Button>
         </Modal.Footer>
       </Modal>
-
+  
       {/* 도움말 모달 */}
-      <Modal show={showHelpModal} onHide={() => setShowHelpModal(false)} style={{ fontFamily: "YeojuCeramic", fontSize:"12px"}}>
+      <Modal show={showHelpModal} onHide={() => setShowHelpModal(false)} style={{ fontFamily: "YeojuCeramic", fontSize: "12px" }}>
         <Modal.Header closeButton>
           <Modal.Title>위치 권한 활성화 방법</Modal.Title>
         </Modal.Header>
