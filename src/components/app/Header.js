@@ -52,11 +52,7 @@ function Header() {
    };
 
    const springSecurity = async() => {
-    await axios.post(serverUrl + "/member/signIn", {
-        params : {
-            email : jwtDecode(token).email
-        }
-    }, {
+    await axios.post(serverUrl + "/signIn", {}, {
         headers : {
             "Authorization" : `Bearer ${token}`
         },
