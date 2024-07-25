@@ -1,7 +1,8 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { AuthContext } from '../login/OAuth';
-import { jwtDecode } from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import { Modal, Button } from 'react-bootstrap';
 import './chatPage.css';
 
 const ChatWindow = ({
@@ -16,6 +17,7 @@ const ChatWindow = ({
 }) => {
     const { token } = useContext(AuthContext);
     const [loggedInUserId, setLoggedInUserId] = useState(null);
+    const [showParticipants, setShowParticipants] = useState(false);
 
     useEffect(() => {
         if (token) {
@@ -23,7 +25,7 @@ const ChatWindow = ({
                 const decodedToken = jwtDecode(token);
                 setLoggedInUserId(decodedToken.email);
             } catch (error) {
-                console.error('토큰 디코딩 중 에러 발생:', error);
+                console.error('Error decoding token:', error);
             }
         }
     }, [token]);
@@ -59,7 +61,7 @@ const ChatWindow = ({
 
     const getDefaultMessage = () => {
         if (activeKey === 'one') {
-            return selectedChat ? '스와이프가 통하면 둘이 한 잔 해요!' : '채팅방을 선택하세요.';
+            return '조용하게 둘이 한 잔?';
         } else {
             return '여럿이 먹는 술이 더 꿀맛!';
         }
@@ -78,24 +80,33 @@ const ChatWindow = ({
         return null;
     };
 
+    const toggleParticipants = () => {
+        setShowParticipants(!showParticipants);
+    };
+
     return (
         <>
-            {selectedChat || activeKey === 'together' ? (
+            {activeKey === 'together' || selectedChat ? (
                 <>
                     <div className="chat-top">
                         <div className="d-flex align-items-center">
-                            {renderProfileImage()}
+                            {!selectedChat && renderProfileImage()}
                             <span className="chat-name">
                                 {getDisplayName()}
                             </span>
+                            {selectedChat && selectedChat.togetherId && (
+                                <Button variant="primary" onClick={toggleParticipants}>
+                                    {showParticipants ? '채팅 참여자' : '채팅 참여자'}
+                                </Button>
+                            )}
                         </div>
                     </div>
-                    <div className="chat active-chat" data-chat={`person${selectedChat ? selectedChat.roomId : ''}`}>
-                        {selectedChat && selectedChat.messages && selectedChat.messages.length > 0 ? (
+                    <div className="chat active-chat" data-chat={`person${selectedChat.roomId}`}>
+                        {selectedChat.messages && selectedChat.messages.length > 0 ? (
                             selectedChat.messages.map((message, index) => (
                                 <div
                                     key={index}
-                                    className={`chat-bubble ${isSender(message.senderId) ? 'me' : 'you'}`}
+                                    className={`chat-bubble ${isSender(message.sender_id) ? 'me' : 'you'}`}
                                 >
                                     <div>{message.message}</div>
                                     <span className="chat-time">{formatMessageTime(message.write_day)}</span>
@@ -127,8 +138,31 @@ const ChatWindow = ({
                     )}
                 </>
             ) : (
-                <div>{getDefaultMessage()}</div>
+                <div className="no-chat">{getDefaultMessage()}</div>
             )}
+
+            {/* 채팅 참여자 모달 */}
+            <Modal show={showParticipants} onHide={toggleParticipants}>
+                <Modal.Header closeButton>
+                    <Modal.Title>채팅 참여자</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {selectedChat && selectedChat.members ? (
+                        <ul>
+                            {selectedChat.members.map((member, index) => (
+                                <li key={index}>{member}</li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p>No participants found.</p>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={toggleParticipants}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </>
     );
 };

@@ -59,7 +59,7 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
     };
 
     const getLastMessage = (room) => {
-        return room.lastMessage || { message: '메시지가 없습니다', write_day: new Date().toISOString() };
+        return room.lastMessage || { message: '메시지가 없습니다', write_day: new Date().toISOString(), read: 0 };
     };
 
     const isUserInChat = (room) => {
@@ -77,6 +77,7 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
         return <div>오류 발생: {error}</div>;
     }
 
+
     return (
         <>
             <div className="chat-top d-flex align-items-center">
@@ -87,6 +88,7 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
                 {currentChatRooms && currentChatRooms.length > 0 ? (
                     currentChatRooms.filter(isUserInChat).map(room => {
                         const lastMessage = getLastMessage(room);
+                        const isNewMessage = lastMessage.read === 0;
                         return (
                             <li
                                 key={room.roomId}
@@ -106,6 +108,7 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
                                         <span className="chat-name">
                                             {isTogether ? `${room.togetherId}` : (room.member1 !== loggedInUserId ? room.member1 : room.member2)}
                                         </span>
+                                        {isNewMessage && lastMessage.sender_id !== loggedInUserId && <span className="receive-new">New</span>}
                                     </div>
                                     <span className="chat-time">
                                         {formatDate(lastMessage.write_day)}

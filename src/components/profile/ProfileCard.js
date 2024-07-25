@@ -20,8 +20,8 @@ const ProfileCard = ({ profileInfo, loggedInUserId, showLikeButton }) => {
     // const isLiked = likedProfiles.includes(profileInfo.profile.email);
 
     // 새로 작성한 Like
-    const [likes, setLikes] = useState(profileInfo.profile.popularity);
-    const [isLiked, setIsLiked] = useState(likes.includes(memberEmail));
+    const [likes, setLikes] = useState(profileInfo.profile.popularity || []);
+    const [isLiked, setIsLiked] = useState((likes || []).includes(memberEmail || ""));
     const [likeCnt, setLikeCnt] = useState(likes.length);
 
     useEffect(() => {
