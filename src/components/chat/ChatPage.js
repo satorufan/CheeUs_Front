@@ -13,7 +13,9 @@ import {
     setActiveKey, 
     appendMessageToChat, 
     updateLastMessageInChatRooms, 
-    updateLastMessageInTogetherChatRooms 
+    updateLastMessageInTogetherChatRooms,
+    updateMessageReadStatus,
+    updateTogetherMessageReadStatus
 } from '../../store/ChatSlice';
 import ChatList from './ChatList';
 import ChatWindow from './ChatWindow';
@@ -118,6 +120,7 @@ const ChatPage = () => {
             dispatch(setSelectedChat({ ...selectedRoom, messages }));
             dispatch(setShowMessageInput(true));
             dispatch(setMessageInput(''));
+            dispatch(updateMessageReadStatus({ roomId }));
         } catch (error) {
             console.error('메시지를 불러오는 중 에러 발생:', error);
         }
@@ -140,6 +143,7 @@ const ChatPage = () => {
             dispatch(setSelectedChat({ ...selectedRoom, messages }));
             dispatch(setShowMessageInput(true));
             dispatch(setMessageInput(''));
+            dispatch(updateTogetherMessageReadStatus({ roomId }));
         } catch (error) {
             console.error('메시지를 불러오는 중 에러 발생:', error);
         }

@@ -1,7 +1,8 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { AuthContext } from '../login/OAuth';
-import { jwtDecode } from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import { Modal, Button } from 'react-bootstrap';
 import './chatPage.css';
 
 const ChatWindow = ({
@@ -16,6 +17,7 @@ const ChatWindow = ({
 }) => {
     const { token } = useContext(AuthContext);
     const [loggedInUserId, setLoggedInUserId] = useState(null);
+    const [showParticipants, setShowParticipants] = useState(false);
 
     useEffect(() => {
         if (token) {
@@ -23,7 +25,7 @@ const ChatWindow = ({
                 const decodedToken = jwtDecode(token);
                 setLoggedInUserId(decodedToken.email);
             } catch (error) {
-                console.error('토큰 디코딩 중 에러 발생:', error);
+                console.error('Error decoding token:', error);
             }
         }
     }, [token]);
@@ -78,13 +80,9 @@ const ChatWindow = ({
         return null;
     };
 
-    if (!selectedChat) {
-        return (
-            <div className="no-chat">
-                {getDefaultMessage()}
-            </div>
-        );
-    }
+    const toggleParticipants = () => {
+        setShowParticipants(!showParticipants);
+    };
 
     return (
         <>
@@ -96,6 +94,11 @@ const ChatWindow = ({
                             <span className="chat-name">
                                 {getDisplayName()}
                             </span>
+                            {selectedChat && selectedChat.togetherId && (
+                                <Button variant="primary" onClick={toggleParticipants}>
+                                    {showParticipants ? '채팅 참여자' : '채팅 참여자'}
+                                </Button>
+                            )}
                         </div>
                     </div>
                     <div className="chat active-chat" data-chat={`person${selectedChat.roomId}`}>
@@ -137,6 +140,29 @@ const ChatWindow = ({
             ) : (
                 <div className="no-chat">{getDefaultMessage()}</div>
             )}
+
+            {/* 채팅 참여자 모달 */}
+            <Modal show={showParticipants} onHide={toggleParticipants}>
+                <Modal.Header closeButton>
+                    <Modal.Title>채팅 참여자</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {selectedChat && selectedChat.members ? (
+                        <ul>
+                            {selectedChat.members.map((member, index) => (
+                                <li key={index}>{member}</li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p>No participants found.</p>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={toggleParticipants}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </>
     );
 };

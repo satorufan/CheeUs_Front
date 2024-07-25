@@ -215,3 +215,10 @@
     background-color: black;
     border-color:black;
 }
+.receive-new{
+    border-radius: 25px;
+    background-color: black;
+    color:white;
+    padding : 2px 5px;
+    font-size: 10px;
+}

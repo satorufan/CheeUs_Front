@@ -87,6 +87,41 @@ export const fetchTogetherChatRooms = createAsyncThunk(
     }
 );
 
+// 읽음 상태를 업데이트하는 비동기 Thunk
+export const updateMessageReadStatus = createAsyncThunk(
+    'chat/updateMessageReadStatus',
+    async ({ roomId }, { dispatch }) => {
+        try {
+            // 서버에 읽음 상태 업데이트 요청
+            await axios.put(`http://localhost:8889/api/messages/${roomId}/read`);
+            
+            // 상태 업데이트
+            dispatch(messageRead({ roomId }));
+        } catch (error) {
+            console.error('메시지 읽음 상태 업데이트 오류:', error);
+            throw new Error(error.message);
+        }
+    }
+);
+
+// 단체 채팅 메시지 읽음 상태를 업데이트하는 비동기 Thunk
+export const updateTogetherMessageReadStatus = createAsyncThunk(
+    'together/updateMessageReadStatus',
+    async ({ roomId }, { dispatch }) => {
+        if (!roomId) {
+            console.error('Invalid roomId:', roomId);
+            return; // roomId가 유효하지 않으면 실행 중지
+        }
+
+        try {
+            await axios.put(`http://localhost:8889/api/togetherMessages/${roomId}/read`);
+            dispatch(messageReadTogether({ roomId }));
+        } catch (error) {
+            console.error('단체 채팅 메시지 읽음 상태 업데이트 오류:', error);
+            throw new Error(error.message);
+        }
+    }
+);
 const chatSlice = createSlice({
     name: 'chat',
     initialState,
@@ -140,7 +175,64 @@ const chatSlice = createSlice({
                 } : room
             );
         },
+        messageRead(state, action) {
+            const { roomId } = action.payload;
+            state.chatRooms = state.chatRooms.map(room =>
+                room.roomId === roomId ? {
+                    ...room,
+                    messages: room.messages.map(message => ({
+                        ...message,
+                        read: 1
+                    })),
+                    lastMessage: {
+                        ...room.lastMessage,
+                        read: 1
+                    }
+                } : room
+            );
+        },
+        markMessagesAsRead(state, action) {
+            const roomId = action.payload;
+            state.chatRooms = state.chatRooms.map(room => 
+                room.roomId === roomId ? {
+                    ...room,
+                    lastMessage: room.lastMessage ? {
+                        ...room.lastMessage,
+                        read: 1
+                    } : room.lastMessage
+                } : room
+            );
+        },
+        messageReadTogether(state, action) {
+            const { roomId } = action.payload;
+            state.togetherChatRooms = state.togetherChatRooms.map(room =>
+                room.roomId === roomId ? {
+                    ...room,
+                    messages: room.messages.map(message => ({
+                        ...message,
+                        read: 1
+                    })),
+                    lastMessage: {
+                        ...room.lastMessage,
+                        read: 1
+                    }
+                } : room
+            );
+        },
+        markTogetherMessagesAsRead(state, action) {
+            const roomId = action.payload;
+            state.togetherChatRooms = state.togetherChatRooms.map(room => 
+                room.roomId === roomId ? {
+                    ...room,
+                    lastMessage: room.lastMessage ? {
+                        ...room.lastMessage,
+                        read: 1
+                    } : room.lastMessage
+                } : room
+            );
+        },
     },
+    
     extraReducers: (builder) => {
         builder
             .addCase(fetchChatRooms.pending, (state) => {
@@ -175,7 +267,11 @@ export const {
     setActiveKey,
     appendMessageToChat,
     updateLastMessageInChatRooms,
-    updateLastMessageInTogetherChatRooms
+    updateLastMessageInTogetherChatRooms,
+    markMessagesAsRead,
+    messageRead,
+    messageReadTogether,
+    markTogetherMessagesAsRead
 } = chatSlice.actions;
 
 export default chatSlice.reducer;
