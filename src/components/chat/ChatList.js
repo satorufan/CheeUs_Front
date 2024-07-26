@@ -4,6 +4,7 @@ import { jwtDecode } from 'jwt-decode';
 import { AuthContext } from '../login/OAuth';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchChatRooms, fetchTogetherChatRooms } from '../../store/ChatSlice';
+import { selectUserProfile, fetchUserProfiles, selectProfiles } from '../../store/MatchSlice';
 
 const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
     const { token } = useContext(AuthContext);
@@ -13,6 +14,8 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
     const updatedTogetherChatRooms = useSelector(state => state.chat.togetherChatRooms);
     const status = useSelector(state => state.chat.status);
     const error = useSelector(state => state.chat.error);
+    const userProfile = useSelector(selectUserProfile);
+    const profiles = useSelector(selectProfiles);
 
     useEffect(() => {
         if (token) {
@@ -25,6 +28,9 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
                 dispatch(fetchTogetherChatRooms()).catch(err => {
                     console.error('Failed to fetch together chat rooms:', err);
                 });
+                dispatch(fetchUserProfiles({ serverUrl: 'http://localhost:8080' })).catch(err => {
+                    console.error('Failed to fetch user profiles:', err);
+                });
             } catch (err) {
                 console.error('Token decoding error:', err);
             }
@@ -34,11 +40,17 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
     useEffect(() => {
         console.log('업데이트된 1:1 채팅방:', updatedChatRooms);
         console.log('업데이트된 단체 채팅방:', updatedTogetherChatRooms);
-    }, [updatedChatRooms, updatedTogetherChatRooms]);
+        console.log(userProfile);
+    }, [updatedChatRooms, updatedTogetherChatRooms, userProfile]);
 
+    // 첫 번째 프로필 이미지 가져오기
     const getProfileImage = useCallback((memberId) => {
-        return `https://www.example.com/profiles/${memberId}.jpg`;
-    }, []);
+        const profile = profiles.find(p => p.profile.email === memberId);
+        return profile && profile.imageBlob.length > 0 
+            ? profile.imageBlob[0] 
+            : 'https://www.example.com/default-profile.jpg'; // 기본 이미지 URL
+    }, [profiles]);
+
 
     const formatDate = (dateString) => {
         if (!dateString) return '메시지가 없습니다'; 
@@ -67,6 +79,11 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
         return room.members.includes(loggedInUserId);
     };
 
+    const getNickname = (email) => {
+        const profile = profiles.find(p => p.profile.email === email);
+        return profile ? profile.profile.nickname : email;
+    };
+
     const currentChatRooms = isTogether ? updatedTogetherChatRooms : updatedChatRooms;
 
     if (status === 'loading') {
@@ -76,7 +93,6 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
     if (status === 'failed') {
         return <div>오류 발생: {error}</div>;
     }
-
 
     return (
         <>
@@ -106,7 +122,7 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
                                             />
                                         )}
                                         <span className="chat-name">
-                                            {isTogether ? `${room.togetherId}` : (room.member1 !== loggedInUserId ? room.member1 : room.member2)}
+                                            {isTogether ? `${room.togetherId}` : (room.member1 !== loggedInUserId ? getNickname(room.member1) : getNickname(room.member2))}
                                         </span>
                                         {isNewMessage && lastMessage.sender_id !== loggedInUserId && <span className="receive-new">New</span>}
                                     </div>

@@ -2,22 +2,27 @@
     --white: #ffffff;
     --light: #e0e0e0;
     --pink: #FF6B6B;
+    --blue: #007bff;
     height: 100vh;
 }
 
 .profile-img {
-    width: 50px; 
-    height: 50px; 
-    object-fit: cover; 
+    width: 30px;
+    height: 30px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #ddd;
 }
+
 .chat-wrapper {
     position: relative;
     left: 50%;
     width: var(--wrapper);
     transform: translateX(-50%);
     overflow-y: hidden;
-    margin-bottom :20px; 
+    margin-bottom: 20px;
 }
+
 
 .container {
     position: absolute;
@@ -35,7 +40,9 @@
     width: 38%;
     border-right: 1px solid var(--light);
     background-color: var(--white);
-    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    height: 70vh;
 }
 
 .chat-top {
@@ -45,6 +52,11 @@
     padding: 0 20px;
 }
 
+.top-bar{
+    display : flex;
+    align-items: center; 
+    justify-content: space-between;
+}
 .chat-search {
     flex: 1;
     height: 42px;
@@ -93,10 +105,12 @@
 
 .chat-name {
     font-weight: bold;
+    justify-content: flex-start;
 }
 
 .chat-time {
     color: #757575;
+    font-size: 10px;
 }
 
 .chat-right {
@@ -104,7 +118,7 @@
     padding: 20px;
     display: flex;
     flex-direction: column;
-    height:70vh;
+    height: 70vh;
     overflow-y: auto;
 }
 
@@ -116,43 +130,74 @@
 .chat.active-chat {
     display: block;
     height: 100vh;
-    overflow-y :auto;
-    margin:20px;
+    overflow-y: auto;
+    margin: 20px;
+}
+
+.chat-bubble-container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+.message-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px; 
+}
+
+.nickname {
+    font-weight: bold;
+    margin-left: 10px; 
+    font-size : 15px;
+}
+
+.chat-window-top{
+    background-color: black;
+    color:white;
+    padding : 10px;
+    margin-right:10px;
 }
 
 .chat-bubble {
-    display: inline-block;
     max-width: 70%;
     padding: 10px;
-    margin-bottom: 10px;
     border-radius: 10px;
-    clear: both;
-    word-wrap: break-word;
-}
-
-.chat-bubble.you {
-    background-color: #e3f2fd;
-    float: left;
+    position: relative;
+    display: flex;
+    flex-direction: column;
 }
 
 .chat-bubble.me {
-    background-color: #f0f0f0;
-    float: right;
-    margin-right:20px;
+    background-color: #dcf8c6;
+    margin-left: auto;
+}
+
+.chat-bubble.you {
+    background-color: #fff;
+    border: 1px solid #ddd;
 }
 
 .chat-bubble .chat-time {
-    display: block;
+    align-self: flex-end;
     font-size: 0.8em;
     color: #757575;
     margin-top: 5px;
+}
+
+.chat-bubble-container.me {
+    align-items: flex-end; 
+}
+
+.chat-bubble-container.you {
+    align-items: flex-start;
 }
 
 .chat-write {
     display: flex;
     align-items: center;
     padding: 10px;
-    background-color: white;
+    background-color: var(--white);
 }
 
 .chat-write-link {
@@ -182,8 +227,6 @@
     color: #ffffff;
 }
 
-
-
 .chat-input[type="text"] {
     flex: 1;
     height: 42px;
@@ -200,25 +243,72 @@
     color: white;
     border-radius: 50px;
     font-size: large;
-    margin-left : 10px;
-    width:30px;
+    margin-left: 10px;
+    width: 30px;
     height: 30px;
-    padding:1px;
+    padding: 1px;
 }
 
 .nav-tabs .nav-link {
-    color: black
+    color: black;
 }
 
 .nav-tabs .nav-link.active {
     color: #fff; 
     background-color: black;
-    border-color:black;
+    border-color: black;
 }
-.receive-new{
+
+.receive-new {
     border-radius: 25px;
     background-color: black;
-    color:white;
-    padding : 2px 5px;
+    color: white;
+    padding: 2px 5px;
     font-size: 10px;
+}
+
+.chat-window-top-no {
+    display: flex;            
+    justify-content: center; 
+    align-items: center;     
+    text-align: center; 
+}
+
+.participant-list {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-end; 
+    align-items: center; 
+}
+
+.participant-item {
+    position: relative;
+    margin-right: 5px;
+}
+
+.participant-img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    border:solid 2px white;
+}
+
+.participant-info {
+    display: none;
+    position: absolute;
+    top:30px;
+    left: 0;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    text-align: center;
+    z-index: 10;
+    color:black;
+    width: 120px;
+}
+
+.participant-item:hover .participant-info {
+    display: block;
 }
