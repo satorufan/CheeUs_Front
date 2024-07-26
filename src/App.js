@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route, BrowserRouter, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, BrowserRouter } from 'react-router-dom';
 import './App.css';
 import './fonts/fonts.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -23,6 +23,7 @@ import BoardPage from './components/board/BoardPage';
 import ShortForm from './components/shortform/ShortFrom';
 import WriteShortForm from './components/shortform/WriteShortForm.js'
 import EditShortForm from './components/shortform/EditShortForm'
+import DetailShortForm from './components/shortform/DetailShortForm';
 import InputFrom from './components/toast/InputForm';
 import FreeBoard from './components/freeboard/FreeBoard';
 import DetailFreeBoard from './components/freeboard/DetailFreeBoard';
@@ -32,7 +33,6 @@ import EventBoard from './components/eventboard/EventBoard';
 import DetailEventBoard from './components/eventboard/DetailEventBoard';
 import WriteEventBoard from './components/eventboard/WriteEventBoard';
 import EditEventBoard from './components/eventboard/EditEventBoard';
-import DetailShortForm from './components/shortform/DetailShortForm';
 import { AuthProvider } from './components/login/OAuth';
 //import scoket from './server';
 import AdminDashboard from './admin';
@@ -40,7 +40,7 @@ import Magazine from './components/magazine/Magazine';
 import PopUp from './components/magazine/PopUp';
 import Recipe from './components/magazine/Recipe';
 import Tmi from './components/magazine/Tmi';
-import Recomend from './components/magazine/Recomend';
+import Recommend from './components/magazine/Recommend';
 import MagazineDetail from './components/magazine/MagazineDetail';
 import Event from './components/event/Event';
 import EventAll from './components/event/EventAll';
@@ -93,7 +93,7 @@ function App() {
               <Route path="/magazine/popup" element={<PopUp/>} />              
               <Route path="/magazine/recipe" element={<Recipe/>} />              
               <Route path="/magazine/tmi" element={<Tmi/>} />              
-              <Route path="/magazine/Recomend" element={<Recomend/>} />              
+              <Route path="/magazine/Recommend" element={<Recommend/>} />              
               <Route path="/magazine/detail/:category/:id" element={<MagazineDetail />} />
               <Route path="/event" element={<Event/>} />              
               <Route path="/event/eventAll" element={<EventAll/>} />              

@@ -89,7 +89,7 @@ function Header() {
                             <Nav.Link href="/dtboard" onClick = {handleLinkClick}>함께 마셔요</Nav.Link>
                             <Nav.Link href="/board">게시판</Nav.Link>
                             <Nav.Link href="/event">이벤트</Nav.Link>
-                            <Nav.Link href="/magazine">메거진</Nav.Link>
+                            <Nav.Link href="/magazine">매거진</Nav.Link>
 
                             {isLoggedIn && profileStatus !== "loading" ? (
                                 <>

@@ -27,10 +27,10 @@ function MagazineCategory() {
             path: "/magazine/recipe"
         },
         {
-            bgImage: "/images/recomend.jpg",
+            bgImage: "/images/recommend.jpg",
             title: "이주의 술집추천",
             description: "이주의 핫한 술집은 어딜까?",
-            path: "/magazine/recomend"
+            path: "/magazine/recommend"
         },
     ];
 

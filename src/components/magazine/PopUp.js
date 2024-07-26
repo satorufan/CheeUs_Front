@@ -17,7 +17,7 @@ const initialMagazines = [
     title: "이번주 가장핫한 성수 Label5 팝업!",
     content: "이번주 가장핫한 성수 Label5 팝업!",
     photoes: "/images/popup1.jpg",
-    author_id: 1,
+    admin_id: 1,
     author_name: "관리자",
     like: 17,
     views: 151,
@@ -28,7 +28,7 @@ const initialMagazines = [
     title: "Absolute 팝업",
     content: "보드카의 정석 Absolute 팝업",
     photoes: "/images/popup2.jpg",
-    author_id: 2,
+    admin_id: 2,
     author_name: "관리자",
     like: 21,
     views: 78,
@@ -39,7 +39,7 @@ const initialMagazines = [
     title: "JackDaniel's pop-up",
     content: "JackDaniel's pop-up",
     photoes: "/images/popup3.jpg",
-    author_id: 2,
+    admin_id: 2,
     author_name: "관리자",
     like: 5,
     views: 37,
@@ -50,7 +50,7 @@ const initialMagazines = [
     title: "Devine 보드카 성수 pop-up",
     content: "Devine 보드카 성수 pop-up",
     photoes: "/images/popup4.jpg",
-    author_id: 2,
+    admin_id: 2,
     author_name: "관리자",
     like: 34,
     views: 97,
@@ -61,7 +61,7 @@ const initialMagazines = [
     title: "홍대 맥주시음 팝업",
     content: "홍대 맥주 시음 팝업",
     photoes: "/images/popup5.jpg",
-    author_id: 2,
+    admin_id: 2,
     author_name: "관리자",
     like: 55,
     views: 138,
@@ -139,14 +139,14 @@ const PopUp = () => {
               </Box>
               <Box className="card-content">
                 <Avatar
-                  src={`https://images.unsplash.com/profile-${magazine.author_id}?dpr=2&auto=format&fit=crop&w=32&h=32&q=60&crop=faces&bg=fff`}
+                  src={`https://images.unsplash.com/profile-${magazine.admin_id}?dpr=2&auto=format&fit=crop&w=32&h=32&q=60&crop=faces&bg=fff`}
                   size="sm"
                   sx={{ '--Avatar-size': '1.5rem' }}
                   className="card-avatar"
                 />
                 <div>
                   <div className="card-author-name">
-                    {magazine.author_name}
+                    {magazine.author_name}<a className = 'hidden'>{magazine.admin_id}</a>
                   </div>
                 </div>
                 <div className="card-icons-container">

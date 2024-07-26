@@ -17,7 +17,7 @@ const initialMagazines = [
     title: "스크류드라이버를 아시나요?",
     content: "광부들의 칵테일 스크류드라이버!",
     photoes: "/images/tmi1.jpg",
-    author_id: 1,
+    admin_id: 1,
     author_name: "관리자",
     like: 17,
     views: 151,
@@ -28,7 +28,7 @@ const initialMagazines = [
     title: "쿠바 리브레의 유래!",
     content: "쿠바의 자유를 기념하여!",
     photoes: "/images/tmi2.jpg",
-    author_id: 2,
+    admin_id: 2,
     author_name: "관리자",
     like: 21,
     views: 78,
@@ -39,7 +39,7 @@ const initialMagazines = [
     title: "데킬라 선라이즈에 대하여.",
     content: "일출을 떠오르게하는 색",
     photoes: "/images/tmi3.jpg",
-    author_id: 2,
+    admin_id: 2,
     author_name: "관리자",
     like: 5,
     views: 37,
@@ -50,7 +50,7 @@ const initialMagazines = [
     title: "초록빛 미도리 사워!",
     content: "달콤상콤한 초록빛 멜론 칵테일",
     photoes: "/images/tmi4.jpg",
-    author_id: 2,
+    admin_id: 2,
     author_name: "관리자",
     like: 34,
     views: 97,
@@ -61,7 +61,7 @@ const initialMagazines = [
     title: "뉴욕! TMI",
     content: "칵테일 NEW YORK",
     photoes: "/images/tmi5.jpg",
-    author_id: 2,
+    admin_id: 2,
     author_name: "관리자",
     like: 55,
     views: 138,
@@ -139,14 +139,14 @@ const Tmi = () => {
               </Box>
               <Box className="card-content">
                 <Avatar
-                  src={`https://images.unsplash.com/profile-${magazine.author_id}?dpr=2&auto=format&fit=crop&w=32&h=32&q=60&crop=faces&bg=fff`}
+                  src={`https://images.unsplash.com/profile-${magazine.admin_id}?dpr=2&auto=format&fit=crop&w=32&h=32&q=60&crop=faces&bg=fff`}
                   size="sm"
                   sx={{ '--Avatar-size': '1.5rem' }}
                   className="card-avatar"
                 />
                 <div>
                   <div className="card-author-name">
-                    {magazine.author_name}
+                    {magazine.author_name}<a className = 'hidden'>{magazine.admin_id}</a>
                   </div>
                 </div>
                 <div className="card-icons-container">

@@ -7,7 +7,7 @@ const chipData = [
   { label: '이달의 POP-UP', path: '/magazine/popup' },
   { label: '술 TMI', path: '/magazine/tmi' },
   { label: '섞어섞어 Recipe', path: '/magazine/recipe' },
-  { label: '이주의 술집추천', path: '/magazine/recomend' },
+  { label: '이주의 술집추천', path: '/magazine/recommend' },
 ];
 
 function MagazineTop() {
@@ -39,7 +39,7 @@ function MagazineTop() {
     if (location.pathname.match(/^\/magazine\/detail\/recipe\/\d+$/)) {
       return '섞어섞어 Recipe';
     }
-    if (location.pathname.match(/^\/magazine\/detail\/recomend\/\d+$/)) {
+    if (location.pathname.match(/^\/magazine\/detail\/recommend\/\d+$/)) {
       return '이주의 술집추천';
     }
     switch (location.pathname) {
@@ -49,7 +49,7 @@ function MagazineTop() {
         return '술 TMI';
       case '/magazine/recipe':
         return '섞어섞어 Recipe';
-      case '/magazine/recomend':
+      case '/magazine/recommend':
         return '이주의 술집추천';
       default:
         return 'Chee Us 메거진';
@@ -57,7 +57,7 @@ function MagazineTop() {
   };
 
   const shouldShowSearch = () => {
-    return ['/magazine/popup', '/magazine/tmi', '/magazine/recipe', '/magazine/recomend'].includes(location.pathname);
+    return ['/magazine/popup', '/magazine/tmi', '/magazine/recipe', '/magazine/recommend'].includes(location.pathname);
   };
 
   return (
