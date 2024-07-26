@@ -17,7 +17,7 @@ const initialEvents = [
     title: "CHEE US 6월 이벤트!",
     content: "6월 이벤트!",
     photoes: "/images/event6.jpg",
-    author_id: 1,
+    admin_id: 1,
     author_name: "관리자",
     like: 17,
     views: 151,
@@ -28,7 +28,7 @@ const initialEvents = [
     title: "CHEE US 7월 이벤트!",
     content: "7월 이벤트!",
     photoes: "/images/event7.jpg",
-    author_id: 2,
+    admin_id: 2,
     author_name: "관리자",
     like: 21,
     views: 78,
@@ -39,7 +39,7 @@ const initialEvents = [
     title: "CHEE US 8월 이벤트!",
     content: "8월 이벤트!",
     photoes: "/images/event8.jpg",
-    author_id: 2,
+    admin_id: 2,
     author_name: "관리자",
     like: 5,
     views: 37,
@@ -50,7 +50,7 @@ const initialEvents = [
     title: "CHEE US 9월 이벤트!",
     content: "9월 이벤트!",
     photoes: "/images/event9.jpg",
-    author_id: 2,
+    admin_id: 2,
     author_name: "관리자",
     like: 34,
     views: 97,
@@ -61,7 +61,7 @@ const initialEvents = [
     title: "CHEE US 10월 이벤트!",
     content: "10월 이벤트!",
     photoes: "/images/event10.jpg",
-    author_id: 2,
+    admin_id: 2,
     author_name: "관리자",
     like: 55,
     views: 138,
@@ -72,7 +72,7 @@ const initialEvents = [
     title: "CHEE US 11월 이벤트!",
     content: "11월의 이벤트!",
     photoes: "/images/event11.jpg",
-    author_id: 2,
+    admin_id: 2,
     author_name: "관리자",
     like: 55,
     views: 138,
@@ -83,7 +83,7 @@ const initialEvents = [
     title: "CHEE US 12월 이벤트!",
     content: "12월의 이벤트!",
     photoes: "/images/event12.jpg",
-    author_id: 2,
+    admin_id: 2,
     author_name: "관리자",
     like: 55,
     views: 138,
@@ -161,14 +161,14 @@ const EventAll = () => {
               </Box>
               <Box className="card-content">
                 <Avatar
-                  src={`https://images.unsplash.com/profile-${event.author_id}?dpr=2&auto=format&fit=crop&w=32&h=32&q=60&crop=faces&bg=fff`}
+                  src={`https://images.unsplash.com/profile-${event.admin_id}?dpr=2&auto=format&fit=crop&w=32&h=32&q=60&crop=faces&bg=fff`}
                   size="sm"
                   sx={{ '--Avatar-size': '1.5rem' }}
                   className="card-avatar"
                 />
                 <div>
                   <div className="card-author-name">
-                    {event.author_name}
+                    {event.author_name}<a className ='hidden'>{event.admin_id}</a>
                   </div>
                 </div>
                 <div className="card-icons-container">

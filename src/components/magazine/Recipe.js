@@ -17,7 +17,7 @@ const initialMagazines = [
     title: "스크류드라이버 레시피",
     content: "간결해서 만들기 쉬운!",
     photoes: "/images/recipe1.jpg",
-    author_id: 1,
+    admin_id: 1,
     author_name: "관리자",
     like: 17,
     views: 151,
@@ -28,7 +28,7 @@ const initialMagazines = [
     title: "쿠바 리브레 레시피",
     content: "실패할 수 없는 맛!",
     photoes: "/images/recipe2.jpg",
-    author_id: 2,
+    admin_id: 2,
     author_name: "관리자",
     like: 21,
     views: 78,
@@ -39,7 +39,7 @@ const initialMagazines = [
     title: "데킬라 선라이즈 레시피",
     content: "사진잘받는 영롱한색!",
     photoes: "/images/recipe3.jpg",
-    author_id: 2,
+    admin_id: 2,
     author_name: "관리자",
     like: 5,
     views: 37,
@@ -50,7 +50,7 @@ const initialMagazines = [
     title: "미도리사워 레시피",
     content: "모르는 사람은 있어도, 한잔만 마신 사람은 없다..!",
     photoes: "/images/recipe4.jpg",
-    author_id: 2,
+    admin_id: 2,
     author_name: "관리자",
     like: 34,
     views: 97,
@@ -61,7 +61,7 @@ const initialMagazines = [
     title: "뉴욕 레시피",
     content: "라이위스키로 만드는 칵테일!",
     photoes: "/images/recipe5.jpg",
-    author_id: 2,
+    admin_id: 2,
     author_name: "관리자",
     like: 55,
     views: 138,
@@ -139,14 +139,14 @@ const Recipe = () => {
               </Box>
               <Box className="card-content">
                 <Avatar
-                  src={`https://images.unsplash.com/profile-${magazine.author_id}?dpr=2&auto=format&fit=crop&w=32&h=32&q=60&crop=faces&bg=fff`}
+                  src={`https://images.unsplash.com/profile-${magazine.admin_id}?dpr=2&auto=format&fit=crop&w=32&h=32&q=60&crop=faces&bg=fff`}
                   size="sm"
                   sx={{ '--Avatar-size': '1.5rem' }}
                   className="card-avatar"
                 />
                 <div>
                   <div className="card-author-name">
-                    {magazine.author_name}
+                    {magazine.author_name}<a className = 'hidden'>{magazine.admin_id}</a>
                   </div>
                 </div>
                 <div className="card-icons-container">

@@ -10,6 +10,7 @@ const dummyData = {
       title: "CHEE US 6월 이벤트!",
       content: "6월의 이벤트!",
       photoes: "/images/event6.jpg",
+      admin_id: 1,
       author_name: "관리자",
       like: 17,
       views: 151,
@@ -20,6 +21,7 @@ const dummyData = {
       title: "CHEE US 7월 이벤트!",
       content: "7월의 이벤트!",
       photoes: "/images/event7.jpg",
+      admin_id: 1,
       author_name: "관리자",
       like: 17,
       views: 151,
@@ -30,6 +32,7 @@ const dummyData = {
       title: "CHEE US 8월 이벤트!",
       content: "8월의 이벤트!",
       photoes: "/images/event8.jpg",
+      admin_id: 1,
       author_name: "관리자",
       like: 17,
       views: 151,
@@ -40,6 +43,7 @@ const dummyData = {
       title: "CHEE US 9월 이벤트!",
       content: "9월의 이벤트!",
       photoes: "/images/event9.jpg",
+      admin_id: 1,
       author_name: "관리자",
       like: 17,
       views: 151,
@@ -50,6 +54,7 @@ const dummyData = {
       title: "CHEE US 10월 이벤트!",
       content: "10월의 이벤트!",
       photoes: "/images/event10.jpg",
+      admin_id: 1,
       author_name: "관리자",
       like: 17,
       views: 151,
@@ -60,6 +65,7 @@ const dummyData = {
       title: "CHEE US 11월 이벤트!",
       content: "11월의 이벤트!",
       photoes: "/images/event11.jpg",
+      admin_id: 1,
       author_name: "관리자",
       like: 17,
       views: 151,
@@ -70,6 +76,7 @@ const dummyData = {
       title: "CHEE US 12월 이벤트!",
       content: "12월의 이벤트!",
       photoes: "/images/event12.jpg",
+      admin_id: 1,
       author_name: "관리자",
       like: 17,
       views: 151,
@@ -90,7 +97,6 @@ const EventDetail = () => {
   if (!data) {
     return <div>Loading...</div>;
   }
-
   return (
     <div className="event-detail-container">
       <EventTop/>
@@ -101,6 +107,7 @@ const EventDetail = () => {
       	<img src={data.photoes} alt={data.title} className="event-detail-image" />
         <div className="event-detail-footer">
           <div className="event-detail-author">에디터 : {data.author_name}</div>
+          <a className = "hidden">{data.admin_id}</a>
           <div className="event-detail-stats">
             <span className="event-detail-likes">Likes: {data.like}</span>
             <span className="event-detail-views">Views: {data.views}</span>

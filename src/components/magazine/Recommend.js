@@ -16,60 +16,60 @@ const initialMagazines = [
     id: 1,
     title: "이주의 술집추천 : 성수동편",
     content: "성수의 핫한 술집 추천!",
-    photoes: "/images/recomend1.jpg",
-    author_id: 1,
+    photoes: "/images/recommend1.jpg",
+    admin_id: 1,
     author_name: "관리자",
     like: 17,
     views: 151,
-    category: 'recomend'
+    category: 'recommend'
   },
   {
     id: 2,
     title: "이주의 술집추천 : 이태원편",
     content: "핫플 이태원의 술집추천",
-    photoes: "/images/recomend2.jpg",
-    author_id: 2,
+    photoes: "/images/recommend2.jpg",
+    admin_id: 2,
     author_name: "관리자",
     like: 21,
     views: 78,
-    category: 'recomend'
+    category: 'recommend'
   },
   {
     id: 3,
     title: "이주의 술집추천 : 홍대편",
     content: "패피들의 성지 홍대 술집추천!",
-    photoes: "/images/recomend3.jpg",
-    author_id: 2,
+    photoes: "/images/recommend3.jpg",
+    admin_id: 2,
     author_name: "관리자",
     like: 5,
     views: 37,
-    category: 'recomend'
+    category: 'recommend'
   },
   {
     id: 4,
     title: "이주의 술집추천 : 을지로편",
     content: "힙지로의 힙한 술집추천!",
-    photoes: "/images/recomend4.jpg",
-    author_id: 2,
+    photoes: "/images/recommend4.jpg",
+    admin_id: 2,
     author_name: "관리자",
     like: 34,
     views: 97,
-    category: 'recomend'
+    category: 'recommend'
   },
   {
     id: 5,
     title: "이주의 술집추천 : 군자편",
     content: "나만 아는 군자 술집 추천!",
-    photoes: "/images/recomend5.jpg",
-    author_id: 2,
+    photoes: "/images/recommend5.jpg",
+    admin_id: 2,
     author_name: "관리자",
     like: 55,
     views: 138,
-    category: 'recomend'
+    category: 'recommend'
   },
 ];
 
-const Recomend = () => {
+const Recommend = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -86,13 +86,13 @@ const Recomend = () => {
   }, [location.search]);
 
   const handleCardClick = (id) => {
-    navigate(`/magazine/detail/recomend/${id}`);
+    navigate(`/magazine/detail/recommend/${id}`);
   };
 
   // 페이지네이션
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentMagazines = magazines.filter(magazine => magazine.category === 'recomend' && (magazine.title.includes(searchQuery) || magazine.content.includes(searchQuery))).slice(startIndex, startIndex + itemsPerPage);
-  const totalPages = Math.ceil(magazines.filter(magazine => magazine.category === 'recomend' && (magazine.title.includes(searchQuery) || magazine.content.includes(searchQuery))).length / itemsPerPage);
+  const currentMagazines = magazines.filter(magazine => magazine.category === 'recommend' && (magazine.title.includes(searchQuery) || magazine.content.includes(searchQuery))).slice(startIndex, startIndex + itemsPerPage);
+  const totalPages = Math.ceil(magazines.filter(magazine => magazine.category === 'recommend' && (magazine.title.includes(searchQuery) || magazine.content.includes(searchQuery))).length / itemsPerPage);
 
   const handleChange = (event, value) => {
     setCurrentPage(value);
@@ -139,14 +139,14 @@ const Recomend = () => {
               </Box>
               <Box className="card-content">
                 <Avatar
-                  src={`https://images.unsplash.com/profile-${magazine.author_id}?dpr=2&auto=format&fit=crop&w=32&h=32&q=60&crop=faces&bg=fff`}
+                  src={`https://images.unsplash.com/profile-${magazine.admin_id}?dpr=2&auto=format&fit=crop&w=32&h=32&q=60&crop=faces&bg=fff`}
                   size="sm"
                   sx={{ '--Avatar-size': '1.5rem' }}
                   className="card-avatar"
                 />
                 <div>
                   <div className="card-author-name">
-                    {magazine.author_name}
+                    {magazine.author_name}<a className = 'hidden'>{magazine.admin_id}</a>
                   </div>
                 </div>
                 <div className="card-icons-container">
@@ -187,4 +187,4 @@ const Recomend = () => {
   );
 };
 
-export default Recomend;
+export default Recommend;

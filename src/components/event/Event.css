@@ -5,7 +5,6 @@
     align-items: center;
     margin-top: 30px;
 }
-
 .eventContent-card-container {
     display: grid;
     width: 80vw;
@@ -14,7 +13,6 @@
     justify-items: center;
     margin-bottom: 20px; 
 }
-
 .eventContent-card {
     width: 300px;
     background-color: #fff;
@@ -23,25 +21,21 @@
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
-
 .eventContent-card:hover {
     transform: translateY(-5px);
     box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
 }
-
 .card-photo {
     width: 100%;
     height: auto;
     display: block;
     object-fit: cover;
 }
-
 .content-text,
 .card-author-name,
 .eventContent-title {
     font-family: 'GwangyangTouching';
 }
-
 .card-overlay-text {
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 1;
@@ -63,7 +57,6 @@
     white-space: normal;
   overflow-wrap: break-word;
 }
-
 .card-content {
     display: flex;
     gap: 1rem;
@@ -72,18 +65,15 @@
     margin-bottom: 0;
     font-family: 'GwangyangTouching';
 }
-
 .card-avatar {
     --Avatar-size: 2rem;
 }
-
 .card-icons-container {
     display: flex;
     gap: 0.5rem;
     cursor: pointer;
     white-space: nowrap;
 }
-
 .card-icon {
     display: flex;
     align-items: center;
@@ -93,37 +83,31 @@
     color: #808080;
     transition: color 0.3s;
 }
-
 @media (max-width: 1200px) {
     .eventContent-card-container {
         grid-template-columns: repeat(2, 1fr);
     }
 }
-
 @media (max-width: 768px) {
     .eventContent-card-container {
         grid-template-columns: 1fr;
     }
 }
-
 .pagination {
     display: flex;
     justify-content: center;
     margin-top: 20px;
 }
-
 .pagination button {
     margin: 0 5px;
     padding: 5px 10px;
     cursor: pointer;
 }
-
 .create-post-container {
     display: flex;
     justify-content: flex-end;
     margin-top: 20px; 
 }
-
 .create-post-button {
     padding: 10px 15px;
     background-color: #000000;
@@ -135,12 +119,12 @@
     font-family: 'GwangyangTouching';
     justify-content: flex-end;
     margin-right : 8vw;
-
 }
-
 .create-post-button:hover {
     background-color: #ffffff;
     color:black;
     border : solid 2px black;
-    
+}
+.hidden{
+	display: hidden;
 }
