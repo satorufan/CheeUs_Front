@@ -10,94 +10,15 @@ import Visibility from '@mui/icons-material/Visibility';
 import EventTop from "./EventTop";
 import Pagination from '@mui/material/Pagination';
 import './Event.css';
-
-const initialEvents = [
-  {
-    id: 1,
-    title: "CHEE US 6월 이벤트!",
-    content: "6월 이벤트!",
-    photoes: "/images/event6.jpg",
-    admin_id: 1,
-    author_name: "관리자",
-    like: 17,
-    views: 151,
-    category: 'event'
-  },
-  {
-    id: 2,
-    title: "CHEE US 7월 이벤트!",
-    content: "7월 이벤트!",
-    photoes: "/images/event7.jpg",
-    admin_id: 2,
-    author_name: "관리자",
-    like: 21,
-    views: 78,
-    category: 'event'
-  },
-  {
-    id: 3,
-    title: "CHEE US 8월 이벤트!",
-    content: "8월 이벤트!",
-    photoes: "/images/event8.jpg",
-    admin_id: 2,
-    author_name: "관리자",
-    like: 5,
-    views: 37,
-    category: 'event'
-  },
-  {
-    id: 4,
-    title: "CHEE US 9월 이벤트!",
-    content: "9월 이벤트!",
-    photoes: "/images/event9.jpg",
-    admin_id: 2,
-    author_name: "관리자",
-    like: 34,
-    views: 97,
-    category: 'event'
-  },
-  {
-    id: 5,
-    title: "CHEE US 10월 이벤트!",
-    content: "10월 이벤트!",
-    photoes: "/images/event10.jpg",
-    admin_id: 2,
-    author_name: "관리자",
-    like: 55,
-    views: 138,
-    category: 'event'
-  },
-  {
-    id: 6,
-    title: "CHEE US 11월 이벤트!",
-    content: "11월의 이벤트!",
-    photoes: "/images/event11.jpg",
-    admin_id: 2,
-    author_name: "관리자",
-    like: 55,
-    views: 138,
-    category: 'event'
-  },
-  {
-    id: 7,
-    title: "CHEE US 12월 이벤트!",
-    content: "12월의 이벤트!",
-    photoes: "/images/event12.jpg",
-    admin_id: 2,
-    author_name: "관리자",
-    like: 55,
-    views: 138,
-    category: 'event'
-  },
-];
+import { useEvents } from './EventContext';
 
 const EventAll = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  
+  const { events } = useEvents();
+
   const itemsPerPage = 8;
   const [currentPage, setCurrentPage] = useState(1);
-  const [events, setEvents] = useState(initialEvents); // 초기화 시 dummyData 사용
   const [searchQuery, setSearchQuery] = useState('');
 
   // URL 쿼리에서 검색어를 읽어와 상태에 설정
@@ -113,8 +34,8 @@ const EventAll = () => {
 
   // 페이지네이션
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentEvents = events.filter(event => event.category === 'event' && (event.title.includes(searchQuery) || event.content.includes(searchQuery))).slice(startIndex, startIndex + itemsPerPage);
-  const totalPages = Math.ceil(events.filter(event => event.category === 'event' && (event.title.includes(searchQuery) || event.content.includes(searchQuery))).length / itemsPerPage);
+  const currentEvents = Object.values(events.event).filter(event => event.title.includes(searchQuery) || event.title2.includes(searchQuery)).slice(startIndex, startIndex + itemsPerPage);
+  const totalPages = Math.ceil(Object.values(events.event).filter(event => event.title.includes(searchQuery) || event.title2.includes(searchQuery)).length / itemsPerPage);
 
   const handleChange = (event, value) => {
     setCurrentPage(value);
@@ -122,7 +43,7 @@ const EventAll = () => {
 
   return (
     <>
-      <EventTop/>
+      <EventTop />
       <div className="eventContent-container">
         <div className="eventContent-card-container">
           {currentEvents.map((event) => (
@@ -142,13 +63,13 @@ const EventAll = () => {
                         className="card-photo"
                       />
                       <div className="card-overlay-text">
-                        {event.content}
+                        {event.title2}
                       </div>
                     </CardCover>
                   ) : (
                     <CardCover className="card-cover">
-                      <div className="content-text">
-                        {event.content}
+                      <div className="title2-text">
+                        {event.title2}
                       </div>
                     </CardCover>
                   )}
@@ -159,7 +80,7 @@ const EventAll = () => {
                   {event.title}
                 </div>
               </Box>
-              <Box className="card-content">
+              <Box className="card-title2">
                 <Avatar
                   src={`https://images.unsplash.com/profile-${event.admin_id}?dpr=2&auto=format&fit=crop&w=32&h=32&q=60&crop=faces&bg=fff`}
                   size="sm"
@@ -167,8 +88,8 @@ const EventAll = () => {
                   className="card-avatar"
                 />
                 <div>
-                  <div className="card-author-name">
-                    {event.author_name}<a className ='hidden'>{event.admin_id}</a>
+                  <div className="card-admin-name">
+                    {event.admin_name}<a className='hidden'>{event.admin_id}</a>
                   </div>
                 </div>
                 <div className="card-icons-container">

@@ -47,6 +47,8 @@ import EventAll from './components/event/EventAll';
 import EventNow from './components/event/EventNow';
 import EventEnd from './components/event/EventEnd';
 import EventDetail from './components/event/EventDetail';
+import { EventProvider } from './components/event/EventContext';
+import { MagazineProvider } from './components/magazine/MagazineContext';
 
 const ChatPage = lazy(() => import('./components/chat/ChatPage'));
 
@@ -56,6 +58,8 @@ function App() {
       <AuthProvider>
       <BrowserRouter>
         <PostProvider>
+        <MagazineProvider>
+        <EventProvider>
           <Header />
             <Suspense fallback={<div>Loading...</div>}>
             <Routes>
@@ -102,8 +106,10 @@ function App() {
               <Route path="*" element={<div>404</div>} />
               <Route path="/event/detail/:category/:id" element={<EventDetail />} />
             </Routes>
-            </Suspense>
-          <Footer />
+	       </Suspense>
+	      <Footer />
+	    </EventProvider>
+	    </MagazineProvider>
         </PostProvider>
       </BrowserRouter>
       </AuthProvider>
