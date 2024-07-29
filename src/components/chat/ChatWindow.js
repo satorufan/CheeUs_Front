@@ -1,27 +1,30 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React, { useEffect, useContext, useState, useRef } from 'react';
 import { AuthContext } from '../login/OAuth';
-import {jwtDecode} from 'jwt-decode'; // jwtDecode는 기본 import 사용
+import { jwtDecode } from 'jwt-decode';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import { useSelector } from 'react-redux';
 import './chatPage.css';
-import { selectUserProfile, selectProfiles } from '../../store/MatchSlice';
+import { selectProfiles } from '../../store/MatchSlice';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { Modal, Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 
 const ChatWindow = ({
     selectedChat,
     messageInput,
     showMessageInput,
     formatMessageTime,
-    scrollRef,
     sendMessage,
     setMessageInput,
     activeKey
 }) => {
     const { token } = useContext(AuthContext);
+    const scrollRef = useRef(null);
     const [loggedInUserId, setLoggedInUserId] = useState(null);
     const [showParticipants, setShowParticipants] = useState(false);
-    const userProfile = useSelector(selectUserProfile);
     const profiles = useSelector(selectProfiles);
-    
+    const navigate = useNavigate(); 
+
     useEffect(() => {
         if (token) {
             try {
@@ -33,30 +36,42 @@ const ChatWindow = ({
         }
     }, [token]);
 
+    // 새 메시지가 도착했을 때 스크롤을 아래로 이동
     useEffect(() => {
         if (selectedChat) {
             scrollToBottom();
         }
-    }, [selectedChat]);
+    }, [selectedChat, selectedChat?.messages]);
 
     const scrollToBottom = () => {
         if (scrollRef.current) {
-            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+            const element = scrollRef.current;
+            const isAtBottom = element.scrollHeight - element.scrollTop === element.clientHeight;
+
+            if (!isAtBottom) {
+                element.scrollTo({
+                    top: element.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }
         }
     };
 
+    // 현재 사용자가 방장일때
+    const isAdmin = () => {
+        return selectedChat && selectedChat.members.length > 0 && selectedChat.members[0] === loggedInUserId;
+    };
+
+    // 메시지의 발신자가 현재 사용자와 같은지 확인
     const isSender = (senderId) => senderId === loggedInUserId;
 
+    // 현재 채팅에서 다른 사용자의 ID를 가져옴
     const getOtherUserId = () => {
         if (!selectedChat) return null;
         return selectedChat.member1 === loggedInUserId ? selectedChat.member2 : selectedChat.member1;
     };
 
-    const getProfileImageSrc = () => {
-        const profileUserId = getOtherUserId();
-        return profileUserId ? `https://www.clarity-enhanced.net/wp-content/uploads/2020/06/profile-${profileUserId}.jpg` : '';
-    };
-
+    // 채팅 창의 상단 
     const getDisplayName = () => {
         if (!selectedChat || (!selectedChat.member1 && !selectedChat.member2 && !selectedChat.togetherId)) {
             return <div className='chat-window-top-no'>나랑 같이 취할 사람 찾으러 가기!</div>; 
@@ -77,12 +92,13 @@ const ChatWindow = ({
                                         src={getProfileImage(member)}
                                         alt={`Profile of ${getNickname(member)}`}
                                         className="participant-img"
+                                        onClick={() => navigateToUserProfile(member)}
                                     />
-                                    <div className="participant-info">
-                                        <div>{getNickname(member)}</div>
-                                    </div>
                                 </div>
                             ))}
+                        <button className="more" onClick={toggleParticipants}>
+                            <MoreVertIcon />
+                        </button>
                     </div>
                 </>
             );
@@ -103,33 +119,49 @@ const ChatWindow = ({
                         src={profileImage} 
                         alt={`Profile of ${nickname}`} 
                         className="profile-img rounded-circle" 
-                        style={{ width: '40px', height: '40px', marginRight: '10px' }} 
+                        style={{ width: '40px', height: '40px', marginRight: '10px' }}
+                        onClick={() => navigateToUserProfile(otherUserId)}
                     />
-                    <span>{nickname}</span>
+                    <span onClick={() => navigateToUserProfile(otherUserId)}>{nickname}</span> 
                 </div>
             );
         } else {
-            return <span>{nickname}</span>;
+            return <span onClick={() => navigateToUserProfile(otherUserId)}>{nickname}</span>; 
         }
     };
 
+    // 기본 메시지
     const getDefaultMessage = () => {
         if (activeKey === 'one') {
-            return '조용하게 둘이 한 잔?';
+            return ['조용하게', '둘이 한 잔?'];
         } else {
-            return '여럿이 먹는 술이 더 꿀맛!';
+            return ['여럿이 먹는 술이', '더 꿀맛!'];
         }
     };
+    
+    const DefaultMessage = () => {
+        const [line1, line2] = getDefaultMessage();
+        return (
+            <div>
+                <>{line1}</>
+                <br />
+                <>{line2}</>
+            </div>
+        );
+    };
 
+    // 참가자 모달 토글
     const toggleParticipants = () => {
         setShowParticipants(!showParticipants);
     };
 
+    // 닉네임을 가져옴
     const getNickname = (email) => {
         const profile = profiles.find(p => p.profile.email === email);
         return profile ? profile.profile.nickname : email;
     };
 
+    // 프로필 이미지 URL을 가져옴
     const getProfileImage = (email) => {
         const profile = profiles.find(p => p.profile.email === email);
         return profile && profile.imageBlob.length > 0
@@ -137,6 +169,23 @@ const ChatWindow = ({
             : 'https://www.example.com/default-profile.jpg';
     };
 
+    // 사용자 ID를 가져옴
+    const getUserId = (email) => {
+        const profile = profiles.find(p => p.profile.email === email);
+        return profile ? profile.profile.id : null;
+    };
+
+    // 프로필 페이지로 이동
+    const navigateToUserProfile = (email) => {
+        const userId = getUserId(email);
+        if (userId) {
+            navigate(`/user/${userId}`);
+        } else {
+            console.error('User ID not found for email:', email);
+        }
+    };
+
+    // 메시지 발신자의 정보 가져오기
     const getMessageSenderInfo = (senderId) => {
         const senderProfile = profiles.find(p => p.profile.email === senderId);
         return {
@@ -147,8 +196,21 @@ const ChatWindow = ({
         };
     };
 
+    // 메시지 발신자에 따라 채팅 버블 설정
     const getChatBubbleClasses = (senderId) => {
         return isSender(senderId) ? 'chat-bubble me' : 'chat-bubble you';
+    };
+
+    // 사용자 강퇴 처리
+    const handleKick = (memberId) => {
+        console.log('Kick user:', memberId);
+        // 추가 구현예정
+    };
+
+    // 사용자 신고 처리
+    const handleReport = (memberId) => {
+        console.log('Report user:', memberId);
+        // 추가 구현예정
     };
 
     return (
@@ -166,7 +228,7 @@ const ChatWindow = ({
             </div>
 
             {selectedChat && (
-                <div className="chat active-chat" data-chat={`person${selectedChat.roomId}`}>
+                <div className="chat active-chat" data-chat={`person${selectedChat.roomId}`} ref={scrollRef}>
                     {selectedChat.messages && selectedChat.messages.length > 0 ? (
                         selectedChat.messages.map((message, index) => {
                             const senderInfo = getMessageSenderInfo(message.sender_id);
@@ -182,8 +244,9 @@ const ChatWindow = ({
                                                 src={senderInfo.profileImage}
                                                 alt={`Profile of ${senderInfo.nickname}`}
                                                 className="profile-img rounded-circle"
+                                                onClick={() => navigateToUserProfile(message.sender_id)}
                                             />
-                                            <span className="nickname">{senderInfo.nickname}</span>
+                                            <span className="nickname" onClick={() => navigateToUserProfile(message.sender_id)}>{senderInfo.nickname}</span> 
                                         </div>
                                     )}
                                     <div className={getChatBubbleClasses(message.sender_id)}>
@@ -195,7 +258,7 @@ const ChatWindow = ({
                         })
                     ) : (
                         <div className="no-messages">
-                            <p>{getDefaultMessage()}</p>
+                            <div>{DefaultMessage()}</div>
                         </div>
                     )}
                     <div ref={scrollRef}></div>
@@ -211,16 +274,65 @@ const ChatWindow = ({
                         value={messageInput}
                         onChange={(e) => setMessageInput(e.target.value)}
                         onKeyPress={(e) => {
-                            if (e.key === 'Enter') sendMessage();
+                            if (e.key === 'Enter') {
+                                sendMessage();
+                                scrollToBottom();
+                            }
                         }}
                     />
                     <ArrowUpwardIcon
                         className="send-icon"
                         fontSize="large"
-                        onClick={sendMessage}
+                        onClick={() => {
+                            sendMessage();
+                            scrollToBottom();
+                        }}
                     />
                 </div>
             )}
+
+            {/* 채팅 참여자 모달 */}
+            <Modal show={showParticipants} onHide={toggleParticipants}>
+                <Modal.Header closeButton>
+                    <Modal.Title>채팅 참여자</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {selectedChat && selectedChat.members ? (
+                        <ul className="participant-modal-list">
+                            {selectedChat.members.map((member, index) => (
+                                <li key={index} className="participant-modal-item">
+                                    <img
+                                        src={getProfileImage(member)}
+                                        alt={`Profile of ${getNickname(member)}`}
+                                        className="participant-modal-img"
+                                        onClick={() => navigateToUserProfile(member)}
+                                    />
+                                    <span
+                                        className="modal-nickname"
+                                        onClick={() => navigateToUserProfile(member)} 
+                                    >
+                                        {getNickname(member)}
+                                    </span>
+                                    <div className="participant-modal-actions">
+                                        {isAdmin() && ( 
+                                            <button className="no-style" onClick={() => handleKick(member)}>강퇴</button>
+                                        )}
+                                        <button className="no-style" onClick={() => handleReport(member)}>🚨</button>
+                                    </div>
+                                    <br/>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p>No participants found.</p>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={toggleParticipants}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </>
     );
 };
