@@ -10,29 +10,20 @@ import Visibility from '@mui/icons-material/Visibility';
 import EventTop from "./EventTop";
 import Pagination from '@mui/material/Pagination';
 import './Event.css';
-
-const initialEvents = [
-  {
-    id: 1,
-    title: "CHEE US 6월 이벤트!",
-    content: "6월 이벤트!",
-    photoes: "/images/event6.jpg",
-    admin_id: 1,
-    author_name: "관리자",
-    like: 17,
-    views: 151,
-    category: 'event'
-  },
-];
+import { useEvents } from './EventContext';
 
 const EventEnd = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  
+  const { events } = useEvents();
+
   const itemsPerPage = 8;
   const [currentPage, setCurrentPage] = useState(1);
-  const [events, setEvents] = useState(initialEvents); // 초기화 시 dummyData 사용
   const [searchQuery, setSearchQuery] = useState('');
+
+  // 현재 날짜 가져오기
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth() + 1; // 월은 0부터 시작하므로 +1 필요
 
   // URL 쿼리에서 검색어를 읽어와 상태에 설정
   useEffect(() => {
@@ -45,10 +36,23 @@ const EventEnd = () => {
     navigate(`/event/detail/event/${id}`);
   };
 
+  // 날짜 필터링
+  const isEndedEvent = (eventDate) => {
+    const event = new Date(eventDate);
+    const eventMonth = event.getMonth() + 1;
+    return eventMonth < currentMonth;
+  };
+
   // 페이지네이션
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentEvents = events.filter(event => event.category === 'event' && (event.title.includes(searchQuery) || event.content.includes(searchQuery))).slice(startIndex, startIndex + itemsPerPage);
-  const totalPages = Math.ceil(events.filter(event => event.category === 'event' && (event.title.includes(searchQuery) || event.content.includes(searchQuery))).length / itemsPerPage);
+  const currentEvents = Object.values(events.event)
+    .filter(event => isEndedEvent(event.date) && (event.title.includes(searchQuery) || event.title2.includes(searchQuery)))
+    .slice(startIndex, startIndex + itemsPerPage);
+  const totalPages = Math.ceil(
+    Object.values(events.event)
+      .filter(event => isEndedEvent(event.date) && (event.title.includes(searchQuery) || event.title2.includes(searchQuery)))
+      .length / itemsPerPage
+  );
 
   const handleChange = (event, value) => {
     setCurrentPage(value);
@@ -56,7 +60,7 @@ const EventEnd = () => {
 
   return (
     <>
-      <EventTop/>
+      <EventTop />
       <div className="eventContent-container">
         <div className="eventContent-card-container">
           {currentEvents.map((event) => (
@@ -76,13 +80,13 @@ const EventEnd = () => {
                         className="card-photo"
                       />
                       <div className="card-overlay-text">
-                        {event.content}
+                        {event.title2}
                       </div>
                     </CardCover>
                   ) : (
                     <CardCover className="card-cover">
-                      <div className="content-text">
-                        {event.content}
+                      <div className="title2-text">
+                        {event.title2}
                       </div>
                     </CardCover>
                   )}
@@ -93,7 +97,7 @@ const EventEnd = () => {
                   {event.title}
                 </div>
               </Box>
-              <Box className="card-content">
+              <Box className="card-title2">
                 <Avatar
                   src={`https://images.unsplash.com/profile-${event.admin_id}?dpr=2&auto=format&fit=crop&w=32&h=32&q=60&crop=faces&bg=fff`}
                   size="sm"
@@ -101,8 +105,8 @@ const EventEnd = () => {
                   className="card-avatar"
                 />
                 <div>
-                  <div className="card-author-name">
-                    {event.author_name}<a className ='hidden'>{event.admin_id}</a>
+                  <div className="card-admin-name">
+                    {event.admin_name}<a className='hidden'>{event.admin_id}</a>
                   </div>
                 </div>
                 <div className="card-icons-container">

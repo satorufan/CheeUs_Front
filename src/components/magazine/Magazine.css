@@ -36,7 +36,7 @@
     object-fit: cover;
 }
 
-.content-text,
+.title2-text,
 .card-author-name,
 .magazineContent-title {
     font-family: 'GwangyangTouching';
@@ -64,7 +64,7 @@
   overflow-wrap: break-word;
 }
 
-.card-content {
+.card-title2 {
     display: flex;
     gap: 1rem;
     align-items: center;

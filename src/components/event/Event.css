@@ -31,7 +31,7 @@
     display: block;
     object-fit: cover;
 }
-.content-text,
+.title2-text,
 .card-author-name,
 .eventContent-title {
     font-family: 'GwangyangTouching';
@@ -57,7 +57,7 @@
     white-space: normal;
   overflow-wrap: break-word;
 }
-.card-content {
+.card-title2 {
     display: flex;
     gap: 1rem;
     align-items: center;
