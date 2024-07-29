@@ -25,7 +25,6 @@ import axios from 'axios';
 
 const ChatPage = () => {
     const dispatch = useDispatch();
-    const scrollRef = useRef(null);
     const activeKey = useSelector(state => state.chat.activeKey);
     const selectedChat = useSelector(state => state.chat.selectedChat);
     const chatRooms = useSelector(state => state.chat.chatRooms);
@@ -94,15 +93,6 @@ const ChatPage = () => {
         dispatch(setShowMessageInput(false));
     }, [activeKey, dispatch]);
 
-    useEffect(() => {
-        scrollToBottom();
-    }, [selectedChat]);
-
-    const scrollToBottom = () => {
-        if (scrollRef.current) {
-            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-        }
-    };
 
     const handlePersonClick = async (roomId) => {
         try {
@@ -209,7 +199,6 @@ const ChatPage = () => {
                                         messageInput={messageInput}
                                         showMessageInput={showMessageInput}
                                         formatMessageTime={formatMessageTime}
-                                        scrollRef={scrollRef}
                                         sendMessage={sendMessage}
                                         setMessageInput={(input) => dispatch(setMessageInput(input))}
                                         activeKey={activeKey}
@@ -236,7 +225,6 @@ const ChatPage = () => {
                                         messageInput={messageInput}
                                         showMessageInput={showMessageInput}
                                         formatMessageTime={formatMessageTime}
-                                        scrollRef={scrollRef}
                                         sendMessage={sendMessage}
                                         setMessageInput={(input) => dispatch(setMessageInput(input))}
                                         activeKey={activeKey}

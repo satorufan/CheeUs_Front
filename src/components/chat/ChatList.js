@@ -130,9 +130,9 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
                                         {formatDate(lastMessage.write_day)}
                                     </span>
                                 </div>
-                                <p className="chat-preview mt-1">
+                                <div className="chat-preview">
                                     {lastMessage.message}
-                                </p>
+                                </div>
                             </li>
                         );
                     })
