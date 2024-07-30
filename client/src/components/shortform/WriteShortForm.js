@@ -62,11 +62,9 @@ function WriteShortForm() {
   
       const authorId = decodedToken?.email;
       const authorName = userProfile.name;
-  
+
       const newBoard = {
-        id: newId,
         author_id: authorId,
-        author_name: authorName,
         category: 2,
         title,
         content,
@@ -74,7 +72,8 @@ function WriteShortForm() {
         views: 0,
         like: 0,
         repl_cnt: 0,
-        videoUrl,
+        photoes: '',
+        media: ''
       };
   
       console.log('제출될 게시물 정보:', newBoard); // 콘솔에 제출될 게시물 정보 출력
@@ -106,8 +105,7 @@ function WriteShortForm() {
     const onChangeTitleHandler = (e) => {
       setTitle(e.target.value);
     };
-  
-  
+
     const onFileChangeHandler = (e) => {
       const selectedFile = e.target.files[0];
       setFile(selectedFile);

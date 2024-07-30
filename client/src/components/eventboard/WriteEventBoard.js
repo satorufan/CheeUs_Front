@@ -56,9 +56,7 @@ const WriteEventBoard = () => {
     const authorName = userProfile.name;
 
     const newBoard = {
-      id: newId,
       author_id: authorId,
-      author_name: authorName,
       category: 3,
       title,
       content,
@@ -67,6 +65,7 @@ const WriteEventBoard = () => {
       like: 0,
       repl_cnt: 0,
       photoes: '',
+      media: ''
     };
     
     swal({

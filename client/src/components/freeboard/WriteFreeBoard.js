@@ -56,9 +56,7 @@ const WriteFreeBoard = () => {
     const authorName = userProfile.name; 
 
     const newBoard = {
-      id: newId,
       author_id: authorId,
-      author_name: authorName,
       category: 1,
       title,
       content,
@@ -67,6 +65,7 @@ const WriteFreeBoard = () => {
       like: 0,
       repl_cnt: 0,
       photoes: '',
+      media: ''
     };
 
     swal({
@@ -77,7 +76,7 @@ const WriteFreeBoard = () => {
     }).then((willSubmit) => {
       if (willSubmit) {
         // 콘솔에 제출된 정보 출력
-        console.log('제출된 게시물 정보:', newBoard);
+        // console.log('제출된 게시물 정보:', newBoard);
 
         // 사용자가 확인 버튼을 누르면 게시물 제출
         dispatch(addBoard(newBoard));
