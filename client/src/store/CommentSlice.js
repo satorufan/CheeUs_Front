@@ -3,6 +3,12 @@ import axios from 'axios';
 
 // 초기 상태 정의
 const initialState = {
+    comments: {},
+    loading: false,
+    error: null,
+};
+/*
+const initialState = {
     comments: {
         // boardId: 1인 경우의 초기 댓글 데이터
         1: [
@@ -43,9 +49,27 @@ const initialState = {
         ],
       },
     };
-
+*/
 
 // 댓글 목록을 가져오는 thunk
+export const fetchComments = createAsyncThunk(
+    'comments/fetchComments',
+    async (boardId) => {
+        const response = await axios.get(`http://localhost:8080/comment/${boardId}`);
+        console.log(JSON.stringify(response.data, null, 2)); // 댓글정보 로딩 확인
+        // 댓글 데이터 정보 추출
+        const comments = response.data.map(comment => ({
+            id: comment.id,
+            board_id: comment.board_id,
+            repl_author_id: comment.repl_author_id,
+            repl_content: comment.repl_content, // 백엔드에서 사용하는 이름 그대로 사용
+            writeday: comment.writeday
+        }));
+
+        return { boardId, comments };
+    }
+);
+/*
 export const fetchComments = createAsyncThunk(
     'comments/fetchComments',
     async (boardId) => {
@@ -53,20 +77,21 @@ export const fetchComments = createAsyncThunk(
       return { boardId, comments: response.data };
     }
 );
+*/
 
 // 댓글 추가를 위한 thunk
 export const addComment = createAsyncThunk(
-  'comments/addComment',
-  async (commentData) => {
-    const response = await axios.post('http://localhost:8080/comments', commentData);
-    return {
-      id: response.data.id,
-      board_id: response.data.board_id,
-      repl_author_id: response.data.repl_author_id,
-      content: response.data.repl_content,
-      writeday: response.data.writeday
-    };
-  }
+    'comments/addComment',
+    async (commentData) => {
+        const response = await axios.post(`http://localhost:8080/comment/${commentData.id}`, commentData);
+        return {
+            id: response.data.id,
+            board_id: response.data.board_id,
+            repl_author_id: response.data.repl_author_id,
+            repl_content: response.data.repl_content, // 백엔드에서 사용하는 이름 그대로 사용
+            writeday: response.data.writeday
+        };
+    }
 );
 
 // 댓글 삭제를 위한 thunk
@@ -79,6 +104,24 @@ export const deleteComment = createAsyncThunk(
 );
 
 // 댓글 수정을 위한 thunk
+export const updateComment = createAsyncThunk(
+    'comments/updateComment',
+    async (updatedComment) => {
+        const { id, ...updatedData } = updatedComment;
+        const response = await axios.put(`http://localhost:8080/comment/${id}`, {
+            ...updatedData,
+            repl_content: updatedData.repl_content // 백엔드에서 사용하는 이름 그대로 사용
+        });
+        return {
+            id: response.data.id,
+            board_id: response.data.board_id,
+            repl_author_id: response.data.repl_author_id,
+            repl_content: response.data.repl_content,
+            writeday: response.data.writeday
+        };
+    }
+);
+/*
 export const updateComment = createAsyncThunk(
   'comments/updateComment',
   async (updatedComment) => {
@@ -96,6 +139,7 @@ export const updateComment = createAsyncThunk(
     };
   }
 );
+*/
 
 const commentsSlice = createSlice({
   name: 'comments',
@@ -103,6 +147,11 @@ const commentsSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+        .addCase(fetchComments.fulfilled, (state, action) => {
+            const { boardId, comments } = action.payload;
+            state.comments[boardId] = comments;
+        })
+        /*
         .addCase(fetchComments.fulfilled, (state, action) => {
             console.log('Fetch Comments Fulfilled:', action.payload); // 응답 확인
             const { boardId, comments } = action.payload;
@@ -114,6 +163,15 @@ const commentsSlice = createSlice({
                 writeday: comment.writeday
             })) || [];
         })
+         */
+        .addCase(addComment.fulfilled, (state, action) => {
+            const { boardId, ...newComment } = action.payload;
+            if (!state.comments[boardId]) {
+                state.comments[boardId] = [];
+            }
+            state.comments[boardId].push(newComment);
+        })
+        /*
       .addCase(addComment.fulfilled, (state, action) => {
         console.log('Add Comment Fulfilled:', action.payload); // 응답 확인
         const { board_id, id, content, repl_author_id, writeday } = action.payload;
@@ -128,6 +186,7 @@ const commentsSlice = createSlice({
           writeday
         });
       })
+         */
       .addCase(deleteComment.fulfilled, (state, action) => {
         const commentId = action.payload;
         Object.keys(state.comments).forEach(boardId => {

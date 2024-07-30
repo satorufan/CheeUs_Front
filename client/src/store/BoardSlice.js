@@ -3,133 +3,65 @@ import axios from 'axios';
 import { fetchComments, addComment, deleteComment, updateComment } from './CommentSlice';
 
 const initialState = {
-  boards: [
-    {
-      id: 1,
-      author_id: 'rbfl8484@gmail.com',
-      author_name: "안녕",
-      category: 1,
-      title: "첫 번째 게시물",
-      content: "첫 번째 게시물 내용입니다.agdagadgadgadsdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddagdadagaeadgadgadgadgadgadgadgadgadgadgadgadadgadgadagd",
-      writeday: "2024-07-11",
-      views: 50,
-      like: 10,
-      repl_cnt: 3,
-      photoes: "https://www.w3schools.com/w3images/mac.jpg",
-    },
-    {
-      id: 2,
-      author_id: 'abc',
-      author_name: "Jane Smith",
-      category: 1,
-      title: "두 번째 게시물",
-      content: "두 번째 게시물 내용입니다.",
-      writeday: "2024-07-10",
-      views: 30,
-      like: 5,
-      repl_cnt: 2,
-      photoes: "",
-    },
-    {
-      id: 3,
-      author_id: 103,
-      author_name: "Michael Johnson",
-      category: 1,
-      title: "세 번째 게시물",
-      content: "세 번째 게시물 내용입니다.",
-      writeday: "2024-07-09",
-      views: 20,
-      like: 8,
-      repl_cnt: 1,
-      photoes: "",
-    },
-    {
-      id: 4,
-      author_id: 104,
-      author_name: "Emily Brown",
-      category: 1,
-      title: "네 번째 게시물",
-      content: "네 번째 게시물 내용입니다.",
-      writeday: "2024-07-08",
-      views: 25,
-      like: 6,
-      repl_cnt: 2,
-      photoes: "https://www.w3schools.com/html/frenchfood.jpg",
-    },
-    {
-      id: 5,
-      author_id: 'rbfl8484@gmail.com',
-      author_name: '안녕',
-      category: 2,
-      title: '첫 번째 비디오 게시물',
-      content: '첫 번째 비디오 게시물 어쩌고 저쩌고',
-      writeday: '2024-07-11',
-      views: 50,
-      like: 10,
-      repl_cnt: 3,
-      media: 'V',
-      videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
-    },
-    {
-      id: 6,
-      author_id: 102,
-      author_name: 'Jane Smith',
-      category: 2,
-      title: '두 번째 비디오 게시물',
-      content: '두 번째 비디오 게시물',
-      writeday: '2024-07-10',
-      views: 30,
-      like: 5,
-      repl_cnt: 2,
-      media: 'V',
-      videoUrl: 'https://www.w3schools.com/html/movie.mp4',
-    },
-    {
-      id: 7,
-      author_id: 103,
-      author_name: 'Michael Johnson',
-      category: 2,
-      title: '세 번째 비디오 게시물',
-      content: '세 번째 비디오 게시물',
-      writeday: '2024-07-09',
-      views: 20,
-      like: 8,
-      repl_cnt: 1,
-      media: 'V',
-      videoUrl: 'https://assets.codepen.io/6093409/river.mp4',
-    },
-    {
-      id: 8,
-      author_id: 'rbfl8484@gmail.com',
-      author_name: "안녕",
-      category: 3,
-      title: "맥주 빨리마시기 대회",
-      content: "맥주를 빨리마시면 숙취를 얻습니다.",
-      writeday: "2024-07-09",
-      views: 20,
-      like: 8,
-      repl_cnt: 1,
-      photoes: "",
-    },
-    {
-      id: 9,
-      author_id: 105,
-      author_name: "빙그레",
-      category: 3,
-      title: "바나나 막걸리 먹으면",
-      content: "나한테 바나나?그래서 말걸리?",
-      writeday: "2024-07-09",
-      views: 20,
-      like: 8,
-      repl_cnt: 1,
-      photoes: "",
-    },
-  ],
-  filteredBoards: [], // 필터링된 게시물 목록
-  searchQuery: '', // 검색어 상태
+  boards: [],
+  filteredBoards: [],
+  searchQuery: '',
   likedMap: {},
 };
 
+// 카테고리에 따른 게시물 목록을 가져오는 thunk
+export const fetchBoards = createAsyncThunk(
+    'board/fetchBoards',
+    async (category) => {
+      const urlMap = {
+        freeboard: 'http://localhost:8080/board/freeboard',
+        shortform: 'http://localhost:8080/board/shortform',
+        eventboard: 'http://localhost:8080/board/eventboard'
+      };
+      const response = await axios.get(urlMap[category]);
+      return { category, data: response.data };
+    }
+);
+
+// 게시물 추가를 위한 thunk
+export const addBoard = createAsyncThunk(
+    'board/addBoard',
+    async (boardData) => {
+      const formData = new FormData();
+      formData.append('board', JSON.stringify(boardData)); // JSON 형태의 게시물 데이터
+      if (boardData.file) {
+        formData.append('file', boardData.file); // 파일 추가
+      }
+
+      const response = await axios.post('http://localhost:8080/board/insert', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      return response.data;
+    }
+);
+
+// 게시물 업데이트를 위한 thunk
+export const updateBoard = createAsyncThunk(
+    'board/updateBoard',
+    async (updatedBoard) => {
+      const response = await axios.put(
+          `http://localhost:8080/board/update/${updatedBoard.id}`,
+          updatedBoard,
+          {
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          }
+      );
+      // console.log("updated Data : ", updatedBoard); // 전송데이터 확인용
+      // console.log("response Data : ", response.data); // 결과 확인용
+      return response.data;
+    }
+);
+
+/*
 // 게시물 목록을 가져오는 thunk
 export const fetchBoards = createAsyncThunk(
   'board/fetchBoards',
@@ -138,7 +70,9 @@ export const fetchBoards = createAsyncThunk(
     return response.data;
   }
 );
+*/
 
+/*
 // 게시물 추가를 위한 thunk
 export const addBoard = createAsyncThunk(
   'board/addBoard',
@@ -156,7 +90,9 @@ export const addBoard = createAsyncThunk(
     return response.data;
   }
 );
+*/
 
+/*
 // 게시물 업데이트를 위한 thunk
 export const updateBoard = createAsyncThunk(
   'board/updateBoard',
@@ -166,6 +102,7 @@ export const updateBoard = createAsyncThunk(
     return response.data;
   }
 );
+*/
 
 const boardSlice = createSlice({
   name: 'board',
@@ -186,16 +123,25 @@ const boardSlice = createSlice({
     filterBoards(state) {
       const query = state.searchQuery.toLowerCase();
       state.filteredBoards = state.boards.filter(board =>
+          (board.title && board.title.toLowerCase().includes(query)) ||
+          (board.content && board.content.toLowerCase().includes(query))
+      );
+    },
+    /*
+      filterBoards(state) {
+      const query = state.searchQuery.toLowerCase();
+      state.filteredBoards = state.boards.filter(board =>
         board.title.toLowerCase().includes(query) ||
         board.content.toLowerCase().includes(query)
       );
-    },
+      },
+ */
   },
   extraReducers: (builder) => {
     builder
       .addCase(fetchBoards.fulfilled, (state, action) => {
-        state.boards = action.payload; // 게시물 목록 업데이트
-        state.filteredBoards = action.payload; // 초기 필터링된 게시물 목록 설정
+        state.boards = action.payload.data; // 게시물 목록 업데이트
+        state.filteredBoards = action.payload.data; // 초기 필터링된 게시물 목록 설정
       })
       .addCase(addBoard.fulfilled, (state, action) => {
         state.boards.push(action.payload); // 새로운 게시물 추가

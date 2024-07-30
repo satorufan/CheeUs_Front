@@ -10,7 +10,7 @@ import Favorite from '@mui/icons-material/Favorite';
 import Visibility from '@mui/icons-material/Visibility';
 import BoardTop from '../board/BoardTop';
 import Pagination from '@mui/material/Pagination';
-import { selectBoards, toggleLike, selectLikedMap, filterBoards, setSearchQuery, selectFilteredBoards } from '../../store/BoardSlice';
+import { selectBoards, toggleLike, selectLikedMap, filterBoards, setSearchQuery, selectFilteredBoards, fetchBoards} from '../../store/BoardSlice';
 import './shortForm.css';
 
 const ShortForm = () => {
@@ -27,6 +27,11 @@ const ShortForm = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [hoveredBoard, setHoveredBoard] = useState(null);
   const boardRefs = useRef({});
+
+  // 보드 목록 로딩
+  useEffect(() => {
+    dispatch(fetchBoards('shortform'));
+  }, [dispatch]);
 
   // URL 쿼리에서 검색어를 읽어와 상태에 설정
   useEffect(() => {

@@ -8,12 +8,14 @@ import { AuthContext } from '../login/OAuth'; // AuthContext 가져오기
 import { jwtDecode } from "jwt-decode";
 import './detailBoard.css';
 import Swal from 'sweetalert2';
+import axios from "axios";
 
 const DetailBoard = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const boards = useSelector(selectBoards);
   const { token } = useContext(AuthContext); // 현재 사용자 정보 가져오기
+  const [lastCategory, setLastCategory] = useState(null);
 
   let decodedToken;
   if (token) {
@@ -26,20 +28,48 @@ const DetailBoard = () => {
   const [scraped, setScraped] = useState(false);
 
   useEffect(() => {
-    if (!board) {
-      return;
-    }
+    if (!board) return;
 
-    // 게시물 카테고리에 따라 경로 변경
-    if (board.category === 1) {
-      navigate(`/board/freeboard/detail/${id}`);
-    } else if (board.category === 2) {
-      navigate(`/board/shortform/detail/${id}`);
-    } else if (board.category === 3) {
-      navigate(`/board/eventboard/detail/${id}`);
-    }
+    // 중복 navigate 방지를 위해 이전 카테고리 상태를 저장하고 비교
+    if (board.category !== lastCategory) {
+      setLastCategory(board.category);
+      let path = `/`; // 기본 경로 설정
 
-  }, [board, id, navigate, decodedToken]);
+      switch (board.category) {
+        case 1:
+          path = `/board/freeboard/detail/${id}`;
+          break;
+        case 2:
+          path = `/board/shortform/detail/${id}`;
+          break;
+        case 3:
+          path = `/board/eventboard/detail/${id}`;
+          break;
+        default:
+          // 기본 경로는 홈이나 에러 페이지 등으로 설정 가능
+          path = `/`;
+      }
+      navigate(path);
+    }
+  }, [board, id, navigate, lastCategory]);
+
+  /*
+ useEffect(() => {
+   if (!board) {
+     return;
+   }
+
+   // 게시물 카테고리에 따라 경로 변경
+   if (board.category === 1) {
+     navigate(`/board/freeboard/detail/${id}`);
+   } else if (board.category === 2) {
+     navigate(`/board/shortform/detail/${id}`);
+   } else if (board.category === 3) {
+     navigate(`/board/eventboard/detail/${id}`);
+   }
+
+ }, [board, id, navigate, decodedToken]);
+*/
 
   const handleAddComment = (e) => {
     e.preventDefault();
@@ -54,6 +84,57 @@ const DetailBoard = () => {
     setScraped(!scraped);
   };
 
+  const handleDelete = (id, category) => {
+    // console.log("id 수신 확인 : " + board.id);
+    // console.log("category 수신 확인 : " + board.category);
+    Swal.fire({
+      title: '정말로 삭제하시겠습니까?',
+      text: '이 작업은 되돌릴 수 없습니다!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: 'black',
+      cancelButtonColor: '#darkgray',
+      confirmButtonText: '삭제',
+      cancelButtonText: '취소'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios.delete(`http://localhost:8080/board/delete/${board.id}`)
+            .then((response) => {
+              console.log('게시물이 삭제되었습니다.', response.data);
+              Swal.fire(
+                  '삭제 완료!',
+                  '게시물이 성공적으로 삭제되었습니다.',
+                  'success'
+              ).then(() => {
+                // category에 따라 navigate 경로 설정
+                let path = '/';
+                switch (board.category) {
+                  case 1:
+                    path = '/board/freeboard';
+                    break;
+                  case 2:
+                    path = '/board/shortform';
+                    break;
+                  case 3:
+                    path = '/board/eventboard';
+                    break;
+                }
+                navigate(path);
+              });
+            })
+            .catch((error) => {
+              console.error('삭제 중 오류가 발생했습니다:', error);
+              Swal.fire(
+                  '삭제 실패',
+                  '게시물 삭제 중 문제가 발생했습니다.',
+                  'error'
+              );
+            });
+      }
+    });
+  };
+
+/*
   const handleDelete = () => {
     Swal.fire({
       title: '정말로 삭제하시겠습니까?',
@@ -71,6 +152,7 @@ const DetailBoard = () => {
       }
     });
   };
+*/
 
   if (!board) return <div>게시물을 찾을 수 없습니다.</div>;
 
