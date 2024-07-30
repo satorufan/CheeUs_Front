@@ -40,7 +40,7 @@ yarn-error.log*
 .idea/**/aws.xml
 
 # Generated files
-.idea/**/contentModel.xml
+# .idea/**/contentModel.xml
 
 # Sensitive or high-churn files
 .idea/**/dataSources/
