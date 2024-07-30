@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { Search } from '@mui/icons-material';
-import { jwtDecode } from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 import { AuthContext } from '../login/OAuth';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchChatRooms, fetchTogetherChatRooms } from '../../store/ChatSlice';
+import { fetchChatRooms, fetchTogetherChatRooms, updateOneOnOneChatRoomStatus, removeUserFromTogetherChatRoom } from '../../store/ChatSlice';
 import { selectUserProfile, fetchUserProfiles, selectProfiles } from '../../store/MatchSlice';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
 const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
     const { token } = useContext(AuthContext);
@@ -43,7 +44,6 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
         console.log(userProfile);
     }, [updatedChatRooms, updatedTogetherChatRooms, userProfile]);
 
-    // 첫 번째 프로필 이미지 가져오기
     const getProfileImage = useCallback((memberId) => {
         const profile = profiles.find(p => p.profile.email === memberId);
         return profile && profile.imageBlob.length > 0 
@@ -51,7 +51,14 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
             : 'https://www.example.com/default-profile.jpg'; // 기본 이미지 URL
     }, [profiles]);
 
+    const getOtherMemberId = (room) => {
+        if (isTogether) {
+            return room.members.find(member => member !== loggedInUserId);
+        }
+        return room.member1 === loggedInUserId ? room.member2 : room.member1;
+    };
 
+    
     const formatDate = (dateString) => {
         if (!dateString) return '메시지가 없습니다'; 
 
@@ -75,7 +82,9 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
     };
 
     const isUserInChat = (room) => {
-        if (!isTogether || !room.members) return true;
+        if (!isTogether) {
+            return room.match !== 3;
+        }
         return room.members.includes(loggedInUserId);
     };
 
@@ -94,6 +103,22 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
         return <div>오류 발생: {error}</div>;
     }
 
+    const handleExitChat = (roomId) => { // 여기 해결하기
+        if (isTogether) {
+            if (window.confirm('정말로 이 단체 채팅방에서 나가시겠습니까?')) {
+                dispatch(removeUserFromTogetherChatRoom({ roomId, userId: loggedInUserId }))
+                    .then(() => console.log('단체 채팅방에서 사용자 제거 성공'))
+                    .catch(err => console.error('단체 채팅방에서 사용자 제거 오류:', err));
+            }
+        } else {
+            if (window.confirm('정말로 이 1:1 채팅방을 삭제하시겠습니까?')) {
+                dispatch(updateOneOnOneChatRoomStatus({ roomId, match: 3 }))
+                    .then(() => console.log('1:1 채팅방 match 업데이트 성공'))
+                    .catch(err => console.error('1:1 채팅방 match 업데이트 오류:', err));
+            }
+        }
+    };
+
     return (
         <>
             <div className="chat-top d-flex align-items-center">
@@ -105,6 +130,7 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
                     currentChatRooms.filter(isUserInChat).map(room => {
                         const lastMessage = getLastMessage(room);
                         const isNewMessage = lastMessage.read === 0;
+                        const otherMemberId = getOtherMemberId(room);
                         return (
                             <li
                                 key={room.roomId}
@@ -115,10 +141,9 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
                                     <div className="d-flex align-items-center">
                                         {!isTogether && (
                                             <img
-                                                src={getProfileImage(room.member1)}
+                                                src={getProfileImage(otherMemberId)}
                                                 alt={`${room.member1}의 프로필`}
                                                 className="rounded-circle mr-3"
-                                                style={{ width: '40px', height: '40px' }}
                                             />
                                         )}
                                         <span className="chat-name">
@@ -131,7 +156,12 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
                                     </span>
                                 </div>
                                 <div className="chat-preview">
-                                    {lastMessage.message}
+                                    <div className="message-content">
+                                        {lastMessage.message}
+                                    </div>
+                                    <div className="delete-icon">
+                                        <DeleteForeverIcon onClick={() => handleExitChat(room.roomId)} />
+                                    </div>
                                 </div>
                             </li>
                         );

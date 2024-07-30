@@ -1,6 +1,6 @@
 import React, { useEffect, useContext, useState, useRef } from 'react';
 import { AuthContext } from '../login/OAuth';
-import { jwtDecode } from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import { useSelector } from 'react-redux';
 import './chatPage.css';
@@ -36,7 +36,6 @@ const ChatWindow = ({
         }
     }, [token]);
 
-    // 새 메시지가 도착했을 때 스크롤을 아래로 이동
     useEffect(() => {
         if (selectedChat) {
             scrollToBottom();
@@ -57,45 +56,53 @@ const ChatWindow = ({
         }
     };
 
-    // 현재 사용자가 방장일때
     const isAdmin = () => {
         return selectedChat && selectedChat.members.length > 0 && selectedChat.members[0] === loggedInUserId;
     };
 
-    // 메시지의 발신자가 현재 사용자와 같은지 확인
     const isSender = (senderId) => senderId === loggedInUserId;
 
-    // 현재 채팅에서 다른 사용자의 ID를 가져옴
     const getOtherUserId = () => {
         if (!selectedChat) return null;
         return selectedChat.member1 === loggedInUserId ? selectedChat.member2 : selectedChat.member1;
     };
 
-    // 채팅 창의 상단 
     const getDisplayName = () => {
         if (!selectedChat || (!selectedChat.member1 && !selectedChat.member2 && !selectedChat.togetherId)) {
             return <div className='chat-window-top-no'>나랑 같이 취할 사람 찾으러 가기!</div>; 
         }
-
+    
         if (selectedChat.togetherId) {
+            const nonCurrentMembers = selectedChat.members.filter(member => member !== loggedInUserId);
+            const avatarsToShow = nonCurrentMembers.slice(0, 1); 
+            const additionalCount = nonCurrentMembers.length - 1; 
+    
             return (
                 <>
                     <div className="chat-name">
                         {selectedChat.togetherId}
                     </div>
                     <div className="participant-list">
-                        {selectedChat.members
-                            .filter(member => member !== loggedInUserId) 
-                            .map((member, index) => (
-                                <div key={index} className="participant-item">
+                        <div className="participant-avatar-container">
+                            {avatarsToShow.map((member, index) => (
+                                <div
+                                    key={index}
+                                    className="participant-item"
+                                    style={{ zIndex: avatarsToShow.length - index }}
+                                >
                                     <img
                                         src={getProfileImage(member)}
                                         alt={`Profile of ${getNickname(member)}`}
                                         className="participant-img"
-                                        onClick={() => navigateToUserProfile(member)}
                                     />
                                 </div>
                             ))}
+                            {additionalCount > 0 && (
+                                <div className="more-avatars">
+                                     + {additionalCount}
+                                </div>
+                            )}
+                        </div>
                         <button className="more" onClick={toggleParticipants}>
                             <MoreVertIcon />
                         </button>
@@ -103,7 +110,7 @@ const ChatWindow = ({
                 </>
             );
         }
-
+    
         const otherUserId = getOtherUserId();
         if (!otherUserId) {
             return <span>상대방 정보 없음</span>;
@@ -111,7 +118,7 @@ const ChatWindow = ({
         
         const nickname = getNickname(otherUserId);
         const profileImage = getProfileImage(otherUserId);
-
+    
         if (activeKey === 'one') {
             return (
                 <div className="d-flex align-items-center">
@@ -130,7 +137,6 @@ const ChatWindow = ({
         }
     };
 
-    // 기본 메시지
     const getDefaultMessage = () => {
         if (activeKey === 'one') {
             return ['조용하게', '둘이 한 잔?'];
@@ -150,18 +156,15 @@ const ChatWindow = ({
         );
     };
 
-    // 참가자 모달 토글
     const toggleParticipants = () => {
         setShowParticipants(!showParticipants);
     };
 
-    // 닉네임을 가져옴
     const getNickname = (email) => {
         const profile = profiles.find(p => p.profile.email === email);
         return profile ? profile.profile.nickname : email;
     };
 
-    // 프로필 이미지 URL을 가져옴
     const getProfileImage = (email) => {
         const profile = profiles.find(p => p.profile.email === email);
         return profile && profile.imageBlob.length > 0
@@ -169,13 +172,11 @@ const ChatWindow = ({
             : 'https://www.example.com/default-profile.jpg';
     };
 
-    // 사용자 ID를 가져옴
     const getUserId = (email) => {
         const profile = profiles.find(p => p.profile.email === email);
         return profile ? profile.profile.id : null;
     };
 
-    // 프로필 페이지로 이동
     const navigateToUserProfile = (email) => {
         const userId = getUserId(email);
         if (userId) {
@@ -185,7 +186,6 @@ const ChatWindow = ({
         }
     };
 
-    // 메시지 발신자의 정보 가져오기
     const getMessageSenderInfo = (senderId) => {
         const senderProfile = profiles.find(p => p.profile.email === senderId);
         return {
@@ -196,18 +196,15 @@ const ChatWindow = ({
         };
     };
 
-    // 메시지 발신자에 따라 채팅 버블 설정
     const getChatBubbleClasses = (senderId) => {
         return isSender(senderId) ? 'chat-bubble me' : 'chat-bubble you';
     };
 
-    // 사용자 강퇴 처리
     const handleKick = (memberId) => {
         console.log('Kick user:', memberId);
         // 추가 구현예정
     };
 
-    // 사용자 신고 처리
     const handleReport = (memberId) => {
         console.log('Report user:', memberId);
         // 추가 구현예정
