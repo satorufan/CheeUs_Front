@@ -103,7 +103,12 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
         return <div>오류 발생: {error}</div>;
     }
 
-    const handleExitChat = (roomId) => { // 여기 해결하기
+    
+
+    const handleExitChat = (roomId) => {
+        // roomId를 객체 형태로 출력
+        console.log({ roomId });
+    
         if (isTogether) {
             if (window.confirm('정말로 이 단체 채팅방에서 나가시겠습니까?')) {
                 dispatch(removeUserFromTogetherChatRoom({ roomId, userId: loggedInUserId }))

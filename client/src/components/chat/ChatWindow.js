@@ -311,10 +311,14 @@ const ChatWindow = ({
                                         {getNickname(member)}
                                     </span>
                                     <div className="participant-modal-actions">
-                                        {isAdmin() && ( 
+                                        {/* Show Kick button only if admin and member is not the logged-in user */}
+                                        {isAdmin() && member !== loggedInUserId && (
                                             <button className="no-style" onClick={() => handleKick(member)}>강퇴</button>
                                         )}
-                                        <button className="no-style" onClick={() => handleReport(member)}>🚨</button>
+                                        {/* Show Report button always, but hide it if the member is the logged-in user */}
+                                        {member !== loggedInUserId && (
+                                            <button className="no-style" onClick={() => handleReport(member)}>🚨</button>
+                                        )}
                                     </div>
                                     <br/>
                                 </li>

@@ -62,6 +62,7 @@ app.get('/api/chatRooms', async (req, res) => {
                 $project: {
                     _id: 0,
                     roomId: '$id',
+                    match:'$match',
                     member1: 1,
                     member2: 1,
                     messages: {
@@ -186,7 +187,7 @@ app.put('/api/messages/:roomId/read', async (req, res) => {
     }
 });
 
-// 단체1:1 메시지 읽음 상태 업데이트
+// 단체 메시지 읽음 상태 업데이트
 app.put('/api/togetherMessages/:roomId/read', async (req, res) => {
     const { roomId } = req.params;
     if (!roomId) {
@@ -204,6 +205,52 @@ app.put('/api/togetherMessages/:roomId/read', async (req, res) => {
     } catch (error) {
         console.error('단체 채팅 메시지 읽음 상태 업데이트 오류:', error);
         res.status(500).json({ error: '단체 채팅 메시지 읽음 상태 업데이트 실패' });
+    }
+});
+
+// 1:1 채팅방 삭제 API
+app.put('/api/chatRooms/:roomId', async (req, res) => {
+    const roomId = parseInt(req.params.roomId, 10);
+    try {
+        const result = await db.collection('oneone_chat_rooms').updateOne(
+            { id: roomId },
+            { $set: { match: 3 } } // match 값을 3으로 업데이트
+        );
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ error: '채팅방을 찾을 수 없습니다' });
+        }
+        res.status(200).json({ message: '채팅방 상태가 업데이트되었습니다' });
+    } catch (error) {
+        console.error('채팅방 상태 업데이트 오류:', error);
+        res.status(500).json({ error: '채팅방 상태 업데이트 실패' });
+    }
+});
+
+
+// 단체 채팅방에서 사용자 제거 API
+app.put('/api/togetherChatRooms/:roomId/leave', async (req, res) => {
+    const roomId = parseInt(req.params.roomId, 10);
+    const { userId } = req.body; // 나가려는 사용자의 ID
+
+    if (!userId) {
+        return res.status(400).json({ error: '사용자 ID가 필요합니다' });
+    }
+
+    try {
+        // 1. 채팅방에서 사용자 제거
+        const result = await db.collection('together_chat_rooms').updateOne(
+            { id: roomId },
+            { $pull: { members: userId } } // members 배열에서 userId를 제거
+        );
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ error: '단체 채팅방을 찾을 수 없습니다' });
+        }
+
+        res.status(200).json({ message: '채팅방에서 사용자 제거 완료' });
+    } catch (error) {
+        console.error('채팅방에서 사용자 제거 오류:', error);
+        res.status(500).json({ error: '채팅방에서 사용자 제거 실패' });
     }
 });
 
