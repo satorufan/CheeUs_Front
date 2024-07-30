@@ -30,16 +30,16 @@ const PostDetailMap = ({ latitude, longitude, title, location }) => {
               map: map,
             });
 
-            const mapTypeControl = new kakao.maps.MapTypeControl();
-            map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
-            const zoomControl = new kakao.maps.ZoomControl();
-            map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
+              // 마커에 클릭 이벤트 추가 (예: 커스텀 오버레이 표시)
+              const overlay = new kakao.maps.CustomOverlay({
+                content: generateCustomOverlayContent(),
+                position: marker.getPosition(),
+                yAnchor: 1.5,
+                zIndex: 3,
+                clickable: true
+              });
 
-            const content = `<div class = 'infowindow'><${title}><br/>장소 : ${location}</div>`;
-            const infowindow = new kakao.maps.InfoWindow({
-              content: content,
-            });
-            infowindow.open(map, marker);
+                overlay.setMap(map);
           });
         }
       } catch (error) {
@@ -54,8 +54,22 @@ const PostDetailMap = ({ latitude, longitude, title, location }) => {
     };
   }, [latitude, longitude, title, location]);
 
+  const generateCustomOverlayContent = ( ) => {
+
+    let content = `
+      <div style="position: relative; display: inline-block; padding:15px; background-color:white; border-radius:10px; box-shadow: 0px 0px 10px rgba(0,0,0,0.5); border: none;">
+        <h3 style="margin:0; padding-bottom:5px; border-bottom:1px solid #ccc;width: auto;">${title}</h3>
+        <p style="margin:5px 0;">${location}</p>
+        <div style="position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 10px solid white;"></div>
+        </div>
+      `;
+
+    return content;
+  };
+
+
   return (
-    <div id="map" style={{  height: '87.5vh'}}></div>
+    <div id="map" style={{  height: '100%', width: '100%'}}></div>
   );
 };
 

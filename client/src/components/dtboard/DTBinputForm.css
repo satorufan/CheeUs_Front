@@ -72,6 +72,7 @@
 	display: flex;
 	height: 98.5vh;
 	background-color: #f9f9f9;
+	gap: 10px;
   }
   .mypageContainer {
   	flex: 1;
@@ -234,6 +235,7 @@
     height: 2.5rem;
     font-size: 1.125rem;
     margin-left: 5px;
+    margin-right: 10px;
   }
    /*지도 영역*/
   .mapContainer{
@@ -248,9 +250,9 @@
    box-shadow: 0px 0px 2px 1px #999;
    margin: 0 auto;
    width: 50%;
-   height: 87.5vh;
-   margin-right: 15px;
-   border-radius: 20px;    
+   height: 87.3vh;
+   margin-right: 25px;
+   border-radius: 10px;    
    margin-top: 90px;
    }
   .board-right {
@@ -276,15 +278,17 @@
   padding: 5px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  margin-right: -4px;
 }
 
 .map-search-box button {
-  padding: 5px 10px;
+  padding: 5px 5px;
   border: none;
   background-color: #333;
   color: white;
   border-radius: 5px;
   cursor: pointer;
+  margin : 0 -4px;
 }
 
 .map-search-box button:hover {
@@ -302,7 +306,7 @@
   top: 30px;
   left: 10px;
   z-index: 9;
-  background: white;
+  background: rgb(255,2555,2555,0.7);
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   max-height: 60vh;
@@ -310,7 +314,6 @@
   width: 30.4%;
   padding: 10px;
 }
-
 .item {
   margin-top: 20px;
   padding: 10px;
@@ -357,5 +360,5 @@
 	height: auto;
 	width: 260px;
 	padding: 5px;
-	
+	border-radius: 5px;
 }

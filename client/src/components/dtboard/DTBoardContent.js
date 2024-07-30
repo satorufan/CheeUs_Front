@@ -23,15 +23,19 @@ const DTBoardContent = ({ posts, totalPosts, postsPerPage, paginate, onWriteButt
         </div>
       ))}
       <div className="board-footer">
-        <div className="pagination">
-          {pageNumbers.map(number => (
-            <a key={number} onClick={(e) => { e.preventDefault(); paginate(number); }} href="!#" className="page-link">
-              {number} {/* 페이지 넘버를 key값으로 하며, preventDefault와 !#로 페이지 새로고침 막으면서 paginate를 호출하여 페이지를 변경한다. */}
-            </a>
-          ))}
-        </div>
-        <button className="write-button" onClick={onWriteButtonClick}>게시글 작성</button>
+      	<div className = "footerLeft">
+	        <div className="pagination">
+	          {pageNumbers.map(number => (
+	            <a key={number} onClick={(e) => { e.preventDefault(); paginate(number); }} href="!#" className="page-link">
+	              {number} {/* 페이지 넘버를 key값으로 하며, preventDefault와 !#로 페이지 새로고침 막으면서 paginate를 호출하여 페이지를 변경한다. */}
+	            </a>
+	          ))}
+	        </div>
       </div>
+      <div className = "footerRight">
+	          <button className="write-button" onClick={onWriteButtonClick}>게시글 작성</button>
+	      </div>
+	  </div>
     </div>
   );
 };
