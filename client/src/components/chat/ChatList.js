@@ -8,7 +8,7 @@ import { selectUserProfile, fetchUserProfiles, selectProfiles } from '../../stor
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
 const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
-    const { token } = useContext(AuthContext);
+    const { token, serverUrl, memberEmail } = useContext(AuthContext);
     const [loggedInUserId, setLoggedInUserId] = useState(null);
     const dispatch = useDispatch();
     const updatedChatRooms = useSelector(state => state.chat.chatRooms);
@@ -16,20 +16,20 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
     const status = useSelector(state => state.chat.status);
     const error = useSelector(state => state.chat.error);
     const userProfile = useSelector(selectUserProfile);
-    const profiles = useSelector(selectProfiles);
+    // const profiles = useSelector(selectProfiles);
 
     useEffect(() => {
         if (token) {
             try {
                 const decodedToken = jwtDecode(token);
                 setLoggedInUserId(decodedToken.email);
-                dispatch(fetchChatRooms(decodedToken.email)).catch(err => {
+                dispatch(fetchChatRooms({serverUrl, userId : decodedToken.email})).catch(err => {
                     console.error('Failed to fetch chat rooms:', err);
                 });
                 dispatch(fetchTogetherChatRooms()).catch(err => {
                     console.error('Failed to fetch together chat rooms:', err);
                 });
-                dispatch(fetchUserProfiles({ serverUrl: 'http://localhost:8080' })).catch(err => {
+                dispatch(fetchUserProfiles({ serverUrl, memberEmail })).catch(err => {
                     console.error('Failed to fetch user profiles:', err);
                 });
             } catch (err) {
@@ -44,19 +44,20 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
         console.log(userProfile);
     }, [updatedChatRooms, updatedTogetherChatRooms, userProfile]);
 
-    const getProfileImage = useCallback((memberId) => {
-        const profile = profiles.find(p => p.profile.email === memberId);
-        return profile && profile.imageBlob.length > 0 
-            ? profile.imageBlob[0] 
-            : 'https://www.example.com/default-profile.jpg'; // 기본 이미지 URL
-    }, [profiles]);
+    // const getProfileImage = useCallback((memberId) => {
+    //     console.log(profiles);
+    //     const profile = profiles.find(p => p.profile.email === memberId);
+    //     return profile && profile.imageBlob.length > 0 
+    //         ? profile.imageBlob[0] 
+    //         : 'https://www.example.com/default-profile.jpg'; // 기본 이미지 URL
+    // }, [profiles]);
 
-    const getOtherMemberId = (room) => {
-        if (isTogether) {
-            return room.members.find(member => member !== loggedInUserId);
-        }
-        return room.member1 === loggedInUserId ? room.member2 : room.member1;
-    };
+    // const getOtherMemberId = (room) => {
+    //     if (isTogether) {
+    //         return room.members.find(member => member !== loggedInUserId);
+    //     }
+    //     return room.member1 === loggedInUserId ? room.member2 : room.member1;
+    // };
 
     
     const formatDate = (dateString) => {
@@ -88,10 +89,10 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
         return room.members.includes(loggedInUserId);
     };
 
-    const getNickname = (email) => {
-        const profile = profiles.find(p => p.profile.email === email);
-        return profile ? profile.profile.nickname : email;
-    };
+    // const getNickname = (email) => {
+    //     const profile = profiles.find(p => p.profile.email === email);
+    //     return profile ? profile.profile.nickname : email;
+    // };
 
     const currentChatRooms = isTogether ? updatedTogetherChatRooms : updatedChatRooms;
 
@@ -130,7 +131,7 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
                     currentChatRooms.filter(isUserInChat).map(room => {
                         const lastMessage = getLastMessage(room);
                         const isNewMessage = lastMessage.read === 0;
-                        const otherMemberId = getOtherMemberId(room);
+                        // const otherMemberId = getOtherMemberId(room);
                         return (
                             <li
                                 key={room.roomId}
@@ -141,13 +142,13 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
                                     <div className="d-flex align-items-center">
                                         {!isTogether && (
                                             <img
-                                                src={getProfileImage(otherMemberId)}
-                                                alt={`${room.member1}의 프로필`}
+                                                src={room.image}
+                                                alt={`${room.email}의 프로필`}
                                                 className="rounded-circle mr-3"
                                             />
                                         )}
                                         <span className="chat-name">
-                                            {isTogether ? `${room.togetherId}` : (room.member1 !== loggedInUserId ? getNickname(room.member1) : getNickname(room.member2))}
+                                            {room.nickname}
                                         </span>
                                         {isNewMessage && lastMessage.sender_id !== loggedInUserId && <span className="receive-new">New</span>}
                                     </div>

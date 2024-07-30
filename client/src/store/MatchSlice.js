@@ -20,42 +20,62 @@ const initialState = {
 // 타 멤버 프로필을 가져오는 thunk
 export const fetchUserProfiles = createAsyncThunk(
     'match/fetchUserProfiles',
-    async ({ serverUrl }) => {
-        const response = await axios.get(`${serverUrl}/match`);
-        const profiles = response.data.map(data => {
-            const imageBlob = [];
-            for (let i = 0; i < data.profile.photo; i++) {
-                imageBlob.push(`data:${data.imageType[i]};base64,${data.imageBlob[i]}`);
-            }
-            return {
-                profile: {
-                    ...data.profile,
-                    popularity: data.popularity
-                },
-                imageBlob: imageBlob
-            };
-        });
-        return profiles;
+    async ({ serverUrl, memberEmail }) => {
+        if (memberEmail) {
+            const response = await axios.get(`${serverUrl}/match`, {params : {email : memberEmail}});
+            const profiles = response.data.map(data => {
+                const imageBlob = [];
+                for (let i = 0; i < data.profile.photo; i++) {
+                    imageBlob.push(`data:${data.imageType[i]};base64,${data.imageBlob[i]}`);
+                }
+                return {
+                    profile: {
+                        ...data.profile,
+                        popularity: data.popularity
+                    },
+                    imageBlob: imageBlob
+                };
+            });
+            console.log(response);
+            return profiles;
+        }
     }
 );
 
+// 위치 정보 동의
 export const updateLocationPermission = createAsyncThunk(
     'match/updateLocationPermission',
-    async ({ serverUrl, userId }) => {
-        const response = await axios.put(`${serverUrl}/updateLocationPermission/${loggedInUserId}`, { location_ok: 1 });
+    async ({memberEmail, serverUrl, latitude, longitude}) => {
+        const formData = new FormData();
+
+        formData.append("email", memberEmail);
+        formData.append("type", "location");
+        formData.append("latitude", latitude);
+        formData.append("longitude", longitude);
+        
+        const response = await axios.put(`${serverUrl}/profile/allow`, formData);
         return response.data;
     }
 );
 
+// 매칭 동의
 export const updateMatchServiceAgreement = createAsyncThunk(
     'match/updateMatchServiceAgreement',
-    async ({ serverUrl, userId }) => {
-        const response = await axios.put(`${serverUrl}/updateMatchServiceAgreement/${loggedInUserId}`, { match_ok: 1 });
+    async ({memberEmail, serverUrl}) => {
+        const formData = new FormData();
+
+        formData.append("email", memberEmail);
+        formData.append("type", "match");
+        
+        const response = await axios.put(`${serverUrl}/profile/allow`, formData);
         return response.data;
     }
 );
 
-
+// firstLiker 먼저 좋아요 눌렀을 경우 목록 불러오기 -> 둘이마셔요에서 띄울지 말지 정하는 로직
+export const loadFirstLike = createAsyncThunk(
+    'match/loadFirstLike'
+)
 
 const MatchSlice = createSlice({
     name: 'match',
