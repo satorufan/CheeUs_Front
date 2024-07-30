@@ -1,0 +1,85 @@
+.magazine-category-container {
+    display: flex;
+    font-family: 'GwangyangTouching';
+    justify-content: center;
+    align-items: center; 
+    margin-top :50px;
+    transition: all 0.3s ease;
+    margin-bottom: 50px;
+}
+
+.magazine-page-card {
+    box-shadow: 0px 10px 15px -3px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    height: 30rem;
+    width: 10rem;
+    border-radius: 2rem;
+    margin: 10px;
+    background-position: end;
+    background-repeat: no-repeat;
+    background-size: cover;
+    overflow: hidden;
+    transition: width var(--animation-time) linear;
+    transition: transform 0.3s ease, box-shadow 0.3s ease
+}
+
+.magazine-page-card.active {
+    width: 40rem;
+    transform: scale(1.02);
+    transform: margin(1);
+    transition: transform 0.5s ease;
+    box-shadow: 0px 20px 30px -6px rgba(0, 0, 0, 0.3);
+}
+
+.magazine-page-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    height: 100%;
+    transform: scale(0.6);
+    transition: all var(--animation-time) linear;
+}
+
+.magazine-page-card.active .magazine-page-content {
+    transform: scale(1);
+}
+
+.magazine-page-detail {
+    margin-top: 0.75rem;
+    height : 30%;
+    margin-left: 2rem;
+    transition: all var(--animation-time) linear;
+    color: white;
+    opacity: 0;
+}
+
+.magazine-page-card.active .magazine-page-detail {
+    opacity: 1;
+    margin-left: 0;
+    background-color: rgba(11, 11, 11, 0.5);
+    padding-top:3%;
+}
+
+.magazine-page-card.active .magazine-page-detail .magazine-page-title,
+.magazine-page-card.active .magazine-page-detail .magazine-page-title-content {
+    margin-left: 1.5rem;
+
+}
+
+
+.magazine-page-bg {
+    height: 20rem;
+    width: 4rem;
+    box-shadow: inset 0px -20px 100px 10px rgba(0, 0, 0, 0.7);
+    background-position: bottom;
+    background-repeat: no-repeat;
+    background-size: cover;
+    overflow: hidden;
+    transform: scale(1.5);
+    transition: all var(--animation-time) linear;
+}
+
+.magazine-page-card.active .magazine-page-bg {
+    width: 30rem;
+    transform: scale(1);
+}

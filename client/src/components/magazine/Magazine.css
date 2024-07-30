@@ -1,0 +1,149 @@
+.magazineContent-container {
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 30px;
+}
+
+.magazineContent-card-container {
+    display: grid;
+    width: 80vw;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    justify-items: center;
+    margin-bottom: 20px; 
+}
+
+.magazineContent-card {
+    width: 300px;
+    background-color: #fff;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.magazineContent-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.card-photo {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+}
+
+.title2-text,
+.card-author-name,
+.magazineContent-title {
+    font-family: 'GwangyangTouching';
+}
+
+.card-overlay-text {
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    max-height: 5em;
+    overflow: hidden;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 5px 10px 25px 10px;
+    color: white;
+    text-overflow: ellipsis;
+    white-space: normal;
+    font-family: 'GwangyangTouching';
+    font-size: 12px;
+    white-space: normal;
+  overflow-wrap: break-word;
+}
+
+.card-title2 {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    padding: 0;
+    margin-bottom: 0;
+    font-family: 'GwangyangTouching';
+}
+
+.card-avatar {
+    --Avatar-size: 2rem;
+}
+
+.card-icons-container {
+    display: flex;
+    gap: 0.5rem;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.card-icon {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-size: 0.875rem; 
+    color: #808080;
+    transition: color 0.3s;
+}
+
+@media (max-width: 1200px) {
+    .magazineContent-card-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .magazineContent-card-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.pagination button {
+    margin: 0 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.create-post-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px; 
+}
+
+.create-post-button {
+    padding: 10px 15px;
+    background-color: #000000;
+    color: white;
+    border : solid 2px black;
+    cursor: pointer;
+    border-radius: 10px; 
+    transition: background-color 0.3s ease;
+    font-family: 'GwangyangTouching';
+    justify-content: flex-end;
+    margin-right : 8vw;
+
+}
+
+.create-post-button:hover {
+    background-color: #ffffff;
+    color:black;
+    border : solid 2px black;
+    
+}
+.hidden{
+	display: none;
+}

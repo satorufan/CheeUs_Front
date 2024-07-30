@@ -1,0 +1,22 @@
+{
+    "name": "cheeus-server",
+    "version": "0.1.0",
+    "main": "server.js",
+    "scripts": {
+        "start": "node index.js",
+        "dev": "nodemon server.js"
+    },
+    "dependencies": {
+        "cors": "^2.8.5",
+        "dotenv": "^16.4.5",
+        "ejs": "^3.1.10",
+        "express": "^4.17.1",
+        "http": "^0.0.1-security",
+        "mongodb": "^6.8.0",
+        "nunjucks": "^3.2.4",
+        "socket.io": "^4.7.5"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.7"
+    }
+}

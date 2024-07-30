@@ -1,0 +1,55 @@
+
+.magazine-page-top {
+    background-color: black;
+    width: 100vw;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    color: white;
+    font-family: 'GwangyangTouching';
+    font-size: 20px;
+    position: relative;
+}
+
+.magazine-top {
+    display: flex;
+    align-items: center;
+    position: absolute; 
+    right: 20px; 
+}
+
+.magazine-search {
+    padding: 5px;
+    font-size: 14px;
+    flex: 1;
+    height: 35px;
+    padding: 0 15px;
+    background-color: #eceff1;
+    border-radius: 21px;
+    font-family: 'GwangyangTouching';
+    font-weight: 400;
+}
+
+.magazine-search-icon {
+    font-size: 20px;
+    color: white;
+    margin-left: 8px;
+}
+
+.category-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    gap: 20px;
+}
+
+.chip-name {
+    padding: 5px 15px;
+    font-family: 'GwangyangTouching';
+    font-size: 15px;
+    border-radius: 50px;
+    background-color: white;
+    color: black;
+}
