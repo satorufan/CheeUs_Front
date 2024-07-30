@@ -10,6 +10,7 @@ const InputMap = ({ isEditing }) => {
   const [markers, setMarkers] = useState([]);
   const [pagination, setPagination] = useState([]);
   const [places, setPlaces] = useState([]);
+  const [isSearchResultsVisible, setIsSearchResultsVisible] = useState(true);
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -90,10 +91,10 @@ const InputMap = ({ isEditing }) => {
     const bounds = new kakao.maps.LatLngBounds();
     const newMarkers = places.map((place, index) => {
       const placePosition = new kakao.maps.LatLng(place.y, place.x);
-      const { marker, infowindow } = addMarker(placePosition, index, place.place_name, place.address_name);
+      const { marker, overlay } = addMarker(placePosition, index, place.place_name, place.address_name);
       bounds.extend(placePosition);
 
-      return { marker, infowindow, place };
+      return { marker, overlay, place };
     });
 
     setMarkers(newMarkers);
@@ -116,25 +117,51 @@ const InputMap = ({ isEditing }) => {
 
     marker.setMap(map);
 
-    const content = '<div style="padding:5px;z-index:1;">' + title + '</div>';
+    const generateCustomOverlayContent = (onClose) => {
+      let content = `
+        <div style="position: relative; display: inline-block; padding:15px; background-color:white; border-radius:10px; box-shadow: 0px 0px 10px rgba(0,0,0,0.5); border: none;">
+          <button style="position: absolute; top: 5px; right: 5px; background: none; border: none; font-size: 10px; cursor: pointer; color: black;">✖</button>
+          <h3 style="margin:0; padding-bottom:5px; border-bottom:1px solid #ccc;width: auto;">${title}</h3>
+          <p style="margin:5px 0;">${addressName}</p>
+          <div style="position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 10px solid white;"></div>
+        </div>
+      `;
 
-    const infowindow = new kakao.maps.InfoWindow({
-      content: content
+      // DOM element 생성 후 이벤트 리스너 추가
+      const div = document.createElement('div');
+      div.innerHTML = content.trim();
+      const button = div.querySelector('button');
+      button.addEventListener('click', onClose);
+
+      return div;
+    };
+
+    const overlay = new kakao.maps.CustomOverlay({
+      content: generateCustomOverlayContent(() => overlay.setMap(null)),
+      position: marker.getPosition(),
+      yAnchor: 1.5,
+      zIndex: 3,
+      clickable: true
     });
 
     kakao.maps.event.addListener(marker, 'mouseover', function () {
-      infowindow.open(map, marker);
+      overlay.setMap(map);
       const latlng = marker.getPosition();
       const message = `위도 : ${latlng.getLat()}, 경도 : ${latlng.getLng()}, 장소명 : ${title}, 주소 : ${addressName}`;
       console.log(message);
     });
 
     kakao.maps.event.addListener(marker, 'mouseout', function () {
-      infowindow.close();
+      overlay.setMap(null);
     });
 
-    kakao.maps.event.addListener(marker, 'click', function () {
+
+    kakao.maps.event.addListener(marker, 'click', () => {
+      overlay.setMap(map);
       const latlng = marker.getPosition();
+      const message = `위도 : ${latlng.getLat()}, 경도 : ${latlng.getLng()}, 장소명 : ${title}, 주소 : ${addressName}`;
+      console.log(message);
+
       setSelectedPlace({
         latitude: latlng.getLat(),
         longitude: latlng.getLng(),
@@ -143,12 +170,15 @@ const InputMap = ({ isEditing }) => {
       });
     });
 
-    return { marker, infowindow };
+    return { marker, overlay };
   };
 
   const removeMarkers = () => {
     markers.forEach(markerObj => {
       markerObj.marker.setMap(null);
+      if (markerObj.overlay) {
+        markerObj.overlay.setMap(null);
+      }
     });
     setMarkers([]);
   };
@@ -178,7 +208,6 @@ const InputMap = ({ isEditing }) => {
 
   const handleListItemClick = (index) => {
     const markerObj = markers[index];
-    console.log('List item clicked, marker:', markerObj);
     if (markerObj) {
       kakao.maps.event.trigger(markerObj.marker, 'mouseover');
       map.panTo(markerObj.marker.getPosition());
@@ -198,28 +227,37 @@ const InputMap = ({ isEditing }) => {
           onChange={(e) => setSearchInput(e.target.value)}
         />
         <button onClick={handleSearch}>검색</button>
+        {isSearchResultsVisible ? (
+		  <div className = "btn-group dropup">
+            <button className = "btn btn-secondary dropdown-toggle" onClick={() => setIsSearchResultsVisible(false)}></button>
+          </div>
+        ) : (
+          <button className = "btn btn-secondary dropdown-toggle" onClick={() => setIsSearchResultsVisible(true)}></button>
+        )}
       </div>
       <div id="map" className="map" style={{ height: '96vh' }}></div>
-      <div className="search-result">
-        <ul id="placesList">
-          {places.map((place, index) => (
-            <li key={index} className="item" onClick={() => handleListItemClick(index)}>
-              <span className={`markerbg marker_${index + 1}`}></span>
-              <div className="info">
-                <h5>{place.place_name}</h5>
-                {place.road_address_name ?
-                  (<span>{place.road_address_name}<br /><span className="jibun gray">{place.address_name}</span></span>) :
-                  (<span>{place.address_name}</span>)
-                }
-                <br /><span className="tel">{place.phone}</span>
-              </div>
-            </li>
-          ))}
-        </ul>
-        <div id="searchPagination">
-          {displayPagination()}
+      {isSearchResultsVisible && (
+        <div className="search-result">
+          <ul id="placesList">
+            {places.map((place, index) => (
+              <li key={index} className="item" onClick={() => handleListItemClick(index)}>
+                <span className={`markerbg marker_${index + 1}`}></span>
+                <div className="info">
+                  <h5>{place.place_name}</h5>
+                  {place.road_address_name ?
+                    (<span>{place.road_address_name}<br /><span className="jibun gray">{place.address_name}</span></span>) :
+                    (<span>{place.address_name}</span>)
+                  }
+                  <br /><span className="tel">{place.phone}</span>
+                </div>
+              </li>
+            ))}
+          </ul>
+          <div id="searchPagination">
+            {displayPagination()}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
