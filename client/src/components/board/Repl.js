@@ -33,9 +33,11 @@ function Repl({ boardId }) {
     }, [dispatch, boardId]);
 
     // 로그 확인용
+    /*
     useEffect(() => {
         console.log('Comments:', comments);
     }, [comments]);
+    */
 
     const handleInputChange = (e) => {
         setCommentText(e.target.value);

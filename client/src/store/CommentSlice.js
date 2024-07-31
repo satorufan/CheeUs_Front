@@ -56,7 +56,7 @@ export const fetchComments = createAsyncThunk(
     'comments/fetchComments',
     async (boardId) => {
         const response = await axios.get(`http://localhost:8080/comment/${boardId}`);
-        console.log(JSON.stringify(response.data, null, 2)); // 댓글정보 로딩 확인
+        // console.log(JSON.stringify(response.data, null, 2)); // 디버깅용 댓글정보 로딩 확인
         // 댓글 데이터 정보 추출
         const comments = response.data.map(comment => ({
             id: comment.id,
@@ -124,9 +124,9 @@ export const updateComment = createAsyncThunk(
 // 댓글 삭제를 위한 thunk
 export const deleteComment = createAsyncThunk(
   'comments/deleteComment',
-  async (commentId) => {
-      console.log("commentId : " + commentId);
-    await axios.delete(`http://localhost:8080/comments/${commentId}`);
+    async (commentId) => {
+      // console.log("commentId : " + commentId)
+    await axios.delete(`http://localhost:8080/comment/${commentId}`);
     return commentId;
   }
 );
@@ -136,7 +136,7 @@ export const updateComment = createAsyncThunk(
   'comments/updateComment',
   async (updatedComment) => {
     const { id, ...updatedData } = updatedComment;
-    const response = await axios.put(`http://localhost:8080/comments/${id}`, {
+    const response = await axios.put(`http://localhost:8080/comment/${id}`, {
       ...updatedData,
       repl_content: updatedData.content
     });
