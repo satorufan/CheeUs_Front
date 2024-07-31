@@ -4,6 +4,7 @@ import './App.css';
 import './fonts/fonts.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Main from './components/main/Main';
+import NotFound from './components/app/NotFound';
 import Signup from './components/signup/Signup';
 import Login from './components/login/Login';
 import LoginCallback from './components/login/LoginCallback';
@@ -102,7 +103,7 @@ function App() {
               <Route path="/event/eventAll" element={<EventAll/>} />              
               <Route path="/event/eventNow" element={<EventNow/>} />              
               <Route path="/event/eventEnd" element={<EventEnd/>} />              
-              <Route path="*" element={<div>404</div>} />
+              <Route path="*" element={<NotFound/>} />
               <Route path="/event/detail/:category/:id" element={<EventDetail />} />
             </Routes>
 	       </Suspense>

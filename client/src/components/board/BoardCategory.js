@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import ArrowOutwardIcon from '@mui/icons-material/ArrowOutward';
 import "./boardCategory.css";
 
 function BoardCategory() {
-    const [activeIndex, setActiveIndex] = useState(0);
     const navigate = useNavigate();
 
     const cards = [
@@ -28,12 +27,8 @@ function BoardCategory() {
         },
     ];
 
-    const handleCardClick = (index, path) => {
-        if (activeIndex === index) {
-            navigate(path); // 같은 카드를 두 번 클릭하면 해당 경로로 이동
-        } else {
-            setActiveIndex(index); // 다른 카드를 클릭하면 활성화
-        }
+    const handleCardClick = (path) => {
+        navigate(path);
     };
 
     return (
@@ -41,8 +36,8 @@ function BoardCategory() {
             {cards.map((card, index) => (
                 <div
                     key={index}
-                    className={`board-page-card ${activeIndex === index ? "active" : ""}`}
-                    onClick={() => handleCardClick(index, card.path)}
+                    className="board-page-card"
+                    onClick={() => handleCardClick(card.path)}
                     style={{ backgroundImage: `url(${card.bgImage})` }}
                 >
                     <div className="board-page-content">

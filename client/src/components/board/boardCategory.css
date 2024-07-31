@@ -3,8 +3,7 @@
     font-family: 'GwangyangTouching';
     justify-content: center;
     align-items: center; 
-    margin-top :50px;
-    transition: all 0.3s ease;
+    margin-top: 50px;
     margin-bottom: 50px;
 }
 
@@ -19,16 +18,12 @@
     background-repeat: no-repeat;
     background-size: cover;
     overflow: hidden;
-    transition: width var(--animation-time) linear;
-    transition: transform 0.3s ease, box-shadow 0.3s ease
+    transition: width 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.board-page-card.active {
-    width: 40rem;
-    transform: scale(1.02);
-    transform: margin(1);
-    transition: transform 0.5s ease;
-    box-shadow: 0px 20px 30px -6px rgba(0, 0, 0, 0.3);
+.board-page-card:hover {
+    width: 30rem; 
+    transform: scale(1.05);
 }
 
 .board-page-content {
@@ -36,50 +31,31 @@
     flex-direction: column;
     justify-content: flex-end;
     height: 100%;
-    transform: scale(0.6);
-    transition: all var(--animation-time) linear;
+    transform: scale(0.8);
+    transition: transform 0.3s ease;
 }
 
-.board-page-card.active .board-page-content {
+.board-page-card:hover .board-page-content {
     transform: scale(1);
 }
 
 .board-page-detail {
     margin-top: 0.75rem;
-    height : 30%;
+    height: 30%;
     margin-left: 2rem;
-    transition: all var(--animation-time) linear;
+    transition: opacity 0.3s ease, margin-left 0.3s ease;
     color: white;
     opacity: 0;
 }
 
-.board-page-card.active .board-page-detail {
+.board-page-card:hover .board-page-detail {
     opacity: 1;
     margin-left: 0;
     background-color: rgba(11, 11, 11, 0.5);
-    padding-top:3%;
+    padding-top: 3%;
 }
 
-.board-page-card.active .board-page-detail .board-page-title,
-.board-page-card.active .board-page-detail .board-page-title-content {
+.board-page-card:hover .board-page-detail .board-page-title,
+.board-page-card:hover .board-page-detail .board-page-title-content {
     margin-left: 1.5rem;
-
-}
-
-
-.board-page-bg {
-    height: 20rem;
-    width: 4rem;
-    box-shadow: inset 0px -20px 100px 10px rgba(0, 0, 0, 0.7);
-    background-position: bottom;
-    background-repeat: no-repeat;
-    background-size: cover;
-    overflow: hidden;
-    transform: scale(1.5);
-    transition: all var(--animation-time) linear;
-}
-
-.board-page-card.active .board-page-bg {
-    width: 30rem;
-    transform: scale(1);
 }
