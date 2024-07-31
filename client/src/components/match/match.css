@@ -1,5 +1,3 @@
-
-
 .permissionMessage {
     text-align: center;
     font-family: 'YeojuCeramic';
@@ -27,7 +25,6 @@
 .permissionMessage span {
     color: #FF6B6B;
 }
-
 
 @media (max-width: 768px) {
     .permissionMessage {
