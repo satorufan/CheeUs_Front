@@ -56,14 +56,16 @@ export const fetchComments = createAsyncThunk(
     'comments/fetchComments',
     async (boardId) => {
         const response = await axios.get(`http://localhost:8080/comment/${boardId}`);
-        console.log(JSON.stringify(response.data, null, 2)); // 댓글정보 로딩 확인
+        // console.log(JSON.stringify(response.data, null, 2)); // 디버깅용 댓글정보 로딩 확인
         // 댓글 데이터 정보 추출
         const comments = response.data.map(comment => ({
             id: comment.id,
             board_id: comment.board_id,
+            parent_id: comment.parent_id,
             repl_author_id: comment.repl_author_id,
             repl_content: comment.repl_content, // 백엔드에서 사용하는 이름 그대로 사용
-            writeday: comment.writeday
+            writeday: comment.writeday,
+            group: comment.group
         }));
 
         return { boardId, comments };
@@ -83,24 +85,19 @@ export const fetchComments = createAsyncThunk(
 export const addComment = createAsyncThunk(
     'comments/addComment',
     async (commentData) => {
+        // 디버깅용
+        console.log('Comment Data:', commentData);
         const response = await axios.post(`http://localhost:8080/comment/${commentData.id}`, commentData);
         return {
             id: response.data.id,
             board_id: response.data.board_id,
+            parent_id: response.data.parent_id,
             repl_author_id: response.data.repl_author_id,
             repl_content: response.data.repl_content, // 백엔드에서 사용하는 이름 그대로 사용
-            writeday: response.data.writeday
+            writeday: response.data.writeday,
+            group: response.data.group
         };
     }
-);
-
-// 댓글 삭제를 위한 thunk
-export const deleteComment = createAsyncThunk(
-  'comments/deleteComment',
-  async (commentId) => {
-    await axios.delete(`http://localhost:8080/comments/${commentId}`);
-    return commentId;
-  }
 );
 
 // 댓글 수정을 위한 thunk
@@ -115,18 +112,31 @@ export const updateComment = createAsyncThunk(
         return {
             id: response.data.id,
             board_id: response.data.board_id,
+            parent_id: response.data.parent_id,
             repl_author_id: response.data.repl_author_id,
             repl_content: response.data.repl_content,
-            writeday: response.data.writeday
+            writeday: response.data.writeday,
+            group: response.data.group
         };
     }
 );
+
+// 댓글 삭제를 위한 thunk
+export const deleteComment = createAsyncThunk(
+  'comments/deleteComment',
+    async (commentId) => {
+      // console.log("commentId : " + commentId)
+    await axios.delete(`http://localhost:8080/comment/${commentId}`);
+    return commentId;
+  }
+);
+
 /*
 export const updateComment = createAsyncThunk(
   'comments/updateComment',
   async (updatedComment) => {
     const { id, ...updatedData } = updatedComment;
-    const response = await axios.put(`http://localhost:8080/comments/${id}`, {
+    const response = await axios.put(`http://localhost:8080/comment/${id}`, {
       ...updatedData,
       repl_content: updatedData.content
     });
@@ -165,11 +175,25 @@ const commentsSlice = createSlice({
         })
          */
         .addCase(addComment.fulfilled, (state, action) => {
-            const { boardId, ...newComment } = action.payload;
+            const newComment = action.payload;
+            const boardId = newComment.board_id;
+            // const { boardId, ...newComment } = action.payload;
             if (!state.comments[boardId]) {
                 state.comments[boardId] = [];
             }
+
+            /*
+            // 대댓글은 parent_id가 있는 경우, 해당 댓글의 replies에 추가
+            if (newComment.parent_id) {
+                const parentComment = state.comments[boardId].find(comment => comment.id === newComment.parent_id);
+                if (parentComment) {
+                    parentComment.replies = parentComment.replies || [];
+                    parentComment.replies.push(newComment);
+                }
+            } else {
             state.comments[boardId].push(newComment);
+            }
+             */
         })
         /*
       .addCase(addComment.fulfilled, (state, action) => {
@@ -195,6 +219,17 @@ const commentsSlice = createSlice({
           }
         });
       })
+        .addCase(updateComment.fulfilled, (state, action) => {
+            const updatedComment = action.payload;
+            const boardId = updatedComment.board_id;
+            if (state.comments[boardId]) {
+                const index = state.comments[boardId].findIndex(comment => comment.id === updatedComment.id);
+                if (index !== -1) {
+                    state.comments[boardId][index] = updatedComment;
+                }
+            }
+        });
+      /*
       .addCase(updateComment.fulfilled, (state, action) => {
         const updatedComment = action.payload;
         Object.keys(state.comments).forEach(boardId => {
@@ -206,6 +241,7 @@ const commentsSlice = createSlice({
           }
         });
       });
+      */
   },
 });
 
