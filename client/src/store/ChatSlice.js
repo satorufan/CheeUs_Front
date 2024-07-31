@@ -21,11 +21,8 @@ export const fetchChatRooms = createAsyncThunk(
             // 1:1 채팅방 데이터 요청
             const response = await axios.get('http://localhost:8889/api/chatRooms');
             // `match`가 2인 채팅방만 필터링
-            console.log(response);
             const chatRooms = response.data.filter(room => room.match === 2 && (room.member1 === userId || room.member2 === userId));
             console.log(chatRooms);
-
-
 
             // 각 채팅방의 메시지 가져오기
             const chatRoomsWithMessages = await Promise.all(chatRooms.map(async (room) => {
@@ -67,19 +64,36 @@ export const fetchChatRooms = createAsyncThunk(
 // 단체 채팅방을 가져오는 비동기 Thunk
 export const fetchTogetherChatRooms = createAsyncThunk(
     'together/fetchChatRooms',
-    async () => {
+    async ({serverUrl, userId}) => {
         try {
             const response = await axios.get('http://localhost:8889/api/togetherChatRooms');
-            const chatRooms = response.data;
+            //const chatRooms = response.data;
+            const chatRooms = response.data.filter(room=>room.members.includes(userId));
 
             const chatRoomsWithMessages = await Promise.all(chatRooms.map(async (room) => {
                 try {
                     const messagesResponse = await axios.get(`http://localhost:8889/api/togetherMessages/${room.roomId}`);
                     const messages = messagesResponse.data;
                     const lastMessage = messages.length > 0 ? messages[messages.length - 1] : null;
+                    
+                    // 유저 정보 불러오기
+                    const members = await Promise.all(room.members.map(async (member) => {
+                        const memberInfo = await axios.get(serverUrl+'/match/chattingTogether', {params : {
+                            email : member
+                        }});
+                        return {
+                            email : memberInfo.data.email,
+                            image : 'data:' + memberInfo.data.imageType + 
+                            ';base64,' + memberInfo.data.imageBlob,
+                            nickname : memberInfo.data.nickname
+                        }
+                    }));
 
                     return {
-                        ...room,
+                        members : members,
+                        messages : room.messages,
+                        roomId : room.roomId,
+                        togetherId : room.togetherId,
                         lastMessage: lastMessage ? {
                             ...lastMessage,
                             write_day: new Date(lastMessage.write_day).toISOString()

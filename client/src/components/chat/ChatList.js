@@ -26,7 +26,7 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
                 dispatch(fetchChatRooms({serverUrl, userId : decodedToken.email})).catch(err => {
                     console.error('Failed to fetch chat rooms:', err);
                 });
-                dispatch(fetchTogetherChatRooms()).catch(err => {
+                dispatch(fetchTogetherChatRooms({serverUrl, userId : decodedToken.email})).catch(err => {
                     console.error('Failed to fetch together chat rooms:', err);
                 });
                 dispatch(fetchUserProfiles({ serverUrl, memberEmail })).catch(err => {
@@ -82,12 +82,12 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
         return room.lastMessage || { message: '메시지가 없습니다', write_day: new Date().toISOString(), read: 0 };
     };
 
-    const isUserInChat = (room) => {
-        if (!isTogether) {
-            return room.match !== 3;
-        }
-        return room.members.includes(loggedInUserId);
-    };
+    // const isUserInChat = (room) => {
+    //     if (!isTogether) {
+    //         return room.match !== 3;
+    //     }
+    //     return room.members.includes(loggedInUserId);
+    // };
 
     // const getNickname = (email) => {
     //     const profile = profiles.find(p => p.profile.email === email);
@@ -128,7 +128,7 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
             </div>
             <ul className="chat-people list-unstyled">
                 {currentChatRooms && currentChatRooms.length > 0 ? (
-                    currentChatRooms.filter(isUserInChat).map(room => {
+                    currentChatRooms.map(room => {
                         const lastMessage = getLastMessage(room);
                         const isNewMessage = lastMessage.read === 0;
                         // const otherMemberId = getOtherMemberId(room);

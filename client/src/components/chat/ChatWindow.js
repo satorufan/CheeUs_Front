@@ -37,6 +37,7 @@ const ChatWindow = ({
     }, [token]);
 
     useEffect(() => {
+        console.log(selectedChat);
         if (selectedChat) {
             scrollToBottom();
         }
@@ -91,7 +92,7 @@ const ChatWindow = ({
                                     style={{ zIndex: avatarsToShow.length - index }}
                                 >
                                     <img
-                                        src={getProfileImage(member)}
+                                        src={member.image}
                                         alt={`Profile of ${getNickname(member)}`}
                                         className="participant-img"
                                     />
@@ -299,7 +300,7 @@ const ChatWindow = ({
                             {selectedChat.members.map((member, index) => (
                                 <li key={index} className="participant-modal-item">
                                     <img
-                                        src={getProfileImage(member)}
+                                        src={member.image}
                                         alt={`Profile of ${getNickname(member)}`}
                                         className="participant-modal-img"
                                         onClick={() => navigateToUserProfile(member)}
@@ -308,7 +309,7 @@ const ChatWindow = ({
                                         className="modal-nickname"
                                         onClick={() => navigateToUserProfile(member)} 
                                     >
-                                        {getNickname(member)}
+                                        {member.nickname}
                                     </span>
                                     <div className="participant-modal-actions">
                                         {isAdmin() && ( 
