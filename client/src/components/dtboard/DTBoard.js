@@ -1,14 +1,39 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import './DTBoard.css';
 import DTBoardContent from './DTBoardContent';
 import DTBoardMap from './DTBoardMap';
 import { useNavigate } from 'react-router-dom';
 import { usePosts } from './PostContext';
+import { fetchUserProfiles, selectProfiles,  } from '../../store/MatchSlice';
+import { selectUserProfile } from '../../store/ProfileSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { AuthContext } from '../login/OAuth';
+
 
 const DTBoard = () => {
   const { posts } = usePosts();
   const navigate = useNavigate();
+  
+  const dispatch = useDispatch();
+  const { memberEmail, serverUrl } = useContext(AuthContext);
+  const userProfile = useSelector(selectUserProfile);
+  const profiles = useSelector(selectProfiles);
 
+  useEffect(() => {
+    dispatch(fetchUserProfiles({ serverUrl, memberEmail }));
+  }, [dispatch, serverUrl, memberEmail]);
+  
+  useEffect(() => {
+    if (profiles && memberEmail) {
+      const user = profiles.find(profile => profile.profile.email === memberEmail);
+    }
+  }, [profiles, userProfile]);
+  
+  const goLogin = () =>{
+	 navigate('/login') 
+  }  
+  
+  
   // 페이지 설정
   const [currentPage, setCurrentPage] = useState(1);   // 현재 페이지의 기본값을 1로 한다.
   const postsPerPage = 7;  // 한 페이지에 표시할 포스트의 수.
@@ -23,6 +48,7 @@ const DTBoard = () => {
 
   return (
     <div className="board-layout">
+      {profiles && userProfile ? (    
       <div className="board-content">
         <DTBoardContent
           posts={currentPosts}
@@ -34,6 +60,11 @@ const DTBoard = () => {
         />
         <DTBoardMap selectedPostId={selectedPostId} /> {/* 선택된 게시물 ID를 전달 */}
       </div>
+      ): memberEmail ? (<div className="permissionMessage" >
+              <p>잠시만 기다려주세요...</p>
+            </div>) : (<div className="permissionMessage" >
+              <p onClick={goLogin}>로그인 후 이용할 수 있습니다.</p>
+            </div>)}
     </div>
   );
 };

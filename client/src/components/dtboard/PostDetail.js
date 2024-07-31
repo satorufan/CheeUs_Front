@@ -72,12 +72,12 @@ const PostDetail = () => {
           <div className="textareaBox">{post.title}</div>
         </div>
         <div className="mapHeader">
-          <div className="mapping">
+          <div className="mapping2">
             장소 : {post.location}({post.address})
           </div>
         </div>
       </div>
-      <div className="contentContainer">
+      <div className="contentContainer2">
         <div className="mypageContainer">
           <br />
           <div className="contentHeader">
@@ -98,6 +98,7 @@ const PostDetail = () => {
             <div className="content">{post.content}</div>
           </div>
         </div>
+        
         <div className="detailMapContainer">
           <PostDetailMap
             latitude={post.latitude}
