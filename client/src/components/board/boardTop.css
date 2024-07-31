@@ -52,4 +52,10 @@
     border-radius: 50px;
     background-color: white;
     color: black;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.chip-name:hover {
+    background-color: black;
+    color: white;
 }
