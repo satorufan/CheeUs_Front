@@ -98,7 +98,7 @@ const PostDetail = () => {
                 <img className="profileImg" src={profileImg} alt="Profile" />
               </div>
               <div className="profile2">
-                <a>{post.author_Id}</a>
+                <a>{post.author_id}</a>
               </div>
             </div>
             <div className="dateHeader">
@@ -132,7 +132,7 @@ const PostDetail = () => {
             <button className="backButton">채팅방</button>
           </div>
           <div className="buttonArea2">
-            {loggedInUserId === post.author_Id ? (
+            {loggedInUserId === post.author_id ? (
               <>
                 <button className="modifyButton" onClick={onModifyHandler}>
                   글 수정
