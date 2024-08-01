@@ -208,13 +208,18 @@ app.put('/api/messages/:roomId/read', async (req, res) => {
 // 단체 메시지 읽음 상태 업데이트
 app.put('/api/togetherMessages/:roomId/read', async (req, res) => {
     const { roomId } = req.params;
+    const { userId } = req.body;
+
     if (!roomId) {
         return res.status(400).json({ error: 'roomId가 필요합니다' });
+    }
+    if (!userId) {
+        return res.status(400).json({ error: 'userId가 필요합니다' });
     }
     try {
         const result = await db.collection('together_chat_messages').updateMany(
             { room_id: parseInt(roomId, 10) },
-            { $set: { read: 1 } }
+            { $addToSet: { read: userId } } // 배열로 유지
         );
         if (result.matchedCount === 0) {
             return res.status(404).json({ error: '메시지를 찾을 수 없습니다' });
@@ -264,6 +269,12 @@ app.put('/api/togetherChatRooms/:roomId/leave', async (req, res) => {
         if (result.matchedCount === 0) {
             return res.status(404).json({ error: '단체 채팅방을 찾을 수 없습니다' });
         }
+
+        // 2. 메시지의 read 배열에서 사용자 제거
+        await db.collection('together_chat_messages').updateMany(
+            { room_id: roomId },
+            { $pull: { read: userId } } // read 배열에서 userId를 제거
+        );
 
         res.status(200).json({ message: '채팅방에서 사용자 제거 완료' });
     } catch (error) {

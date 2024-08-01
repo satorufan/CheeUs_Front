@@ -22,7 +22,7 @@
 }
 
 .board-page-card:hover {
-    width: 30rem; 
+    width: 40rem; 
     transform: scale(1.05);
 }
 
