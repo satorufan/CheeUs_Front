@@ -35,6 +35,7 @@ const PostDetail = () => {
   
   if (!post) return <div>Post not found</div>;
   
+  console.log("post.nickname", post.nickname)
   
   const onExitHandler = () => {
     navigate('/dtBoard');
