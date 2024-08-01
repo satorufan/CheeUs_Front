@@ -79,9 +79,6 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
     };
 
     const getLastMessage = (room) => {
-        if (isTogether){
-            return room.lastMessage || { message: '메시지가 없습니다', write_day: new Date().toISOString(), read: [] };
-        }
         return room.lastMessage || { message: '메시지가 없습니다', write_day: new Date().toISOString(), read: 0 };
     };
 
@@ -107,16 +104,6 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
         return <div>오류 발생: {error}</div>;
     }
 
-    const isNewMessage = (lastMessage) => {
-        if (isTogether) {
-            // 단체 채팅일 때만 read가 배열인 경우
-            const readArray = Array.isArray(lastMessage.read) ? lastMessage.read : [];
-            return !readArray.includes(loggedInUserId);
-        }
-        // 1:1 채팅일 경우
-        return lastMessage.read === 0;
-    };
-
     
 
     const handleExitChat = (roomId) => {
@@ -140,7 +127,7 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
 
     return (
         <>
-             <div className="chat-top d-flex align-items-center">
+            <div className="chat-top d-flex align-items-center">
                 <input type="text" className="form-control chat-search" placeholder="검색" />
                 <Search className="search-icon ml-2" />
             </div>
@@ -148,7 +135,8 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
                 {currentChatRooms && currentChatRooms.length > 0 ? (
                     currentChatRooms.map(room => {
                         const lastMessage = getLastMessage(room);
-                        const isNew = isNewMessage(lastMessage);
+                        const isNewMessage = lastMessage.read === 0;
+                        // const otherMemberId = getOtherMemberId(room);
                         return (
                             <li
                                 key={room.roomId}
@@ -167,7 +155,7 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
                                         <span className="chat-name">
                                             {room.nickname}
                                         </span>
-                                        {isNew && lastMessage.sender_id !== loggedInUserId && <span className="receive-new">New</span>}
+                                        {isNewMessage && lastMessage.sender_id !== loggedInUserId && <span className="receive-new">New</span>}
                                     </div>
                                     <span className="chat-time">
                                         {formatDate(lastMessage.write_day)}
