@@ -98,7 +98,7 @@ const PostDetail = () => {
                 <img className="profileImg" src={profileImg} alt="Profile" />
               </div>
               <div className="profile2">
-                <a>{post.author_id}</a>
+                <a>{post.nickname}</a>
               </div>
             </div>
             <div className="dateHeader">
