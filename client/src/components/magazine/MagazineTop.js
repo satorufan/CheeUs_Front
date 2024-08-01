@@ -80,7 +80,7 @@ function MagazineTop() {
       <div className="category-container">
         {chipData.map((data, index) => (
           <button
-            className="chip-name"
+            className="chip-name btn btn-outline-dark"
             key={index}
             onClick={() => navigate(data.path)}
           >

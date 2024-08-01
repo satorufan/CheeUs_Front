@@ -16,7 +16,7 @@
 	width: 95%;
 	display: flex;
   }
-    .textareaBox {
+  .textareaBox {
 	overflow: hidden;
     background: transparent;
     display: flex;
@@ -30,10 +30,21 @@
   }
   .dateHeader{
 	z-index: 16;
-	width:340px;
+	width:350px;
 	display: flex;
 	justify-content: flex-end;
 	align-items: end;
+	margin-bottom: 0px;
+	color: white;
+  }
+  .dateHeader a{
+  	background: #777;
+    display: flex;
+    border-radius: 5px;
+    padding: 4px 6px;
+    margin-right: 15px;
+    border: 2px solid #666; 
+    margin-bottom: 0px;
   }
   .example-custom-input {
     background-color: #777;
@@ -68,11 +79,25 @@
   .mapping{
 	margin-left: 10px;
   }
+  .mapping2{
+	margin-left: 10px;
+	position: absolute;
+	top: 205px;
+	left: 48.5%;
+  }
   .contentContainer{
 	display: flex;
 	height: 98.5vh;
 	background-color: #f9f9f9;
 	gap: 10px;
+	margin-top: -10px;
+  }
+  .contentContainer2{
+	display: flex;
+	height: 98.5vh;
+	background-color: #f9f9f9;
+	gap: 10px;
+	margin-top: -20px;
   }
   .mypageContainer {
   	flex: 1;
@@ -85,6 +110,8 @@
   .contentHeader{
 	width: 100%;
 	display: flex;
+	padding-bottom: 15px;
+	margin-bottom: -14px;
   }
   .profileContainer{
 	display: flex;
@@ -92,7 +119,7 @@
 	display: flex;
 	justify-content: flex-start;
 	height: 35px;
-	margin-top: 3px;
+	margin: 0 0 3px 3px;
   }
   .profile1{
 	display: flex;
@@ -107,24 +134,19 @@
 	margin: 0 2px 2px 2px;
   }
   .profile2 a{
-	box-shadow: 1px 1px 1px 1px #999;
 	border-radius: 10px;
-	padding: 1px 2px;
+	padding: 4px 10px;
+	display: flex;
   }
   .profileImg{
 	border-radius: 50%;
-	width : 32px;
-	height : 32px;
+	width : 35px;
+	height : 35px;
     display: flex;
     margin-left: 20px;
     box-shadow: 1px 1px 1px 1px #999;
   }
-  .dateHeader a{
-    display: flex;
-    font-weight: bold;
-    box-shadow: 1px 1px 1px 1px #999;
-    border-radius: 5px;
-  }
+
   .contentBox{
     box-shadow: 0px 0px 2px 1px #999;
     height: 89%;
@@ -266,7 +288,7 @@
   top: 10px;
   left: 10px;
   z-index: 10; /* 검색창을 지도 위로 올림 */
-  background: white;
+  background : rgb(255,2555,2555,0.7);
   padding: 10px;
   border-radius: 5px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -279,13 +301,14 @@
   border: 1px solid #ccc;
   border-radius: 5px;
   margin-right: -4px;
+  background: rgb(255,2555,2555,0.7);
 }
 
 .map-search-box button {
   padding: 5px 5px;
   border: none;
   background-color: #333;
-  color: white;
+  color:rgb(255,2555,2555,0.7);
   border-radius: 5px;
   cursor: pointer;
   margin : 0 -4px;

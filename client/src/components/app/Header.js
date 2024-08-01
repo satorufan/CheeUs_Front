@@ -77,7 +77,7 @@ function Header() {
 
 
     return (
-        <div className="header-container nav-tabs">
+        <div className="header-container">
             <button onClick={springSecurity}>스프링시큐리티 테스트 버튼</button>
             <button onClick={springRedis}>스프링 Redis 테스트 버튼</button>
             <Navbar bg="#f2d420" expand="lg" style={{ backgroundColor: 'white' }} expanded={isNavExpanded}>
@@ -93,15 +93,15 @@ function Header() {
                     <Navbar.Toggle aria-controls="navbarNav" onClick={handleNavToggle} />
                     <Navbar.Collapse id="navbarNav">
                         <Nav className="ms-auto">
-                            <Nav.Link href="/match">둘이 마셔요</Nav.Link>
-                            <Nav.Link href="/dtboard" onClick = {handleLinkClick}>함께 마셔요</Nav.Link>
-                            <Nav.Link href="/board">게시판</Nav.Link>
-                            <Nav.Link href="/event">이벤트</Nav.Link>
-                            <Nav.Link href="/magazine">매거진</Nav.Link>
+                            <Nav.Link href="/match" className="nav-link-list">둘이 마셔요</Nav.Link>
+                            <Nav.Link href="/dtboard"className="nav-link-list" onClick = {handleLinkClick}>함께 마셔요</Nav.Link>
+                            <Nav.Link href="/board" className="nav-link-list" >게시판</Nav.Link>
+                            <Nav.Link href="/event"className="nav-link-list" >이벤트</Nav.Link>
+                            <Nav.Link href="/magazine"className="nav-link-list" >매거진</Nav.Link>
 
                             {isLoggedIn && profileStatus !== "loading" ? (
                                 <>
-                                    <Nav.Link href="/mypage">
+                                    <Nav.Link href="/mypage" className="nav-link-list">
                                         {isNavExpanded ? (
                                             "프로필"
                                         ) : (
@@ -114,7 +114,7 @@ function Header() {
                                             </Stack>
                                         )}
                                     </Nav.Link>
-                                    <Nav.Link onClick={handleReadMessage} href="/chatpage">
+                                    <Nav.Link onClick={handleReadMessage} href="/chatpage" className="nav-link-list">
                                         {isNavExpanded ? (
                                             "채팅방"
                                         ) : (

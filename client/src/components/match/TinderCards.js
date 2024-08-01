@@ -152,50 +152,62 @@ const TinderCards = () => {
 
   return (
     <div className="tinderCard_container">
-      {currentIndex === -1 ? (
+      {profileCards.length === 0 || currentIndex === -1 ? (
         <div className="noMoreCardsMessage">
-          <p>매칭 할 카드가 없습니다.</p>
-          <p>함께 마셔요 게시판에는 있을지도~?</p>
+          <div className="noMessge">
+            <span>매칭 할 카드가 없습니다.</span><br/>
+            <span>함께 마셔요 게시판에는 </span> <br/><span>있을지도~?</span>
+          </div>
         </div>
       ) : (
         <>
-          <div className='cardContainer'>
-            {profileCards ? profileCards.map((profile, index) => (
-              <TinderCard
-                ref={childRefs[index]}
-                className='swipe'
-                key={profile.profile.email}
-                onSwipe={(dir) => swiped(dir, profile.profile.email, index)}
-                onCardLeftScreen={() => outOfFrame(profile.profile.email, index)}
-                preventSwipe={['up', 'down']}
-              >
-                <div className="card">
-                  <ProfileCard profileInfo={profile} />
-                  {showMessages[index] && (
-                    <div className={`infoText ${showMessages[index] === 'LIKE' ? 'like' : 'nope'}`}>
-                      {showMessages[index]}
-                    </div>
-                  )}
-                </div>
-              </TinderCard>
-            )) : <></>}
-          </div>
-          {canSwipe && (
-            <div className='swipeButtons'>
-              <IconButton onClick={handleSwipeLeft} disabled={!canSwipe}>
-                <div className="show-nope">Nope!</div>
-                <CloseIcon fontSize='large' className="close_button" />
-              </IconButton>
-              <IconButton onClick={handleSwipeRight} disabled={!canSwipe}>
-                <div className="show-like">Like!</div>
-                <FavoriteIcon fontSize='large' className="favorite_button" />
-              </IconButton>
+          <div className='cardButtonContainer'>
+            <div className='swipeButton'>
+              {canSwipe && (
+                <IconButton onClick={handleSwipeLeft} disabled={!canSwipe}>
+                  <div className="buttonContent">
+                    <div className="show-nope">Nope!</div>
+                    <div className="close_button">X</div>
+                  </div>
+                </IconButton>
+              )}
             </div>
-          )}
+            <div className='cardContainer'>
+              {profileCards ? profileCards.map((profile, index) => (
+                <TinderCard
+                  ref={childRefs[index]}
+                  className='swipe'
+                  key={profile.profile.email}
+                  onSwipe={(dir) => swiped(dir, profile.profile.email, index)}
+                  onCardLeftScreen={() => outOfFrame(profile.profile.email, index)}
+                  preventSwipe={['up', 'down']}
+                >
+                  <div className="card">
+                    <ProfileCard profileInfo={profile} />
+                    {showMessages[index] && (
+                      <div className={`infoText ${showMessages[index] === 'LIKE' ? 'like' : 'nope'}`}>
+                        {showMessages[index]}
+                      </div>
+                    )}
+                  </div>
+                </TinderCard>
+              )) : <></>}
+            </div>
+            <div className='swipeButton'>
+              {canSwipe && (
+                <IconButton onClick={handleSwipeRight} disabled={!canSwipe}>
+                  <div className="buttonContent">
+                    <div className="show-like">Like!</div>
+                    <div className="favorite_button">♥</div>
+                  </div>
+                </IconButton>
+              )}
+            </div>
+          </div>
         </>
       )}
     </div>
   );
-};
+}
 
 export default TinderCards;

@@ -16,6 +16,7 @@ import {
 } from '../../store/MatchSlice';
 import { AuthContext } from '../login/OAuth';
 import { selectProfileStatus, selectUserProfile } from '../../store/ProfileSlice';
+import { useNavigate } from 'react-router-dom';
 
 const Match = () => {
   const dispatch = useDispatch();
@@ -29,7 +30,7 @@ const Match = () => {
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [showMatchServiceModal, setShowMatchServiceModal] = useState(false);
   const [showHelpModal, setShowHelpModal] = useState(false);
-
+  const navigate = useNavigate();
   useEffect(() => {
     dispatch(fetchUserProfiles({ serverUrl, memberEmail }));
   }, [dispatch, serverUrl, memberEmail]);
@@ -98,7 +99,9 @@ const Match = () => {
   const handleHelp = () => {
     setShowHelpModal(true);
   };
-
+  const goLogin = () =>{
+	 navigate('/login') 
+  }
 
   return (
     <div className="match_container">
@@ -133,10 +136,10 @@ const Match = () => {
             <Button variant="dark" onClick={handleHelp}>도움말</Button>
           </div>
         </div>
-      )) : memberEmail ? (<div className="permissionMessage">
+      )) : memberEmail ? (<div className="permissionMessage" >
               <p>잠시만 기다려주세요...</p>
-            </div>) : (<div className="permissionMessage">
-              <p>로그인부터 해주세요.</p>
+            </div>) : (<div className="permissionMessage" >
+              <p onClick={goLogin}>로그인 후 이용할 수 있습니다.</p>
             </div>)}
 
       {/* 위치 정보 동의 모달 */}

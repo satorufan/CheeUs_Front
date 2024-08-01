@@ -1,8 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const loggedInUserId = 1;
-
 const initialState = {
     userLocation: null,
     likedProfiles: [],
@@ -21,13 +19,13 @@ const initialState = {
 export const fetchUserProfiles = createAsyncThunk(
     'match/fetchUserProfiles',
     async ({ serverUrl, memberEmail }) => {
-        if (memberEmail) {
-            const response = await axios.get(`${serverUrl}/match`, {params : {email : memberEmail}});
+        if (!memberEmail) {
+            throw new Error("Member email is required");
+        }
+        try {
+            const response = await axios.get(`${serverUrl}/match`, { params: { email: memberEmail } });
             const profiles = response.data.map(data => {
-                const imageBlob = [];
-                for (let i = 0; i < data.profile.photo; i++) {
-                    imageBlob.push(`data:${data.imageType[i]};base64,${data.imageBlob[i]}`);
-                }
+                const imageBlob = data.imageBlob.map((blob, index) => `data:${data.imageType[index]};base64,${blob}`);
                 return {
                     profile: {
                         ...data.profile,
@@ -36,8 +34,9 @@ export const fetchUserProfiles = createAsyncThunk(
                     imageBlob: imageBlob
                 };
             });
-            console.log(response);
             return profiles;
+        } catch (error) {
+            throw new Error(error.message);
         }
     }
 );
@@ -45,14 +44,13 @@ export const fetchUserProfiles = createAsyncThunk(
 // 위치 정보 동의
 export const updateLocationPermission = createAsyncThunk(
     'match/updateLocationPermission',
-    async ({memberEmail, serverUrl, latitude, longitude}) => {
+    async ({ memberEmail, serverUrl, latitude, longitude }) => {
         const formData = new FormData();
-
         formData.append("email", memberEmail);
         formData.append("type", "location");
         formData.append("latitude", latitude);
         formData.append("longitude", longitude);
-        
+
         const response = await axios.put(`${serverUrl}/profile/allow`, formData);
         return response.data;
     }
@@ -61,21 +59,15 @@ export const updateLocationPermission = createAsyncThunk(
 // 매칭 동의
 export const updateMatchServiceAgreement = createAsyncThunk(
     'match/updateMatchServiceAgreement',
-    async ({memberEmail, serverUrl}) => {
+    async ({ memberEmail, serverUrl }) => {
         const formData = new FormData();
-
         formData.append("email", memberEmail);
         formData.append("type", "match");
-        
+
         const response = await axios.put(`${serverUrl}/profile/allow`, formData);
         return response.data;
     }
 );
-
-// firstLiker 먼저 좋아요 눌렀을 경우 목록 불러오기 -> 둘이마셔요에서 띄울지 말지 정하는 로직
-export const loadFirstLike = createAsyncThunk(
-    'match/loadFirstLike'
-)
 
 const MatchSlice = createSlice({
     name: 'match',
@@ -108,16 +100,18 @@ const MatchSlice = createSlice({
             state.currentIndex = -1;
         },
         updateConfirmedList(state, action) {
-            const profileId = action.payload;
-            state.shuffledProfiles = state.shuffledProfiles.map(profile => {
-                if (profile.profile.id === profileId) {
-                    return {
-                        ...profile,
-                        confirmedlist: [...profile.confirmedlist, loggedInUserId],
-                    };
-                }
-                return profile;
-            });
+            const { profileId } = action.payload;
+            if (state.loggedInUserId) {
+                state.shuffledProfiles = state.shuffledProfiles.map(profile => {
+                    if (profile.profile.id === profileId) {
+                        return {
+                            ...profile,
+                            confirmedlist: [...profile.confirmedlist, state.loggedInUserId],
+                        };
+                    }
+                    return profile;
+                });
+            }
         },
     },
     extraReducers: (builder) => {
@@ -132,11 +126,16 @@ const MatchSlice = createSlice({
                 state.userProfile = updatedProfile;
                 state.matchServiceAgreed = updatedProfile.match_ok === 1;
             })
+            .addCase(fetchUserProfiles.pending, (state) => {
+                state.status = 'loading';
+            })
             .addCase(fetchUserProfiles.fulfilled, (state, action) => {
                 state.profiles = action.payload;
+                state.status = 'succeeded';
             })
             .addCase(fetchUserProfiles.rejected, (state, action) => {
                 state.error = action.error.message;
+                state.status = 'failed';
             });
     },
 });
@@ -150,6 +149,7 @@ export const {
     decrementIndex,
     resetIndex,
     updateConfirmedList,
+    setLoggedInUserId,
 } = MatchSlice.actions;
 
 export const selectProfiles = (state) => state.match.profiles;
@@ -160,4 +160,5 @@ export const selectUserLocation = (state) => state.match.userLocation;
 export const selectLocationOk = (state) => state.match.locationOk;
 export const selectMatchServiceAgreed = (state) => state.match.matchServiceAgreed;
 export const selectUserProfile = (state) => state.match.userProfile;
+
 export default MatchSlice.reducer;

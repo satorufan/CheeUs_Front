@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { BsArrowLeft } from 'react-icons/bs';
 import { usePosts } from './PostContext';
@@ -8,13 +8,22 @@ import './DTBinputForm.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import profileImg from '../images/google.png';
 import Swal from 'sweetalert2';
+import { fetchUserProfiles} from '../../store/MatchSlice';
+import { useDispatch} from 'react-redux';
+import { AuthContext } from '../login/OAuth';
 
 // 로그인한 사용자의 아이디를 가져오는 함수
 const useAuth = () => {
-  // 로그인 정보를 가져오는 로직을 작성해서 대체해야함
-  // 임시로 사용자 아이디 고정값으로 가져옴.
-  // 어떻게,,연결하지?
-  const loggedInUserId = 0;	//바꾸면 찜하기 보임
+  const dispatch = useDispatch();
+  const { memberEmail, serverUrl } = useContext(AuthContext);
+  
+  useEffect(() => {
+    dispatch(fetchUserProfiles({ serverUrl, memberEmail }));
+  }, [dispatch, serverUrl, memberEmail]);
+  
+   
+  const loggedInUserId = memberEmail;	//바꾸면 찜하기 보임
+  console.log("이메일은?" +memberEmail);
   return { loggedInUserId };
 };
 
@@ -26,7 +35,10 @@ const PostDetail = () => {
   const navigate = useNavigate();
   
   if (!post) return <div>Post not found</div>;
-
+  
+  console.log("posts:", posts);
+  console.log("post:", post);
+  
   const onExitHandler = () => {
     navigate('/dtBoard');
     window.location.reload();
@@ -64,7 +76,7 @@ const PostDetail = () => {
       }
     });
   };
-
+  
   return (
     <div className="inputContainer">
       <div className="topContainer">
@@ -72,12 +84,12 @@ const PostDetail = () => {
           <div className="textareaBox">{post.title}</div>
         </div>
         <div className="mapHeader">
-          <div className="mapping">
+          <div className="mapping2">
             장소 : {post.location}({post.address})
           </div>
         </div>
       </div>
-      <div className="contentContainer">
+      <div className="contentContainer2">
         <div className="mypageContainer">
           <br />
           <div className="contentHeader">
@@ -86,7 +98,7 @@ const PostDetail = () => {
                 <img className="profileImg" src={profileImg} alt="Profile" />
               </div>
               <div className="profile2">
-                <a>{post.authorId}</a>
+                <a>{post.author_id}</a>
               </div>
             </div>
             <div className="dateHeader">
@@ -98,6 +110,7 @@ const PostDetail = () => {
             <div className="content">{post.content}</div>
           </div>
         </div>
+        
         <div className="detailMapContainer">
           <PostDetailMap
             latitude={post.latitude}
@@ -119,7 +132,7 @@ const PostDetail = () => {
             <button className="backButton">채팅방</button>
           </div>
           <div className="buttonArea2">
-            {loggedInUserId === post.authorId ? (
+            {loggedInUserId === post.author_id ? (
               <>
                 <button className="modifyButton" onClick={onModifyHandler}>
                   글 수정

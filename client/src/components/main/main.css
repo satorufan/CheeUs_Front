@@ -1,10 +1,8 @@
 .main-container {
     position: relative;
     width: 100%;
-    height: 135vh;
     overflow-x: hidden;
-    overflow-y: auto;
-    margin-bottom : 20px;
+    margin-bottom: 20px;
 }
 
 .video-background {
@@ -12,46 +10,78 @@
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
+    height: 500px;
+    overflow: hidden;
     z-index: -1;
-    overflow-y: hidden;
-    
 }
 
 .video-background video {
     width: 100%;
     height: 100%;
-    object-fit: cover; 
+    object-fit: cover;
 }
 
-.main-video-content {
-    position: absolute;
-    top: 30%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+.grey {
+    position: relative;
     width: 100%;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.8);
+    margin-top: 500px;
+    z-index: 2;
+    height: 480px;
+    overflow-y: auto;
+}
+
+.main-section {
+    position: sticky;
+    top: 60px; 
+    height: 350px;
+    background-color: rgba(255, 255, 255);
+    display: flex;
+    align-items: center;
+    margin: 50px auto;
+    padding: 20px;
+    z-index: 1;
+    transition: opacity 0.3s, transform 0.3s;
+    justify-content: center;
+}
+
+/* 이미지 기본 스타일 */
+.main-section-image img {
+    width: 500px;
+    height: 300px;
+    object-fit: cover;
+}
+
+.main-section-text {
     text-align: center;
-    color: white;
-    font-family: 'TOkki';
+    font-size: 24px;
+    color: black;
+    padding: 20px;
+    font-family: GwangyangTouching;
+    transition: font-size 0.6s ease; 
 }
 
-.main-video-content h1 {
-    font-size: 7vw;
+
+@media (max-width: 768px) {
+    .main-section-text {
+        font-size: 20px; 
+    }
+
+    .main-section-image img {
+        opacity: 0; 
+        display: none;
+    }
 }
 
-.main-video-content p {
-    font-size: 4vw;
-}
 
+/* 캐러셀 설정 */
 .main-carousel {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    margin-top: 20px;
+    position: relative;
     width: 100%;
     max-width: 100vw;
-    
+    margin-top: 20px;
+    z-index: 3;
 }
 
 .main-carousel .carousel-caption {
@@ -60,10 +90,10 @@
     left: 0;
     right: 0;
     background-color: rgba(0, 0, 0, 0.5);
-    color: white; 
-    padding: 20px; 
-    text-align: center; 
-    transition: bottom 0.3s; 
+    color: white;
+    padding: 20px;
+    text-align: center;
+    transition: bottom 0.3s;
 }
 
 .main-carousel .carousel-inner {
@@ -78,26 +108,80 @@
     height: 100%;
 }
 
-@media (max-width: 768px) {
-    .main-container {
-        height: 100vh;
-    }
-    .video-background {
-        height: 80%;
-    }
+/* 비디오 콘텐츠 설정 */
+.main-video-content {
+    position: absolute;
+    top: 250px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    text-align: center;
+    color: white;
+    font-family: 'TOkki';
+    z-index: 4;
+}
 
+.main-video-content h1 {
+    font-size: 7vw;
+}
+
+@media (max-width: 768px) {
     .video-background video {
         height: 100%;
     }
-
     .main-video-content {
-        top: 40%;
+        top: 20;
         font-size: 1rem;
     }
     .main-carousel {
         height: 20%;
     }
     .main-carousel .carousel-inner {
-        height : 100%;
+        height: 100%;
     }
+    .video-background {
+        height: 400px;
+    }
+}
+
+/* 타이핑 애니메이션 설정 */
+@keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
+}
+
+@keyframes typingFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.typing {
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.typing h1 {
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    font-size: 7vw;
+}
+
+.typing .line {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 0;
+    animation: typing 2s steps(40, end) forwards;
+}
+
+.typing .line1 {
+    animation: typing 2s steps(40, end) forwards;
+}
+
+.typing .line2 {
+    animation: typing 2s steps(40, end) 2s forwards;
 }

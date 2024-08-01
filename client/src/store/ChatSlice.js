@@ -96,10 +96,11 @@ export const fetchTogetherChatRooms = createAsyncThunk(
                         togetherId : room.togetherId,
                         lastMessage: lastMessage ? {
                             ...lastMessage,
-                            write_day: new Date(lastMessage.write_day).toISOString()
+                            write_day: new Date(lastMessage.write_day).toISOString(),read:[]
                         } : {
                             message: '메시지가 없습니다',
-                            write_day: new Date().toISOString()
+                            write_day: new Date().toISOString(),
+                            read:[]
                         }
                     };
                 } catch (error) {
@@ -135,7 +136,7 @@ export const updateOneOnOneChatRoomStatus = createAsyncThunk(
         }
     }
 );
-// 단체에서 맴버명 제거
+//단체 채팅방 나가기
 export const removeUserFromTogetherChatRoom = createAsyncThunk(
     'together/removeUserFromChatRoom',
     async ({ roomId, userId }, { dispatch }) => {
@@ -145,7 +146,7 @@ export const removeUserFromTogetherChatRoom = createAsyncThunk(
         }
         try {
             // API 요청으로 사용자를 제거
-            await axios.put(`http://localhost:8889/api/togetherChatRooms/${roomId}/removeUser`, { userId });
+            await axios.put(`http://localhost:8889/api/togetherChatRooms/${roomId}/leave`, { userId });
             dispatch(userRemovedFromChatRoom({ roomId, userId }));
         } catch (error) {
             console.error('단체 채팅방에서 사용자 제거 오류:', error);
@@ -174,21 +175,18 @@ export const updateMessageReadStatus = createAsyncThunk(
 // 단체 채팅 메시지 읽음 상태를 업데이트하는 비동기 Thunk
 export const updateTogetherMessageReadStatus = createAsyncThunk(
     'together/updateMessageReadStatus',
-    async ({ roomId }, { dispatch }) => {
-        if (!roomId) {
-            console.error('Invalid roomId:', roomId);
-            return; // roomId가 유효하지 않으면 실행 중지
-        }
-
+    async ({ roomId, userId }, { dispatch }) => {
+        console.log('Thunk called with userId:', userId); // 디버깅용
         try {
-            await axios.put(`http://localhost:8889/api/togetherMessages/${roomId}/read`);
-            dispatch(messageReadTogether({ roomId }));
+            await axios.put(`http://localhost:8889/api/togetherMessages/${roomId}/read`, { userId });
+            dispatch(messageReadTogether({ roomId, userId }));
         } catch (error) {
             console.error('단체 채팅 메시지 읽음 상태 업데이트 오류:', error);
             throw new Error(error.message);
         }
     }
 );
+
 
 const chatSlice = createSlice({
     name: 'chat',
@@ -218,6 +216,21 @@ const chatSlice = createSlice({
                     write_day: new Date(action.payload.write_day).toISOString()
                 });
             }
+        },
+        appendMessageToTogetherChat(state, action) {
+            const { roomId, message } = action.payload;
+            const existingRoom = state.togetherChatRooms.find(room => room.roomId === roomId);
+            if (existingRoom) {
+                existingRoom.messages.push({
+                    ...message,
+                    write_day: new Date(message.write_day).toISOString(),
+                    read: []
+                });
+                existingRoom.lastMessage = {
+                    ...message,
+                    write_day: new Date(message.write_day).toISOString()
+                };
+            }
         },        
         updateLastMessageInChatRooms(state, action) {
             const { roomId, message } = action.payload;
@@ -238,7 +251,8 @@ const chatSlice = createSlice({
                     ...room,
                     lastMessage: {
                         ...message,
-                        write_day: new Date(message.write_day).toISOString()
+                        write_day: new Date(message.write_day).toISOString(),
+                        read: Array.isArray(message.read) ? [...new Set([...message.read, action.payload.userId])] : [action.payload.userId]
                     }
                 } : room
             );
@@ -260,45 +274,47 @@ const chatSlice = createSlice({
             );
         },
         markMessagesAsRead(state, action) {
-            const roomId = action.payload;
+            const { roomId, userId } = action.payload;
+            console.log('Reducer called with userId:', userId);
             state.chatRooms = state.chatRooms.map(room => 
                 room.roomId === roomId ? {
                     ...room,
                     lastMessage: room.lastMessage ? {
                         ...room.lastMessage,
-                        read: 1
+                        read: room.lastMessage.read ? [...new Set([...room.lastMessage.read, userId])] : [userId]
                     } : room.lastMessage
                 } : room
             );
         },
         messageReadTogether(state, action) {
-            const { roomId } = action.payload;
+            const { roomId, userId } = action.payload;
             state.togetherChatRooms = state.togetherChatRooms.map(room =>
                 room.roomId === roomId ? {
                     ...room,
                     messages: room.messages.map(message => ({
                         ...message,
-                        read: 1
+                        read: Array.isArray(message.read) ? [...new Set([...message.read, userId])] : [userId]
                     })),
                     lastMessage: {
                         ...room.lastMessage,
-                        read: 1
+                        read: Array.isArray(room.lastMessage.read) ? [...new Set([...room.lastMessage.read, userId])] : [userId]
                     }
                 } : room
             );
         },
         markTogetherMessagesAsRead(state, action) {
-            const roomId = action.payload;
+            const { roomId, userId } = action.payload;
             state.togetherChatRooms = state.togetherChatRooms.map(room => 
                 room.roomId === roomId ? {
                     ...room,
                     lastMessage: room.lastMessage ? {
                         ...room.lastMessage,
-                        read: 1
+                        read: room.lastMessage.read ? [...new Set([...room.lastMessage.read, userId])] : [userId]
                     } : room.lastMessage
                 } : room
             );
         },
+
         chatRoomStatusUpdated(state, action) {
             const { roomId, isTogether } = action.payload;
             if (isTogether) {

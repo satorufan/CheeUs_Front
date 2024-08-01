@@ -1,6 +1,6 @@
 import React, { useEffect, useContext, useState, useRef } from 'react';
 import { AuthContext } from '../login/OAuth';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import { useSelector } from 'react-redux';
 import './chatPage.css';
@@ -37,8 +37,18 @@ const ChatWindow = ({
     }, [token]);
 
     useEffect(() => {
-        console.log(selectedChat);
         if (selectedChat) {
+            console.log('Selected Chat:', selectedChat);
+            
+            // 출력 각 속성
+            console.log('Member 1:', selectedChat.member1);
+            console.log('Member 2:', selectedChat.member2);
+            console.log('Room ID:', selectedChat.roomId);
+            console.log('Match:', selectedChat.match);
+            console.log('Nickname:', selectedChat.nickname);
+            console.log('Profile Image:', selectedChat.image);
+    
+            // 스크롤을 하단으로 이동
             scrollToBottom();
         }
     }, [selectedChat, selectedChat?.messages]);
@@ -68,6 +78,20 @@ const ChatWindow = ({
         return selectedChat.member1 === loggedInUserId ? selectedChat.member2 : selectedChat.member1;
     };
 
+    const getNicknameForSender = (senderId) => {
+        if (selectedChat && selectedChat.email === senderId) {
+            return selectedChat.nickname;
+        }
+        return null;
+    };
+
+    const getProfileImageForSender = (senderId) => {
+        if (selectedChat && selectedChat.email === senderId) {
+            return selectedChat.image;
+        }
+        return 'https://www.example.com/default-profile.jpg'; // 기본 이미지 URL
+    };
+
     const getDisplayName = () => {
         if (!selectedChat || (!selectedChat.member1 && !selectedChat.member2 && !selectedChat.togetherId)) {
             return <div className='chat-window-top-no'>나랑 같이 취할 사람 찾으러 가기!</div>; 
@@ -93,7 +117,7 @@ const ChatWindow = ({
                                 >
                                     <img
                                         src={member.image}
-                                        alt={`Profile of ${getNickname(member)}`}
+                                        alt={`member`}
                                         className="participant-img"
                                     />
                                 </div>
@@ -112,29 +136,29 @@ const ChatWindow = ({
             );
         }
     
-        const otherUserId = getOtherUserId();
-        if (!otherUserId) {
-            return <span>상대방 정보 없음</span>;
-        }
+        //const otherUserId = getOtherUserId();
+        //if (!otherUserId) {
+        //    return <span>상대방 정보 없음</span>;
+        //}
         
-        const nickname = getNickname(otherUserId);
-        const profileImage = getProfileImage(otherUserId);
+        //const nickname = getNickname(otherUserId);
+       // const profileImage = getProfileImage(otherUserId);
     
         if (activeKey === 'one') {
             return (
                 <div className="d-flex align-items-center">
                     <img 
-                        src={profileImage} 
-                        alt={`Profile of ${nickname}`} 
+                        src={selectedChat.image} 
+                        alt={`Profile of ${selectedChat.nickname}`} 
                         className="profile-img rounded-circle" 
                         style={{ width: '40px', height: '40px', marginRight: '10px' }}
-                        onClick={() => navigateToUserProfile(otherUserId)}
+                        onClick={() => navigateToUserProfile(selectedChat.id)}
                     />
-                    <span onClick={() => navigateToUserProfile(otherUserId)}>{nickname}</span> 
+                    <span onClick={() => navigateToUserProfile(selectedChat.id)}>{selectedChat.nickname}</span> 
                 </div>
             );
         } else {
-            return <span onClick={() => navigateToUserProfile(otherUserId)}>{nickname}</span>; 
+            return <span onClick={() => navigateToUserProfile(selectedChat.id)}>{selectedChat.nickname}</span>; 
         }
     };
 
@@ -166,12 +190,12 @@ const ChatWindow = ({
         return profile ? profile.profile.nickname : email;
     };
 
-    const getProfileImage = (email) => {
-        const profile = profiles.find(p => p.profile.email === email);
-        return profile && profile.imageBlob.length > 0
-            ? profile.imageBlob[0]
-            : 'https://www.example.com/default-profile.jpg';
-    };
+    //const getProfileImage = (email) => {
+    //    const profile = profiles.find(p => p.profile.email === email);
+    //    return profile && profile.imageBlob.length > 0
+    //        ? profile.imageBlob[0]
+    //        : 'https://www.example.com/default-profile.jpg';
+    //};
 
     const getUserId = (email) => {
         const profile = profiles.find(p => p.profile.email === email);
@@ -229,6 +253,8 @@ const ChatWindow = ({
                 <div className="chat active-chat" data-chat={`person${selectedChat.roomId}`} ref={scrollRef}>
                     {selectedChat.messages && selectedChat.messages.length > 0 ? (
                         selectedChat.messages.map((message, index) => {
+                            const senderNickname = getNicknameForSender(message.sender_id);
+                            const senderProfileImage = getProfileImageForSender(message.sender_id);
                             const senderInfo = getMessageSenderInfo(message.sender_id);
                             const isSameSenderAsPrevious = index > 0 && selectedChat.messages[index - 1].sender_id === message.sender_id;
                             return (
@@ -239,12 +265,14 @@ const ChatWindow = ({
                                     {!isSender(message.sender_id) && !isSameSenderAsPrevious && (
                                         <div className="message-info">
                                             <img
-                                                src={senderInfo.profileImage}
-                                                alt={`Profile of ${senderInfo.nickname}`}
+                                                src={senderProfileImage}
+                                                alt={`Profile of ${senderNickname || senderInfo.nickname}`}
                                                 className="profile-img rounded-circle"
                                                 onClick={() => navigateToUserProfile(message.sender_id)}
                                             />
-                                            <span className="nickname" onClick={() => navigateToUserProfile(message.sender_id)}>{senderInfo.nickname}</span> 
+                                            <span className="nickname" onClick={() => navigateToUserProfile(message.sender_id)}>
+                                                {senderNickname || senderInfo.nickname}
+                                            </span> 
                                         </div>
                                     )}
                                     <div className={getChatBubbleClasses(message.sender_id)}>
@@ -312,10 +340,14 @@ const ChatWindow = ({
                                         {member.nickname}
                                     </span>
                                     <div className="participant-modal-actions">
-                                        {isAdmin() && ( 
+                                        {/* Show Kick button only if admin and member is not the logged-in user */}
+                                        {isAdmin() && member !== loggedInUserId && (
                                             <button className="no-style" onClick={() => handleKick(member)}>강퇴</button>
                                         )}
-                                        <button className="no-style" onClick={() => handleReport(member)}>🚨</button>
+                                        {/* Show Report button always, but hide it if the member is the logged-in user */}
+                                        {member !== loggedInUserId && (
+                                            <button className="no-style" onClick={() => handleReport(member)}>🚨</button>
+                                        )}
                                     </div>
                                     <br/>
                                 </li>
