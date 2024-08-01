@@ -14,12 +14,13 @@ const DTBoardContent = ({ posts, totalPosts, postsPerPage, paginate, onWriteButt
       <h2>함께 마셔요 게시판</h2>
       <hr className="divider" />
       {posts.map((post) => (
-        <div key={post.id} className="post" onClick={() => onPostClick(post.id)}> {/* 게시물 클릭 시 선택된 게시물 ID를 설정 */}
-          <h5>{post.title}</h5>
-          <p>{post.location} | {post.time}</p>
-          <p className='contentHidden'>{post.content}</p>
-          <p className='contentHidden'>{post.address}</p>
-          <hr className="divider" />
+        <div key={post.id} className="post" > {/* 게시물 클릭 시 선택된 게시물 ID를 설정 */}
+          <div className = "postClickArea" onClick={() => onPostClick(post.id)}>
+            <h5>{post.title}</h5>
+            <p>{post.location} | {post.time}</p>
+            <p className='contentHidden'>{post.content}</p>
+            <p className='contentHidden'>{post.address}</p>
+          </div>
         </div>
       ))}
       <div className="board-footer">
