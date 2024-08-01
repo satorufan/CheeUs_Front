@@ -79,15 +79,9 @@ function DTBInputForm() {
     
     const content = editorRef.current.getInstance().getMarkdown(); // content를 getInstance().getMarkdown()으로 받아옴
     
-    console.log("title: ", title);
-    console.log("content: ", content);
-    console.log("time: ", time);
-    console.log("nickname: ", nickname);
-    console.log("memberEmail: ", memberEmail);
-    
     addPost(title, content, time, nickname, memberEmail);
     navigate('/dtboard'); // 게시글 작성 후 게시판으로 이동
-   // window.location.reload();
+    window.location.reload();
   };
 
   const onExitHandler = () => {

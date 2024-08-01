@@ -37,7 +37,6 @@ export const PostProvider = ({ children }) => {
       latitude: selectedPlace?.latitude || null,
       longitude: selectedPlace?.longitude || null,
     };
-	console.log("newPost:", newPost);
     axios.post('http://localhost:8080/dtBoard/insert', newPost)
       .then(response => {
         setPosts([...posts, { ...newPost, id: response.data.id }]); // 서버에서 반환된 id 사용

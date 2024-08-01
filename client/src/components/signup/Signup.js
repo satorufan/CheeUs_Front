@@ -38,7 +38,7 @@ const Signup = () => {
   const [name, setName] = useState('');
   const [birth, setBirth] = useState('');
   const [tel, setTel] = useState('');
-  const [authTelState, setAuthTelState] = useState(null);
+  const [authTelState, setAuthTelState] = useState(1);
   const [telAuthCode, setTelAuthCode] = useState('');
   const [nickname, setNickname] = useState('');
   const [nicknameChecked, setNicknameChecked] = useState(false);

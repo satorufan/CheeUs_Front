@@ -23,7 +23,6 @@ const useAuth = () => {
   
    
   const loggedInUserId = memberEmail;	//바꾸면 찜하기 보임
-  console.log("이메일은?" +memberEmail);
   return { loggedInUserId };
 };
 
@@ -36,8 +35,6 @@ const PostDetail = () => {
   
   if (!post) return <div>Post not found</div>;
   
-  console.log("posts:", posts);
-  console.log("post:", post);
   
   const onExitHandler = () => {
     navigate('/dtBoard');
@@ -98,7 +95,7 @@ const PostDetail = () => {
                 <img className="profileImg" src={profileImg} alt="Profile" />
               </div>
               <div className="profile2">
-                <a>{post.author_id}</a>
+                <a>{post.nickname}</a>
               </div>
             </div>
             <div className="dateHeader">
