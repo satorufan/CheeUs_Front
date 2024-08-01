@@ -38,6 +38,8 @@ const Signup = () => {
   const [name, setName] = useState('');
   const [birth, setBirth] = useState('');
   const [tel, setTel] = useState('');
+  const [authTelState, setAuthTelState] = useState(null);
+  const [telAuthCode, setTelAuthCode] = useState('');
   const [nickname, setNickname] = useState('');
   const [nicknameChecked, setNicknameChecked] = useState(false);
   const [gender, setGender] = useState();
@@ -113,6 +115,82 @@ const Signup = () => {
     //
   }
 
+  // 전화번호 인증 코드 전송
+  const sendTelAuthCode = () => {
+    if (!(tel == null || tel.length != 11 || !/^\d*$/.test(tel))) {
+      const formData = new FormData();
+
+      formData.append("tel", tel);
+
+      axios.post(serverUrl+"/member/send-mms", formData)
+      .then((res)=>{
+        if (res.data == "5회이상 실패하였습니다. 잠시후에 다시 시도해주세요.") {
+          sweetalert("5회이상 실패하였습니다. 잠시후에 다시 시도해주세요.","","","확인");
+        } else {
+          sweetalert("인증 번호가 전송되었습니다","","","확인");
+          setTime(180);
+          setIsActive(true);
+          setAuthTelState(0);
+        }
+      }).catch((err)=>{
+        if (err.response.data == "fail") {
+          sweetalert("인증 번호 전송실패! 전화번호 확인해주세요.","","","확인");
+        } else {
+          console.log(err.response.data);
+        }
+      });
+    } else {
+
+    }
+  }
+
+  // 인증 확인
+  const verifyAuthCode = () => {
+    const formData = new FormData();
+
+    formData.append("tel", tel);
+    formData.append("authCode", telAuthCode);
+
+    axios.post(serverUrl+"/member/telVerify", formData)
+    .then((res)=>{
+      if (res.data == "success") {
+        sweetalert("인증 성공하였습니다!","","","확인");
+        setAuthTelState(1);
+      } else {
+        if (res.data == "5회이상 실패하였습니다. 잠시후에 다시 시도해주세요.") {
+          sweetalert("5회이상 실패하였습니다. 잠시후에 다시 시도해주세요.","","","확인");
+          setAuthTelState(null);
+          setIsActive(false);
+        } else {
+          sweetalert(`잘못된 인증번호! 남은 횟수(${5-res.data})`,"","","확인");
+        }
+        console.log(res);
+      }
+    });
+  }
+
+  // 전화번호 인증시 동작할 타이머
+  const [time, setTime] = useState(180); // 3분 = 180초
+  const [isActive, setIsActive] = useState(false);
+
+  useEffect(() => {
+    if (!isActive) return;
+    if (time === 0) return setIsActive(false);
+
+    const interval = setInterval(() => {
+      setTime(time => time - 1);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isActive, time]);
+
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+  };
+
+
   // 위치 정보 불러오기
   const getUserLocation = () => {
     if (navigator.geolocation) {
@@ -153,8 +231,8 @@ const Signup = () => {
   };
   const handleTagSubmit = () => {
     var tagsString = "";
-    tags.map((tag)=>{
-      tagsString += tag + "/";
+    tags.map((tag, index)=>{
+      tagsString += index < tags.length-1 ? tag + "/" : tag;
     });
     return tagsString;
   }
@@ -176,6 +254,8 @@ const Signup = () => {
       tel.length != 11 || !/^\d*$/.test(tel)
     ) {
       sweetalert("전화번호를 정확히 입력해주세요!", '','','확인');
+    } else if (authTelState != 1) {
+      sweetalert("전화번호 인증을 완료해주세요!", '','','확인');
     } else if (nickname == null) {
       sweetalert("닉네임을 입력해주세요!", '','','확인');
     } else if (gender == null) {
@@ -286,6 +366,18 @@ const Signup = () => {
               placeholder="전화번호를 입력하세요(ex. 01011112222)" 
               value={tel}
               onChange={(event) => setTel(event.target.value)}/>
+              <button type="button" onClick={sendTelAuthCode} hidden={!(authTelState == null)}>전화번호 인증</button>
+              <button type="button" hidden={!(authTelState == 1)}>인증완료</button>
+            </div>
+            <div className="form-group" hidden={!(authTelState == 0)}>
+              <label>전화번호 인증</label>
+              <input 
+              type="text"
+              placeholder="인증번호를 입력하세요" 
+              value={telAuthCode}
+              onChange={(event) => setTelAuthCode(event.target.value)}/>
+              <label>{formatTime(time)}</label>
+              <button type="button" onClick={verifyAuthCode} hidden={!(authTelState == 0)}>인증확인</button>
             </div>
             <div className="form-group">
               <label>성별</label>
