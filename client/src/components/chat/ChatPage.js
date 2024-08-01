@@ -115,25 +115,29 @@ const ChatPage = () => {
             console.error('메시지를 불러오는 중 에러 발생:', error);
         }
     };
-
     const handleTogetherRoomClick = async (roomId) => {
+        const userId = loggedInUserId;
         try {
+            console.log('handleTogetherRoomClick called with roomId:', roomId, 'userId:', userId);
+            
             const selectedRoom = togetherChatRooms.find(room => room.roomId === roomId);
             if (!selectedRoom) {
                 console.error(`roomId ${roomId}에 해당하는 단체 채팅방을 찾을 수 없습니다.`);
                 return;
             }
-
+            console.log('Updated together chat room read array:', selectedRoom);
+            
             const response = await axios.get(`http://localhost:8889/api/togetherMessages/${roomId}`);
             const messages = response.data.map(message => ({
                 ...message,
-                write_day: new Date(message.writeDay || message.write_day).toISOString()
+                write_day: new Date(message.writeDay || message.write_day).toISOString(),
+                read: Array.isArray(message.read) ? message.read : [message.read]
             }));
-
+        
             dispatch(setSelectedChat({ ...selectedRoom, messages }));
             dispatch(setShowMessageInput(true));
             dispatch(setMessageInput(''));
-            dispatch(updateTogetherMessageReadStatus({ roomId }));
+            dispatch(updateTogetherMessageReadStatus({ roomId, userId }));
         } catch (error) {
             console.error('메시지를 불러오는 중 에러 발생:', error);
         }
@@ -150,7 +154,7 @@ const ChatPage = () => {
             message: messageInput,
             write_day: new Date().toISOString(),
             read: 0,
-            ...(activeKey === 'one' ? { chat_room_id: selectedChat.roomId } : { room_id: selectedChat.roomId })
+            ...(activeKey === 'one' ? { chat_room_id: selectedChat.roomId } : { room_id: selectedChat.roomId, read: [loggedInUserId] })
         };
 
         socket.current.emit('sendMessage', newMessage);

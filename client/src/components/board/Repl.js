@@ -154,7 +154,7 @@ function Repl({ boardId }) {
                     <div className="detail-comment">
                         <div className="comment-user-info">
                             <img src={'https://via.placeholder.com/30'} alt="Profile" className="reply-profile-pic" />
-                            <span className="reply-nickname">{replNickname}</span>
+                            <span className="reply-nickname">{comment.repl_author_id}</span>
                         </div>
                         <div className="comment-content">
                             <span>{comment.repl_content}</span>
