@@ -368,6 +368,10 @@ const chatSlice = createSlice({
                 state.status = 'failed';
                 state.error = action.error.message;
             })
+            .addCase(removeUserFromTogetherChatRoom.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                // 여기부터수정
+            })
             .addCase(updateOneOnOneChatRoomStatus.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.error.message;

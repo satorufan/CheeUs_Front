@@ -2,12 +2,13 @@ import React, { useEffect, useContext, useState, useRef } from 'react';
 import { AuthContext } from '../login/OAuth';
 import { jwtDecode } from 'jwt-decode';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import './chatPage.css';
 import { selectProfiles } from '../../store/MatchSlice';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { Modal, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import { removeUserFromTogetherChatRoom } from '../../store/ChatSlice';
 
 const ChatWindow = ({
     selectedChat,
@@ -24,6 +25,7 @@ const ChatWindow = ({
     const [showParticipants, setShowParticipants] = useState(false);
     const profiles = useSelector(selectProfiles);
     const navigate = useNavigate(); 
+    const dispatch = useDispatch();
 
     useEffect(() => {
         if (token) {
@@ -67,9 +69,6 @@ const ChatWindow = ({
         }
     };
 
-    const isAdmin = () => {
-        return selectedChat && selectedChat.members.length > 0 && selectedChat.members[0] === loggedInUserId;
-    };
 
     const isSender = (senderId) => senderId === loggedInUserId;
 
@@ -225,9 +224,29 @@ const ChatWindow = ({
         return isSender(senderId) ? 'chat-bubble me' : 'chat-bubble you';
     };
 
-    const handleKick = (memberId) => {
-        console.log('Kick user:', memberId);
-        // 추가 구현예정
+
+    const handleKick = (userEmailObj) => {
+        const roomId = selectedChat.roomId;
+        const userId = userEmailObj.email; 
+
+        console.log(roomId);
+        console.log(userId);
+
+        if (!roomId || !userId) {
+            console.error('Invalid roomId or userEmail:', roomId, userId);
+            return;
+        }
+        
+        console.log({ roomId, userId });
+    
+        if (window.confirm('정말로 이 사용자를 단체 채팅방에서 강퇴하시겠습니까?')) {
+            dispatch(removeUserFromTogetherChatRoom({ roomId, userId }))
+                .then(() => {
+                    console.log('단체 채팅방에서 사용자 강퇴 성공');
+                    // 성공적으로 강퇴 후, UI 업데이트 또는 리프레시 로직 추가
+                })
+                .catch(err => console.error('단체 채팅방에서 사용자 강퇴 오류:', err));
+        }
     };
 
     const handleReport = (memberId) => {
