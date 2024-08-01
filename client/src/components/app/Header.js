@@ -70,7 +70,7 @@ function Header() {
     const isLoggedIn = userProfile !== null;
 
     return (
-        <div className="header-container nav-tabs">
+        <div className="header-container">
             <button onClick={springSecurity}>스프링시큐리티 테스트 버튼</button>
             <Navbar bg="#f2d420" expand="lg" style={{ backgroundColor: 'white' }} expanded={isNavExpanded}>
                 <Container fluid className="header-box">

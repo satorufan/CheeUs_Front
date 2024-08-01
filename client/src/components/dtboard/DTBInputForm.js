@@ -1,4 +1,4 @@
-import React, { useState, useRef, forwardRef } from 'react';
+import React, { useState, useRef, forwardRef, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BsArrowLeft } from 'react-icons/bs';
 import '@toast-ui/editor/dist/toastui-editor.css';
@@ -11,6 +11,11 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { ko } from 'date-fns/locale';
 import { format } from 'date-fns';
 import Swal from 'sweetalert2';
+import { fetchUserProfiles, selectProfiles,  } from '../../store/MatchSlice';
+import { selectUserProfile } from '../../store/ProfileSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { AuthContext } from '../login/OAuth';
+
 
 function DTBInputForm() {
   const [startDate, setStartDate] = useState(new Date());
@@ -19,6 +24,27 @@ function DTBInputForm() {
   const editorRef = useRef();
   const navigate = useNavigate();
   const { addPost, selectedPlace } = usePosts();
+  const dispatch = useDispatch();
+  const { memberEmail, serverUrl } = useContext(AuthContext);
+  const userProfile = useSelector(selectUserProfile);
+  const profiles = useSelector(selectProfiles);  
+  const [nickname, setNickname] = useState('');
+  
+  useEffect(() => {
+    dispatch(fetchUserProfiles({ serverUrl, memberEmail }));
+  }, [dispatch, serverUrl, memberEmail]);  
+  
+    useEffect(() => {
+    if (profiles && memberEmail) {
+      const user = profiles.find(profile => profile.profile.email === memberEmail);
+    }
+  }, [profiles, userProfile]);
+  
+   useEffect(() => {
+       if (userProfile) {
+           setNickname(userProfile.profile.nickname);
+       }
+   }, [userProfile]);  
 
   const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => {
     const formattedValue = format(startDate, '약속시간 : yyyy.MM.dd') + ' ' + format(startDate, 'HH:mm');
@@ -51,11 +77,17 @@ function DTBInputForm() {
       return;
 	}
     
-    
     const content = editorRef.current.getInstance().getMarkdown(); // content를 getInstance().getMarkdown()으로 받아옴
-    addPost(title, content, time);
+    
+    console.log("title: ", title);
+    console.log("content: ", content);
+    console.log("time: ", time);
+    console.log("nickname: ", nickname);
+    console.log("memberEmail: ", memberEmail);
+    
+    addPost(title, content, time, nickname, memberEmail);
     navigate('/dtboard'); // 게시글 작성 후 게시판으로 이동
-    window.location.reload();
+   // window.location.reload();
   };
 
   const onExitHandler = () => {

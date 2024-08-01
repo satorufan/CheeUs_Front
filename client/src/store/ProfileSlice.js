@@ -80,7 +80,7 @@ export const updateUserProfileThunk = createAsyncThunk(
             profile : response.data.profile,
             imageBlob : imageBlob
         };
-
+		console.log("profile : " +  profile);
         return profile; // 프로필 데이터 반환
     }
 );
