@@ -340,11 +340,10 @@ const ChatWindow = ({
                                         {member.nickname}
                                     </span>
                                     <div className="participant-modal-actions">
-                                        {/* Show Kick button only if admin and member is not the logged-in user */}
-                                        {isAdmin() && member !== loggedInUserId && (
+                                        
+                                        { selectedChat.members[0].email === loggedInUserId && member.email !== loggedInUserId &&(
                                             <button className="no-style" onClick={() => handleKick(member)}>강퇴</button>
                                         )}
-                                        {/* Show Report button always, but hide it if the member is the logged-in user */}
                                         {member !== loggedInUserId && (
                                             <button className="no-style" onClick={() => handleReport(member)}>🚨</button>
                                         )}
