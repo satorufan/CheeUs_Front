@@ -67,11 +67,19 @@ function Header() {
     // axios.get(serverUrl + "/signIn").then((res)=>{console.log(res)}).catch((err)=>console.log(err));
    }
 
+    const springRedis = async() => {
+        console.log("Redis");
+        axios.get(serverUrl+"/member/redis").then(res=>console.log(res))
+        .catch((err)=>console.log(err));
+    }
+
     const isLoggedIn = userProfile !== null;
+
 
     return (
         <div className="header-container nav-tabs">
             <button onClick={springSecurity}>스프링시큐리티 테스트 버튼</button>
+            <button onClick={springRedis}>스프링 Redis 테스트 버튼</button>
             <Navbar bg="#f2d420" expand="lg" style={{ backgroundColor: 'white' }} expanded={isNavExpanded}>
                 <Container fluid className="header-box">
                     <Navbar.Brand href="/main" className="header-logo">
