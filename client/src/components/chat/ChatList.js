@@ -104,22 +104,37 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
         return <div>오류 발생: {error}</div>;
     }
 
+    const isNewMessage = (room) => {
+        const lastMessage = getLastMessage(room);
+        if (isTogether) {
+            return !lastMessage.read.includes(loggedInUserId);
+        }
+        return lastMessage.read === 0 && lastMessage.sender_id !== loggedInUserId;
+    };
     
 
     const handleExitChat = (roomId) => {
         // roomId를 객체 형태로 출력
         console.log({ roomId });
-    
+
         if (isTogether) {
             if (window.confirm('정말로 이 단체 채팅방에서 나가시겠습니까?')) {
                 dispatch(removeUserFromTogetherChatRoom({ roomId, userId: loggedInUserId }))
-                    .then(() => console.log('단체 채팅방에서 사용자 제거 성공'))
+                    .then(() => {
+                        console.log('단체 채팅방에서 사용자 제거 성공');
+                        // 단체 채팅방 리스트 다시 불러오기
+                        dispatch(fetchTogetherChatRooms({ serverUrl, userId: loggedInUserId }));
+                    })
                     .catch(err => console.error('단체 채팅방에서 사용자 제거 오류:', err));
             }
         } else {
             if (window.confirm('정말로 이 1:1 채팅방을 삭제하시겠습니까?')) {
                 dispatch(updateOneOnOneChatRoomStatus({ roomId, match: 3 }))
-                    .then(() => console.log('1:1 채팅방 match 업데이트 성공'))
+                    .then(() => {
+                        console.log('1:1 채팅방 match 업데이트 성공');
+                        // 1:1 채팅방 리스트 다시 불러오기
+                        dispatch(fetchChatRooms({ serverUrl, userId: loggedInUserId }));
+                    })
                     .catch(err => console.error('1:1 채팅방 match 업데이트 오류:', err));
             }
         }
@@ -135,7 +150,6 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
                 {currentChatRooms && currentChatRooms.length > 0 ? (
                     currentChatRooms.map(room => {
                         const lastMessage = getLastMessage(room);
-                        const isNewMessage = lastMessage.read === 0;
                         // const otherMemberId = getOtherMemberId(room);
                         return (
                             <li
@@ -155,7 +169,7 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
                                         <span className="chat-name">
                                             {room.nickname}
                                         </span>
-                                        {isNewMessage && lastMessage.sender_id !== loggedInUserId && <span className="receive-new">New</span>}
+                                        {isNewMessage(room) && <span className="receive-new">New</span>}
                                     </div>
                                     <span className="chat-time">
                                         {formatDate(lastMessage.write_day)}

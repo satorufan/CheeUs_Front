@@ -368,6 +368,16 @@ const chatSlice = createSlice({
                 state.status = 'failed';
                 state.error = action.error.message;
             })
+            .addCase(removeUserFromTogetherChatRoom.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                const { roomId, userId } = action.meta.arg;
+                state.togetherChatRooms = state.togetherChatRooms.map(room =>
+                    room.roomId === roomId ? {
+                        ...room,
+                        members: room.members.filter(member => member !== userId)
+                    } : room
+                );
+            })
             .addCase(updateOneOnOneChatRoomStatus.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.error.message;
