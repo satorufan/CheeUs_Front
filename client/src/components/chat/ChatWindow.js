@@ -28,6 +28,7 @@ const ChatWindow = ({
     const navigate = useNavigate(); 
     const dispatch = useDispatch();
     const [profileData, setProfileData] = useState([]);
+    const [isDataLoaded, setIsDataLoaded] = useState(false);
 
     useEffect(() => {
         if (token) {
@@ -47,7 +48,7 @@ const ChatWindow = ({
     }, [selectedChat]);
 
     useEffect(() => {
-        if (selectedChat && selectedChat.togetherId) {
+        if (selectedChat && selectedChat.togetherId && !isDataLoaded) {
             // 단체 채팅의 경우, 멤버 이메일을 기반으로 프로필 데이터 가져오기
             const memberEmails = selectedChat.members.map(member => member.email);
 
@@ -60,6 +61,7 @@ const ChatWindow = ({
                     // 모든 프로필 데이터 병합
                     const profiles = responses.flatMap(response => response.payload);
                     setProfileData(profiles);
+                    setIsDataLoaded(true); // 데이터가 성공적으로 로드되었음을 표시
                 } catch (error) {
                     console.error('Error fetching profiles:', error);
                 }
@@ -67,7 +69,7 @@ const ChatWindow = ({
 
             fetchProfiles();
         }
-    }, [selectedChat, dispatch, serverUrl]);;
+    }, [selectedChat, dispatch, serverUrl, isDataLoaded]);
 
     useEffect(() => {
         if (selectedChat) {
@@ -253,7 +255,7 @@ const ChatWindow = ({
             };
         } else {
             // 단체 채팅인 경우
-            const senderProfile = profileData.find(p => p.profile.email === senderId);
+            const senderProfile = profileData.find(p => p.profile.email === senderId); /////////여기 확인!!
             console.log(profileData);
             return {
                 nickname: senderProfile ? senderProfile.profile.nickname : senderId,
