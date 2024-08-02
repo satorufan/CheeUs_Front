@@ -120,13 +120,21 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
         if (isTogether) {
             if (window.confirm('정말로 이 단체 채팅방에서 나가시겠습니까?')) {
                 dispatch(removeUserFromTogetherChatRoom({ roomId, userId: loggedInUserId }))
-                    .then(() => console.log('단체 채팅방에서 사용자 제거 성공'))
+                    .then(() => {
+                        console.log('단체 채팅방에서 사용자 제거 성공');
+                        // 단체 채팅방 리스트 다시 불러오기
+                        dispatch(fetchTogetherChatRooms({ serverUrl, userId: loggedInUserId }));
+                    })
                     .catch(err => console.error('단체 채팅방에서 사용자 제거 오류:', err));
             }
         } else {
             if (window.confirm('정말로 이 1:1 채팅방을 삭제하시겠습니까?')) {
                 dispatch(updateOneOnOneChatRoomStatus({ roomId, match: 3 }))
-                    .then(() => console.log('1:1 채팅방 match 업데이트 성공'))
+                    .then(() => {
+                        console.log('1:1 채팅방 match 업데이트 성공');
+                        // 1:1 채팅방 리스트 다시 불러오기
+                        dispatch(fetchChatRooms({ serverUrl, userId: loggedInUserId }));
+                    })
                     .catch(err => console.error('1:1 채팅방 match 업데이트 오류:', err));
             }
         }

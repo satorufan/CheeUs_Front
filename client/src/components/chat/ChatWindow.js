@@ -4,11 +4,11 @@ import { jwtDecode } from 'jwt-decode';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import { useDispatch, useSelector } from 'react-redux';
 import './chatPage.css';
-import { selectProfiles } from '../../store/MatchSlice';
+import { selectProfiles, fetchUserProfiles } from '../../store/MatchSlice';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { Modal, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { removeUserFromTogetherChatRoom } from '../../store/ChatSlice';
+import { removeUserFromTogetherChatRoom, fetchTogetherChatRooms } from '../../store/ChatSlice';
 
 const ChatWindow = ({
     selectedChat,
@@ -19,13 +19,15 @@ const ChatWindow = ({
     setMessageInput,
     activeKey
 }) => {
-    const { token } = useContext(AuthContext);
+    const { token, serverUrl } = useContext(AuthContext);
     const scrollRef = useRef(null);
     const [loggedInUserId, setLoggedInUserId] = useState(null);
     const [showParticipants, setShowParticipants] = useState(false);
+    const [participants, setParticipants] = useState([]);
     const profiles = useSelector(selectProfiles);
     const navigate = useNavigate(); 
     const dispatch = useDispatch();
+    const [profileData, setProfileData] = useState([]);
 
     useEffect(() => {
         if (token) {
@@ -37,6 +39,35 @@ const ChatWindow = ({
             }
         }
     }, [token]);
+
+    useEffect(() => {
+        if (selectedChat) {
+            setParticipants(selectedChat.members || []);
+        }
+    }, [selectedChat]);
+
+    useEffect(() => {
+        if (selectedChat && selectedChat.togetherId) {
+            // 단체 채팅의 경우, 멤버 이메일을 기반으로 프로필 데이터 가져오기
+            const memberEmails = selectedChat.members.map(member => member.email);
+
+            const fetchProfiles = async () => {
+                try {
+                    const responses = await Promise.all(
+                        memberEmails.map(email => dispatch(fetchUserProfiles({ serverUrl, memberEmail: email })))
+                    );
+
+                    // 모든 프로필 데이터 병합
+                    const profiles = responses.flatMap(response => response.payload);
+                    setProfileData(profiles);
+                } catch (error) {
+                    console.error('Error fetching profiles:', error);
+                }
+            };
+
+            fetchProfiles();
+        }
+    }, [selectedChat, dispatch, serverUrl]);;
 
     useEffect(() => {
         if (selectedChat) {
@@ -84,11 +115,11 @@ const ChatWindow = ({
         return null;
     };
 
-    const getProfileImageForSender = (senderId) => {
-        if (selectedChat && selectedChat.email === senderId) {
-            return selectedChat.image;
-        }
-        return 'https://www.example.com/default-profile.jpg'; // 기본 이미지 URL
+    const getProfileImageForSender = (email) => {
+        const profile = profiles.find(p => p.profile.email === email);
+        return profile && profile.imageBlob.length > 0
+           ? profile.imageBlob[0]
+            : 'https://www.example.com/default-profile.jpg';
     };
 
     const getDisplayName = () => {
@@ -189,12 +220,12 @@ const ChatWindow = ({
         return profile ? profile.profile.nickname : email;
     };
 
-    //const getProfileImage = (email) => {
-    //    const profile = profiles.find(p => p.profile.email === email);
-    //    return profile && profile.imageBlob.length > 0
-    //        ? profile.imageBlob[0]
-    //        : 'https://www.example.com/default-profile.jpg';
-    //};
+    const getProfileImage = (email) => {
+        const profile = profiles.find(p => p.profile.email === email);
+        return profile && profile.imageBlob.length > 0
+           ? profile.imageBlob[0]
+            : 'https://www.example.com/default-profile.jpg';
+    };
 
     const getUserId = (email) => {
         const profile = profiles.find(p => p.profile.email === email);
@@ -211,13 +242,26 @@ const ChatWindow = ({
     };
 
     const getMessageSenderInfo = (senderId) => {
-        const senderProfile = profiles.find(p => p.profile.email === senderId);
-        return {
-            nickname: senderProfile ? senderProfile.profile.nickname : senderId,
-            profileImage: senderProfile && senderProfile.imageBlob.length > 0
-                ? senderProfile.imageBlob[0]
-                : 'https://www.example.com/default-profile.jpg'
-        };
+        if (activeKey === 'one') {
+            // 일반 채팅인 경우
+            const senderProfile = profiles.find(p => p.profile.email === senderId);
+            return {
+                nickname: senderProfile ? senderProfile.profile.nickname : senderId,
+                profileImage: senderProfile && senderProfile.imageBlob.length > 0
+                    ? senderProfile.imageBlob[0]
+                    : 'https://www.example.com/default-profile.jpg'
+            };
+        } else {
+            // 단체 채팅인 경우
+            const senderProfile = profileData.find(p => p.profile.email === senderId);
+            console.log(profileData);
+            return {
+                nickname: senderProfile ? senderProfile.profile.nickname : senderId,
+                profileImage: senderProfile && senderProfile.imageBlob.length > 0
+                    ? senderProfile.imageBlob[0]
+                    : 'https://www.example.com/default-profile.jpg'
+            };
+        }
     };
 
     const getChatBubbleClasses = (senderId) => {
@@ -225,25 +269,31 @@ const ChatWindow = ({
     };
 
 
+    //강퇴
     const handleKick = (userEmailObj) => {
         const roomId = selectedChat.roomId;
-        const userId = userEmailObj.email; 
-
+        const userId = userEmailObj.email;
+    
         console.log(roomId);
         console.log(userId);
-
+    
         if (!roomId || !userId) {
             console.error('Invalid roomId or userEmail:', roomId, userId);
             return;
         }
-        
+    
         console.log({ roomId, userId });
     
         if (window.confirm('정말로 이 사용자를 단체 채팅방에서 강퇴하시겠습니까?')) {
             dispatch(removeUserFromTogetherChatRoom({ roomId, userId }))
                 .then(() => {
                     console.log('단체 채팅방에서 사용자 강퇴 성공');
-                    // 성공적으로 강퇴 후, UI 업데이트 또는 리프레시 로직 추가
+                    // 단체 채팅방 리스트 다시 불러오기
+                    dispatch(fetchTogetherChatRooms({ serverUrl, userId: loggedInUserId }))
+                        .then(() => {
+                            // 참여자 목록 업데이트
+                            setParticipants(prevParticipants => prevParticipants.filter(participant => participant.email !== userId));
+                        });
                 })
                 .catch(err => console.error('단체 채팅방에서 사용자 강퇴 오류:', err));
         }
@@ -284,7 +334,7 @@ const ChatWindow = ({
                                     {!isSender(message.sender_id) && !isSameSenderAsPrevious && (
                                         <div className="message-info">
                                             <img
-                                                src={senderProfileImage}
+                                                src={senderProfileImage || getProfileImage}
                                                 alt={`Profile of ${senderNickname || senderInfo.nickname}`}
                                                 className="profile-img rounded-circle"
                                                 onClick={() => navigateToUserProfile(message.sender_id)}
@@ -338,49 +388,48 @@ const ChatWindow = ({
 
             {/* 채팅 참여자 모달 */}
             <Modal show={showParticipants} onHide={toggleParticipants}>
-                <Modal.Header closeButton>
-                    <Modal.Title>채팅 참여자</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    {selectedChat && selectedChat.members ? (
-                        <ul className="participant-modal-list">
-                            {selectedChat.members.map((member, index) => (
-                                <li key={index} className="participant-modal-item">
-                                    <img
-                                        src={member.image}
-                                        alt={`Profile of ${getNickname(member)}`}
-                                        className="participant-modal-img"
-                                        onClick={() => navigateToUserProfile(member)}
-                                    />
-                                    <span
-                                        className="modal-nickname"
-                                        onClick={() => navigateToUserProfile(member)} 
-                                    >
-                                        {member.nickname}
-                                    </span>
-                                    <div className="participant-modal-actions">
-                                        
-                                        { selectedChat.members[0].email === loggedInUserId && member.email !== loggedInUserId &&(
-                                            <button className="no-style" onClick={() => handleKick(member)}>강퇴</button>
-                                        )}
-                                        {member !== loggedInUserId && (
-                                            <button className="no-style" onClick={() => handleReport(member)}>🚨</button>
-                                        )}
-                                    </div>
-                                    <br/>
-                                </li>
-                            ))}
-                        </ul>
-                    ) : (
-                        <p>No participants found.</p>
-                    )}
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={toggleParticipants}>
-                        Close
-                    </Button>
-                </Modal.Footer>
-            </Modal>
+            <Modal.Header closeButton>
+                <Modal.Title>채팅 참여자</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                {participants.length > 0 ? (
+                    <ul className="participant-modal-list">
+                        {participants.map((member, index) => (
+                            <li key={index} className="participant-modal-item">
+                                <img
+                                    src={member.image}
+                                    alt={`Profile of ${getNickname(member.email)}`}
+                                    className="participant-modal-img"
+                                    onClick={() => navigateToUserProfile(member.email)}
+                                />
+                                <span
+                                    className="modal-nickname"
+                                    onClick={() => navigateToUserProfile(member.email)} 
+                                >
+                                    {getNickname(member.email)}
+                                </span>
+                                <div className="participant-modal-actions">
+                                    { selectedChat.members[0].email === loggedInUserId && member.email !== loggedInUserId &&(
+                                        <button className="no-style" onClick={() => handleKick(member)}>강퇴</button>
+                                    )}
+                                    {member.email !== loggedInUserId && (
+                                        <button className="no-style" onClick={() => handleReport(member.email)}>🚨</button>
+                                    )}
+                                </div>
+                                <br/>
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p>No participants found.</p>
+                )}
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={toggleParticipants}>
+                    Close
+                </Button>
+            </Modal.Footer>
+        </Modal>
         </>
     );
 };
