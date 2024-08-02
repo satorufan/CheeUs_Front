@@ -9,6 +9,7 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
 const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
     const { token, serverUrl, memberEmail } = useContext(AuthContext);
+    const [search, setSearch] = useState('');
     const [loggedInUserId, setLoggedInUserId] = useState(null);
     const dispatch = useDispatch();
     const updatedChatRooms = useSelector(state => state.chat.chatRooms);
@@ -43,22 +44,6 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
         console.log('업데이트된 단체 채팅방:', updatedTogetherChatRooms);
         console.log(userProfile);
     }, [updatedChatRooms, updatedTogetherChatRooms, userProfile]);
-
-    // const getProfileImage = useCallback((memberId) => {
-    //     console.log(profiles);
-    //     const profile = profiles.find(p => p.profile.email === memberId);
-    //     return profile && profile.imageBlob.length > 0 
-    //         ? profile.imageBlob[0] 
-    //         : 'https://www.example.com/default-profile.jpg'; // 기본 이미지 URL
-    // }, [profiles]);
-
-    // const getOtherMemberId = (room) => {
-    //     if (isTogether) {
-    //         return room.members.find(member => member !== loggedInUserId);
-    //     }
-    //     return room.member1 === loggedInUserId ? room.member2 : room.member1;
-    // };
-
     
     const formatDate = (dateString) => {
         if (!dateString) return '메시지가 없습니다'; 
@@ -82,19 +67,11 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
         return room.lastMessage || { message: '메시지가 없습니다', write_day: new Date().toISOString(), read: 0 };
     };
 
-    // const isUserInChat = (room) => {
-    //     if (!isTogether) {
-    //         return room.match !== 3;
-    //     }
-    //     return room.members.includes(loggedInUserId);
-    // };
-
-    // const getNickname = (email) => {
-    //     const profile = profiles.find(p => p.profile.email === email);
-    //     return profile ? profile.profile.nickname : email;
-    // };
-
     const currentChatRooms = isTogether ? updatedTogetherChatRooms : updatedChatRooms;
+
+    const filteredChatRooms = !isTogether ? currentChatRooms.filter(room =>
+        room.nickname.toLowerCase().includes(search.toLowerCase())
+    ) : currentChatRooms;
 
     if (status === 'loading') {
         return <div>로딩 중...</div>;
@@ -143,12 +120,18 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
     return (
         <>
             <div className="chat-top d-flex align-items-center">
-                <input type="text" className="form-control chat-search" placeholder="검색" />
+            <input
+                    type="text"
+                    className="form-control chat-search"
+                    placeholder="검색"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)} // 검색어 상태 업데이트
+                />
                 <Search className="search-icon ml-2" />
             </div>
             <ul className="chat-people list-unstyled">
-                {currentChatRooms && currentChatRooms.length > 0 ? (
-                    currentChatRooms.map(room => {
+                {filteredChatRooms.length > 0 ? ( 
+                     filteredChatRooms.map(room => {
                         const lastMessage = getLastMessage(room);
                         // const otherMemberId = getOtherMemberId(room);
                         return (
