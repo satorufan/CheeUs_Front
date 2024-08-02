@@ -22,6 +22,7 @@ import ChatWindow from './ChatWindow';
 import { jwtDecode } from 'jwt-decode';
 import { AuthContext } from '../login/OAuth';
 import axios from 'axios';
+import useSocketIo from '../../hooks/useSocketIo';
 
 const ChatPage = () => {
     const dispatch = useDispatch();
@@ -33,7 +34,7 @@ const ChatPage = () => {
     const showMessageInput = useSelector(state => state.chat.showMessageInput);
 
     const { token } = useContext(AuthContext);
-    const socket = useRef(null);
+    //const socket = useRef(null);
 
     const [loggedInUserId, setLoggedInUserId] = useState(null);
 
@@ -48,6 +49,7 @@ const ChatPage = () => {
         }
     }, [token]);
 
+    /*
     useEffect(() => {
         socket.current = io('http://localhost:8888'); 
     
@@ -78,7 +80,8 @@ const ChatPage = () => {
             socket.current.disconnect();
         };
     }, [dispatch, activeKey, selectedChat]);
-
+    */
+    const socket = useSocketIo(activeKey, selectedChat); // 커스텀훅
 
     useEffect(() => {
         if (loggedInUserId) {
