@@ -17,7 +17,7 @@ const DTBoardContent = ({ posts, totalPosts, postsPerPage, paginate, onWriteButt
         <div key={post.id} className="post" > {/* 게시물 클릭 시 선택된 게시물 ID를 설정 */}
           <div className = "postClickArea" onClick={() => onPostClick(post.id)}>
             <h5>{post.title}</h5>
-            <p>{post.location} | {post.time}</p>
+            <p>{post.location} | 약속시간 : {post.time}</p>
             <p className='contentHidden'>{post.content}</p>
             <p className='contentHidden'>{post.address}</p>
           </div>
