@@ -61,6 +61,14 @@ const TinderCards = () => {
   const swiped = (direction, profileId, index) => {
     const newShowMessages = [...showMessages];
     newShowMessages[index] = direction === 'right' ? 'LIKE' : 'NOPE';
+    setShowMessages(newShowMessages); // 상태 업데이트
+  
+    setTimeout(() => {
+      const infoTextElement = document.querySelector(`.infoText-${index}`);
+      if (infoTextElement) {
+        infoTextElement.classList.add('show');
+      }
+    }, 100); // 애니메이션 시작을 위해 조금 지연
 
     // 백엔드에서 처리
     const formData = new FormData();
@@ -183,12 +191,14 @@ const TinderCards = () => {
                   preventSwipe={['up', 'down']}
                 >
                   <div className="card">
-                    <ProfileCard profileInfo={profile} />
-                    {showMessages[index] && (
-                      <div className={`infoText ${showMessages[index] === 'LIKE' ? 'like' : 'nope'}`}>
-                        {showMessages[index]}
-                      </div>
-                    )}
+                    <div className="card-in">
+                      <ProfileCard profileInfo={profile} />
+                      {showMessages[index] && (
+                        <div className={`infoText ${showMessages[index] === 'LIKE' ? 'like' : 'nope'}`}>
+                          {showMessages[index]}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </TinderCard>
               )) : <></>}
