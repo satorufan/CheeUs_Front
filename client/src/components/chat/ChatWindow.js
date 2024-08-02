@@ -10,6 +10,7 @@ import { Modal, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { removeUserFromTogetherChatRoom, fetchTogetherChatRooms } from '../../store/ChatSlice';
 import Avatar from '@mui/material/Avatar';
+import ReportModal from '../app/ReportModal';
 
 const ChatWindow = ({
     selectedChat,
@@ -18,7 +19,7 @@ const ChatWindow = ({
     formatMessageTime,
     sendMessage,
     setMessageInput,
-    activeKey
+    activeKey,
 }) => {
     const { token, serverUrl } = useContext(AuthContext);
     const scrollRef = useRef(null);
@@ -30,6 +31,13 @@ const ChatWindow = ({
     const dispatch = useDispatch();
     const [profileData, setProfileData] = useState([]);
     const [isDataLoaded, setIsDataLoaded] = useState(false);
+
+    // 신고 모달
+    const [showReportModal, setShowReportModal] = useState(false);
+    const [reportedId, setReportedId] = useState(null);
+    const handleReportModalOpen = () => setShowReportModal(true);
+    const handleReportModalClose = () => setShowReportModal(false);
+    
 
     useEffect(() => {
         if (token) {
@@ -350,8 +358,11 @@ const ChatWindow = ({
     };
 
     const handleReport = (memberId) => {
-        console.log('Report user:', memberId);
-        // 추가 구현예정
+        // 신고할 유저의 email을 상태로 저장
+        setReportedId(memberId.email);
+    
+        // 신고 모달을 엽니다.
+        handleReportModalOpen();
     };
 
     
@@ -454,6 +465,15 @@ const ChatWindow = ({
                     </Button>
                 </Modal.Footer>
             </Modal>
+
+            {/* 신고 모달 */}
+            <ReportModal
+                show={showReportModal}
+                handleClose={handleReportModalClose}
+                reportedId={reportedId}
+                loggedInUserId={loggedInUserId}
+                serverUrl={serverUrl}
+            />
         </>
     );
 };
