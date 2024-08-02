@@ -9,6 +9,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { Modal, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { removeUserFromTogetherChatRoom, fetchTogetherChatRooms } from '../../store/ChatSlice';
+import Avatar from '@mui/material/Avatar';
 
 const ChatWindow = ({
     selectedChat,
@@ -46,30 +47,31 @@ const ChatWindow = ({
             setParticipants(selectedChat.members || []);
         }
     }, [selectedChat]);
-
+    
     useEffect(() => {
         if (selectedChat && selectedChat.togetherId && !isDataLoaded) {
-            // 단체 채팅의 경우, 멤버 이메일을 기반으로 프로필 데이터 가져오기
+            // 단체 채팅 // 멤버 이메일을 기반으로 프로필 데이터 가져오기
             const memberEmails = selectedChat.members.map(member => member.email);
-
+    
             const fetchProfiles = async () => {
                 try {
                     const responses = await Promise.all(
                         memberEmails.map(email => dispatch(fetchUserProfiles({ serverUrl, memberEmail: email })))
                     );
-
+    
                     // 모든 프로필 데이터 병합
                     const profiles = responses.flatMap(response => response.payload);
                     setProfileData(profiles);
-                    setIsDataLoaded(true); // 데이터가 성공적으로 로드되었음을 표시
+                    setIsDataLoaded(true); 
                 } catch (error) {
                     console.error('Error fetching profiles:', error);
                 }
             };
-
+    
             fetchProfiles();
         }
-    }, [selectedChat, dispatch, serverUrl, isDataLoaded]);
+    }, [selectedChat]);
+
 
     useEffect(() => {
         if (selectedChat) {
@@ -102,13 +104,12 @@ const ChatWindow = ({
         }
     };
 
-
     const isSender = (senderId) => senderId === loggedInUserId;
 
-    const getOtherUserId = () => {
-        if (!selectedChat) return null;
-        return selectedChat.member1 === loggedInUserId ? selectedChat.member2 : selectedChat.member1;
-    };
+    //const getOtherUserId = () => {
+    //    if (!selectedChat) return null;
+    //    return selectedChat.member1 === loggedInUserId ? selectedChat.member2 : selectedChat.member1;
+    //};
 
     const getNicknameForSender = (senderId) => {
         if (selectedChat && selectedChat.email === senderId) {
@@ -121,9 +122,12 @@ const ChatWindow = ({
         const profile = profiles.find(p => p.profile.email === email);
         return profile && profile.imageBlob.length > 0
            ? profile.imageBlob[0]
-            : 'https://www.example.com/default-profile.jpg';
+            : <Avatar
+                 src={`${process.env.PUBLIC_URL}/images/default-avatar.jpg`}
+             />;
     };
 
+    // 상단
     const getDisplayName = () => {
         if (!selectedChat || (!selectedChat.member1 && !selectedChat.member2 && !selectedChat.togetherId)) {
             return <div className='chat-window-top-no'>나랑 같이 취할 사람 찾으러 가기!</div>; 
@@ -217,12 +221,12 @@ const ChatWindow = ({
         setShowParticipants(!showParticipants);
     };
 
-    const getNickname = (email) => {
+    const getNickname = (email) => { // 단체채팅 닉네임 가져오기
         const profile = profiles.find(p => p.profile.email === email);
         return profile ? profile.profile.nickname : email;
     };
 
-    const getProfileImage = (email) => {
+    const getProfileImage = (email) => { // 단체채팅 이미지 가져오기
         const profile = profiles.find(p => p.profile.email === email);
         return profile && profile.imageBlob.length > 0
            ? profile.imageBlob[0]
@@ -233,7 +237,13 @@ const ChatWindow = ({
         const profile = profiles.find(p => p.profile.email === email);
         return profile ? profile.profile.id : null;
     };
+    // 날짜 포멧
+    const formatDate = (date) => {
+        // 예시 형식: 2024년 8월 2일
+        return new Intl.DateTimeFormat('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(date));
+    };
 
+    // id로 이동하도록 바꿔야함
     const navigateToUserProfile = (email) => {
         const userId = getUserId(email);
         if (userId) {
@@ -244,32 +254,70 @@ const ChatWindow = ({
     };
 
     const getMessageSenderInfo = (senderId) => {
-        if (activeKey === 'one') {
-            // 일반 채팅인 경우
-            const senderProfile = profiles.find(p => p.profile.email === senderId);
-            return {
-                nickname: senderProfile ? senderProfile.profile.nickname : senderId,
-                profileImage: senderProfile && senderProfile.imageBlob.length > 0
-                    ? senderProfile.imageBlob[0]
-                    : 'https://www.example.com/default-profile.jpg'
-            };
-        } else {
-            // 단체 채팅인 경우
-            const senderProfile = profileData.find(p => p.profile.email === senderId); /////////여기 확인!!
-            console.log(profileData);
-            return {
-                nickname: senderProfile ? senderProfile.profile.nickname : senderId,
-                profileImage: senderProfile && senderProfile.imageBlob.length > 0
-                    ? senderProfile.imageBlob[0]
-                    : 'https://www.example.com/default-profile.jpg'
-            };
-        }
+        const senderProfile = (activeKey === 'one')
+            ? profiles.find(p => p.profile.email === senderId)
+            : profileData.find(p => p.profile.email === senderId);
+    
+        return {
+            nickname: senderProfile ? senderProfile.profile.nickname : senderId,
+            profileImage: senderProfile && senderProfile.imageBlob.length > 0
+                ? senderProfile.imageBlob[0]
+                : <Avatar
+                src={`${process.env.PUBLIC_URL}/images/default-avatar.jpg`}
+            />
+        };
     };
 
     const getChatBubbleClasses = (senderId) => {
         return isSender(senderId) ? 'chat-bubble me' : 'chat-bubble you';
     };
 
+    const renderMessagesWithDateSeparators = () => {
+        if (!selectedChat || !selectedChat.messages) return null;
+    
+        let lastDate = null;
+    
+        return selectedChat.messages.map((message, index) => {
+            const messageDate = formatDate(message.write_day);
+            const showDateSeparator = lastDate !== messageDate;
+    
+            lastDate = messageDate;
+    
+            const senderNickname = getNicknameForSender(message.sender_id);
+            const senderProfileImage = getProfileImageForSender(message.sender_id);
+            const senderInfo = getMessageSenderInfo(message.sender_id);
+            const isSameSenderAsPrevious = index > 0 && selectedChat.messages[index - 1].sender_id === message.sender_id;
+    
+            return (
+                <React.Fragment key={index}>
+                    {showDateSeparator && (
+                        <div className="date-separator">
+                            <div className="messageDate">{messageDate}</div>
+                        </div>
+                    )}
+                    <div className={`chat-bubble-container ${isSender(message.sender_id) ? 'me' : 'you'}`}>
+                        {!isSender(message.sender_id) && !isSameSenderAsPrevious && (
+                            <div className="message-info">
+                                <img
+                                    src={senderProfileImage || 'https://www.example.com/default-profile.jpg'}
+                                    alt={`Profile of ${senderNickname || senderInfo.nickname}`}
+                                    className="profile-img rounded-circle"
+                                    onClick={() => navigateToUserProfile(message.sender_id)}
+                                />
+                                <span className="nickname" onClick={() => navigateToUserProfile(message.sender_id)}>
+                                    {senderNickname || senderInfo.nickname}
+                                </span>
+                            </div>
+                        )}
+                        <div className={getChatBubbleClasses(message.sender_id)}>
+                            {message.message}
+                        </div>
+                        <span className="chat-time">{formatMessageTime(message.write_day)}</span>
+                    </div>
+                </React.Fragment>
+            );
+        });
+    };
 
     //강퇴
     const handleKick = (userEmailObj) => {
@@ -306,6 +354,8 @@ const ChatWindow = ({
         // 추가 구현예정
     };
 
+    
+
     return (
         <>
             <div className="chat-window-top">
@@ -319,40 +369,11 @@ const ChatWindow = ({
                     </div>
                 )}
             </div>
-
+    
             {selectedChat && (
                 <div className="chat active-chat" data-chat={`person${selectedChat.roomId}`} ref={scrollRef}>
                     {selectedChat.messages && selectedChat.messages.length > 0 ? (
-                        selectedChat.messages.map((message, index) => {
-                            const senderNickname = getNicknameForSender(message.sender_id);
-                            const senderProfileImage = getProfileImageForSender(message.sender_id);
-                            const senderInfo = getMessageSenderInfo(message.sender_id);
-                            const isSameSenderAsPrevious = index > 0 && selectedChat.messages[index - 1].sender_id === message.sender_id;
-                            return (
-                                <div
-                                    key={index}
-                                    className={`chat-bubble-container ${isSender(message.sender_id) ? 'me' : 'you'}`}
-                                >
-                                    {!isSender(message.sender_id) && !isSameSenderAsPrevious && (
-                                        <div className="message-info">
-                                            <img
-                                                src={senderProfileImage || getProfileImage}
-                                                alt={`Profile of ${senderNickname || senderInfo.nickname}`}
-                                                className="profile-img rounded-circle"
-                                                onClick={() => navigateToUserProfile(message.sender_id)}
-                                            />
-                                            <span className="nickname" onClick={() => navigateToUserProfile(message.sender_id)}>
-                                                {senderNickname || senderInfo.nickname}
-                                            </span> 
-                                        </div>
-                                    )}
-                                    <div className={getChatBubbleClasses(message.sender_id)}>
-                                        {message.message}
-                                    </div>
-                                    <span className="chat-time">{formatMessageTime(message.write_day)}</span>
-                                </div>
-                            );
-                        })
+                        renderMessagesWithDateSeparators()
                     ) : (
                         <div className="no-messages">
                             <div>{DefaultMessage()}</div>
@@ -390,48 +411,49 @@ const ChatWindow = ({
 
             {/* 채팅 참여자 모달 */}
             <Modal show={showParticipants} onHide={toggleParticipants}>
-            <Modal.Header closeButton>
-                <Modal.Title>채팅 참여자</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                {participants.length > 0 ? (
-                    <ul className="participant-modal-list">
-                        {participants.map((member, index) => (
-                            <li key={index} className="participant-modal-item">
-                                <img
-                                    src={member.image}
-                                    alt={`Profile of ${getNickname(member.email)}`}
-                                    className="participant-modal-img"
-                                    onClick={() => navigateToUserProfile(member.email)}
-                                />
-                                <span
-                                    className="modal-nickname"
-                                    onClick={() => navigateToUserProfile(member.email)} 
-                                >
-                                    {getNickname(member.email)}
-                                </span>
-                                <div className="participant-modal-actions">
-                                    { selectedChat.members[0].email === loggedInUserId && member.email !== loggedInUserId &&(
-                                        <button className="no-style" onClick={() => handleKick(member)}>강퇴</button>
-                                    )}
-                                    {member.email !== loggedInUserId && (
-                                        <button className="no-style" onClick={() => handleReport(member.email)}>🚨</button>
-                                    )}
-                                </div>
-                                <br/>
-                            </li>
-                        ))}
-                    </ul>
-                ) : (
-                    <p>No participants found.</p>
-                )}
-            </Modal.Body>
-            <Modal.Footer>
-                <Button variant="secondary" onClick={toggleParticipants}>
-                    Close
-                </Button>
-            </Modal.Footer>
-        </Modal>
+                <Modal.Header closeButton>
+                    <Modal.Title>채팅 참여자</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {selectedChat && selectedChat.members ? (
+                        <ul className="participant-modal-list">
+                            {selectedChat.members.map((member, index) => (
+                                <li key={index} className="participant-modal-item">
+                                    <img
+                                        src={member.image}
+                                        alt={`Profile of ${getNickname(member)}`}
+                                        className="participant-modal-img"
+                                        onClick={() => navigateToUserProfile(member)}
+                                    />
+                                    <span
+                                        className="modal-nickname"
+                                        onClick={() => navigateToUserProfile(member)} 
+                                    >
+                                        {member.nickname}
+                                    </span>
+                                    <div className="participant-modal-actions">
+
+                                        { selectedChat.members[0].email === loggedInUserId && member.email !== loggedInUserId &&(
+                                            <button className="no-style" onClick={() => handleKick(member)}>강퇴</button>
+                                        )}
+                                        {member !== loggedInUserId && member.email !== loggedInUserId &&(
+                                            <button className="no-style" onClick={() => handleReport(member)}>🚨</button>
+                                        )}
+                                    </div>
+                                    <br/>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p>No participants found.</p>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={toggleParticipants}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </>
     );
 };

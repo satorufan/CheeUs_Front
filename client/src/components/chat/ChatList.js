@@ -187,7 +187,7 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
                         );
                     })
                 ) : (
-                    <li className="no-messages">채팅이 없습니다</li>
+                    <li className="no-chat-list">채팅이 없습니다</li>
                 )}
             </ul>
         </>
