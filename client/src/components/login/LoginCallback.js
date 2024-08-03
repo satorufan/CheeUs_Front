@@ -23,14 +23,21 @@ const LoginCallback = () => {
     // 로그인 처리 및 유저 정보 찾기
     useEffect(()=>{
         if (token) {
-            axios.get(serverUrl + "/member/signIn", {params : {
-                email: jwtDecode(token).email
-            }})
+            axios.get(serverUrl + "/member/signIn", {
+                params : {
+                    email: jwtDecode(token).email
+                },
+                headers : {
+                    "Authorization" : `Bearer ${token}`
+                },
+                withCredentials : true
+            })
             .then((res=>{
                 //정보가 DB에 있으면 바로 로그인.
+                console.log(res)
                 requestSignIn();
                 navigate('/', {state : {logined : res.data.nickname}});
-                window.location.reload();
+                // window.location.reload();
             }))
             .catch((err)=>{
                 //없으면 에러 메시지와 함께, 회원가입 페이지로 이동

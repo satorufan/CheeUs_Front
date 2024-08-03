@@ -36,10 +36,19 @@ const AuthProvider = ({ children }) => {
 	useEffect(()=>{
 		const loadToken = getJwtToken();
 		if (loadToken) {
-			setToken(loadToken);
-			axios.get(serverUrl + "/member/signIn", {params : {
-				email : jwtDecode(loadToken).email
-			}}).then((res)=>{
+			console.log(jwtDecode(loadToken).exp)
+			console.log(Math.floor(Date.now() / 1000));
+			console.log(jwtDecode(loadToken).exp > Math.floor(Date.now() / 1000));
+			axios.get(serverUrl + "/member/tokenCheck", {
+				params : {
+					email : jwtDecode(loadToken).email
+				},
+				headers : {
+					"Authorization" : `Bearer ${loadToken}`
+				},
+				withCredentials : true
+			}).then((res)=>{
+				setToken(loadToken);
 				setEmail(jwtDecode(loadToken).email);
 			}).catch((err)=>{
 				console.log(err);
