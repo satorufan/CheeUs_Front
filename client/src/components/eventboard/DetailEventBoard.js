@@ -5,6 +5,7 @@ import { selectBoards } from '../../store/BoardSlice';
 import DetailBoard from '../board/DetailBoard';
 import Repl from '../board/Repl';
 import '../freeboard/detailFreeBoard.css';
+import BoardDetailTop from '../board/BoardDetailTop';
 
 const DetailFreeBoard = () => {
   const { id } = useParams();
@@ -19,15 +20,7 @@ const DetailFreeBoard = () => {
 
   return (
     <>
-      <div className="board-page-top">이벤트 게시판</div>
-      <div className="detail-free-header">
-        <button
-          className="detail-to-list"
-          onClick={() => navigate('/board/eventboard')}
-        >
-          이벤트 게시판 목록
-        </button>
-      </div>
+    <BoardDetailTop category={3} />
       <div className="detail-free-container">
         <div className="free-detail-container">
           <DetailBoard board={board} />
