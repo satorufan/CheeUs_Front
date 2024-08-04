@@ -92,6 +92,12 @@ function Header() {
 	if(location.pathname.startsWith ("/admin")){
 	 return null;
 	};
+
+    const defaultProfileImage = `${process.env.PUBLIC_URL}/images/default-avatar.jpg`;
+
+    const profileImage = userProfile && userProfile.imageBlob && userProfile.imageBlob.length > 0
+        ? userProfile.imageBlob[0] // Get the first imageBlob if available
+        : defaultProfileImage;
 	
     return (
         <div className="header-container">
@@ -126,7 +132,7 @@ function Header() {
                                             <Stack direction="row" alignItems="center">
                                                 <Avatar
                                                     alt="User Avatar"
-                                                    src={userProfile && typeof userProfile.photo === 'string' ? userProfile.photo : `${process.env.PUBLIC_URL}/images/default-avatar.jpg`}
+                                                    src={profileImage} // Profile image source
                                                     sx={{ width: 32, height: 32 }}
                                                 />
                                             </Stack>

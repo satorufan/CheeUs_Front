@@ -57,15 +57,15 @@ const Signup = () => {
   const [imageFiles, setImageFiles] = useState([]); //실제로 저장될 이미지파일
   //발행한 토큰의 이메일 정보 불러오기
   const {token, serverUrl} = useContext(AuthContext);
-
+  const [openAgreementModal, setOpenAgreementModal] = useState(false);
 
   const buttonStyleMale = {
-    backgroundColor: gender === 0 ? 'gray' : 'white',
-    color : 'black'
+    backgroundColor: gender === 0 ? 'black' : 'white',
+    color : gender === 0 ? 'white' : 'black'
   };
   const buttonStyleFemale = {
-    backgroundColor: gender === 1 ? 'gray' : 'white',
-    color : 'black'
+    backgroundColor: gender === 1 ? 'black' : 'white',
+    color : gender === 1 ? 'white' : 'black'
   };
 
   // photos에 입력받은 사진 임시 저장
@@ -237,6 +237,14 @@ const Signup = () => {
     return tagsString;
   }
 
+  // 서약서 모달
+  const handleOpenAgreementModal = () => {
+    setOpenAgreementModal(true);
+  };
+  const handleCloseAgreementModal = () => {
+    setOpenAgreementModal(false);
+  };
+
   // 제출 - 회원가입 요청
   const handleComplete = async (event) => {
     event.preventDefault();
@@ -291,217 +299,325 @@ const Signup = () => {
   }
 
   return (
-    <div className="signup-container">
-      <form className="signup-form" onSubmit={handleComplete}>
-        <div className="form-sections">
-          <div className="left-section">
-            <div className="form-group">
-              <label>프로필 사진 ( 1개 이상 )</label>
-              <div className="add-photo-grid">
-                {Array.from({ length: 6 }).map((_, index) => (
-                    <div key={index} className="add-photo-container">
-                        <input
+    <div className="signup-box">
+      <div className="signup-container">
+        <form className="signup-form" onSubmit={handleComplete}>
+          <div className="form-sections">
+            <div className="left-section-container">
+            <div className="signup-top">회원가입 정보</div>
+              <div className="left-section">
+              <br></br>
+                <div className="form-group">
+                  <label>프로필 사진 ( 1개 이상 )</label>
+                  <br/>
+                  <div className="add-photo-grid-wrapper">
+                    <div className="add-photo-grid">
+                      {Array.from({ length: 6 }).map((_, index) => (
+                        <div key={index} className="add-photo-container">
+                          <input
                             type="file"
                             accept="image/*"
                             onChange={handleUploadPhoto(index)}
                             style={{ display: 'none' }}
                             id={`photo-input-${index}`}
-                        />
-                        <div className="add-photos" >
+                          />
+                          <div className="add-photos">
                             {photos[index] ? (
                               <>
-                                <img src={photos[index]} alt={`Photo ${index + 1}`} className="edit-photo-thumbnail" />
+                                <img
+                                  src={photos[index]}
+                                  alt={`Photo ${index + 1}`}
+                                  className="edit-photo-thumbnail"
+                                />
                                 <button
                                   type="button"
                                   className="add-remove-photo"
                                   onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleRemovePhoto(index);
+                                    e.stopPropagation();
+                                    handleRemovePhoto(index);
                                   }}
                                 >
-                                <RemoveCircleOutlineIcon />
+                                  <RemoveCircleOutlineIcon />
                                 </button>
                               </>
                             ) : (
                               <>
                                 {index === 0 || photos[index - 1] ? (
-                                  <div className="add-photo-placeholder" onClick={() => handleAddPhoto(index)}>
+                                  <div
+                                    className="add-photo-placeholder"
+                                    onClick={() => handleAddPhoto(index)}
+                                  >
                                     <AddCircleOutlineIcon />
                                   </div>
                                 ) : null}
                               </>
                             )}
+                          </div>
                         </div>
+                      ))}
                     </div>
-                  ))}
+                    </div>
+                </div>
               </div>
-            </div>
-          </div>
-
-          
-          <div className="right-section">
-            <div className="form-group">
-              <label>이메일(ID)</label>
-              <input type="text" value={token ? jwtDecode(token).email : ""} readOnly/>
-            </div>
-            <div className="form-group">
-              <label>이름</label>
-              <input 
-              type="text" 
-              placeholder="이름을 입력하세요" 
-              value={name}
-              onChange={(event) => setName(event.target.value)}/>
-            </div>
-            <div className="form-group">
-              <label>생년월일</label>
-              <input 
-              type="text"
-              placeholder="생년월일을 입력하세요(ex. 20000101)" 
-              value={birth}
-              onChange={(event) => setBirth(event.target.value)}/>
-            </div>
-            <div className="form-group">
-              <label>전화번호</label>
-              <input type="text" 
-              placeholder="전화번호를 입력하세요(ex. 01011112222)" 
-              value={tel}
-              onChange={(event) => setTel(event.target.value)}/>
-              <button type="button" onClick={sendTelAuthCode} hidden={!(authTelState == null)}>전화번호 인증</button>
-              <button type="button" hidden={!(authTelState == 1)}>인증완료</button>
-            </div>
-            <div className="form-group" hidden={!(authTelState == 0)}>
-              <label>전화번호 인증</label>
-              <input 
-              type="text"
-              placeholder="인증번호를 입력하세요" 
-              value={telAuthCode}
-              onChange={(event) => setTelAuthCode(event.target.value)}/>
-              <label>{formatTime(time)}</label>
-              <button type="button" onClick={verifyAuthCode} hidden={!(authTelState == 0)}>인증확인</button>
-            </div>
-            <div className="form-group">
-              <label>성별</label>
-              <div className="gender-buttons">
-                <button type="button" 
-                onClick={()=>setGender(0)}
-                style={buttonStyleMale}>남</button>
-                <button type="button" 
-                onClick={()=>setGender(1)}
-                style={buttonStyleFemale}>여</button>
-              </div>
-            </div>
-            <div className="form-group">
-              <label>닉네임</label>
-              <div className="nickname-group">
-                <input type="text" 
-                placeholder="닉네임을 입력하세요 (변경불가)" 
-                value={nickname}
-                onChange={(event) => setNickname(event.target.value)}/>
-                <button type="button" className="check-button" onClick={() => nicknameCheck(nickname)}>중복확인</button>
-              </div>
-            </div>
-            <div className="form-group">
-                <button type="button" onClick={handleOpenTagModal} variant="outlined" className='edit-tags-btn'>
-                    음주 선호 태그
-                </button>
-                <div className="edit-tag-container">
-                    {tags.map((tag) => (
-                        <Chip
-                            key={tag}
-                            label={tag}
-                            onDelete={() => handleTagToggle(tag)}
-                            variant="outlined"
-                            className="edit-tag-chip"
+              <div className="form-group agreement-section">
+                  <label>사용자정보 동의</label>
+                  <br/>
+                  <div className="agreement-group">
+                    <div className="agreement">
+                      <input
+                        type="checkbox"
+                        checked={isLocationChecked}
+                        onChange={() => {
+                          setIsLocationChecked(!isLocationChecked);
+                          getUserLocation();
+                        }}
+                      />
+                      &nbsp;&nbsp;위치정보 제공 동의
+                    </div>
+                    <div className="agreement">
+                      <input
+                        type="checkbox"
+                        checked={isMatchingChecked}
+                        onChange={() => setIsMatchingChecked(!isMatchingChecked)}
                         />
-                    ))}
+                        &nbsp;&nbsp;1:1 매칭 프로그램 사용 동의
+                    </div>
+                    <div className="agreement" onClick={handleOpenAgreementModal}>
+                        <input
+                        type="checkbox"
+                        checked={isAgreementChecked}
+                        required
+                        />
+                       &nbsp; 안전한 웹서비스 이용 서약서
+                    </div>
+                  </div>
                 </div>
             </div>
-            
-          </div>
-        </div>
-        <div className="bottom-section">
-          <div className="form-group">
-              <label>자기소개</label>
-              <textarea 
-              placeholder="자기소개를 입력하세요"
-              onChange={(event) => setIntro(event.target.value)}></textarea>
-      		</div>
-          <div className="form-group">
-              <label>사용자정보 동의</label>
-              <div className='agreement-group'>
-	              <label className='agreement'>
-	              	위치정보 제공 동의
-	              	<input 
-	                  type="checkbox" 
-	                  checked={isLocationChecked} 
-	                  onChange={() => {
-                      setIsLocationChecked(!isLocationChecked)
-                      getUserLocation()
-                    }}
-	                />
-	              </label>
-	              <label className='agreement'>
-	              	1:1 매칭 프로그램 사용 동의
-	              	<input 
-	                  type="checkbox" 
-	                  checked={isMatchingChecked} 
-	                  onChange={() => setIsMatchingChecked(!isMatchingChecked)}
-	                />
-	              </label>
-	              <label className="agreement">
-	                안전한 웹서비스 이용 서약서
-	                <input 
-	                  type="checkbox" 
-	                  checked={isAgreementChecked} 
-	                  onChange={() => setIsAgreementChecked(!isAgreementChecked)}
-	                />
-	              </label>
-                
-            </div>
-            {/* 태그 모달 */}
-            <Dialog open={openTagModal} onClose={handleCloseTagModal}>
-                <DialogTitle>음주 선호 태그</DialogTitle>
-                <DialogContent>
-                    <div className="edit-tag-selection">
-                        {availableTags.map((tag) => (
-                            <Chip
-                                key={tag}
-                                label={tag}
-                                onClick={() => handleTagToggle(tag)}
-                                variant={tags.includes(tag) ? "filled" : "outlined"}
-                                className="edit-tag-chip"
-                            />
-                        ))}
-                    </div>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseTagModal} color="primary">
-                        닫기
-                    </Button>
-                </DialogActions>
-            </Dialog>
-
-            {/* Confirmation Modal */}
-            <Dialog open={openConfirmModal} onClose={() => setOpenConfirmModal(false)}>
-                <DialogTitle>확인</DialogTitle>
-                <DialogContent>
-                    <p>프로필을 저장하시겠습니까?</p>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setOpenConfirmModal(false)} color="primary">
-                        취소
-                    </Button>
-                    {/* <Button onClick={handleTagsConfirm} color="primary">
-                        저장
-                    </Button> */}
-                </DialogActions>
-            </Dialog>
-            <div className="submit-area">
-      			<button type="submit" className="submit-button" >Submit</button>
+  
+            <div className="right-section-container">
+              <div className="right-section">
+                <div className="form-group">
+                  <br/>
+                  <label>이메일(ID)</label>
+                  <input
+                    type="text"
+                    value={token ? jwtDecode(token).email : ""}
+                    readOnly
+                  />
+                </div>
+                <div className="form-group">
+                  <label>이름</label>
+                  <input
+                    type="text"
+                    placeholder="이름을 입력하세요"
+                    value={name}
+                    onChange={(event) => setName(event.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>생년월일</label>
+                  <input
+                    type="text"
+                    placeholder="생년월일을 입력하세요(ex. 20000101)"
+                    value={birth}
+                    onChange={(event) => setBirth(event.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>전화번호</label>
+                  <div  className="tel-group">
+                  <input
+                    type="text"
+                    placeholder="전화번호를 입력하세요(ex. 01011112222)"
+                    value={tel}
+                    onChange={(event) => setTel(event.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={sendTelAuthCode}
+                    hidden={!(authTelState == null)}
+                  >
+                    전화번호 인증
+                  </button>
+                  <button
+                    type="button"
+                    hidden={!(authTelState == 1)}
+                    className="check-button"
+                  >
+                    인증완료
+                  </button>
+                </div>
+                <div className="form-group" hidden={!(authTelState == 0)}>
+                  <label>전화번호 인증</label>
+                  <input
+                    type="text"
+                    placeholder="인증번호를 입력하세요"
+                    value={telAuthCode}
+                    onChange={(event) => setTelAuthCode(event.target.value)}
+                  />
+                  <label>{formatTime(time)}</label>
+                  <button
+                    type="button"
+                    onClick={verifyAuthCode}
+                    hidden={!(authTelState == 0)}
+                    className="check-button"
+                  >
+                    인증확인
+                  </button>
+                  </div>
+                </div>
+                <div className="form-group">
+                  <label>닉네임</label>
+                  <div className="nickname-group">
+                    <input
+                      type="text"
+                      placeholder="닉네임을 입력하세요 (변경불가)"
+                      value={nickname}
+                      onChange={(event) => setNickname(event.target.value)}
+                    />
+                    <button
+                      type="button"
+                      className="check-button"
+                      onClick={() => nicknameCheck(nickname)}
+                    >
+                      중복확인
+                    </button>
+                  </div>
+                </div>
+                <div className="form-group">
+                  <label>성별</label>
+                  <div className="gender-buttons">
+                    <button
+                      type="button"
+                      onClick={() => setGender(0)}
+                      style={buttonStyleMale}
+                      className="gender-buttons button"
+                    >
+                      남
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setGender(1)}
+                      style={buttonStyleFemale}
+                      className="gender-buttons button"
+                    >
+                      여
+                    </button>
+                  </div>
+                </div>
+                <div className="form-group">
+                  <button
+                    type="button"
+                    onClick={handleOpenTagModal}
+                    variant="outlined"
+                    className="edit-tags-btn"
+                  >
+                    음주 선호 태그
+                  </button>
+                  <div className="edit-tag-container">
+                    {tags.map((tag) => (
+                      <Chip
+                        key={tag}
+                        label={tag}
+                        onDelete={() => handleTagToggle(tag)}
+                        variant="outlined"
+                        className="edit-tag-chip"
+                      />
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
-        </div>
-      </form>
+          </div>
+          <div className="bottom-section">
+            <div className="form-group">
+              <label>자기소개</label>
+              <input
+                placeholder="자기소개를 입력하세요"
+                onChange={(event) => setIntro(event.target.value)}
+                className='self-input'
+              ></input>
+            </div>
+          </div>
+          {/* 태그 모달 */}
+          <Dialog open={openTagModal} onClose={handleCloseTagModal}>
+            <DialogContent className="dialog-content">
+              <h1>음주 선호 태그</h1>
+              <div className="edit-tag-selection">
+                {availableTags.map((tag) => (
+                  <Chip
+                    key={tag}
+                    label={tag}
+                    onClick={() => handleTagToggle(tag)}
+                    variant={tags.includes(tag) ? "filled" : "outlined"}
+                    className="edit-tag-chip"
+                  />
+                ))}
+              </div>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseTagModal} color="primary">
+                닫기
+              </Button>
+            </DialogActions>
+          </Dialog>
+  
+          {/* Confirmation Modal */}
+          <Dialog open={openConfirmModal} onClose={() => setOpenConfirmModal(false)}>
+            <DialogTitle>확인</DialogTitle>
+            <DialogContent className="dialog-content">
+              <p>프로필을 저장하시겠습니까?</p>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setOpenConfirmModal(false)} color="primary">
+                취소
+              </Button>
+              {/* <Button onClick={handleTagsConfirm} color="primary">
+                저장
+              </Button> */}
+            </DialogActions>
+          </Dialog>
+          <div className="submit-area">
+            <button type="submit" className="submit-button">
+              Submit
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {/* 서약서 모달 */}
+      <Dialog open={openAgreementModal} onClose={handleCloseAgreementModal}>
+        <DialogContent className="dialog-content">
+          <h1>서약서</h1>
+          <p>
+            사용자는 안전한 음주문화를 위하여 다음과 같은 규칙을 준수해야 합니다.
+          </p>
+          <br />
+          <p>첫째, 불순한 목적으로 타인과 접촉할 시, 법적 처벌을 받을 수 있습니다.</p>
+          <p>타인이 원하지 않는 행동을 하는 것은 범죄임을 인지하십시오.</p>
+          <br />
+          <p>둘째, 사람이 많고 밝은 곳에서 모임을 진행하십시요.</p>
+          <p>안전한 귀가와 범죄 예방을 위하여 위험 시 도움을 청할 수 있는 장소에서 모임을 진행하십시오.</p>
+          <br />
+          <p>셋째, 음란하거나 사회에 혼란을 줄 수 있는 게시물 작성을 금지합니다.</p>
+          <p>부적합한 게시물을 작성할 경우 계정 삭제 조치 됩니다.</p>
+          <br />
+          {/* 서약서 내용 */}
+          <input
+            type="checkbox"
+            checked={isAgreementChecked}
+            onChange={() => setIsAgreementChecked(!isAgreementChecked)}
+            required
+          />
+          &nbsp;위와 같은 규칙을 지키기로 서약합니다.
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseAgreementModal} color="primary">
+            닫기
+          </Button>
+        </DialogActions>
+      </Dialog>     
+
     </div>
   );
 };
