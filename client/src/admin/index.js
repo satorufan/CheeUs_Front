@@ -6,6 +6,7 @@ import { PostEdit } from './PostEdit';
 import { PostCreate } from './PostCreate';
 import UserIcon from '@material-ui/icons/Group';
 import PostIcon from '@material-ui/icons/Book';
+import ReportIcon from '@material-ui/icons/Report';
 import axios from 'axios';
 import { stringify } from 'query-string';
 
@@ -57,6 +58,7 @@ const AdminDashboard = () => (
     <Admin basename="/admin" dataProvider={dataProvider}>
         <Resource name="users" list={UserList} edit={UserEdit} create={UserCreate} icon={UserIcon} />
         <Resource name="posts" list={PostList} edit={PostEdit} create={PostCreate} icon={PostIcon} />
+        <Resource name="report" list={UserList} edit={UserEdit} create={UserCreate} icon={ReportIcon} />
     </Admin>
 );
 
