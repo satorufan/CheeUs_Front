@@ -21,13 +21,14 @@ const DTBoard = () => {
   const [nickname, setNickname] = useState('');
   
   useEffect(() => {
-    dispatch(fetchUserProfiles({ serverUrl, memberEmail, token }));
+    dispatch(fetchUserProfiles({ serverUrl, memberEmail }));
   }, [dispatch, serverUrl, memberEmail]);
   
   useEffect(() => {
     if (profiles && memberEmail) {
       const user = profiles.find(profile => profile.profile.email === memberEmail);
     }
+    console.log(profiles, userProfile)
   }, [profiles, userProfile]);
   
    useEffect(() => {

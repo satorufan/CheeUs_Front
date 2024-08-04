@@ -31,7 +31,7 @@ function DTBInputForm() {
   const [nickname, setNickname] = useState('');
   
   useEffect(() => {
-    dispatch(fetchUserProfiles({ serverUrl, memberEmail, token }));
+    dispatch(fetchUserProfiles({ serverUrl, memberEmail }));
   }, [dispatch, serverUrl, memberEmail]);  
   
     useEffect(() => {

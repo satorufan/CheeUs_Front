@@ -18,7 +18,7 @@ const useAuth = () => {
   const { memberEmail, serverUrl, token } = useContext(AuthContext);
   
   useEffect(() => {
-    dispatch(fetchUserProfiles({ serverUrl, memberEmail, token }));
+    dispatch(fetchUserProfiles({ serverUrl, memberEmail }));
   }, [dispatch, serverUrl, memberEmail]);
   
    

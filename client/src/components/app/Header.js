@@ -31,7 +31,7 @@ function Header() {
         if (token) {
             dispatch(fetchUserProfile({ serverUrl, memberEmail, token }));
         }
-    }, [token, dispatch, serverUrl]);
+    }, [token, dispatch, serverUrl, memberEmail]);
 
     const handleLogout = () => {
         requestSignOut();
