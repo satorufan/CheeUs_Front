@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Carousel, Modal } from 'react-bootstrap';
-import { updateUserLocation, likeProfile, unlikeProfile } from '../../store/ProfileSlice';
+import { updateUserLocation } from '../../store/ProfileSlice';
 import './profileCard.css';
 import axios from 'axios';
 import { AuthContext } from '../login/OAuth';
@@ -173,9 +173,14 @@ const ProfileCard = ({ profileInfo, loggedInUserId, showLikeButton }) => {
                 <div className='profileIntro-tag'>
                     <div className="profileIntro">{profileInfo.profile.intro}</div>
                     <ul className="profile-tags">
-                        {profileInfo.profile.tags ? profileInfo.profile.tags.split('/').map(tag => (
-                            <li key={tag.trim()}>{tag.trim()}</li>
-                        )) : ""}
+                        {profileInfo.profile.tags ? profileInfo.profile.tags
+                            .split('/')
+                            .map(tag => tag.trim()) // 모든 태그에 대해 앞뒤 공백을 제거
+                            .filter(tag => tag.length > 0) // 빈 문자열 필터링
+                            .map(tag => (
+                            <li key={tag}>{tag}</li>
+                            ))
+                        : null}
                         <li className="like-btn" onClick={handleLike}>
                             {isLiked ? '❤️' : '🤍'} {likeCnt}
                         </li>

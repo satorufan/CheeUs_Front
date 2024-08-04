@@ -3,8 +3,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import TinderCard from 'react-tinder-card';
 import ProfileCard from '../profile/ProfileCard';
 import './tinderCards.css';
-import CloseIcon from '@mui/icons-material/Close';
-import FavoriteIcon from '@mui/icons-material/Favorite';
 import IconButton from '@mui/material/IconButton';
 import { 
   selectProfiles, 
@@ -12,12 +10,12 @@ import {
   selectCurrentIndex, 
   setShuffledProfiles, 
   updateConfirmedList, 
-  updateShowMessages, 
   decrementIndex, 
   resetIndex 
 } from '../../store/MatchSlice';
 import { AuthContext } from '../login/OAuth';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 const TinderCards = () => {
   const dispatch = useDispatch();
@@ -61,14 +59,6 @@ const TinderCards = () => {
   const swiped = (direction, profileId, index) => {
     const newShowMessages = [...showMessages];
     newShowMessages[index] = direction === 'right' ? 'LIKE' : 'NOPE';
-    setShowMessages(newShowMessages); // 상태 업데이트
-  
-    setTimeout(() => {
-      const infoTextElement = document.querySelector(`.infoText-${index}`);
-      if (infoTextElement) {
-        infoTextElement.classList.add('show');
-      }
-    }, 100); // 애니메이션 시작을 위해 조금 지연
 
     // 백엔드에서 처리
     const formData = new FormData();
@@ -78,7 +68,16 @@ const TinderCards = () => {
     axios.post(serverUrl + "/match/swipe", formData)
     .then((res)=>{
       if (res.data.matchState == 2) {
-        alert("매치 성공!");
+        Swal.fire({
+          title: '매치 성공!',
+          text: '즐거운 대화를 나누어 보아요!',
+          icon: 'dark',
+          confirmButtonText: '확인'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = `/chatpage`; // 채팅방 URL로 이동
+          }
+        });
         sendMessage(res.data);
       }
     });
