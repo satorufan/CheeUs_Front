@@ -7,6 +7,7 @@ import { PostCreate } from './PostCreate';
 import UserIcon from '@material-ui/icons/Group';
 import PostIcon from '@material-ui/icons/Book';
 import ReportIcon from '@material-ui/icons/Report';
+import InputIcon from '@material-ui/icons/Input';
 import axios from 'axios';
 import { stringify } from 'query-string';
 
