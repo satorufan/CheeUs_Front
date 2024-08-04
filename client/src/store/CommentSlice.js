@@ -7,49 +7,6 @@ const initialState = {
     loading: false,
     error: null,
 };
-/*
-const initialState = {
-    comments: {
-        // boardId: 1인 경우의 초기 댓글 데이터
-        1: [
-          {
-            id: 1,
-            board_id: 1,
-            repl_author_id: 201,
-            content: '이것은 초기 댓글입니다.',
-            writeday: new Date().toISOString().split('T')[0], // 오늘 날짜
-            replies: [
-              {
-                id: 101,
-                board_id: 1,
-                repl_author_id: 202,
-                content: '이것은 초기 대댓글입니다.',
-                writeday: new Date().toISOString().split('T')[0], // 오늘 날짜
-              }
-            ],
-          }
-        ],
-        5: [
-        {
-            id: 8,
-            board_id: 5,
-            repl_author_id: 'rbfl8484@gmail.com',
-            content: '이것은 초기 댓글입니다.',
-            writeday: new Date().toISOString().split('T')[0], // 오늘 날짜
-            replies: [
-                {
-                id: 8,
-                board_id: 5,
-                repl_author_id: 202,
-                content: '이것은 초기 대댓글입니다.',
-                writeday: new Date().toISOString().split('T')[0], // 오늘 날짜
-                }
-            ],
-            }
-        ],
-      },
-    };
-*/
 
 // 댓글 목록을 가져오는 thunk
 export const fetchComments = createAsyncThunk(
@@ -63,6 +20,7 @@ export const fetchComments = createAsyncThunk(
             board_id: comment.board_id,
             parent_id: comment.parent_id,
             repl_author_id: comment.repl_author_id,
+            nickname: comment.nickname,
             repl_content: comment.repl_content, // 백엔드에서 사용하는 이름 그대로 사용
             writeday: comment.writeday,
             group: comment.group
@@ -114,6 +72,7 @@ export const updateComment = createAsyncThunk(
             board_id: response.data.board_id,
             parent_id: response.data.parent_id,
             repl_author_id: response.data.repl_author_id,
+            nickname: response.data.nickname,
             repl_content: response.data.repl_content,
             writeday: response.data.writeday,
             group: response.data.group
