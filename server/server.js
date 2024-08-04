@@ -120,6 +120,18 @@ app.post('/api/messages', async (req, res) => {
     }
 });
 
+// 단체 채팅방 생성
+app.get('/api/togetherMessages/:roomId', async (req, res) => {
+    const roomId = parseInt(req.params.roomId, 10);
+    try {
+        const messages = await db.collection('together_chat_messages').find({ room_id: roomId }).toArray();
+        res.json(messages);
+    } catch (error) {
+        console.error('Error fetching messages:', error);
+        res.status(500).json({ error: 'Failed to fetch messages' });
+    }
+});
+
 // 단체 채팅 메시지 조회 API
 app.get('/api/togetherMessages/:roomId', async (req, res) => {
     const roomId = parseInt(req.params.roomId, 10);
