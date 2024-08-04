@@ -12,7 +12,7 @@ import './header.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUserProfile, selectProfileStatus, selectUserProfile } from '../../store/ProfileSlice';
 import { jwtDecode } from 'jwt-decode';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { fetchUserProfiles, selectProfiles } from '../../store/MatchSlice';
 import axios from 'axios';
 
@@ -25,6 +25,7 @@ function Header() {
     const profiles = useSelector(selectProfiles);
     const profileStatus = useSelector(selectProfileStatus);
     const dispatch = useDispatch();
+    const location = useLocation();
 
     useEffect(() => {
         if (token) {
@@ -74,8 +75,11 @@ function Header() {
     }
 
     const isLoggedIn = userProfile !== null;
-
-
+    
+	if(location.pathname.startsWith ("/admin")){
+	 return null;
+	};
+	
     return (
         <div className="header-container">
             <button onClick={springSecurity}>스프링시큐리티 테스트 버튼</button>

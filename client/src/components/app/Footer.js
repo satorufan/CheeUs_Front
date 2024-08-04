@@ -3,8 +3,16 @@ import './footer.css';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import XIcon from '@mui/icons-material/X';
+import { useLocation } from 'react-router-dom';
 
 function Footer() {
+	
+  const location = useLocation();
+  
+  	if(location.pathname.startsWith ("/admin")){
+	 return null;
+	};
+  
   return (
     <div className="footer-container">
       <div className="container-fluid">

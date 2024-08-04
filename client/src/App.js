@@ -92,7 +92,6 @@ function App() {
               <Route path="/board/eventboard/edit/:id" element={<EditEventBoard />} />
               <Route path="/chatpage" element={<ChatPage />} />
               <Route path="/input" element={<InputFrom />} />
-              <Route path="/admin/*" element={<AdminDashboard />} />
               <Route path="/magazine" element={<Magazine/>} />
               <Route path="/magazine/popup" element={<PopUp/>} />              
               <Route path="/magazine/recipe" element={<Recipe/>} />              
@@ -105,6 +104,7 @@ function App() {
               <Route path="/event/eventEnd" element={<EventEnd/>} />              
               <Route path="*" element={<NotFound/>} />
               <Route path="/event/detail/:category/:id" element={<EventDetail />} />
+              <Route path="/admin/*" element={<AdminDashboard />} />
             </Routes>
 	       </Suspense>
 	      <Footer />
