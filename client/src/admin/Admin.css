@@ -23,10 +23,20 @@
 
 .adminLoginContainer{
 	height: 100%;
+	text-align: center;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+.adminLoginHeader{
+	height: 60px;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
 }
 .adminLoginBox{
 	align-items: center;
-	height: 100%;
+	height: 300px;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -39,19 +49,25 @@
 	margin-right: 5px;
 }
 .adminId{
+	width: 350px;
 	height :48%;
 	margin: 2px 0;
 }
 .adminPasswd{
+	width: 350px;
 	height :48%;
 	margin: 2px 0;
 }
 .adminId input{
+	width: 100%;
 	height: 100%;
 	border-radius: 10px;
 	background-color: #555;
+	text-align: center;
 }
 .adminPasswd input{
+	text-align: center;
+	width: 100%;
 	height: 100%;
 	border-radius: 10px;
 	background-color: #555;
