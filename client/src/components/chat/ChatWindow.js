@@ -188,22 +188,21 @@ const ChatWindow = ({
         //const nickname = getNickname(otherUserId);
        // const profileImage = getProfileImage(otherUserId);
     
-        if (activeKey === 'one') {
-            return (
-                <div className="d-flex align-items-center">
-                    <img 
-                        src={selectedChat.image} 
-                        alt={`Profile of ${selectedChat.nickname}`} 
-                        className="profile-img rounded-circle" 
-                        style={{ width: '40px', height: '40px', marginRight: '10px' }}
-                        onClick={() => navigateToUserProfile(selectedChat.id)}
-                    />
-                    <span onClick={() => navigateToUserProfile(selectedChat.id)}>{selectedChat.nickname}</span> 
-                </div>
-            );
-        } else {
-            return <span onClick={() => navigateToUserProfile(selectedChat.id)}>{selectedChat.nickname}</span>; 
-        }
+       if (activeKey === 'one') {
+        return (
+            <div className="d-flex align-items-center">
+                <img 
+                    src={selectedChat.image} 
+                    alt={`Profile of ${selectedChat.nickname}`} 
+                    className="profile-img rounded-circle" 
+                    style={{ width: '40px', height: '40px', marginRight: '10px' }}
+                    onClick={() => navigateToUserProfile(selectedChat.id)}
+                />
+                <span onClick={() => navigateToUserProfile(selectedChat.id)}>{selectedChat.nickname}</span> 
+                <Button variant="outline-danger" className="report-button" onClick={() => handleReport(selectedChat)}>🚨 신고</Button>
+            </div>
+        );
+    }
     };
 
     const getDefaultMessage = () => {

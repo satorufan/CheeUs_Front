@@ -152,6 +152,11 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
                                         <span className="chat-name">
                                             {room.nickname}
                                         </span>
+                                        {isTogether && (
+                                        <div className="together-id">
+                                            {room.togetherId}
+                                        </div>
+                                    )}
                                         {isNewMessage(room) && <span className="receive-new">New</span>}
                                     </div>
                                     <span className="chat-time">

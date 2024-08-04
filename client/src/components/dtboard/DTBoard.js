@@ -43,7 +43,7 @@ const DTBoard = () => {
   
   // 페이지 설정
   const [currentPage, setCurrentPage] = useState(1);   // 현재 페이지의 기본값을 1로 한다.
-  const postsPerPage = 7;  // 한 페이지에 표시할 포스트의 수.
+  const postsPerPage = 10;  // 한 페이지에 표시할 포스트의 수.
 
   const indexOfLastPost = currentPage * postsPerPage;  // 페이지의 마지막 게시물 index
   const indexOfFirstPost = indexOfLastPost - postsPerPage;  // 페이지의 첫 번째 게시물 index

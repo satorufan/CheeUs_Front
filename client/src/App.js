@@ -49,6 +49,7 @@ import EventEnd from './components/event/EventEnd';
 import EventDetail from './components/event/EventDetail';
 import { EventProvider } from './components/event/EventContext';
 import { MagazineProvider } from './components/magazine/MagazineContext';
+import Admin from './admin/Admin';
 
 const ChatPage = lazy(() => import('./components/chat/ChatPage'));
 
@@ -92,7 +93,6 @@ function App() {
               <Route path="/board/eventboard/edit/:id" element={<EditEventBoard />} />
               <Route path="/chatpage" element={<ChatPage />} />
               <Route path="/input" element={<InputFrom />} />
-              <Route path="/admin/*" element={<AdminDashboard />} />
               <Route path="/magazine" element={<Magazine/>} />
               <Route path="/magazine/popup" element={<PopUp/>} />              
               <Route path="/magazine/recipe" element={<Recipe/>} />              
@@ -105,6 +105,8 @@ function App() {
               <Route path="/event/eventEnd" element={<EventEnd/>} />              
               <Route path="*" element={<NotFound/>} />
               <Route path="/event/detail/:category/:id" element={<EventDetail />} />
+              <Route path="/admin/*" element={<AdminDashboard />} />
+              <Route path="/admin" element={<Admin />} />
             </Routes>
 	       </Suspense>
 	      <Footer />

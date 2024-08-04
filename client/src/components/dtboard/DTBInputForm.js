@@ -2,7 +2,7 @@ import React, { useState, useRef, forwardRef, useEffect, useContext } from 'reac
 import { useNavigate } from 'react-router-dom';
 import { BsArrowLeft } from 'react-icons/bs';
 import '@toast-ui/editor/dist/toastui-editor.css';
-import ToastEditor from './ToastEditor';
+import ToastEditor from '../toast/ToastEditor';
 import './DTBinputForm.css';
 import InputMap from './InputMap';
 import { usePosts } from './PostContext';
