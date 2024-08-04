@@ -165,7 +165,7 @@ const DetailBoard = () => {
             sx={{ width: 40, height: 40 }}
             className="detail-avatar"
           />
-          <div className="detail-author">{board.author_name}</div>
+          <div className="detail-author">{board.nickname}</div>
         </div>
         <div className="detail-title-container">
           <div className="detail-title">{board.title}</div>
