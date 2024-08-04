@@ -3,6 +3,7 @@
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { createContext, useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
 //카카오 로그인 //https://data-jj.tistory.com/53
 //구글 로그인 //https://velog.io/@049494/%EA%B5%AC%EA%B8%80-%EB%A1%9C%EA%B7%B8%EC%9D%B8
@@ -29,6 +30,15 @@ export const NAVER_AUTH_URL =`https://nid.naver.com/oauth2.0/authorize?response_
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
+	const sweetalert = (title, contents, icon, confirmButtonText) => {
+        Swal.fire({
+            title: title,
+            text: contents,
+            icon: icon,
+            confirmButtonText: confirmButtonText
+        });
+    };
+
 	const [memberEmail, setEmail] = useState('');
 	const [token, setToken] = useState('');
 	const serverUrl = "http://localhost:8080";
@@ -37,27 +47,37 @@ const AuthProvider = ({ children }) => {
 		const loadToken = getJwtToken();
 		if (loadToken) {
 			setToken(loadToken);
-			axios.get(serverUrl + "/member/signIn", {params : {
-				email : jwtDecode(loadToken).email
-			}}).then((res)=>{
+			axios.get(serverUrl + "/member/tokenCheck", {
+				params : {
+					email : jwtDecode(loadToken).email
+				},
+				headers : {
+					"Authorization" : `Bearer ${loadToken}`
+				},
+				withCredentials : true
+			}).then((res)=>{
+				console.log(res);
 				setEmail(jwtDecode(loadToken).email);
 			}).catch((err)=>{
 				console.log(err);
+				if (err.response.data.message == "존재하지 않는 이메일입니다.") {
+					document.cookie = `${"Authorization"}=; Max-Age=-99999999;`;
+                } else {
+					sweetalert("만료되었습니다. 다시 로그인해주세요", "","","확인");
+					requestSignOut();
+				}
 			});
 		}
 	}, []);
 
 	//로그인
-	const requestSignIn = () => {
-		const loadToken = getJwtToken();
-		setToken(loadToken);
-		setEmail(jwtDecode(loadToken).email);
+	const requestSignIn = (nickname) => {
+		console.log("로그인");
+		sweetalert(nickname + "님 환영합니다.", "", "", "확인");
 	}
 
 	//로그아웃
 	const requestSignOut = () => {
-		setToken(null);
-		setEmail(null);
 		window.location.href = serverUrl+"/logout";
 		console.log("로그아웃")
 	}

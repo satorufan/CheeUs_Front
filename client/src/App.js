@@ -35,7 +35,7 @@ import DetailEventBoard from './components/eventboard/DetailEventBoard';
 import WriteEventBoard from './components/eventboard/WriteEventBoard';
 import EditEventBoard from './components/eventboard/EditEventBoard';
 import { AuthProvider } from './components/login/OAuth';
-import AdminDashboard from './admin';
+import AdminDashboard from './admin/index';
 import Magazine from './components/magazine/Magazine';
 import PopUp from './components/magazine/PopUp';
 import Recipe from './components/magazine/Recipe';

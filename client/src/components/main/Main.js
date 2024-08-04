@@ -2,11 +2,12 @@ import React, { useEffect, useState, useRef } from 'react';
 import './main.css';
 import Carousel from 'react-bootstrap/Carousel';
 import Swal from 'sweetalert2';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 function Main() {
   const [currentSection, setCurrentSection] = useState(null);
   const greyRef = useRef(null);
+  const navigate = useNavigate();
 
   // SweetAlert 설정 함수
   const sweetalert = (title, contents, icon, confirmButtonText) => {
@@ -18,13 +19,7 @@ function Main() {
     });
   };
 
-  // 로그인 후 메시지 표시
-  const location = useLocation();
-  useEffect(() => {
-    if (location.state) {
-      sweetalert(location.state.logined + "님 환영합니다.", "", "", "확인");
-    }
-  }, [location]);
+  
 
   // 스크롤 이벤트 핸들러
   useEffect(() => {

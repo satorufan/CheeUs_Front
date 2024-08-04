@@ -4,10 +4,9 @@
 }
 
 .detail-comments-container {
-    margin: 20px 0;
     height: 80vh; 
     overflow-y: auto;
-    margin: 20px 0;
+    margin: 40px 0;
 }
 
 .comment-container {

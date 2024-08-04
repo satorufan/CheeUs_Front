@@ -23,9 +23,6 @@ const Login = () => {
 					<a  style={{cursor : 'pointer'}}	className = 'logo'>
 						<img src = {kakaoLoginImage} alt = "카카오계정 로그인" onClick={()=>loginBtn("kakao")} />
 					</a><br/>
-					{/* <a  href = {GOOGLE_AUTH_URL} className = 'logo'>
-						<img src = {googleLoginImage} alt = "구글계정 로그인" />
-					</a><br/> */}
 					<a  style={{cursor : 'pointer'}}	className = 'logo'>
 						<img src = {googleLoginImage} alt = "구글계정 로그인" onClick={()=>loginBtn("google")} />
 					</a><br/>

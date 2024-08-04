@@ -53,7 +53,7 @@ function Header() {
    };
 
    const springSecurity = async() => {
-    await axios.post(serverUrl + "/signIn", {}, {
+    await axios.get(serverUrl + "/member/signIn2", {params : {email : "test"},
         headers : {
             "Authorization" : `Bearer ${token}`
         },
@@ -61,12 +61,26 @@ function Header() {
     })
     .then((res)=>{
         console.log(res);
-        console.log(jwtDecode(token).email);
+    }).catch((err)=>{
+        console.log(err)
+        if (err.response.status == 401) {
+            alert("토큰 만료 다시 로그인해주셈");
+            window.location.reload();
+        }
+        });
+    }
+
+   const springSecurityPost = async() => {
+    await axios.post(serverUrl + "/member/signIn3", "test", {
+        headers : {
+            "Authorization" : `Bearer ${token}`
+        },
+        withCredentials : true
     })
-    .catch((err)=>console.log(err));
-    // axios.get(serverUrl + "/oauth2/authorization/google").then((res)=>{console.log(res)}).catch((err)=>console.log(err));
-    // axios.get(serverUrl + "/signIn").then((res)=>{console.log(res)}).catch((err)=>console.log(err));
-   }
+    .then((res)=>{
+        console.log(res);
+    }).catch((err)=>console.log(err));
+    }
 
     const springRedis = async() => {
         console.log("Redis");
@@ -82,8 +96,9 @@ function Header() {
 	
     return (
         <div className="header-container">
-            <button onClick={springSecurity}>스프링시큐리티 테스트 버튼</button>
-            <button onClick={springRedis}>스프링 Redis 테스트 버튼</button>
+            {/* <button onClick={springSecurity}>스프링시큐리티 GET 테스트 버튼</button>
+            <button onClick={springSecurityPost}>스프링시큐리티 POST 테스트 버튼</button>
+            <button onClick={springRedis}>스프링 Redis 테스트 버튼</button> */}
             <Navbar bg="#f2d420" expand="lg" style={{ backgroundColor: 'white' }} expanded={isNavExpanded}>
                 <Container fluid className="header-box">
                     <Navbar.Brand href="/main" className="header-logo">

@@ -17,6 +17,7 @@ function Repl({ boardId }) {
     const [showReplyInput, setShowReplyInput] = useState({});
     const { token } = useContext(AuthContext);
     const userProfile = useSelector(selectUserProfile);
+    const [nickname, setNickname] = useState('');
 
     let decodedToken = {};
     if (token) {
@@ -24,13 +25,20 @@ function Repl({ boardId }) {
     }
 
     const loggedInUserId = decodedToken?.email;
-    const replNickname= userProfile.nickname; // 백에서 닉네임 조인해서 가져와서 다시 처리 해봅시다
+    // const replNickname= userProfile.nickname; // 백에서 닉네임 조인해서 가져와서 다시 처리 해봅시다
 
     useEffect(() => {
         if (boardId) {
             dispatch(fetchComments(boardId));
         }
     }, [dispatch, boardId]);
+
+    // 프로필 정보 로딩용
+    useEffect(() => {
+        if (userProfile) {
+            setNickname(userProfile.profile.nickname);
+        }
+    }, [userProfile]);
 
     // 로그 확인용
     /*
@@ -56,6 +64,7 @@ function Repl({ boardId }) {
             const newComment = {
                 board_id: boardId,
                 repl_author_id: loggedInUserId, // 로그인한 사용자 ID 사용
+                nickname : nickname, //
                 parent_id: 0,
                 group: 1,
                 writeday: new Date().toISOString().split('T')[0],
@@ -76,6 +85,7 @@ function Repl({ boardId }) {
             const reply = {
                 board_id: boardId,
                 repl_author_id: loggedInUserId,
+                nickname: nickname, //
                 parent_id: parentId,
                 group: 2,
                 writeday: new Date().toISOString().split('T')[0],
@@ -154,7 +164,7 @@ function Repl({ boardId }) {
                     <div className="detail-comment">
                         <div className="comment-user-info">
                             <img src={'https://via.placeholder.com/30'} alt="Profile" className="reply-profile-pic" />
-                            <span className="reply-nickname">{comment.repl_author_id}</span>
+                            <span className="reply-nickname">{comment.nickname}</span>
                         </div>
                         <div className="comment-content">
                             <span>{comment.repl_content}</span>
@@ -184,7 +194,7 @@ function Repl({ boardId }) {
                                     <div className="detail-reply">
                                         <div className="reply-user-info">
                                             <img src={'https://via.placeholder.com/30'} alt="Profile" className="reply-profile-pic" />
-                                            <span className="reply-nickname">{reply.repl_author_id}</span>
+                                            <span className="reply-nickname">{reply.nickname}</span>
                                         </div>
                                         <div className="reply-content">
                                             <span>{reply.repl_content}</span>

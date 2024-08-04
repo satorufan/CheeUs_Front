@@ -3,8 +3,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import TinderCard from 'react-tinder-card';
 import ProfileCard from '../profile/ProfileCard';
 import './tinderCards.css';
-import CloseIcon from '@mui/icons-material/Close';
-import FavoriteIcon from '@mui/icons-material/Favorite';
 import IconButton from '@mui/material/IconButton';
 import { 
   selectProfiles, 
@@ -12,12 +10,12 @@ import {
   selectCurrentIndex, 
   setShuffledProfiles, 
   updateConfirmedList, 
-  updateShowMessages, 
   decrementIndex, 
   resetIndex 
 } from '../../store/MatchSlice';
 import { AuthContext } from '../login/OAuth';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 const TinderCards = () => {
   const dispatch = useDispatch();
@@ -70,7 +68,16 @@ const TinderCards = () => {
     axios.post(serverUrl + "/match/swipe", formData)
     .then((res)=>{
       if (res.data.matchState == 2) {
-        alert("매치 성공!");
+        Swal.fire({
+          title: '매치 성공!',
+          text: '즐거운 대화를 나누어 보아요!',
+          icon: 'dark',
+          confirmButtonText: '확인'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = `/chatpage`; // 채팅방 URL로 이동
+          }
+        });
         sendMessage(res.data);
       }
     });
@@ -183,12 +190,14 @@ const TinderCards = () => {
                   preventSwipe={['up', 'down']}
                 >
                   <div className="card">
-                    <ProfileCard profileInfo={profile} />
-                    {showMessages[index] && (
-                      <div className={`infoText ${showMessages[index] === 'LIKE' ? 'like' : 'nope'}`}>
-                        {showMessages[index]}
-                      </div>
-                    )}
+                    <div className="card-in">
+                      <ProfileCard profileInfo={profile} />
+                      {showMessages[index] && (
+                        <div className={`infoText ${showMessages[index] === 'LIKE' ? 'like' : 'nope'}`}>
+                          {showMessages[index]}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </TinderCard>
               )) : <></>}
