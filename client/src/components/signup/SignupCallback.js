@@ -43,6 +43,7 @@ const SignupCallback = () => {
             .then((res)=>{
                 requestSignIn();
                 navigate("/logincallback");
+                window.location.reload();
             })
             .catch((err)=>{
                 console.log(err);

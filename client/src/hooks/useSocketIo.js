@@ -12,7 +12,14 @@ const useSocketIo = (activeKey, selectedChat) => {
     const socket = useRef(null);
 
     useEffect(() => {
-        socket.current = io('http://localhost:8888'); 
+        socket.current = io('http://localhost:8888');
+
+        const handleCreateTogetherRoom = async (message) => {
+            console.log("Created Room : ", message);
+
+            const createRoom = 'http://localhost:8889/api/createOneoneRoom';
+            // await axios.post(createRoom, newRoom);
+        };
 
         const handleReceiveMessage = (message) => {
             console.log('Received message:', message);

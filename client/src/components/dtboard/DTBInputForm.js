@@ -25,7 +25,7 @@ function DTBInputForm() {
   const navigate = useNavigate();
   const { addPost, selectedPlace } = usePosts();
   const dispatch = useDispatch();
-  const { memberEmail, serverUrl } = useContext(AuthContext);
+  const { memberEmail, serverUrl, token } = useContext(AuthContext);
   const userProfile = useSelector(selectUserProfile);
   const profiles = useSelector(selectProfiles);  
   const [nickname, setNickname] = useState('');
