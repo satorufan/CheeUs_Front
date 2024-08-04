@@ -1,0 +1,23 @@
+.adminPage{
+	
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	height: 100vh;
+	align-items: center;
+	background-color: #333;
+}
+.adminHeader{
+	margin-top: 30px;
+	color: white;
+}
+.adminContainer{
+	height :100vh;
+	width: 50vw;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	text-align: center;
+}
+.buttonContainer{
+}
