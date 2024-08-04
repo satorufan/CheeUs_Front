@@ -86,7 +86,6 @@ function Header() {
         .catch((err)=>console.log(err));
     }
 
-    console.log(memberEmail)
     const isLoggedIn = memberEmail !== '';
 
 

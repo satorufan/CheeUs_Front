@@ -13,11 +13,14 @@ const initialState = {
 // 사용자 프로필을 가져오는 thunk
 export const fetchUserProfile = createAsyncThunk(
     'profile/fetchUserProfile',
-    async ({ serverUrl, memberEmail }) => {
-        
-        if (memberEmail) {
+    async ({ serverUrl, memberEmail, token }) => {
+        if (memberEmail && token) {
             const response = await axios.get(`${serverUrl}/profile`, {
-                params: { email: memberEmail }
+                params: { email: memberEmail },
+                headers : {
+                    "Authorization" : `Bearer ${token}`
+                },
+                withCredentials : true
             });
             const imageBlob = [];
             for(let i=0 ; i < response.data.profile.photo ; i ++){
@@ -32,7 +35,6 @@ export const fetchUserProfile = createAsyncThunk(
                 },
                 imageBlob : imageBlob
             };
-
             return profile; // 프로필 데이터 반환
             // return response.data; // 프로필 데이터 반환
         }
@@ -42,7 +44,7 @@ export const fetchUserProfile = createAsyncThunk(
 // 사용자 프로필 업데이트 thunk
 export const updateUserProfileThunk = createAsyncThunk(
     'profile/updateUserProfile',
-    async ({ serverUrl, updateUserProfile }) => {
+    async ({ serverUrl, updateUserProfile, token }) => {
         const formData = new FormData();
 
         formData.append("memberProfileDetail",
@@ -66,7 +68,8 @@ export const updateUserProfileThunk = createAsyncThunk(
 
         const response = await axios.post(serverUrl + '/profile/edit', formData, {
             headers : {
-                'Content-Type': 'multipart/form-data'
+                'Content-Type': 'multipart/form-data',
+                "Authorization" : `Bearer ${token}`
             }
         }).then((res)=>window.location.reload()).catch((err)=>{console.log(err)});
 

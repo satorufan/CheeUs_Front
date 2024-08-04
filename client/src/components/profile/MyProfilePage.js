@@ -19,7 +19,7 @@ const MyProfilePage = () => {
         });
     };
 
-    const { serverUrl, memberEmail } = useContext(AuthContext);
+    const { serverUrl, memberEmail, token } = useContext(AuthContext);
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const userProfile = useSelector(selectUserProfile);
@@ -27,7 +27,7 @@ const MyProfilePage = () => {
     const profileError = useSelector(selectProfileError);
 
     useEffect(() => {
-        //dispatch(fetchUserProfile({ serverUrl, memberEmail }));
+        dispatch(fetchUserProfile({ serverUrl, memberEmail, token }));
     }, [dispatch, serverUrl, memberEmail]);
 
     useEffect(() => {

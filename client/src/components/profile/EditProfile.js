@@ -31,7 +31,7 @@ const EditProfile = ({ onClose = () => {} }) => {
         });
     };
 
-    const {serverUrl} = useContext(AuthContext);
+    const {serverUrl, token} = useContext(AuthContext);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const profile = useSelector(selectUserProfile);
@@ -104,7 +104,7 @@ const EditProfile = ({ onClose = () => {} }) => {
                 imageBlob : updateUserProfilePhotos
             }
 
-            dispatch(updateUserProfileThunk({serverUrl, updateUserProfile}));
+            dispatch(updateUserProfileThunk({serverUrl, updateUserProfile, token}));
             onClose();
             console.log("저장된 프로필:", updateUserProfile);
             navigate('/mypage');
