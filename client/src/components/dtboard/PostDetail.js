@@ -15,10 +15,10 @@ import { AuthContext } from '../login/OAuth';
 // 로그인한 사용자의 아이디를 가져오는 함수
 const useAuth = () => {
   const dispatch = useDispatch();
-  const { memberEmail, serverUrl } = useContext(AuthContext);
+  const { memberEmail, serverUrl, token } = useContext(AuthContext);
   
   useEffect(() => {
-    dispatch(fetchUserProfiles({ serverUrl, memberEmail }));
+    dispatch(fetchUserProfiles({ serverUrl, memberEmail, token }));
   }, [dispatch, serverUrl, memberEmail]);
   
    

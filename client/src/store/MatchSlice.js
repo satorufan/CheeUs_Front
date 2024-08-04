@@ -18,7 +18,7 @@ const initialState = {
 // 타 멤버 프로필을 가져오는 thunk
 export const fetchUserProfiles = createAsyncThunk(
     'match/fetchUserProfiles',
-    async ({ serverUrl, memberEmail, token }) => {
+    async ({ serverUrl, memberEmail }) => {
         if (!memberEmail) {
             throw new Error("Member email is required");
         }

@@ -29,7 +29,7 @@ function Header() {
 
     useEffect(() => {
         if (token) {
-            dispatch(fetchUserProfile({ serverUrl, memberEmail }));
+            dispatch(fetchUserProfile({ serverUrl, memberEmail, token }));
         }
     }, [token, dispatch, serverUrl]);
 
