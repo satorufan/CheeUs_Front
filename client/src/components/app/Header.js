@@ -27,8 +27,6 @@ function Header() {
     const dispatch = useDispatch();
     const location = useLocation();
 
-    console.log(userProfile);
-
     useEffect(() => {
         if (token) {
             const memberEmail = jwtDecode(token).email;
