@@ -35,6 +35,7 @@ const PostDetail = () => {
   
   if (!post) return <div>Post not found</div>;
   
+  console.log("post.nickname", post.nickname)
   
   const onExitHandler = () => {
     navigate('/dtBoard');
@@ -90,7 +91,7 @@ const PostDetail = () => {
         <div className="mypageContainer">
           <br />
           <div className="contentHeader">
-            <div className="profileContainer">
+            <div className="profileContainer" onClick={()=>navigate("/mypage")}>
               <div className="profile1">
                 <img className="profileImg" src={profileImg} alt="Profile" />
               </div>

@@ -8,8 +8,6 @@ import {
   setLocationDenied,
   setMatchServiceAgreement,
   selectProfiles,
-  selectLocationOk,
-  selectMatchServiceAgreed,
   fetchUserProfiles,
   updateLocationPermission,
   updateMatchServiceAgreement,

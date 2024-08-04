@@ -121,6 +121,10 @@
 	height: 35px;
 	margin: 0 0 3px 3px;
   }
+  .profileContainer:hover{
+	cursor: pointer;
+    font-weight: bold;
+  }
   .profile1{
 	display: flex;
 	flex-direction: column;
@@ -145,6 +149,11 @@
     display: flex;
     margin-left: 20px;
     box-shadow: 1px 1px 1px 1px #999;
+  }
+  .profileImg:hover{
+    border: 1px solid white;
+    width: 35px;
+    height: 35px;
   }
 
   .contentBox{

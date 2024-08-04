@@ -18,6 +18,13 @@ body {
     border-radius: 50%;
     border: 2px solid #ddd;
 }
+.no-chat-list{
+    margin-top: 30px;
+    text-align: center;
+    font-size: clamp(1rem, 5vw, 2rem);
+    font-family: 'Tokki';
+    white-space: nowrap;
+}
 
 .chat-wrapper {
     position: relative;
@@ -417,4 +424,20 @@ body {
         width: 1.5rem;
         height: 1.5rem;
     }
+}
+
+.date-separator {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0;
+}
+
+.messageDate {
+    background-color: #ffb2b2;
+    color: white;
+    font-size: 12px;
+    font-weight: 100;
+    padding: 2px 10px;
+    border-radius: 25px;
+    margin: 3px;
 }
