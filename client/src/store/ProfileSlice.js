@@ -16,7 +16,8 @@ export const fetchUserProfile = createAsyncThunk(
     'profile/fetchUserProfile',
     async ({ serverUrl, memberEmail, token }) => {
 
-        if (memberEmail != '' && token) {
+        console.log(memberEmail, token)
+        if (memberEmail && token) {
             const response = await axios.get(`${serverUrl}/profile`, {
                 params: { email: memberEmail },
                 headers : {
