@@ -34,6 +34,7 @@ export const fetchUserProfiles = createAsyncThunk(
                     imageBlob: imageBlob
                 };
             });
+            console.log(profiles)
             return profiles;
         } catch (error) {
             throw new Error(error.message);
@@ -44,14 +45,20 @@ export const fetchUserProfiles = createAsyncThunk(
 // 위치 정보 동의
 export const updateLocationPermission = createAsyncThunk(
     'match/updateLocationPermission',
-    async ({ memberEmail, serverUrl, latitude, longitude }) => {
+    async ({ memberEmail, serverUrl, latitude, longitude, token }) => {
         const formData = new FormData();
         formData.append("email", memberEmail);
         formData.append("type", "location");
         formData.append("latitude", latitude);
         formData.append("longitude", longitude);
 
-        const response = await axios.put(`${serverUrl}/profile/allow`, formData);
+        const response = await axios.put(`${serverUrl}/profile/allow`, formData, {
+            headers : {
+                "Authorization" : `Bearer ${token}`
+            },
+            withCredentials : true
+            }
+        );
         return response.data;
     }
 );
@@ -59,12 +66,18 @@ export const updateLocationPermission = createAsyncThunk(
 // 매칭 동의
 export const updateMatchServiceAgreement = createAsyncThunk(
     'match/updateMatchServiceAgreement',
-    async ({ memberEmail, serverUrl }) => {
+    async ({ memberEmail, serverUrl, token }) => {
         const formData = new FormData();
         formData.append("email", memberEmail);
         formData.append("type", "match");
 
-        const response = await axios.put(`${serverUrl}/profile/allow`, formData);
+        const response = await axios.put(`${serverUrl}/profile/allow`, formData, {
+            headers : {
+                "Authorization" : `Bearer ${token}`
+            },
+            withCredentials : true
+            }
+        );
         return response.data;
     }
 );
@@ -153,6 +166,7 @@ export const {
 } = MatchSlice.actions;
 
 export const selectProfiles = (state) => state.match.profiles;
+export const selectStatus = (state) => state.match.status;
 export const selectShuffledProfiles = (state) => state.match.shuffledProfiles;
 export const selectCurrentIndex = (state) => state.match.currentIndex;
 export const selectShowMessages = (state) => state.match.showMessages;

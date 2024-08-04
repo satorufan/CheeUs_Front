@@ -11,7 +11,8 @@ import {
   setShuffledProfiles, 
   updateConfirmedList, 
   decrementIndex, 
-  resetIndex 
+  resetIndex,
+  selectStatus, 
 } from '../../store/MatchSlice';
 import { AuthContext } from '../login/OAuth';
 import axios from 'axios';
@@ -20,6 +21,7 @@ import Swal from 'sweetalert2';
 const TinderCards = () => {
   const dispatch = useDispatch();
   const profiles = useSelector(selectProfiles);
+  const profilesStatus = useSelector(selectStatus);
   const [profileCards, setCards] = useState([]);
   const shuffledProfiles = useSelector(selectShuffledProfiles);
   const currentIndex = useSelector(selectCurrentIndex);
@@ -159,7 +161,9 @@ const TinderCards = () => {
 
   return (
     <div className="tinderCard_container">
-      {profileCards.length === 0 || currentIndex === -1 ? (
+      {profilesStatus == 'loading' ? (<div className="permissionMessage" >
+              <p>잠시만 기다려주세요...</p>
+            </div>) : profileCards.length === 0 || currentIndex === -1 ? (
         <div className="noMoreCardsMessage">
           <div className="noMessge">
             <span>매칭 할 카드가 없습니다.</span><br/>

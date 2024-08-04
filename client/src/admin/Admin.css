@@ -1,0 +1,58 @@
+.adminPage{
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	height: 100vh;
+	align-items: center;
+	background-color: #333;
+}
+.adminHeader{
+	margin-top: 30px;
+	color: white;
+}
+.adminContainer{
+	height :100vh;
+	width: 50vw;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	text-align: center;
+}
+.buttonContainer{
+}
+
+.adminLoginContainer{
+	height: 100%;
+}
+.adminLoginBox{
+	align-items: center;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+.adminLoginForm{
+	height :100px;
+	display: flex;
+}
+.adminInfo{
+	margin-right: 5px;
+}
+.adminId{
+	height :48%;
+	margin: 2px 0;
+}
+.adminPasswd{
+	height :48%;
+	margin: 2px 0;
+}
+.adminId input{
+	height: 100%;
+	border-radius: 10px;
+	background-color: #555;
+}
+.adminPasswd input{
+	height: 100%;
+	border-radius: 10px;
+	background-color: #555;
+}

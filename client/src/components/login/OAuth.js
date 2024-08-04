@@ -61,7 +61,10 @@ const AuthProvider = ({ children }) => {
 			}).catch((err)=>{
 				console.log(err);
 				if (err.response.data.message == "존재하지 않는 이메일입니다.") {
-					document.cookie = `${"Authorization"}=; Max-Age=-99999999;`;
+					const date = new Date();
+					date.setTime(date.getTime() + (5 * 60 * 1000)); // 현재 시간에 5분을 추가합니다.
+					const expires = `expires=${date.toUTCString()}`;
+					document.cookie = `${"Authorization"}=${loadToken}; ${expires};`;
                 } else {
 					sweetalert("만료되었습니다. 다시 로그인해주세요", "","","확인");
 					requestSignOut();

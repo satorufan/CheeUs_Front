@@ -1,5 +1,5 @@
 import React from 'react';
-import { Admin, Resource } from 'react-admin';
+import { Admin, CustomRoutes, Resource } from 'react-admin';
 import { UserList, UserEdit, UserCreate } from './UserList';
 import { PostList } from './PostList';
 import { PostEdit } from './PostEdit';
@@ -9,6 +9,8 @@ import PostIcon from '@material-ui/icons/Book';
 import ReportIcon from '@material-ui/icons/Report';
 import axios from 'axios';
 import { stringify } from 'query-string';
+import { Route } from 'react-router-dom';
+import AdminLogin from './adminLogin';
 
 const apiUrl = 'http://localhost:8080/admin';
 
@@ -56,6 +58,9 @@ const dataProvider = {
 
 const AdminDashboard = () => (
     <Admin basename="/admin" dataProvider={dataProvider}>
+    	<CustomRoutes>
+    		<Route path = "/adminlogin" element={<AdminLogin />}/>
+    	</CustomRoutes>
         <Resource name="users" list={UserList} edit={UserEdit} create={UserCreate} icon={UserIcon} />
         <Resource name="posts" list={PostList} edit={PostEdit} create={PostCreate} icon={PostIcon} />
         <Resource name="report" list={UserList} edit={UserEdit} create={UserCreate} icon={ReportIcon} />
