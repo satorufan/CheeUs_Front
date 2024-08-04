@@ -92,9 +92,9 @@ function Header() {
 
     return (
         <div className="header-container">
-            <button onClick={springSecurity}>스프링시큐리티 GET 테스트 버튼</button>
+            {/* <button onClick={springSecurity}>스프링시큐리티 GET 테스트 버튼</button>
             <button onClick={springSecurityPost}>스프링시큐리티 POST 테스트 버튼</button>
-            <button onClick={springRedis}>스프링 Redis 테스트 버튼</button>
+            <button onClick={springRedis}>스프링 Redis 테스트 버튼</button> */}
             <Navbar bg="#f2d420" expand="lg" style={{ backgroundColor: 'white' }} expanded={isNavExpanded}>
                 <Container fluid className="header-box">
                     <Navbar.Brand href="/main" className="header-logo">

@@ -19,14 +19,6 @@ function Main() {
     });
   };
 
-  // 로그인 후 메시지 표시
-  const location = useLocation();
-  useEffect(() => {
-    if (location.state) {
-      sweetalert(location.state.logined + "님 환영합니다.", "", "", "확인");
-      navigate('/', { replace: true });
-    }
-  }, []);
   
 
   // 스크롤 이벤트 핸들러

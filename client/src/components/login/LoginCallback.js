@@ -35,9 +35,8 @@ const LoginCallback = () => {
             .then((res=>{
                 //정보가 DB에 있으면 바로 로그인.
                 console.log(res)
-                requestSignIn();
-                navigate('/', {state : {logined : res.data.nickname}});
-                // window.location.reload();
+                requestSignIn(res.data.nickname);
+                navigate("/");
             }))
             .catch((err)=>{
                 //없으면 에러 메시지와 함께, 회원가입 페이지로 이동
