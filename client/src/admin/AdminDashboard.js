@@ -32,6 +32,14 @@ const AdminDashboard = () => (
 					<Route path="posts/create" element={<PostCreate resource="posts" />} />
 					<Route path="posts/edit/:id" element={<PostEdit resource="posts" />} />
 					<Route path="report" element={<ReportList resource="report" />} />
+					<Route path="report/create" element={<ReportCreate resource="report" />} />
+					<Route path="report/edit/:id" element={<ReportEdit resource="report" />} />
+					<Route path="event" element={<EventList resource="event" />} />
+					<Route path="event/create" element={<EventCreate resource="event" />} />
+					<Route path="event/edit/:id" element={<EventEdit resource="event" />} />
+					<Route path="magazine" element={<MagazineList resource="magazine" />} />
+					<Route path="magazine/create" element={<MagazineCreate resource="magazine" />} />
+					<Route path="magazine/edit/:id" element={<MagazineEdit resource="magazine" />} />
                 </Route>
             </CustomRoutes>
             <Resource name="users" list={UserList} edit={UserEdit} create={UserCreate} icon={UserIcon} />

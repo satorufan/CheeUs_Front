@@ -7,7 +7,8 @@
 	background-color: #333;
 }
 .adminHeader{
-	margin-top: 30px;
+	margin-bottom: 330px;
+	margin-left: 25px;
 	color: white;
 }
 .adminContainer{
@@ -17,8 +18,6 @@
 	flex-direction: column;
 	justify-content: center;
 	text-align: center;
-}
-.buttonContainer{
 }
 
 .adminLoginContainer{
