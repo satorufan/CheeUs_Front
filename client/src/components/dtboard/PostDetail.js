@@ -76,77 +76,76 @@ const PostDetail = () => {
   };
   
   return (
-    <div className="inputContainer">
-      <div className="topContainer">
-        <div className="textareaHeader">
-          <div className="textareaBox">{post.title}</div>
-        </div>
-        <div className="mapHeader">
-          <div className="mapping2">
-            장소 : {post.location}({post.address})
+    <div className="dt-detail">
+      <div className="board-page-top">함께 마셔요</div>
+      <div className="detailContainer">
+        <div className="dt-detail-left-box">
+        <div className="profileContainer" onClick={() => navigate("/mypage")}>
+            <div className="profile1">
+              <img className="rounded-circle mr-3" src={profileImg} alt="Profile" style={{ width: '40px', height: '40px' }}/>
+            </div>
+            <div className="profile2">
+              <a>{post.nickname}</a>
+            </div>
           </div>
-        </div>
-      </div>
-      <div className="contentContainer2">
-        <div className="mypageContainer">
-          <br />
-          <div className="contentHeader">
-            <div className="profileContainer" onClick={()=>navigate("/mypage")}>
-              <div className="profile1">
-                <img className="profileImg" src={profileImg} alt="Profile" />
+          <div className="textareaHeader">
+            <div className="textareaBox">{post.title}</div>
+          </div>
+          <div className="contentContainer2">
+              <div className="contentHeader">
               </div>
-              <div className="profile2">
-                <a>{post.nickname}</a>
-              </div>
+              <br />
+              <div className="contentBox">
+                <div className="mapHeader">
+            <div className="mapping2">
+              장소 | {post.location} ({post.address})
             </div>
             <div className="dateHeader">
               <a>약속시간 : {post.time}</a>
             </div>
           </div>
-          <br />
-          <div className="contentBox">
-            <div className="content">{post.content}</div>
-          </div>
+                <div className="content">{post.content}</div>
+              </div>
+            </div>
         </div>
-        
-        <div className="detailMapContainer">
-          <PostDetailMap
-            latitude={post.latitude}
-            longitude={post.longitude}
-            title={post.title}
-            location={post.location}
-          />
+        <div className="dt-detail-right-box">
+          <div className="detailMapContainer">
+            <PostDetailMap
+              latitude={post.latitude}
+              longitude={post.longitude}
+              title={post.title}
+              location={post.location}
+            />
+          </div>
         </div>
       </div>
       <div className="bottomContainer">
-        <div className="buttonsWrap">
-          <div className="buttonArea1">
-            <button className="backButton" onClick={onExitHandler}>
-              <div className="arrowWrap">
-                <BsArrowLeft className="arrow" />
-                <span className="arrowText">목록으로</span>
-              </div>
-            </button>
-            <button className="backButton">채팅방</button>
-          </div>
-          <div className="buttonArea2">
-            {loggedInUserId === post.author_id ? (
-              <>
-                <button className="modifyButton" onClick={onModifyHandler}>
-                  글 수정
-                </button>
-                <button className="deleteButton" onClick={onDeleteHandler}>
-                  글 삭제
-                </button>
-              </>
-            ) : (
-              <button className="backButton">찜하기</button>
-            )}
-          </div>
+        <div className="buttonArea1">
+          <button className="backButton" onClick={onExitHandler}>
+            <div className="arrowWrap">
+              <span className="arrowText">↩ 목록으로</span>
+            </div>
+          </button>
+          <button className="backButton">채팅에 참여하기</button>
+        </div>
+        <div className="buttonArea2">
+          {loggedInUserId === post.author_id ? (
+            <>
+              <button className="backButton" onClick={onModifyHandler}>
+                글 수정
+              </button>
+              <button className="backButton" onClick={onDeleteHandler}>
+                글 삭제
+              </button>
+            </>
+          ) : (
+            <button className="backButton">찜하기</button>
+          )}
         </div>
       </div>
     </div>
   );
 };
+
 
 export default PostDetail;

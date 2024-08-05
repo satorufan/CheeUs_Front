@@ -243,7 +243,7 @@ const InputMap = ({ isEditing }) => {
               <li key={index} className="item" onClick={() => handleListItemClick(index)}>
                 <span className={`markerbg marker_${index + 1}`}></span>
                 <div className="info">
-                  <h5>{place.place_name}</h5>
+                  <div>{place.place_name}</div>
                   {place.road_address_name ?
                     (<span>{place.road_address_name}<br /><span className="jibun gray">{place.address_name}</span></span>) :
                     (<span>{place.address_name}</span>)
