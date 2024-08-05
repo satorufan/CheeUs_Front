@@ -1,303 +1,124 @@
-  .inputContainer{
-	height: 100vh;
-	margin-bottom: 120px;
-	background-color: #f9f9f9;
+/* 기본 스타일 */
+.input-Container {
+  display: flex;
+  gap: 10px;
+  margin: 20px;
+  overflow: hidden;
+}
+
+.textareaBox input {
+  border: 1px solid #ccc; 
+  padding: 8px;
+  border-radius: 4px;
+  outline: none;
+}
+
+/* 포커스 시 스타일 */
+.textareaBox input:focus {
+  border: none !important;
+  box-shadow: none !important; 
+}
+
+.dt-input-left-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  border-radius: 10px;
+  outline: none;
+}
+
+.dt-input-mypage-box {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.dt-input-right-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.mapContainer {
+  flex: 1;
+  overflow: hidden;
+  border-radius: 10px;
+  height: 50%;
+}
+
+.bottomContainer {
+  display: flex;
+  justify-content: space-between;
+  background-color: #f9f9f9;
+  padding: 0 20px;
+  box-shadow: 0px -1px 5px rgba(0, 0, 0, 0.1);
+}
+
+.textareaHeader {
+  display: flex;
+  justify-content: space-between;
+}
+
+.textareaBox input {
+  border: none;
+  font-size: 1.8vw;
+  margin-left: 30px;
+}
+
+.example-custom-input {
+  background-color: white; 
+  color: black; 
+  border-radius: 10px; 
+  padding: 5px;
+  font-size: 15px;
+  border: solid black 2px;
+  margin-right: 20px;
+  margin-top: 10px;
+}
+
+.mapping {
+  font-size: 1.5vw;
+}
+
+.submitButton, .backButton {
+  background-color: black;
+  color: white;
+  border-radius: 10px;
+  padding: 10px 20px;
+  margin-top: 10px;
+  margin: 10px;
+  border: solid 2px white;
+}
+
+.submitButton:hover, .backButton:hover {
+  background-color: white;
+  border: solid 2px black;
+  color: black;
+}
+
+ .detailMapContainer{
+  height: 87.3vh;
   }
-  .topContainer{
-	z-index: 15;
-	display: flex;
-	height: 70px;
-	margin-left: 23px;
-	padding: 8px;
-	background-color: white;
-	background-color: #f9f9f9;
-  }
-  .textareaHeader{
-	width: 95%;
-	display: flex;
-  }
-  .textareaBox {
-	overflow: hidden;
-    background: transparent;
-    display: flex;
-    font-size: 2.5rem;
-    width: 100%;
-    resize: none;
-    outline: none;
-    border: none;
-    font-weight: bold;
-    color: #555;
-  }
-  .dateHeader{
-	z-index: 16;
-	width:350px;
-	display: flex;
-	justify-content: flex-end;
-	align-items: end;
-	margin-bottom: 0px;
-	color: white;
-  }
-  .dateHeader a{
-  	background: #777;
-    display: flex;
-    border-radius: 5px;
-    padding: 4px 6px;
-    margin-right: 15px;
-    border: 2px solid #666; 
-    margin-bottom: 0px;
-  }
-  .example-custom-input {
-    background-color: #777;
-    color: white;
-    cursor: pointer;
-    padding: 3px;
-    border-radius: 5px;
-    border : 2px solid #666;
-  }
-  .react-datepicker-time__header{
-	height: 43px;
-	align-items: center;
-	display: flex;
-	justify-content: center;
-  }
-  .mapHeader{
-    background: transparent;
-    padding: 0px;
-    font-size: 1.5rem;
-    width: 98%;
-    resize: none;
-    line-height: 1.5;
-    outline: none;
-    border: none;
-    font-weight: bold;
-    color: #666;
-	display: flex;
-	flex-direction: column;
-	justify-content: flex-end;
-	margin-left: 35px;
-  }
-  .mapping{
-	margin-left: 10px;
-  }
-  .mapping2{
-	margin-left: 10px;
-	position: absolute;
-	top: 180px;
-	left: 48.5%;
-  }
-  .contentContainer{
-	display: flex;
-	height: 98.5vh;
-	background-color: #f9f9f9;
-	gap: 10px;
-	margin-top: -10px;
-  }
-  .contentContainer2{
-	display: flex;
-	height: 98.5vh;
-	background-color: #f9f9f9;
-	gap: 10px;
-	margin-top: -20px;
-  }
-  .mypageContainer {
-  	flex: 1;
-  	z-index: 0;
-    margin: 0 auto;
-    width: 50%;
-    margin-top: 5px;
-    margin-left: 13px;
-  }
-  .contentHeader{
-	width: 100%;
-	display: flex;
-	padding-bottom: 15px;
-	margin-bottom: -14px;
-  }
-  .profileContainer{
-	display: flex;
-	width: 60%;
-	display: flex;
-	justify-content: flex-start;
-	height: 35px;
-	margin: 0 0 3px 3px;
-  }
-  .profileContainer:hover{
-	cursor: pointer;
-    font-weight: bold;
-  }
-  .profile1{
-	display: flex;
-	flex-direction: column;
-	justify-content: flex-end;
-	margin-right: 5px;
-  }
-  .profile2{
-	display: flex;
-	flex-direction: column;
-	justify-content: flex-end;
-	margin: 0 2px 2px 2px;
-  }
-  .profile2 a{
-	border-radius: 10px;
-	padding: 4px 10px;
-	display: flex;
-  }
-  .profileImg{
-	border-radius: 50%;
-	width : 35px;
-	height : 35px;
-    display: flex;
-    margin-left: 20px;
-    box-shadow: 1px 1px 1px 1px #999;
-  }
-  .profileImg:hover{
-    border: 1px solid white;
-    width: 35px;
-    height: 35px;
+  
+ .board-right {
+  position: relative;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
 
-  .contentBox{
-    box-shadow: 0px 0px 2px 1px #999;
-    height: 89%;
-    border-radius: 10px;
-    width: 95%;
-    margin-left: 25px;
-  }
-  .content{
-    margin-left: 20px;
-    padding-top: 10px;
-  }
-   .bottomContainer{
-    display: flex;
-    margin: 0 auto;
-    background-color: #f9f9f9;
-    height: 8vh;
-  }
 
-  .buttonsWrap {
-    display: flex;
-    padding: 8px 6px;
-    width: 100%;
-  }
-  .buttonArea1{
-    display: flex;
-    justify-content: flex-start;
-    width: 50%;
-    margin-left: 30px;
-  }
-  .buttonArea2{
-    display: flex;
-    justify-content: flex-end;
-    width: 50%;
-    margin-right: 10px;
-  }
-  .backButton {
-    display: flex;
-    font-size: 1.124rem;
-    font-weight: bold;
-    height: 2.5rem;
-    padding: 0.5rem 1rem;
-    align-items: center;
-    background-color: #888;
-    border-radius: 4px;
-    cursor: pointer;
-    border: none;
-    display: flex;
-    outline: none;
-    color: white;
-    margin-left: 5px;
-  }
-  
-  .arrowWrap {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .arrow {
-    font-size: 20px;
-  }
-  
-  .arrowText {
-    margin-left: 8px;
-    font-size: 1.125rem;
-  }
-  
-  .submitButton {
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    cursor: pointer;
-    outline: none;
-    border: none;
-    background-color: #12b886;
-    color: #ffffff;
-    border-radius: 4px;
-    padding: 0px 1.25rem;
-    height: 2.5rem;
-    font-size: 1.125rem;
-    margin-right: 25px;
-  }
-  .modifyButton{
-    align-items: center;
-    display: flex;
-    font-weight: bold;
-    cursor: pointer;
-    outline: none;
-    border: none;
-    background-color: #12b886;
-    color: #ffffff;
-    border-radius: 4px;
-    padding: 0px 1.25rem;
-    height: 2.5rem;
-    font-size: 1.125rem;
-  }
-  .deleteButton{
-    align-items: center;
-    display: flex;
-    font-weight: bold;
-    cursor: pointer;
-    outline: none;
-    border: none;
-    background-color: #12b886;
-    color: #ffffff;
-    border-radius: 4px;
-    padding: 0px 1.25rem;
-    height: 2.5rem;
-    font-size: 1.125rem;
-    margin-left: 5px;
-    margin-right: 10px;
-  }
-   /*지도 영역*/
-  .mapContainer{
-   flex: 1;
-   margin: 0 auto;
-   width: 50%;
-   height: 50vh;
-   margin-right: 15px;
-  }
-  .detailMapContainer{
-   display: flex;
-   box-shadow: 0px 0px 2px 1px #999;
-   margin: 0 auto;
-   width: 50%;
-   height: 87.3vh;
-   margin-right: 25px;
-   border-radius: 10px;    
-   margin-top: 90px;
-   }
-  .board-right {
-   position: relative;
-   background-color: white;
-   border-radius: 10px;
-   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-   }
 .map-search-box {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 10; /* 검색창을 지도 위로 올림 */
-  background : rgb(255,2555,2555,0.7);
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.7);
   padding: 10px;
   border-radius: 5px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -309,43 +130,38 @@
   padding: 5px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  margin-right: -4px;
-  background: rgb(255,2555,2555,0.7);
+  background: rgba(255, 255, 255, 0.7);
 }
 
 .map-search-box button {
-  padding: 5px 5px;
+  padding: 5px 10px;
   border: none;
   background-color: #333;
-  color:rgb(255,2555,2555,0.7);
+  color: rgba(255, 255, 255, 0.7);
   border-radius: 5px;
   cursor: pointer;
-  margin : 0 -4px;
 }
 
 .map-search-box button:hover {
   background-color: #555;
 }
 
-.map {
-  width: 100%;
-  height: 100vh;
-  border-radius: 5px;
-}
-
 .search-result {
   position: absolute;
   top: 30px;
-  left: 10px;
   z-index: 9;
-  background: rgb(255,2555,2555,0.7);
+  background: rgba(255, 255, 255, 0.7);
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   max-height: 60vh;
   overflow-y: auto;
   width: 30.4%;
   padding: 10px;
+  font-size: 15px;
+  min-width: 100px;
+  left:10px;
 }
+
 .item {
   margin-top: 20px;
   padding: 10px;
@@ -366,6 +182,7 @@
   color: #0066ff;
   font-size: 0.9em;
 }
+
 .search-result #searchPagination {
   display: flex;
   justify-content: center; 
@@ -384,13 +201,51 @@
 .search-result #searchPagination a:hover {
   background-color: #ddd;
 }
+
 .hidden {
   display: none;
 }
-.infowindow{
-	z-index: 1;
-	height: auto;
-	width: 260px;
-	padding: 5px;
-	border-radius: 5px;
+
+.infowindow {
+  z-index: 1;
+  height: auto;
+  width: 260px;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+@media (max-width: 768px) {
+  .input-Container {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .dt-input-left-box, .dt-input-right-box {
+    flex: none;
+    width: 100%;
+    box-shadow: none;
+    background-color: transparent;
+  }
+
+  .mapContainer {
+    width: 100%;
+    height: 300px; 
+  }
+}
+
+@media (max-width: 480px) {
+  .bottomContainer {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .submitButton, .backButton {
+    width: 100%;
+    padding: 15px;
+    margin: 10px 0;
+  }
+  
+  .mapContainer {
+    height: 250px; 
+}
 }

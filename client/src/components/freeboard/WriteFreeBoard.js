@@ -113,12 +113,14 @@ const WriteFreeBoard = () => {
     <div className="inputContainer">
       <div className="topContainer">
         <div className="textareaHeader">
-          <textarea
-            className="textareaBox"
-            placeholder="타이틀을 입력해주세요"
-            value={title}
-            onChange={onChangeTitleHandler}
-          />
+        <div className="textareaBox">
+            <input
+              className="textareaBox"
+              placeholder="타이틀을 입력해주세요"
+              value={title}
+              onChange={onChangeTitleHandler}
+            />
+          </div>
         </div>
       </div>
       <div className="contentContainer">
@@ -127,20 +129,15 @@ const WriteFreeBoard = () => {
         </div>
       </div>
       <div className="bottomContainer">
-        <div className="buttonsWrap">
-          <div className="buttonArea1">
-            <button className="backButton" onClick={onExitHandler}>
-              <div className="arrowWrap">
-                <BsArrowLeft className="arrow" />
-                <span className="arrowText">나가기</span>
-              </div>
-            </button>
-          </div>
-          <div className="buttonArea2">
-            <button className="submitButton" onClick={onSubmitHandler}>
-              제출하기
-            </button>
-          </div>
+        <div className="buttonArea1">
+          <button className="backButton" onClick={onExitHandler}>
+              <div className="arrowText" onClick={onExitHandler}> ↩ 나가기</div>
+          </button>
+        </div>
+        <div className="buttonArea2">
+          <button className="submitButton" onClick={onSubmitHandler}>
+            제출하기
+          </button>
         </div>
       </div>
     </div>
