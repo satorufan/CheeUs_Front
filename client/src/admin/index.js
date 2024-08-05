@@ -1,13 +1,19 @@
 import React from 'react';
 import { Admin, Resource } from 'react-admin';
-import { UserList, UserEdit, UserCreate } from './UserList';
-import { PostList } from './PostList';
-import { PostEdit } from './PostEdit';
-import { PostCreate } from './PostCreate';
 import UserIcon from '@material-ui/icons/Group';
 import PostIcon from '@material-ui/icons/Book';
 import ReportIcon from '@material-ui/icons/Report';
 import InputIcon from '@material-ui/icons/Input';
+// import userDataProvider from './userDataProvider';
+// import { UserList, UserEdit, UserCreate } from './UserList';
+import { UserList, UserEdit, UserCreate } from './UserList';
+import { PostList, PostEdit, PostCreate } from './PostList';
+// import { PostList } from './PostList';
+// import { PostEdit } from './PostEdit';
+// import { PostCreate } from './PostCreate';
+import { ReportList, ReportEdit, ReportCreate } from './ReportList';
+import dataProvider from './dataProvider';
+/*
 import axios from 'axios';
 import { stringify } from 'query-string';
 
@@ -54,12 +60,13 @@ const dataProvider = {
         return { data: params.ids };
     }
 };
+*/
 
 const AdminDashboard = () => (
     <Admin basename="/admin" dataProvider={dataProvider}>
         <Resource name="users" list={UserList} edit={UserEdit} create={UserCreate} icon={UserIcon} />
         <Resource name="posts" list={PostList} edit={PostEdit} create={PostCreate} icon={PostIcon} />
-        <Resource name="report" list={UserList} edit={UserEdit} create={UserCreate} icon={ReportIcon} />
+        <Resource name="reports" list={ReportList} edit={ReportEdit} create={ReportCreate} icon={ReportIcon} />
     </Admin>
 );
 

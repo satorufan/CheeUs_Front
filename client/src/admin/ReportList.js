@@ -3,8 +3,7 @@ import { List, Datagrid, TextField, EditButton, DeleteButton, Edit, SimpleForm, 
 import axios from 'axios';
 import { stringify } from 'query-string';
 
-/*
-const apiUrl = 'http://localhost:8080/admin/UserData';
+const apiUrl = 'http://localhost:8080/admin/AdminReport';
 
 const dataProvider = {
     getList: async (resource, params) => {
@@ -47,9 +46,8 @@ const dataProvider = {
         return { data: params.ids };
     }
 };
-*/
 
-export const UserList = (props) => (
+export const ReportList = (props) => (
     <List {...props}>
         <Datagrid rowClick="edit">
             <TextField source="email" />
@@ -61,7 +59,7 @@ export const UserList = (props) => (
     </List>
 );
 
-export const UserEdit = (props) => (
+export const ReportEdit = (props) => (
     <Edit {...props}>
         <SimpleForm>
             <TextInput source="email" disabled />
@@ -71,7 +69,7 @@ export const UserEdit = (props) => (
     </Edit>
 );
 
-export const UserCreate = (props) => (
+export const ReportCreate = (props) => (
     <Create {...props}>
         <SimpleForm>
             <TextInput source="email" />

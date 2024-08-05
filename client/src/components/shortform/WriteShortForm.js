@@ -23,6 +23,7 @@ function WriteShortForm() {
     const { token } = useContext(AuthContext);
     const userProfile = useSelector(selectUserProfile);
     const boards = useSelector((state) => state.board.boards);
+    const [nickname, setNickname] = useState('');
   
     let decodedToken;
     if (token) {
@@ -59,12 +60,15 @@ function WriteShortForm() {
       };
   
       const newId = findMaxId() + 1;
-  
+
+      // author_id와 author_name, nickname 설정
       const authorId = decodedToken?.email;
       const authorName = userProfile.name;
+        const nickname = userProfile.profile.nickname;
 
       const newBoard = {
         author_id: authorId,
+          nickname,
         category: 2,
         title,
         content,

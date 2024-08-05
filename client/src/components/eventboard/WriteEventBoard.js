@@ -18,6 +18,7 @@ const WriteEventBoard = () => {
   const { token } = useContext(AuthContext); // 현재 사용자 정보 가져오기
   const userProfile = useSelector(selectUserProfile); // Redux의 selectUserProfile selector를 사용하여 userProfile 가져옴
   const boards = useSelector(state => state.board.boards); // boards 변수를 Redux 상태에서 가져옴
+  const [nickname, setNickname] = useState('');
 
   let decodedToken;
   if (token) {
@@ -51,12 +52,14 @@ const WriteEventBoard = () => {
 
     const newId = findMaxId() + 1;
 
-    // author_id와 author_name 설정
+    // author_id와 author_name, nickname 설정
     const authorId = decodedToken?.email;
     const authorName = userProfile.name;
+    const nickname = userProfile.profile.nickname;
 
     const newBoard = {
       author_id: authorId,
+      nickname,
       category: 3,
       title,
       content,
