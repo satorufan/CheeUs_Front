@@ -13,12 +13,12 @@ import {
   updateMatchServiceAgreement,
 } from '../../store/MatchSlice';
 import { AuthContext } from '../login/OAuth';
-import { selectProfileStatus, selectUserProfile } from '../../store/ProfileSlice';
+import { fetchUserProfile, selectProfileStatus, selectUserProfile } from '../../store/ProfileSlice';
 import { useNavigate } from 'react-router-dom';
 
 const Match = () => {
   const dispatch = useDispatch();
-  const { memberEmail, serverUrl } = useContext(AuthContext);
+  const { memberEmail, serverUrl, token } = useContext(AuthContext);
   const userProfile = useSelector(selectUserProfile);
 
   const profiles = useSelector(selectProfiles);
@@ -31,7 +31,8 @@ const Match = () => {
   const navigate = useNavigate();
   useEffect(() => {
     dispatch(fetchUserProfiles({ serverUrl, memberEmail }));
-  }, [dispatch, serverUrl, memberEmail]);
+    dispatch(fetchUserProfile({ serverUrl, memberEmail, token }));
+  }, [dispatch, serverUrl, memberEmail, token]);
 
 
   useEffect(() => {
@@ -62,7 +63,7 @@ const Match = () => {
                 dispatch(setUserLocation({ coords: { latitude, longitude } }));
                 
                 //updateLocationPermissionOnServer();
-                dispatch(updateLocationPermission({memberEmail, serverUrl, latitude, longitude}));
+                dispatch(updateLocationPermission({memberEmail, serverUrl, latitude, longitude, token}));
                 setShowMatchServiceModal(true);
             },
             error => {
@@ -85,7 +86,7 @@ const Match = () => {
   const handleMatchServiceConfirm = () => {
     dispatch(setMatchServiceAgreement(true));
     setShowMatchServiceModal(false);
-    dispatch(updateMatchServiceAgreement({memberEmail, serverUrl}));
+    dispatch(updateMatchServiceAgreement({memberEmail, serverUrl, token}));
     window.location.reload();
   };
 

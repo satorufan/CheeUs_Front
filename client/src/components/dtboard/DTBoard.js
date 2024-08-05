@@ -15,7 +15,7 @@ const DTBoard = () => {
   const navigate = useNavigate();
   
   const dispatch = useDispatch();
-  const { memberEmail, serverUrl } = useContext(AuthContext);
+  const { memberEmail, serverUrl, token } = useContext(AuthContext);
   const userProfile = useSelector(selectUserProfile);
   const profiles = useSelector(selectProfiles);
   const [nickname, setNickname] = useState('');
@@ -28,6 +28,7 @@ const DTBoard = () => {
     if (profiles && memberEmail) {
       const user = profiles.find(profile => profile.profile.email === memberEmail);
     }
+    console.log(profiles, userProfile)
   }, [profiles, userProfile]);
   
    useEffect(() => {

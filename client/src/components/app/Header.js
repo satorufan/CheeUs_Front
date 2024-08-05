@@ -18,7 +18,7 @@ import axios from 'axios';
 
 function Header() {
     const [isUnread, setIsUnread] = useState(true); // 채팅 읽지 않은 상태
-    const { token, serverUrl, requestSignOut } = useContext(AuthContext);
+    const { token, serverUrl, requestSignOut, memberEmail } = useContext(AuthContext);
     const [isNavExpanded, setIsNavExpanded] = useState(false); // Navbar 확장 상태 확인
 
     const userProfile = useSelector(selectUserProfile); // Redux에서 사용자 프로필 가져오기
@@ -29,10 +29,9 @@ function Header() {
 
     useEffect(() => {
         if (token) {
-            const memberEmail = jwtDecode(token).email;
-            dispatch(fetchUserProfile({ serverUrl, memberEmail }));
+            dispatch(fetchUserProfile({ serverUrl, memberEmail, token }));
         }
-    }, [token, dispatch, serverUrl]);
+    }, [token, dispatch, serverUrl, memberEmail]);
 
     const handleLogout = () => {
         requestSignOut();
@@ -88,11 +87,17 @@ function Header() {
         .catch((err)=>console.log(err));
     }
 
-    const isLoggedIn = userProfile !== null;
+    const isLoggedIn = memberEmail !== '';
     
 	if(location.pathname.startsWith ("/admin")){
 	 return null;
 	};
+
+    const defaultProfileImage = `${process.env.PUBLIC_URL}/images/default-avatar.jpg`;
+
+    const profileImage = userProfile && userProfile.imageBlob && userProfile.imageBlob.length > 0
+        ? userProfile.imageBlob[0] // Get the first imageBlob if available
+        : defaultProfileImage;
 	
     return (
         <div className="header-container">
@@ -127,7 +132,7 @@ function Header() {
                                             <Stack direction="row" alignItems="center">
                                                 <Avatar
                                                     alt="User Avatar"
-                                                    src={userProfile && typeof userProfile.photo === 'string' ? userProfile.photo : `${process.env.PUBLIC_URL}/images/default-avatar.jpg`}
+                                                    src={profileImage} // Profile image source
                                                     sx={{ width: 32, height: 32 }}
                                                 />
                                             </Stack>

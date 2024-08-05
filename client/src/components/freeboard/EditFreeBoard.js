@@ -8,6 +8,7 @@ import { updateBoard } from '../../store/BoardSlice';
 import swal from 'sweetalert';
 import { jwtDecode } from "jwt-decode";
 import { AuthContext } from '../login/OAuth';
+import BoardDetailTop from '../board/BoardDetailTop';
 
 function EditFreeBoard(){
     const { id } = useParams();
@@ -17,7 +18,7 @@ function EditFreeBoard(){
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { token } = useContext(AuthContext);
-    const userProfile = useSelector(state => state.profile.userProfile); // 예시에 따라 수정
+    //const userProfile = useSelector(state => state.profile.userProfile); // 예시에 따라 수정
     const boards = useSelector(state => state.board.boards);
     const [boardToEdit, setBoardToEdit] = useState(null);
 
@@ -71,6 +72,7 @@ function EditFreeBoard(){
 
     return (
       <div className="inputContainer">
+        <BoardDetailTop category={1} />
         <div className="topContainer">
           <div className="textareaHeader">
             <textarea
