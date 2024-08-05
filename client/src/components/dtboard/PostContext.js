@@ -46,16 +46,26 @@ export const PostProvider = ({ children }) => {
       .catch(error => console.error(error));
       
     console.log("Created Room : ", id.data);
-    const createRoom = 'http://localhost:8889/api/createTogetherRoom';
-    const sendMessage = 'http://localhost:8889/api/togetherMessages';
+
     const req = { 
       title : newPost.title, 
-      member : newPost.author_id, 
+      member : [newPost.author_id], 
       id: id.data 
     };
-    console.log(req);
+
+    const newMessage = {
+      sender_id: 'System',
+      message: '방이 생성되었습니다.',
+      write_day: new Date().toISOString(),
+      read: [newPost.author_id],
+      chat_room_id : id.data
+    };
+
+    const createRoom = 'http://localhost:8889/api/createTogetherRoom';
+    const sendMessage = 'http://localhost:8889/api/togetherMessages';
+
     await axios.post(createRoom, req).then(res=>console.log(res)).catch(err=>console.log(err));
-    // await axios.post(sendMessage, "방이 생성되었습니다.");
+    await axios.post(sendMessage, newMessage);
   };
   
   const modifyPost = (id, title, content, time, nickname, memberEmail) => {

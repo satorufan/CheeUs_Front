@@ -124,12 +124,8 @@ app.post('/api/messages', async (req, res) => {
 app.post('/api/createTogetherRoom', async (req, res) => {
     const roomId = req.body.id;
     try {
-        const messages = await db.collection('together_chat_rooms').insertOne({ 
-            room_id: roomId,
-            togetherId : req.body.title,
-            members : [req.body.author_id]
-        }).toArray();
-        res.json(messages);
+        const messages = await db.collection('together_chat_rooms').insertOne(req.body);
+        res.status(201).json({ message: '>>>>Message sent successfully' });
     } catch (error) {
         console.error('Error fetching messages:', error);
         res.status(500).json({ error: 'Failed to fetch messages', req: req });
