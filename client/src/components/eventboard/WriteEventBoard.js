@@ -19,6 +19,7 @@ const WriteEventBoard = () => {
   const { token } = useContext(AuthContext); // 현재 사용자 정보 가져오기
   const userProfile = useSelector(selectUserProfile); // Redux의 selectUserProfile selector를 사용하여 userProfile 가져옴
   const boards = useSelector(state => state.board.boards); // boards 변수를 Redux 상태에서 가져옴
+  const [nickname, setNickname] = useState('');
 
   let decodedToken;
   if (token) {
@@ -52,12 +53,14 @@ const WriteEventBoard = () => {
 
     const newId = findMaxId() + 1;
 
-    // author_id와 author_name 설정
+    // author_id와 author_name, nickname 설정
     const authorId = decodedToken?.email;
     const authorName = userProfile.name;
+    const nickname = userProfile.profile.nickname;
 
     const newBoard = {
       author_id: authorId,
+      nickname,
       category: 3,
       title,
       content,
@@ -109,13 +112,15 @@ const WriteEventBoard = () => {
     <div className="inputContainer">
       <div className="topContainer">
         <div className="textareaHeader">
-          <textarea
-            className="textareaBox"
-            placeholder="타이틀을 입력해주세요"
-            value={title}
-            onChange={onChangeTitleHandler}
-          />
-        </div>
+            <div className="textareaBox">
+              <input
+                className="textareaBox"
+                placeholder="타이틀을 입력해주세요"
+                value={title}
+                onChange={onChangeTitleHandler}
+              />
+            </div>
+          </div>
       </div>
       <div className="contentContainer">
         <div className="mypageContainer">
@@ -123,13 +128,9 @@ const WriteEventBoard = () => {
         </div>
       </div>
       <div className="bottomContainer">
-        <div className="buttonsWrap">
           <div className="buttonArea1">
             <button className="backButton" onClick={onExitHandler}>
-              <div className="arrowWrap">
-                <BsArrowLeft className="arrow" />
-                <span className="arrowText">나가기</span>
-              </div>
+                <div className="arrowText" onClick={onExitHandler}> ↩ 나가기</div>
             </button>
           </div>
           <div className="buttonArea2">
@@ -138,7 +139,6 @@ const WriteEventBoard = () => {
             </button>
           </div>
         </div>
-      </div>
     </div>
     </>
   );

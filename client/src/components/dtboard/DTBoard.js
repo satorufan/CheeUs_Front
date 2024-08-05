@@ -54,6 +54,8 @@ const DTBoard = () => {
   const [selectedPostId, setSelectedPostId] = useState(null); // 공통 상태로 선택된 게시물 ID를 저장
 
   return (
+    <>
+    <div className="board-page-top">함께 마셔요</div>
     <div className="board-layout">
       {profiles && userProfile ? (    
       <div className="board-content">
@@ -73,6 +75,7 @@ const DTBoard = () => {
               <p onClick={goLogin}>로그인 후 이용할 수 있습니다.</p>
             </div>)}
     </div>
+    </>
   );
 };
 

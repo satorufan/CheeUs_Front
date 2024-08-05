@@ -24,6 +24,7 @@ function WriteShortForm() {
     const { token } = useContext(AuthContext);
     const userProfile = useSelector(selectUserProfile);
     const boards = useSelector((state) => state.board.boards);
+    const [nickname, setNickname] = useState('');
   
     let decodedToken;
     if (token) {
@@ -60,12 +61,15 @@ function WriteShortForm() {
       };
   
       const newId = findMaxId() + 1;
-  
+
+      // author_id와 author_name, nickname 설정
       const authorId = decodedToken?.email;
       const authorName = userProfile.name;
+        const nickname = userProfile.profile.nickname;
 
       const newBoard = {
         author_id: authorId,
+          nickname,
         category: 2,
         title,
         content,
@@ -124,13 +128,15 @@ function WriteShortForm() {
       <><BoardDetailTop category={2} />
       <div className="shortform-inputContainer">
         <div className="shortform-topContainer">
-          <div className="shortform-textareaHeader">
-            <textarea
-              className="short-textareaBox"
-              placeholder="타이틀을 입력해주세요"
-              value={title}
-              onChange={onChangeTitleHandler}
-            />
+          <div className="textareaHeader">
+            <div className="textareaBox">
+              <input
+                className="textareaBox"
+                placeholder="타이틀을 입력해주세요"
+                value={title}
+                onChange={onChangeTitleHandler}
+              />
+            </div>
           </div>
         </div>
         <div className="shortform-write-container">
@@ -157,20 +163,15 @@ function WriteShortForm() {
           </div>
         </div>
         <div className="bottomContainer">
-          <div className="buttonsWrap">
-            <div className="buttonArea1">
-              <button className="backButton" onClick={onExitHandler}>
-                <div className="arrowWrap">
-                  <BsArrowLeft className="arrow" />
-                  <span className="arrowText">나가기</span>
-                </div>
-              </button>
-            </div>
-            <div className="buttonArea2">
-              <button className="submitButton" onClick={onSubmitHandler}>
-                제출하기
-              </button>
-            </div>
+          <div className="buttonArea1">
+            <button className="backButton" onClick={onExitHandler}>
+                <div className="arrowText" onClick={onExitHandler}> ↩ 나가기</div>
+            </button>
+          </div>
+          <div className="buttonArea2">
+            <button className="submitButton" onClick={onSubmitHandler}>
+              제출하기
+            </button>
           </div>
         </div>
       </div>

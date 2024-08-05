@@ -5,16 +5,17 @@ import { Create } from 'react-admin';
 import BooleanField from './BooleanField'; 
 import ToggleButton from './ToggleButton'; 
 
-export const PostList = (props) => (
+export const EventList = (props) => (
     <List {...props}>
         <Datagrid rowClick="edit">
             <TextField source="id" />
-            <TextField source="author_id" />
-            <TextField source="nickname" />
-            <TextField source="category" />
+            <TextField source="admin_id" />
             <TextField source="title" />
+            <TextField source="admin_name" />
             <TextField source="content" />
+            <TextField source="title2" />
             <TextField source="writeday" />
+            <TextField source="catagory" />
             <BooleanField source="pinned" />
             <BooleanField source="hidden" />
             <ToggleButton field="pinned" />
@@ -25,25 +26,27 @@ export const PostList = (props) => (
     </List>
 );
 
-export const PostEdit = (props) => (
+export const EventEdit = (props) => (
     <Edit {...props}>
         <SimpleForm>
             <TextInput source="id" disabled />
             <TextInput source="title" />
-            <TextInput source="body" />
-            <TextInput source="userId" />
+            <TextInput source="content" />
+            <TextInput source="title2" />
+            <TextInput source="category" />
             <BooleanInput source="pinned" label="Pinned" />
             <BooleanInput source="hidden" label="Hidden" />
         </SimpleForm>
     </Edit>
 );
 
-export const PostCreate = (props) => (
+export const EventCreate = (props) => (
     <Create {...props}>
         <SimpleForm>
             <TextInput source="title" />
-            <TextInput source="body" />
-            <TextInput source="userId" />
+            <TextInput source="content" />
+            <TextInput source="title2" />
+            <TextInput source="category" />
             <BooleanInput source="pinned" label="Pinned" />
             <BooleanInput source="hidden" label="Hidden" />
         </SimpleForm>
