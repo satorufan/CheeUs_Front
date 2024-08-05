@@ -2,12 +2,15 @@ import React from "react";
 import './Admin.css';
 import { useNavigate } from "react-router-dom";
 
-const Admin = () =>{
+const AdminHome = () =>{
+	
 	const navigate = useNavigate();
+	
 	const userButton = ()=>{
 		navigate('/admin/users');
 		return;
 	};
+	
 	const postButton = ()=>{
 		navigate('/admin/posts');
 		return;
@@ -29,4 +32,4 @@ const Admin = () =>{
 	);
 };
 
-export default Admin;
+export default AdminHome;

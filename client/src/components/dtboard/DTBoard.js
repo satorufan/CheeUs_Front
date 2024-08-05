@@ -28,7 +28,6 @@ const DTBoard = () => {
     if (profiles && memberEmail) {
       const user = profiles.find(profile => profile.profile.email === memberEmail);
     }
-    console.log(profiles, userProfile)
   }, [profiles, userProfile]);
   
    useEffect(() => {

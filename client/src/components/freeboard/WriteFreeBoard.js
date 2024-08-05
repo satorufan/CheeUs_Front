@@ -9,6 +9,7 @@ import { fetchUserProfile, selectUserProfile } from '../../store/ProfileSlice';
 import { AuthContext } from '../login/OAuth'; 
 import swal from 'sweetalert';
 import { jwtDecode } from "jwt-decode";
+import BoardDetailTop from '../board/BoardDetailTop';
 
 const WriteFreeBoard = () => {
   const [title, setTitle] = useState('');
@@ -103,6 +104,8 @@ const WriteFreeBoard = () => {
   };
 
   return (
+    <>
+    <BoardDetailTop category={1} />
     <div className="inputContainer">
       <div className="topContainer">
         <div className="textareaHeader">
@@ -137,6 +140,7 @@ const WriteFreeBoard = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

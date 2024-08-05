@@ -5,6 +5,7 @@ import { selectBoards } from '../../store/BoardSlice';  // 수정 필요
 import DetailBoard from '../board/DetailBoard';
 import Repl from '../board/Repl';
 import './detailShortForm.css';
+import BoardDetailTop from '../board/BoardDetailTop';
 
 function DetailShortForm() {
   const { id } = useParams();  // URL에서 파라미터(id)를 가져옴
@@ -45,15 +46,7 @@ function DetailShortForm() {
   // 게시물이 있는 경우
   return (
     <>
-      <div className="board-page-top">숏폼 게시판</div>
-      <div className="detail-free-header">
-        <button
-          className="detail-to-list"
-          onClick={() => navigate('/board/shortform')}
-        >
-          숏폼 게시판 목록
-        </button>
-      </div>
+    <BoardDetailTop category={2} />
       <div className="detail-free-container">
         <div className="free-detail-container">
           <DetailBoard board={board} />

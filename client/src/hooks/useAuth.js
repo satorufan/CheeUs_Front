@@ -1,6 +1,6 @@
 import { useContext, useState, useEffect } from 'react';
-import { AuthContext } from '../login/OAuth';
-import jwtDecode from 'jwt-decode';
+import { AuthContext } from '../components/login/OAuth';
+import {jwtDecode} from 'jwt-decode';
 
 const useAuth = () => {
     const { token, serverUrl } = useContext(AuthContext);

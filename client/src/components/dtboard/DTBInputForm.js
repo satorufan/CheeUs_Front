@@ -82,6 +82,13 @@ function DTBInputForm() {
     addPost(title, content, time, nickname, memberEmail);
     navigate('/dtboard'); // 게시글 작성 후 게시판으로 이동
     window.location.reload();
+    Swal.fire({
+      title: '채팅방이 생성되었습니다!',
+      icon: '',
+      showCancelButton: false,
+      confirmButtonColor: '#48088A',
+      confirmButtonText: '확인',
+    });		
   };
 
   const onExitHandler = () => {

@@ -10,6 +10,7 @@ import { jwtDecode } from 'jwt-decode';
 import { AuthContext } from '../login/OAuth';
 import { Form } from 'react-bootstrap';
 import { fetchUserProfile, selectUserProfile } from '../../store/ProfileSlice';
+import BoardDetailTop from '../board/BoardDetailTop';
 
 function EditShortForm() {
   const { id } = useParams();
@@ -117,6 +118,8 @@ function EditShortForm() {
   };
 
   return (
+    <>
+    <BoardDetailTop category={2} />
     <div className="shortform-inputContainer">
       <div className="shortform-topContainer">
         <div className="shortform-textareaHeader">
@@ -169,6 +172,7 @@ function EditShortForm() {
         </div>
       </div>
     </div>
+    </>
   );
 }
 
