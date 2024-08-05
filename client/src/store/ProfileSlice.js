@@ -16,7 +16,6 @@ export const fetchUserProfile = createAsyncThunk(
     'profile/fetchUserProfile',
     async ({ serverUrl, memberEmail, token }) => {
 
-        console.log(memberEmail, token)
         if (memberEmail && token) {
             const response = await axios.get(`${serverUrl}/profile`, {
                 params: { email: memberEmail },
@@ -38,7 +37,6 @@ export const fetchUserProfile = createAsyncThunk(
                 },
                 imageBlob : imageBlob
             };
-            console.log(profile);
             return profile; // 프로필 데이터 반환
             // return response.data; // 프로필 데이터 반환
         }

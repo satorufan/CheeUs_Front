@@ -16,12 +16,13 @@ const initialState = {
 // 1:1 채팅방을 가져오는 비동기 Thunk
 export const fetchChatRooms = createAsyncThunk(
     'chat/fetchChatRooms',
-    async ({serverUrl, userId}) => {
+    async ({serverUrl, loggedInUserId}) => {
         try {
+            console.log(serverUrl)
             // 1:1 채팅방 데이터 요청
             const response = await axios.get('http://localhost:8889/api/chatRooms');
             // `match`가 2인 채팅방만 필터링
-            const chatRooms = response.data.filter(room => room.match === 2 && (room.member1 === userId || room.member2 === userId));
+            const chatRooms = response.data.filter(room => room.match === 2 && (room.member1 === loggedInUserId || room.member2 === loggedInUserId));
             console.log(chatRooms);
 
             // 각 채팅방의 메시지 가져오기
@@ -34,7 +35,7 @@ export const fetchChatRooms = createAsyncThunk(
                 
                 // 유저의 간단한 정보 불러오기 -> 
                 const userInfo = await axios.get(serverUrl + '/match/chattingPersonal', {params : {
-                    email : room.member1 === userId ? room.member2 : room.member1
+                    email : room.member1 === loggedInUserId ? room.member2 : room.member1
                 }});
 
                 return {
