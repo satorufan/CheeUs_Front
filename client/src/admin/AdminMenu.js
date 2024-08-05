@@ -14,5 +14,7 @@ export const AdminMenu = () => (
         <Menu.ResourceItem name="users" />
         <Menu.ResourceItem name="posts" />
         <Menu.ResourceItem name="report" />
+        <Menu.ResourceItem name="event" />
+        <Menu.ResourceItem name="magazine" />
     </Menu>
 );

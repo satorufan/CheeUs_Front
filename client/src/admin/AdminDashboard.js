@@ -3,6 +3,8 @@ import { Admin, CustomRoutes, Resource } from 'react-admin';
 import UserIcon from '@material-ui/icons/Group';
 import PostIcon from '@material-ui/icons/Book';
 import ReportIcon from '@material-ui/icons/Report';
+import EventIcon from '@material-ui/icons/Event';
+import ImportContactsIcon from '@material-ui/icons/ImportContacts';
 import { AdminMenuLayout } from './AdminMenuLayout';
 import { Route } from 'react-router-dom';
 import dataProvider from './dataProvider';
@@ -13,6 +15,8 @@ import { AuthProvider } from './AuthContext';
 import { UserCreate, UserEdit, UserList } from './UserList';
 import { PostCreate, PostEdit, PostList } from './PostList';
 import { ReportCreate, ReportEdit, ReportList } from './ReportList';
+import { EventCreate, EventEdit, EventList } from './EventList';
+import { MagazineCreate, MagazineEdit, MagazineList } from './MagazineList';
 
 const AdminDashboard = () => (
     <AuthProvider>
@@ -33,6 +37,8 @@ const AdminDashboard = () => (
             <Resource name="users" list={UserList} edit={UserEdit} create={UserCreate} icon={UserIcon} />
             <Resource name="posts" list={PostList} edit={PostEdit} create={PostCreate} icon={PostIcon} />
             <Resource name="report" list={ReportList} edit={ReportEdit} create={ReportCreate} icon={ReportIcon} />
+            <Resource name="event" list={EventList} edit={EventEdit} create={EventCreate} icon={EventIcon} />
+            <Resource name="magazine" list={MagazineList} edit={MagazineEdit} create={MagazineCreate} icon={ImportContactsIcon} />
         </Admin>
     </AuthProvider>
 );
