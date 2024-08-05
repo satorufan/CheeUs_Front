@@ -76,8 +76,9 @@ function EditEventBoard(){
       <BoardDetailTop category={3} />
       <div className="inputContainer">
         <div className="topContainer">
-          <div className="textareaHeader">
-            <textarea
+        <div className="textareaHeader">
+        <div className="textareaBox">
+            <input
               className="textareaBox"
               placeholder="타이틀을 입력해주세요"
               value={title}
@@ -85,19 +86,16 @@ function EditEventBoard(){
             />
           </div>
         </div>
+        </div>
         <div className="contentContainer">
           <div className="mypageContainer">
             <ToastEditor ref={editorRef} />
           </div>
         </div>
         <div className="bottomContainer">
-          <div className="buttonsWrap">
             <div className="buttonArea1">
               <button className="backButton" onClick={onExitHandler}>
-                <div className="arrowWrap">
-                  <BsArrowLeft className="arrow" />
-                  <span className="arrowText">나가기</span>
-                </div>
+                  <span className="arrowText">↩ 나가기</span>
               </button>
             </div>
             <div className="buttonArea2">
@@ -106,7 +104,6 @@ function EditEventBoard(){
               </button>
             </div>
           </div>
-        </div>
       </div>
       </>
     );

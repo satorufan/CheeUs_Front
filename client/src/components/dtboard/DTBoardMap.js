@@ -130,7 +130,7 @@ const DTBoardMap = ({ selectedPostId }) => {
       content += `
         <h3 style="margin:0; padding-bottom:5px; border-bottom:1px solid #ccc;width: auto;">${p.title}</h3>
         <p style="margin:5px 0;">${p.location}</p>
-        <button data-id="${p.id}" style="padding: 5px 10px; background-color: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; width: 150px;">
+        <button data-id="${p.id}" style="padding: 5px 10px; background-color: black; color: white; border: none; border-radius: 3px; cursor: pointer; width: 150px;">
           같이 마시러 가기
         </button>
         <br>
