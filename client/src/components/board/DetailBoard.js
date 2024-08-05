@@ -11,7 +11,7 @@ import Swal from 'sweetalert2';
 import axios from "axios";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-
+import rehypeRaw from 'rehype-raw';
 
 
 const DetailBoard = () => {
@@ -190,7 +190,7 @@ const DetailBoard = () => {
             </div>
           ) : (
             <>
-              <p>{board.content}</p>
+              <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>{board.content}</ReactMarkdown>
               {board.photoes && (
                 <div className="detail-image-container">
                   <img className="detail-image" src={board.photoes} alt={board.title} />

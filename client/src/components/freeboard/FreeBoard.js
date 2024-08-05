@@ -14,6 +14,7 @@ import Pagination from '@mui/material/Pagination';
 import './freeBoard.css';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 
 const FreeBoard = () => {
   const dispatch = useDispatch();
@@ -87,11 +88,11 @@ const FreeBoard = () => {
                       </div>
                     </CardCover>
                   ) : (
-                    <CardCover className="card-cover">
                       <div className="content-text">
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{board.content}</ReactMarkdown>
+                       <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+                          {board.content}
+                        </ReactMarkdown>
                       </div>
-                    </CardCover>
                   )}
                 </AspectRatio>
               </Box>
