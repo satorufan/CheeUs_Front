@@ -44,14 +44,16 @@ const UserProfilePage = () => {
     console.log('UserProfile loaded:', userProfile);
 
     return (
-        <div className="myprofile-container">
+        <div className="myprofile-container user">
             <div className="user-profile-nickname">{userProfile.profile.nickname}님의 Profile</div>
-            <div className="profile-container user">
-                <ProfileCard 
-                    profileInfo={userProfile} 
-                    loggedInUserId={loggedInUserId} 
-                    showLikeButton={true} 
-                />
+                <div className="inner-content">
+                <div className="profile-container user">
+                    <ProfileCard 
+                        profileInfo={userProfile} 
+                        loggedInUserId={loggedInUserId} 
+                        showLikeButton={true} 
+                    />
+                </div>
             </div>
             <div>
                 <button 
