@@ -5,7 +5,7 @@
     font-family : 'YeojuCeramic';
     padding: 5px 20px;
     border: solid 2px white;
-    margin-left: calc(60% - 50px);
+    margin-left: calc(60% - 30px);
 }
 
 .back-page-btn:hover{

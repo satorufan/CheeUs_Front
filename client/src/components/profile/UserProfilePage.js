@@ -1,15 +1,14 @@
 import React, { useEffect } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import ProfileCard from './ProfileCard';
 import { fetchUserProfile } from '../../store/ProfileSlice';
 import './userProfilePage.css';
+import useAuth from '../../hooks/useAuth';
 
 const UserProfilePage = () => {
-    const { id } = useParams();
-    const userId = parseInt(id, 10);
-    const userEmail = useLocation();
-    const loggedInUserId = 1; // 가상 로그인
+    const { email } = useParams();
+    const { loggedInUserId } = useAuth();
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -18,10 +17,12 @@ const UserProfilePage = () => {
     const error = useSelector((state) => state.profile.error);
 
     useEffect(() => {
-        if (userId) {
-            dispatch(fetchUserProfile(userId));
+        if (email) {
+            console.log(`Fetching user profile for email: ${email}`);
+            dispatch(fetchUserProfile(email));
         }
-    }, [dispatch, userId]);
+    }, [dispatch, email]);
+
 
     const handleGoBack = () => {
         navigate(-1);
@@ -35,16 +36,19 @@ const UserProfilePage = () => {
         return <p>오류: {error}</p>;
     }
 
-    if (!userProfile) {
+    if (!userProfile || !userProfile.profile) {
+        console.log('UserProfile is not defined or profile is missing');
         return <p>프로필을 찾을 수 없습니다.</p>;
     }
 
+    console.log('UserProfile loaded:', userProfile);
+
     return (
         <div className="myprofile-container">
-            <div className="user-profile-nickname">{userProfile.nickname}님의 Profile</div>
-            <div className="profile-container">
+            <div className="user-profile-nickname">{userProfile.profile.nickname}님의 Profile</div>
+            <div className="profile-container user">
                 <ProfileCard 
-                    profile={userProfile} 
+                    profileInfo={userProfile} 
                     loggedInUserId={loggedInUserId} 
                     showLikeButton={true} 
                 />
@@ -60,6 +64,7 @@ const UserProfilePage = () => {
             </div>
         </div>
     );
+
 };
 
 export default UserProfilePage;
