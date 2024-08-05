@@ -134,7 +134,7 @@ const ShortForm = () => {
                   />
                   <div>
                     <div className='short-author'>
-                      {board.author_name}
+                      {board.nickname}
                     </div>
                   </div>
                   <div className="card-icons-container">
