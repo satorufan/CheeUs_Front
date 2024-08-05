@@ -9,6 +9,10 @@ import { jwtDecode } from "jwt-decode";
 import './detailBoard.css';
 import Swal from 'sweetalert2';
 import axios from "axios";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+
+
 
 const DetailBoard = () => {
   const { id } = useParams();
@@ -186,7 +190,7 @@ const DetailBoard = () => {
             </div>
           ) : (
             <>
-              <p className="detail-content">{board.content}</p>
+              <p>{board.content}</p>
               {board.photoes && (
                 <div className="detail-image-container">
                   <img className="detail-image" src={board.photoes} alt={board.title} />

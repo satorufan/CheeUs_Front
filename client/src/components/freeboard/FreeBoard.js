@@ -12,6 +12,8 @@ import BoardTop from '../board/BoardTop';
 import {selectBoards, toggleLike, selectLikedMap, filterBoards, setSearchQuery, selectFilteredBoards, fetchBoards} from '../../store/BoardSlice';
 import Pagination from '@mui/material/Pagination';
 import './freeBoard.css';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const FreeBoard = () => {
   const dispatch = useDispatch();
@@ -87,7 +89,7 @@ const FreeBoard = () => {
                   ) : (
                     <CardCover className="card-cover">
                       <div className="content-text">
-                        {board.content}
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{board.content}</ReactMarkdown>
                       </div>
                     </CardCover>
                   )}
