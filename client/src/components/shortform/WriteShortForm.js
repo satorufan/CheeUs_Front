@@ -11,6 +11,7 @@ import swal from 'sweetalert';
 import { jwtDecode } from 'jwt-decode';
 import './writeShortForm.css';
 import { Form } from 'react-bootstrap';
+import BoardDetailTop from '../board/BoardDetailTop';
 
 function WriteShortForm() {
     const [title, setTitle] = useState('');
@@ -120,6 +121,7 @@ function WriteShortForm() {
     };
 
     return (
+      <><BoardDetailTop category={2} />
       <div className="shortform-inputContainer">
         <div className="shortform-topContainer">
           <div className="shortform-textareaHeader">
@@ -172,6 +174,7 @@ function WriteShortForm() {
           </div>
         </div>
       </div>
+      </>
     );
 }
 

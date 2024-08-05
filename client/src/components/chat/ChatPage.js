@@ -33,7 +33,7 @@ const ChatPage = () => {
     const messageInput = useSelector(state => state.chat.messageInput);
     const showMessageInput = useSelector(state => state.chat.showMessageInput);
 
-    const { token } = useContext(AuthContext);
+    const { token, serverUrl } = useContext(AuthContext);
     //const socket = useRef(null);
 
     const [loggedInUserId, setLoggedInUserId] = useState(null);
@@ -85,7 +85,7 @@ const ChatPage = () => {
 
     useEffect(() => {
         if (loggedInUserId) {
-            dispatch(fetchChatRooms(loggedInUserId));
+            dispatch(fetchChatRooms({serverUrl, loggedInUserId}));
             dispatch(fetchTogetherChatRooms());
         }
     }, [loggedInUserId, dispatch]);

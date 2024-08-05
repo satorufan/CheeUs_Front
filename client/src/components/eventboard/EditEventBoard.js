@@ -8,6 +8,7 @@ import { updateBoard } from '../../store/BoardSlice';
 import swal from 'sweetalert';
 import { jwtDecode } from "jwt-decode";
 import { AuthContext } from '../login/OAuth';
+import BoardDetailTop from '../board/BoardDetailTop';
 
 function EditEventBoard(){
     const { id } = useParams();
@@ -71,6 +72,8 @@ function EditEventBoard(){
     };
 
     return (
+      <>
+      <BoardDetailTop category={3} />
       <div className="inputContainer">
         <div className="topContainer">
           <div className="textareaHeader">
@@ -105,6 +108,7 @@ function EditEventBoard(){
           </div>
         </div>
       </div>
+      </>
     );
   }
 
