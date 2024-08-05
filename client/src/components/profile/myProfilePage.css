@@ -14,3 +14,128 @@
     border: solid 2px white;
     color: white;
 }
+
+.myprofile-container{
+    margin-bottom:10px;
+}
+
+.edit-myprofile-btn{
+    padding: 5px 20px;
+    font-family : 'YeojuCeramic';
+    border: solid 2px white;
+    margin-left: calc(60% - 50px);
+}
+
+.edit-myprofile-btn:hover{
+    background-color: black;
+    border: solid 2px white;
+    color: white;
+}
+
+
+.myprofile-container {
+    margin-bottom: 10px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.userprofile-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.profile-container {
+    flex: 1;
+    max-width: 400px;
+    margin: 10px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.my-info-container {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 700px;
+}
+
+.my-board, .my-posts {
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    background-color: #fff;
+    flex: 1;
+    margin: 10px;
+    overflow-y: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 25px;
+}
+
+table thead th {
+    background-color: black;
+    color: white;
+    padding: 10px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    text-align: center;
+}
+
+table th, table td {
+    padding: 10px;
+    text-align: left;
+    background-color: #fff;
+    border-radius: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+table tbody {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.mybtn-container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.edit-myprofile-btn {
+    padding: 5px 20px;
+    font-family: 'YeojuCeramic';
+    border: solid 2px white;
+    margin-right: 12%;
+    background-color: black;
+    color: white;
+}
+
+.edit-myprofile-btn:hover {
+    background-color: white;
+    border: solid 2px black;
+    color: black;
+}
+
+@media (max-width: 768px) {
+    .userprofile-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .profile-container, .my-info-container {
+        width: 90%;
+        max-width: none;
+    }
+
+    .my-board, .my-posts {
+        width: 100%;
+    }
+}
