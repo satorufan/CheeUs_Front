@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 
 const PostContext = createContext();
 
@@ -8,6 +9,7 @@ export const usePosts = () => useContext(PostContext);
 export const PostProvider = ({ children }) => {
   const [posts, setPosts] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState(null);
+  const navigate = useNavigate();
   
   useEffect(() => {
     axios.get('http://localhost:8080/dtBoard/')
@@ -48,8 +50,8 @@ export const PostProvider = ({ children }) => {
     console.log("Created Room : ", id.data);
 
     const req = { 
-      title : newPost.title, 
-      member : [newPost.author_id], 
+      together_id : newPost.title, 
+      members : [newPost.author_id], 
       id: id.data 
     };
 
@@ -58,7 +60,7 @@ export const PostProvider = ({ children }) => {
       message: '방이 생성되었습니다.',
       write_day: new Date().toISOString(),
       read: [newPost.author_id],
-      chat_room_id : id.data
+      room_id : id.data
     };
 
     const createRoom = 'http://localhost:8889/api/createTogetherRoom';
@@ -66,6 +68,9 @@ export const PostProvider = ({ children }) => {
 
     await axios.post(createRoom, req).then(res=>console.log(res)).catch(err=>console.log(err));
     await axios.post(sendMessage, newMessage);
+
+    navigate('/dtboard'); // 게시글 작성 후 게시판으로 이동
+    window.location.reload();
   };
   
   const modifyPost = (id, title, content, time, nickname, memberEmail) => {
@@ -87,6 +92,7 @@ export const PostProvider = ({ children }) => {
         })
         .catch(error => console.error(error));
   };
+
 
   return (
     <PostContext.Provider value={{ posts, addPost, modifyPost, selectedPlace, setSelectedPlace, deletePost}}>

@@ -9,30 +9,65 @@ import 'react-datepicker/dist/react-datepicker.css';
 import profileImg from '../images/google.png';
 import Swal from 'sweetalert2';
 import { fetchUserProfiles} from '../../store/MatchSlice';
-import { useDispatch} from 'react-redux';
+import { useDispatch, useSelector} from 'react-redux';
 import { AuthContext } from '../login/OAuth';
+import { selectUserProfile } from '../../store/ProfileSlice';
+import axios from 'axios';
+import { fetchTogetherChatRooms } from '../../store/ChatSlice';
 
-// 로그인한 사용자의 아이디를 가져오는 함수
-const useAuth = () => {
-  const dispatch = useDispatch();
-  const { memberEmail, serverUrl, token } = useContext(AuthContext);
+// // 로그인한 사용자의 아이디를 가져오는 함수
+// const useAuth = (author) => {
+//   const dispatch = useDispatch();
+//   const { memberEmail, serverUrl, token } = useContext(AuthContext);
+//   var authorInfo;
   
-  useEffect(() => {
-    dispatch(fetchUserProfiles({ serverUrl, memberEmail }));
-  }, [dispatch, serverUrl, memberEmail]);
+//   useEffect(() => {
+//     dispatch(fetchUserProfiles({ serverUrl, memberEmail }));
+//     dispatch(fetchTogetherChatRooms({serverUrl, userId : memberEmail}));
+//     axios.get(serverUrl + '/match/chattingPersonal', {params : {
+//       email : author
+//     }}).then((res)=>{
+//       console.log(res)
+//       authorInfo = res.data
+//     });
+//   }, [dispatch, serverUrl, memberEmail, author]);
   
-   
-  const loggedInUserId = memberEmail;	//바꾸면 찜하기 보임
-  return { loggedInUserId };
-};
+//   const loggedInUserId = memberEmail;	//바꾸면 찜하기 보임
+  
+//   return { loggedInUserId, authorInfo };
+// };
 
 const PostDetail = () => {
   const { id } = useParams();
+  const dispatch = useDispatch();
+  const { memberEmail, serverUrl, token } = useContext(AuthContext);
+
+  const [authorInfo, setAuthorInfo] = useState();
   const { posts, deletePost } = usePosts();
-  const { loggedInUserId } = useAuth();
   const post = posts.find((post) => post.id === parseInt(id));
+  // const { loggedInUserId, authorInfo } = useAuth(post ?. author_id);
   const navigate = useNavigate();
+  const userProfile = useSelector(selectUserProfile);
+  console.log(authorInfo);
+  // 유저가 해당 게시글 채팅방에 참여중인지 확인
+  const rooms = useSelector(state => state.chat.togetherChatRooms);
+  const isJoined = rooms ?. filter(room => 
+    room.roomId == id && room.members.map(member=>
+    member.email == memberEmail)).length > 0 ? true : false;
   
+  useEffect(() => {
+    dispatch(fetchUserProfiles({ serverUrl, memberEmail }));
+    dispatch(fetchTogetherChatRooms({serverUrl, userId : memberEmail}));
+    axios.get(serverUrl + '/match/chattingPersonal', {params : {
+      email : post ?. author_id
+    }}).then((res)=>{
+      setAuthorInfo({
+        email : res.data.email,
+        image : 'data:' + res.data.imageType + ';base64,' + res.data.imageBlob
+      })
+    });
+  }, [dispatch, serverUrl, memberEmail]);
+
   if (!post) return <div>Post not found</div>;
   
   console.log("post.nickname", post.nickname)
@@ -74,6 +109,45 @@ const PostDetail = () => {
       }
     });
   };
+
+  const handleClickJoinBtn = () => {
+    Swal.fire({
+      title: isJoined ? '현재 참여중인 채팅방입니다.' : '채팅에 참여하였습니다.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#48088A',
+      confirmButtonText: '채팅방으로 이동',
+      cancelButtonText: '취소',
+    }).then((result) => {
+      console.log(result);
+      if (result.value) {
+        navigate(`/chatpage`);
+      }
+    });
+  }
+
+  const joinChatRoom = async () => {
+    const join = {
+      room_id : id,
+      member : userProfile.profile.email
+    }
+    const newMessage = {
+      sender_id: 'System',
+      message: userProfile.profile.nickname + '님이 입장하였습니다.',
+      write_day: new Date().toISOString(),
+      read: [],
+      room_id : parseInt(id, 10)
+    };
+
+    const joinRoom = 'http://localhost:8889/api/joinTogetherRoom';
+    const sendMessage = 'http://localhost:8889/api/togetherMessages';
+
+    await axios.post(joinRoom, join).then(res=>console.log(res)).catch(err=>console.log(err));
+    await axios.post(sendMessage, newMessage);
+
+    handleClickJoinBtn();
+
+  };
   
   return (
     <div className="inputContainer">
@@ -93,7 +167,7 @@ const PostDetail = () => {
           <div className="contentHeader">
             <div className="profileContainer" onClick={()=>navigate("/mypage")}>
               <div className="profile1">
-                <img className="profileImg" src={profileImg} alt="Profile" />
+                <img className="profileImg" src={authorInfo ? authorInfo.image: profileImg} alt="Profile" />
               </div>
               <div className="profile2">
                 <a>{post.nickname}</a>
@@ -127,10 +201,11 @@ const PostDetail = () => {
                 <span className="arrowText">목록으로</span>
               </div>
             </button>
-            <button className="backButton">채팅방</button>
+            <button className="backButton" onClick={joinChatRoom} hidden={isJoined}>채팅방 참여</button>
+            <button className="backButton" onClick={handleClickJoinBtn} hidden={!isJoined}>현재 참여중</button>
           </div>
           <div className="buttonArea2">
-            {loggedInUserId === post.author_id ? (
+            {memberEmail === post.author_id ? (
               <>
                 <button className="modifyButton" onClick={onModifyHandler}>
                   글 수정

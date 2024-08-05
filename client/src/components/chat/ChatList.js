@@ -24,12 +24,16 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
             try {
                 const decodedToken = jwtDecode(token);
                 setLoggedInUserId(decodedToken.email);
-                dispatch(fetchChatRooms({serverUrl, userId : decodedToken.email})).catch(err => {
-                    console.error('Failed to fetch chat rooms:', err);
-                });
-                dispatch(fetchTogetherChatRooms({serverUrl, userId : decodedToken.email})).catch(err => {
-                    console.error('Failed to fetch together chat rooms:', err);
-                });
+                console.log(isTogether);
+                if (!isTogether) {
+                    dispatch(fetchChatRooms({serverUrl, loggedInUserId : decodedToken.email})).catch(err => {
+                        console.error('Failed to fetch chat rooms:', err);
+                    });
+                } else {
+                    dispatch(fetchTogetherChatRooms({serverUrl, userId : decodedToken.email})).catch(err => {
+                        console.error('Failed to fetch together chat rooms:', err);
+                    });
+                }
                 dispatch(fetchUserProfiles({ serverUrl, memberEmail })).catch(err => {
                     console.error('Failed to fetch user profiles:', err);
                 });
@@ -37,7 +41,7 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
                 console.error('Token decoding error:', err);
             }
         }
-    }, [token, dispatch]);
+    }, [token, dispatch, isTogether]);
 
     useEffect(() => {
         console.log('업데이트된 1:1 채팅방:', updatedChatRooms);
