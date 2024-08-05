@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import ProfileCard from './ProfileCard';
 import { fetchUserProfile, selectUserProfile, selectProfileStatus, selectProfileError } from '../../store/ProfileSlice';
-import './myProfilePage.module.css';
+import './myProfilePage.css';
 import { AuthContext } from '../login/OAuth';
 import Swal from 'sweetalert2';
 
