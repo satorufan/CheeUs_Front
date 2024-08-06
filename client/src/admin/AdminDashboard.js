@@ -1,5 +1,5 @@
 import React from 'react';
-import { Admin, CustomRoutes, Resource } from 'react-admin';
+import { Admin, CustomRoutes, Resource, EditGuesser } from 'react-admin';
 import UserIcon from '@material-ui/icons/Group';
 import PostIcon from '@material-ui/icons/Book';
 import ReportIcon from '@material-ui/icons/Report';
