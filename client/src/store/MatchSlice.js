@@ -34,7 +34,6 @@ export const fetchUserProfiles = createAsyncThunk(
                     imageBlob: imageBlob
                 };
             });
-            console.log(profiles)
             return profiles;
         } catch (error) {
             throw new Error(error.message);

@@ -80,15 +80,13 @@ function DTBInputForm() {
     const content = editorRef.current.getInstance().getMarkdown(); // content를 getInstance().getMarkdown()으로 받아옴
     
     addPost(title, content, time, nickname, memberEmail);
-    navigate('/dtboard'); // 게시글 작성 후 게시판으로 이동
-    window.location.reload();
     Swal.fire({
       title: '채팅방이 생성되었습니다!',
       icon: '',
       showCancelButton: false,
       confirmButtonColor: '#48088A',
       confirmButtonText: '확인',
-    });		
+    });
   };
 
   const onExitHandler = () => {
@@ -101,80 +99,76 @@ function DTBInputForm() {
   };
 
   return (
-    <div className="inputContainer">
-      <div className="topContainer">
-        <div className="textareaHeader">
-          <textarea
-            className="textareaBox"
-            placeholder="타이틀을 입력해주세요"
-            value={title}
-            onChange={onChangeTitleHandler}
-          />
-         <div className="dateHeader">
-          <DatePicker
-            locale={ko}
-            selected={startDate}
-            onChange={(date) => {
-              setStartDate(date);
-              setTime(format(date, 'yyyy.MM.dd HH:mm'));
-            }}
-            dateFormat="yyyy.MM.dd HH:mm"
-            showTimeSelect
-            timeFormat="HH:mm"
-            timeIntervals={15}
-            timeCaption="시간"
-            customInput={<ExampleCustomInput />}
-          />
-        </div>
-        </div>
-
-        <div className="mapHeader">
-          <div className="mapping">
-            장소 :
-            <a>
-              {selectedPlace ? (
-                <>
-                	<a> </a>
-                   {selectedPlace.title} ({selectedPlace.address})
-                  	<span className="hidden">
-                    	{selectedPlace.latitude} {selectedPlace.longitude}
-                  	</span>
-                </>
-              ) : (
-                ' 지도정보'
-              )}
-            </a>
-          </div>
-          <div></div>
-        </div>
-      </div>
-      <div className="contentContainer">
-        <div className="mypageContainer">
-          <ToastEditor ref={editorRef} />
-        </div>
-        <div className="mapContainer">
-          <InputMap isEditing={false} />
-        </div>
-      </div>
-      <div className="bottomContainer">
-        <div className="buttonsWrap">
-         <div className = 'buttonArea1'>
-          <button className="backButton" onClick={onExitHandler}>
-            <div className="arrowWrap">
-              <BsArrowLeft className="arrow" />
-              <span className="arrowText">나가기</span>
+      <div className="dt-input">
+        <div className="board-page-top">함께 마셔요</div>
+        <div className="input-Container">
+          <div className="dt-input-left-box">
+            <div className="textareaHeader">
+              <div className="textareaBox">
+                <input
+                  placeholder="타이틀을 입력해주세요"
+                  value={title}
+                  onChange={onChangeTitleHandler}
+                />
+              </div>
+              <div className="dateHeader">
+                <DatePicker
+                  locale={ko}
+                  selected={startDate}
+                  onChange={(date) => {
+                    setStartDate(date);
+                    setTime(format(date, 'yyyy.MM.dd HH:mm'));
+                  }}
+                  dateFormat="yyyy.MM.dd HH:mm"
+                  showTimeSelect
+                  timeFormat="HH:mm"
+                  timeIntervals={15}
+                  timeCaption="시간"
+                  customInput={<ExampleCustomInput />}
+                />
+              </div>
             </div>
-          </button>
-         </div>
-         <div className='buttonArea2'>
-          <button className="submitButton" onClick={onSubmitHandler}>
-            제출하기
-          </button>
-         </div>
+            <div className="dt-input-mypage-box">
+            <ToastEditor ref={editorRef} />
+          </div>
+          </div>
+          <div className="dt-input-right-box">
+            <div className="mapHeader">
+              <div className="mapping">
+                장소 :
+                <a>
+                  {selectedPlace ? (
+                    <>
+                      {selectedPlace.title} ({selectedPlace.address})
+                      <span className="hidden">
+                        {selectedPlace.latitude} {selectedPlace.longitude}
+                      </span>
+                    </>
+                  ) : (
+                    ' 지도에서 장소를 선택하세요'
+                  )}
+                </a>
+              </div>
+            </div>
+            <div className="mapContainer">
+              <InputMap isEditing={false} />
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  );
+        <div className="bottomContainer">
+          <div className="buttonArea1">
+            <button className="backButton" onClick={onExitHandler}>
+                <div className="arrowText" onClick={onExitHandler}> ↩ 나가기</div>
+            </button>
+          </div>
+          <div className="buttonArea2">
+            <button className="submitButton" onClick={onSubmitHandler}>
+              제출하기
+            </button>
+          </div>
+        </div>
+        </div>
+    );
 };
 
 export default DTBInputForm;

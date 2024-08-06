@@ -9,17 +9,26 @@ const DTBoardContent = ({ posts, totalPosts, postsPerPage, paginate, onWriteButt
     pageNumbers.push(i); // 계산한 페이지 수를 1~n까지 구해 pageNumbers에 넣고 pagination으로 연결해 표시한다.
   }
 
+  console.log(posts);
   return (
     <div className="board-left">
-      <h2>함께 마셔요 게시판</h2>
-      <hr className="divider" />
       {posts.map((post) => (
         <div key={post.id} className="post" > {/* 게시물 클릭 시 선택된 게시물 ID를 설정 */}
           <div className = "postClickArea" onClick={() => onPostClick(post.id)}>
+            <div className='post-img-nick'>
+              <img
+                  src={post.image}
+                  alt={`img`}
+                  className="rounded-circle mr-3"
+                  style={{ width: '25px', height: '25px' }}
+              />
+              <div className="dt-post-nick">{post.nickname}</div>
+            </div>
             <h5>{post.title}</h5>
-            <p>{post.location} | 약속시간 : {post.time}</p>
-            <p className='contentHidden'>{post.content}</p>
-            <p className='contentHidden'>{post.address}</p>
+            <div className="dtpost-location"> {post.location}</div>
+            <div className="dtpost-time"> {post.time}</div>
+            <div className='contentHidden'>{post.content}</div>
+            <div className='contentHidden'>{post.address}</div>
           </div>
         </div>
       ))}

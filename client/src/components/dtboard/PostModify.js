@@ -71,15 +71,19 @@ function PostModify() {
   };
 
   return (
-    <div className="inputContainer">
-      <div className="topContainer">
+    <div className="dt-input">
+        <div className="board-page-top">함께 마셔요</div>
+    <div className="input-Container">
+      <div className="dt-input-left-box">
         <div className="textareaHeader">
-          <textarea
+        <div className="textareaBox">
+          <input
             className="textareaBox"
             placeholder=""
             value={title}
             onChange={onChangeTitleHandler}
           />
+          </div>
           <div className="dateHeader">
             <DatePicker
               locale={ko}
@@ -97,6 +101,11 @@ function PostModify() {
             />
           </div>
         </div>
+        <div className="dt-input-mypage-box">
+            <ToastEditor ref={editorRef} />
+        </div>
+        </div>
+        <div className="dt-input-right-box">
         <div className="mapHeader">
           <div className="mapping">
             장소 :
@@ -110,38 +119,28 @@ function PostModify() {
                   </span>
                 </>
               ) : (
-                ' 지도정보'
+                '지도에서 장소를 선택하세요'
               )}
             </a>
           </div>
-          <div></div>
-        </div>
-      </div>
-      <div className="contentContainer">
-        <div className="mypageContainer">
-          <ToastEditor ref={editorRef} />
-        </div>
+          </div>
         <div className="mapContainer">
           <InputMap isEditing={true} />
         </div>
       </div>
-      <div className="bottomContainer">
-        <div className="buttonsWrap">
-          <div className='buttonArea1'>
+        </div>
+        <div className="bottomContainer">
+          <div className="buttonArea1">
             <button className="backButton" onClick={onExitHandler}>
-              <div className="arrowWrap">
-                <BsArrowLeft className="arrow" />
-                <span className="arrowText">나가기</span>
-              </div>
+                <div className="arrowText" onClick={onExitHandler}> ↩ 나가기</div>
             </button>
           </div>
-          <div className='buttonArea2'>
+          <div className="buttonArea2">
             <button className="submitButton" onClick={onSubmitHandler}>
               제출하기
             </button>
           </div>
         </div>
-      </div>
     </div>
   );
 }

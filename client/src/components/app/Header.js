@@ -123,7 +123,7 @@ function Header() {
                             <Nav.Link href="/event"className="nav-link-list" >이벤트</Nav.Link>
                             <Nav.Link href="/magazine"className="nav-link-list" >매거진</Nav.Link>
 
-                            {isLoggedIn && profileStatus !== "loading" ? (
+                            {isLoggedIn ? (
                                 <>
                                     <Nav.Link href="/mypage" className="nav-link-list">
                                         {isNavExpanded ? (
