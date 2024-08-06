@@ -43,12 +43,12 @@ const PostDetail = () => {
   const { memberEmail, serverUrl, token } = useContext(AuthContext);
 
   const [authorInfo, setAuthorInfo] = useState();
-  const { posts, deletePost } = usePosts();
+  const [isScrapped, setIsScrapped] = useState(false);
+  const { posts, deletePost, addScrap, checkScrap } = usePosts();
   const post = posts.find((post) => post.id === parseInt(id));
   // const { loggedInUserId, authorInfo } = useAuth(post ?. author_id);
   const navigate = useNavigate();
   const userProfile = useSelector(selectUserProfile);
-  console.log(authorInfo);
   // 유저가 해당 게시글 채팅방에 참여중인지 확인
   const rooms = useSelector(state => state.chat.togetherChatRooms);
   const isJoined = rooms ?. filter(room => 
@@ -58,17 +58,28 @@ const PostDetail = () => {
   useEffect(() => {
     dispatch(fetchUserProfiles({ serverUrl, memberEmail }));
     dispatch(fetchTogetherChatRooms({serverUrl, userId : memberEmail}));
-    if (post) {
-      axios.get(serverUrl + '/match/chattingPersonal', {params : {
-        email : post.author_id
-      }}).then((res)=>{
-        setAuthorInfo({
-          email : res.data.email,
-          image : 'data:' + res.data.imageType + ';base64,' + res.data.imageBlob
-        })
-      });
-    }
-  }, [dispatch, serverUrl, memberEmail]);
+    const fetchData = async () => {
+      if (post) {
+          try {
+              // Fetch author info
+              const authorResponse = await axios.get(`${serverUrl}/match/chattingPersonal`, {
+                  params: { email: post.author_id }
+              });
+              setAuthorInfo({
+                  email: authorResponse.data.email,
+                  image: `data:${authorResponse.data.imageType};base64,${authorResponse.data.imageBlob}`
+              });
+
+              // Check if post is scrapped
+              const isPostScrapped = await checkScrap(serverUrl, memberEmail, post.id, token);
+              setIsScrapped(isPostScrapped);
+          } catch (error) {
+              console.error('Error fetching data:', error);
+          }
+        }
+    };
+    fetchData();
+  }, [dispatch, serverUrl, memberEmail, token]);
 
   if (!post) return <div>Post not found</div>;
   
@@ -110,6 +121,19 @@ const PostDetail = () => {
         navigate(`/dtboard/postModify/${id}`);
       }
     });
+  };
+
+  const onScrapHandler = async () => {
+    const scrapMessage = await addScrap(serverUrl, memberEmail, id, post.title, token );
+    Swal.fire({
+      title: `${scrapMessage}!`,
+      icon: '',
+      showCancelButton: true,
+      confirmButtonColor: '#48088A',
+      confirmButtonText: '확인',
+      cancelButtonText: '취소',
+    })
+    setIsScrapped(!isScrapped);
   };
 
   const handleClickJoinBtn = () => {
@@ -156,7 +180,7 @@ const PostDetail = () => {
     <div className="board-page-top">함께 마셔요</div>
     <div className="detailContainer">
       <div className="dt-detail-left-box">
-      <div className="profileContainer" onClick={() => navigate("/mypage")}>
+      <div className="profileContainer" onClick={() => navigate("/userprofile/"+authorInfo.email)}>
           <div className="profile1">
             <img className="rounded-circle mr-3" src={authorInfo ? authorInfo.image : profileImg} alt="Profile" style={{ width: '40px', height: '40px' }}/>
           </div>
@@ -216,7 +240,10 @@ const PostDetail = () => {
             </button>
           </>
         ) : (
-          <button className="backButton">찜하기</button>
+          <>
+            <button className="backButton" onClick={onScrapHandler} hidden={isScrapped}>찜하기</button>
+            <button className="backButton" onClick={onScrapHandler} hidden={!isScrapped}>찜삭제</button>
+          </>
         )}
       </div>
     </div>
