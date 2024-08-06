@@ -12,6 +12,8 @@ import axios from "axios";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
+import { ref, deleteObject } from 'firebase/storage';
+import { storage } from '../firebase/firebase'; // Firebase 저장소 가져오기
 
 
 const DetailBoard = () => {
@@ -88,6 +90,17 @@ const DetailBoard = () => {
     setScraped(!scraped);
   };
 
+  // 이미지 URL 추출 함수
+  const extractImageUrls = (content) => {
+    const regex = /!\[.*?\]\((.*?)\)/g;
+    const urls = [];
+    let match;
+    while ((match = regex.exec(content)) !== null) {
+      urls.push(match[1]);
+    }
+    return urls;
+  };
+
   const handleDelete = (id, category) => {
     // console.log("id 수신 확인 : " + board.id);
     // console.log("category 수신 확인 : " + board.category);
@@ -100,8 +113,26 @@ const DetailBoard = () => {
       cancelButtonColor: '#darkgray',
       confirmButtonText: '삭제',
       cancelButtonText: '취소'
-    }).then((result) => {
+    }).then(async(result) => {
       if (result.isConfirmed) {
+        // Firebase Storage에서 모든 이미지 삭제
+        const toBeDeletedImages = extractImageUrls(board.content);
+        if ( toBeDeletedImages.length > 0 ) {
+          const deletePromises = toBeDeletedImages.map(photoUrl => {
+            const imageRef = ref(storage, photoUrl);
+            return deleteObject(imageRef)
+              .then(() => {
+                console.log(`이미지가 성공적으로 삭제되었습니다: ${photoUrl}`);
+              })
+              .catch((error) => {
+                console.error(`이미지 삭제 중 오류가 발생했습니다 (${photoUrl}):`, error);
+              });
+          });
+
+          await Promise.all(deletePromises);
+        }
+
+        // 게시글 삭제 요청
         axios.delete(`http://localhost:8080/board/delete/${board.id}`)
             .then((response) => {
               console.log('게시물이 삭제되었습니다.', response.data);
