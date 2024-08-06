@@ -116,8 +116,8 @@ function EditFreeBoard(){
       <div className="inputContainer">
         <BoardDetailTop category={1} />
         <div className="topContainer">
-          <div className="textareaHeader">
-            <textarea
+        <div className="textareaBox">
+            <input
               className="textareaBox"
               placeholder="타이틀을 입력해주세요"
               value={title}
@@ -131,13 +131,9 @@ function EditFreeBoard(){
           </div>
         </div>
         <div className="bottomContainer">
-          <div className="buttonsWrap">
             <div className="buttonArea1">
               <button className="backButton" onClick={onExitHandler}>
-                <div className="arrowWrap">
-                  <BsArrowLeft className="arrow" />
                   <span className="arrowText">나가기</span>
-                </div>
               </button>
             </div>
             <div className="buttonArea2">
@@ -145,7 +141,6 @@ function EditFreeBoard(){
                 {isEditMode ? '수정하기' : '제출하기'}
               </button>
             </div>
-          </div>
         </div>
       </div>
     );

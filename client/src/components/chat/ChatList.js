@@ -17,19 +17,23 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
     const status = useSelector(state => state.chat.status);
     const error = useSelector(state => state.chat.error);
     const userProfile = useSelector(selectUserProfile);
-    // const profiles = useSelector(selectProfiles);
+    const profiles = useSelector(selectProfiles);
 
     useEffect(() => {
+        console.log(status, error)
         if (token) {
             try {
                 const decodedToken = jwtDecode(token);
                 setLoggedInUserId(decodedToken.email);
-                dispatch(fetchChatRooms({serverUrl, userId : decodedToken.email})).catch(err => {
-                    console.error('Failed to fetch chat rooms:', err);
-                });
-                dispatch(fetchTogetherChatRooms({serverUrl, userId : decodedToken.email})).catch(err => {
-                    console.error('Failed to fetch together chat rooms:', err);
-                });
+                if (!isTogether) {
+                    dispatch(fetchChatRooms({serverUrl, loggedInUserId : decodedToken.email})).catch(err => {
+                        console.error('Failed to fetch chat rooms:', err);
+                    });
+                } else {
+                    dispatch(fetchTogetherChatRooms({serverUrl, userId : decodedToken.email})).catch(err => {
+                        console.error('Failed to fetch together chat rooms:', err);
+                    });
+                }
                 dispatch(fetchUserProfiles({ serverUrl, memberEmail })).catch(err => {
                     console.error('Failed to fetch user profiles:', err);
                 });
@@ -37,13 +41,13 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
                 console.error('Token decoding error:', err);
             }
         }
-    }, [token, dispatch]);
+    }, [token, dispatch, isTogether, serverUrl]);
 
     useEffect(() => {
         console.log('업데이트된 1:1 채팅방:', updatedChatRooms);
         console.log('업데이트된 단체 채팅방:', updatedTogetherChatRooms);
-        console.log(userProfile);
-    }, [updatedChatRooms, updatedTogetherChatRooms, userProfile]);
+        console.log(profiles);
+    }, [updatedChatRooms, updatedTogetherChatRooms, profiles]);
     
     const formatDate = (dateString) => {
         if (!dateString) return '메시지가 없습니다'; 
@@ -73,13 +77,21 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
         room.nickname.toLowerCase().includes(search.toLowerCase())
     ) : currentChatRooms;
 
-    if (status === 'loading') {
+    if (memberEmail == '') {
+        return <div>로그인 후 이용 가능합니다.</div>;
+    }
+
+    if (status !== 'succeeded') {
         return <div>로딩 중...</div>;
     }
 
-    if (status === 'failed') {
-        return <div>오류 발생: {error}</div>;
-    }
+    // if (status === 'loading') {
+    //     return <div>로딩 중...</div>;
+    // }
+
+    // if (status === 'failed') {
+    //     return <div>오류 발생: {error}</div>;
+    // }
 
     const isNewMessage = (room) => {
         const lastMessage = getLastMessage(room);

@@ -110,7 +110,7 @@ const FreeBoard = () => {
                 />
                 <div>
                   <div className="card-author-name">
-                    {board.author_name}
+                    {board.nickname}
                   </div>
                 </div>
                 <div className="card-icons-container">

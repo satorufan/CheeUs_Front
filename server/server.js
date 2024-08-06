@@ -132,6 +132,21 @@ app.post('/api/createTogetherRoom', async (req, res) => {
     }
 });
 
+// 단체 채팅방 참가
+app.post('/api/joinTogetherRoom', async (req, res) => {
+    const roomId = req.body.room_id;
+    const joinMember = req.body.member;
+    try {
+        const messages = await db.collection('together_chat_rooms').updateOne(
+            { id: parseInt(roomId, 10) },
+            { $addToSet: { members: joinMember } });
+        res.status(201).json({ message: [roomId, joinMember] });
+    } catch (error) {
+        console.error('Error fetching messages:', error);
+        res.status(500).json({ error: 'Failed to fetch messages', req: req });
+    }
+});
+
 // 단체 채팅 메시지 조회 API
 app.get('/api/togetherMessages/:roomId', async (req, res) => {
     const roomId = parseInt(req.params.roomId, 10);
