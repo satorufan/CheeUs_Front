@@ -56,7 +56,7 @@ function App() {
   return (
     <div className="App">
       <AuthProvider>
-      <BrowserRouter>
+      <Router>
         <PostProvider>
         <MagazineProvider>
         <EventProvider>
@@ -111,7 +111,7 @@ function App() {
 	    </EventProvider>
 	    </MagazineProvider>
         </PostProvider>
-      </BrowserRouter>
+      </Router>
       </AuthProvider>
     </div>
   );
