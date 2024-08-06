@@ -18,7 +18,6 @@ export const fetchChatRooms = createAsyncThunk(
     'chat/fetchChatRooms',
     async ({serverUrl, loggedInUserId}) => {
         try {
-            console.log(serverUrl)
             // 1:1 채팅방 데이터 요청
             const response = await axios.get('http://localhost:8889/api/chatRooms');
             // `match`가 2인 채팅방만 필터링

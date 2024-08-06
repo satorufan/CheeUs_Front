@@ -6,8 +6,11 @@ const initialState = {
     userLocation: null,
     likedProfiles: [],
     userProfile: null,
+    otherProfile: null,
     status: 'idle', // 요청 상태
+    otherStatus : 'idle',
     error: null, // 오류 정보
+    otherError: null
 };
 
 
@@ -24,21 +27,34 @@ export const fetchUserProfile = createAsyncThunk(
                 },
                 withCredentials : true
             });
+            console.log(response);
             const imageBlob = [];
             for(let i=0 ; i < response.data.profile.photo ; i ++){
                 imageBlob.push("data:" + response.data.imageType[i]
                     + ";base64," + response.data.imageBlob[i] );
             }
+            const scrapList = response.data.scrap.map((scrap)=> {
+                if (scrap.boardId > 0) return {id : scrap.boardId, type : "[일반게시판]", title : scrap.title}
+                if (scrap.eventId > 0) return {id : scrap.eventId, type : "[이벤트게시판]", title : scrap.title}
+                if (scrap.magazineId > 0) return {id : scrap.magazineId, type : "[매거진]", title : scrap.title}
+                if (scrap.togetherId > 0) return {id : scrap.togetherId, type : "[함께마셔요]", title : scrap.title}
+            })
+            const myPostList = response.data.myPost.map((post)=> {
+                if (post.category == 'board') return {id : post.id, type : "[일반게시판]", title : post.title}
+                if (post.category == 'dtboard') return {id : post.id, type : "[함께마셔요]", title : post.title}
+            })
 
             const profile = {
                 profile : { 
                     ...response.data.profile,
-                    popularity : response.data.popularity
+                    popularity : response.data.popularity,
+                    scrap : scrapList,
+                    myPost : myPostList
                 },
                 imageBlob : imageBlob
             };
+            console.log(profile)
             return profile; // 프로필 데이터 반환
-            // return response.data; // 프로필 데이터 반환
         }
     }
 );
@@ -91,6 +107,39 @@ export const updateUserProfileThunk = createAsyncThunk(
     }
 );
 
+// 다른 사용자 프로필을 가져오는 thunk
+export const fetchOtherProfile = createAsyncThunk(
+    'profile/fetchOtherProfile',
+    async ({ serverUrl, otherEmail, token }) => {
+
+        console.log(otherEmail)
+        if (otherEmail && token) {
+            const response = await axios.get(`${serverUrl}/profile`, {
+                params: { email: otherEmail },
+                headers : {
+                    "Authorization" : `Bearer ${token}`
+                },
+                withCredentials : true
+            });
+            const imageBlob = [];
+            for(let i=0 ; i < response.data.profile.photo ; i ++){
+                imageBlob.push("data:" + response.data.imageType[i]
+                    + ";base64," + response.data.imageBlob[i] );
+            }
+
+            const profile = {
+                profile : { 
+                    ...response.data.profile,
+                    popularity : response.data.popularity
+                },
+                imageBlob : imageBlob
+            };
+            return profile; // 프로필 데이터 반환
+            // return response.data; // 프로필 데이터 반환
+        }
+    }
+);
+
 const ProfileSlice = createSlice({
     name: 'profile', // 슬라이스 이름
     initialState,
@@ -130,6 +179,19 @@ const ProfileSlice = createSlice({
                 state.error = action.error.message; // 오류 메시지 저장
                 state.userProfile = null; // 프로필 초기화
             })
+            .addCase(fetchOtherProfile.pending, (state) => {
+                state.otherStatus = 'loading'; // 로딩 중
+            })
+            .addCase(fetchOtherProfile.fulfilled, (state, action) => {
+                state.otherStatus = 'succeeded'; // 성공
+                state.otherProfile = action.payload; // 프로필 데이터 저장
+                state.otherError = null; // 오류 초기화
+            })
+            .addCase(fetchOtherProfile.rejected, (state, action) => {
+                state.otherStatus = 'failed'; // 실패
+                state.otherError = action.error.message; // 오류 메시지 저장
+                state.otherProfile = null; // 프로필 초기화
+            })
             .addCase(updateUserProfileThunk.fulfilled, (state, action) => {
                 state.userProfile = action.payload; // 업데이트된 프로필 저장
             });
@@ -147,6 +209,7 @@ export const {
 
 // 선택자 내보내기
 export const selectUserProfile = (state) => state.profile.userProfile;
+export const selectOtherProfile = (state) => state.profile.otherProfile;
 export const selectProfileStatus = (state) => state.profile.status;
 export const selectProfileError = (state) => state.profile.error;
 

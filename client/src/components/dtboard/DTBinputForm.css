@@ -1,4 +1,4 @@
-/* 기본 스타일 */
+
 .input-Container {
   display: flex;
   gap: 10px;
@@ -13,7 +13,6 @@
   outline: none;
 }
 
-/* 포커스 시 스타일 */
 .textareaBox input:focus {
   border: none !important;
   box-shadow: none !important; 
