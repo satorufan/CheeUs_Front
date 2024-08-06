@@ -136,13 +136,11 @@ const ChatWindow = ({
 
     const isSender = (senderId) => senderId === loggedInUserId;
 
-<<<<<<< HEAD
-=======
     //const getOtherUserId = () => {
     //    if (!selectedChat) return null;
     //    return selectedChat.member1 === loggedInUserId ? selectedChat.member2 : selectedChat.member1;
     //};
->>>>>>> Front_ggr2
+
     // 발신자 프로필 불러오기
     const getProfileForSender = async (email) => {
         if (email === "System" || email === memberEmail) {
