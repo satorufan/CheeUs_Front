@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { Search } from '@mui/icons-material';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import { AuthContext } from '../login/OAuth';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchChatRooms, fetchTogetherChatRooms, updateOneOnOneChatRoomStatus, removeUserFromTogetherChatRoom } from '../../store/ChatSlice';
 import { selectUserProfile, fetchUserProfiles, selectProfiles } from '../../store/MatchSlice';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import ChtListSkeleton from '../skeleton/ChtListSkeleton.js';
+import ChatListSkeleton from '../skeleton/ChtListSkeleton'; 
 
 const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
     const { token, serverUrl, memberEmail } = useContext(AuthContext);
@@ -18,20 +18,19 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
     const status = useSelector(state => state.chat.status);
     const error = useSelector(state => state.chat.error);
     const userProfile = useSelector(selectUserProfile);
-    // const profiles = useSelector(selectProfiles);
+    const profiles = useSelector(selectProfiles);
 
     useEffect(() => {
         if (token) {
             try {
                 const decodedToken = jwtDecode(token);
                 setLoggedInUserId(decodedToken.email);
-                console.log(isTogether);
                 if (!isTogether) {
-                    dispatch(fetchChatRooms({serverUrl, loggedInUserId : decodedToken.email})).catch(err => {
+                    dispatch(fetchChatRooms({ serverUrl, loggedInUserId: decodedToken.email })).catch(err => {
                         console.error('Failed to fetch chat rooms:', err);
                     });
                 } else {
-                    dispatch(fetchTogetherChatRooms({serverUrl, userId : decodedToken.email})).catch(err => {
+                    dispatch(fetchTogetherChatRooms({ serverUrl, userId: decodedToken.email })).catch(err => {
                         console.error('Failed to fetch together chat rooms:', err);
                     });
                 }
@@ -42,14 +41,8 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
                 console.error('Token decoding error:', err);
             }
         }
-    }, [token, dispatch, isTogether]);
+    }, [token, dispatch, isTogether, serverUrl, memberEmail]);
 
-    useEffect(() => {
-        console.log('업데이트된 1:1 채팅방:', updatedChatRooms);
-        console.log('업데이트된 단체 채팅방:', updatedTogetherChatRooms);
-        console.log(userProfile);
-    }, [updatedChatRooms, updatedTogetherChatRooms, userProfile]);
-    
     const formatDate = (dateString) => {
         if (!dateString) return '메시지가 없습니다'; 
 
@@ -77,7 +70,14 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
     const filteredChatRooms = !isTogether ? currentChatRooms.filter(room =>
         room.nickname.toLowerCase().includes(search.toLowerCase())
     ) : currentChatRooms;
-    
+
+    if (memberEmail === '') {
+        return <div>로그인 후 이용 가능합니다.</div>;
+    }
+
+    if (status === 'loading') {
+        return <ChatListSkeleton isTogether={isTogether} />;
+    }
     const isNewMessage = (room) => {
         const lastMessage = getLastMessage(room);
         if (isTogether) {
@@ -85,18 +85,12 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
         }
         return lastMessage.read === 0 && lastMessage.sender_id !== loggedInUserId;
     };
-    
 
     const handleExitChat = (roomId) => {
-        // roomId를 객체 형태로 출력
-        console.log({ roomId });
-
         if (isTogether) {
             if (window.confirm('정말로 이 단체 채팅방에서 나가시겠습니까?')) {
                 dispatch(removeUserFromTogetherChatRoom({ roomId, userId: loggedInUserId }))
                     .then(() => {
-                        console.log('단체 채팅방에서 사용자 제거 성공');
-                        // 단체 채팅방 리스트 다시 불러오기
                         dispatch(fetchTogetherChatRooms({ serverUrl, userId: loggedInUserId }));
                     })
                     .catch(err => console.error('단체 채팅방에서 사용자 제거 오류:', err));
@@ -105,8 +99,6 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
             if (window.confirm('정말로 이 1:1 채팅방을 삭제하시겠습니까?')) {
                 dispatch(updateOneOnOneChatRoomStatus({ roomId, match: 3 }))
                     .then(() => {
-                        console.log('1:1 채팅방 match 업데이트 성공');
-                        // 1:1 채팅방 리스트 다시 불러오기
                         dispatch(fetchChatRooms({ serverUrl, userId: loggedInUserId }));
                     })
                     .catch(err => console.error('1:1 채팅방 match 업데이트 오류:', err));
@@ -122,18 +114,13 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
                     className="form-control chat-search"
                     placeholder="검색"
                     value={search}
-                    onChange={(e) => setSearch(e.target.value)}
+                    onChange={(e) => setSearch(e.target.value)} // 검색어 상태 업데이트
                 />
                 <Search className="search-icon ml-2" />
             </div>
-            {status === 'loading' ? (
-                <ChtListSkeleton isTogether={isTogether}/> 
-            ) : (
-                <ul className="chat-people list-unstyled">
-                    {status === 'succeeded' && filteredChatRooms.length === 0 && (
-                        <li className="no-chat-list">채팅이 없습니다</li>
-                    )}
-                    {filteredChatRooms.length > 0 && filteredChatRooms.map(room => {
+            <ul className="chat-people list-unstyled">
+                {filteredChatRooms.length > 0 ? ( 
+                    filteredChatRooms.map(room => {
                         const lastMessage = getLastMessage(room);
                         return (
                             <li
@@ -174,9 +161,11 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
                                 </div>
                             </li>
                         );
-                    })}
-                </ul>
-            )}
+                    })
+                ) : (
+                    <li className="no-chat-list">채팅이 없습니다</li>
+                )}
+            </ul>
         </>
     );
 };
