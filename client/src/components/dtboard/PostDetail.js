@@ -172,19 +172,19 @@ const PostDetail = () => {
             </div>
             <br />
             <div className="contentBox">
-              <div className="mapHeader">
-          <div className="mapping2">
-            장소 | {post.location} ({post.address})
-          </div>
-          <div className="dateHeader">
-            <a>약속시간 : {post.time}</a>
-          </div>
-        </div>
               <div className="content">{post.content}</div>
             </div>
           </div>
       </div>
       <div className="dt-detail-right-box">
+        <div className="mapHeader-detail">
+          <div className="mapping2">
+            장소 | {post.location} ({post.address})
+          </div>
+          <div className="dateHeader">
+            <a>시간 | {post.time}</a>
+          </div>
+        </div>
         <div className="detailMapContainer">
           <PostDetailMap
             latitude={post.latitude}

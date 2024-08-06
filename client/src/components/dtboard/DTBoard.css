@@ -201,7 +201,7 @@ body{
 }
 .contentBox{
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  min-height: 510px;
+  min-height: 630px;
   border-radius: 20px;
   padding: 20px;
   margin:10px;
@@ -212,12 +212,20 @@ body{
   background-color: #f0f0f0;
   padding : 15px;
   width:auto;
-  margin-bottom: 10px;
+  margin-bottom: 5px ;
 }
-.mapping2, .dateHeader{
 
+.mapHeader-detail{
+  border-radius: 20px;
+  background-color: #f0f0f0;
+  padding : 15px;
+  width:auto;
+  margin: 25px 0 ;
 }
 .textareaBox{
   font-size : 30px;
   margin-left: 30px;
+}
+.dt-post-nick {
+  margin-left: 10px;
 }

@@ -19,7 +19,9 @@ const useAuth = () => {
 
     return {
         loggedInUserId,
-        serverUrl
+        serverUrl,
+        token
+
     };
 };
 
