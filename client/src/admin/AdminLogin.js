@@ -1,20 +1,26 @@
 import * as React from 'react';
 import { useState } from 'react';
-import { useLogin, useNotify, Notification } from 'react-admin';
+import { useLogin } from 'react-admin';
 import './Admin.css';
+import axios from 'axios';
 
 const AdminLogin = () => { 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const login = useLogin();
-    const notify = useNotify();
 
-    const handleSubmit = e => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        login({ email, password }).catch(() =>
-            notify('Invalid email or password')
-        );
+        try {
+            const response = await axios.post('http://localhost:8080/adminlogin', { id: email, password });
+            localStorage.setItem('token', response.data.token);
+            await login({email, password});
+            console.log('로그인 성공!');
+        } catch (error) {
+            console.log('로그인 실패!');
+        }
     };
+
 
     return (
 		<div className = "adminLoginContainer">
