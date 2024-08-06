@@ -228,6 +228,7 @@ const ChatWindow = ({
     
        if (activeKey === 'one') {
         return (
+            <>
             <div className="d-flex align-items-center">
                 <img 
                     src={selectedChat.image} 
@@ -237,8 +238,11 @@ const ChatWindow = ({
                     onClick={() => navigateToUserProfile(selectedChat.id)}
                 />
                 <span onClick={() => navigateToUserProfile(selectedChat.id)}>{selectedChat.nickname}</span> 
-                <Button variant="outline-danger" className="report-button" onClick={() => handleReport(selectedChat)}>🚨 신고</Button>
             </div>
+            <div className="report no-style">
+                <button className="no-style" onClick={() => handleReport(selectedChat)}>🚨</button>
+            </div>
+            </>
         );
     }
     };
@@ -396,7 +400,6 @@ const ChatWindow = ({
         // 신고할 유저의 email을 상태로 저장
         setReportedId(memberId.email);
     
-        // 신고 모달을 엽니다.
         handleReportModalOpen();
     };
 
