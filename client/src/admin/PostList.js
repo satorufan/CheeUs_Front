@@ -5,8 +5,8 @@ import { DateInput, NumberInput, ReferenceInput } from 'react-admin';
 import { Create } from 'react-admin';
 import BooleanField from './BooleanField'; 
 import { FilterSidebar, ListActions } from './FilterSidebar';
-import ToggleButton from './ToggleButton'; 
-
+import ToggleButton from './ToggleButton';
+import { RichTextInput } from 'ra-input-rich-text';
 
 const postFilters = [
     <SearchInput source="q" />,
@@ -47,7 +47,7 @@ export const PostEdit = (props) => (
             <TextInput source="nickname" />
             <NumberInput source="category" />
             <TextInput source="title" />
-            <TextInput source="content" />
+            <RichTextInput source="content" />
             <TextInput source="photoes" />
             <TextInput source="media" />
             <TextInput source="author_id"/>
@@ -65,7 +65,7 @@ export const PostCreate = (props) => (
             <TextInput source="nickname" />
             <TextInput source="category" />
             <TextInput source="title" />
-            <TextInput source="content" />
+            <RichTextInput source="content" />
             <TextInput source="writeday" />
             <BooleanInput source="pinned" label="Pinned" />
             <BooleanInput source="hidden" label="Hidden" />
