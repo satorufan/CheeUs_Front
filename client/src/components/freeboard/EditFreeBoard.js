@@ -60,10 +60,30 @@ function EditFreeBoard(){
       }
     }, [id, boards]);
 
+    // 사용되지 않는 이미지 삭제 함수
+    const deleteUnusedImages = async (currentContent) => {
+      const usedImageUrls = extractImageUrls(currentContent);
+      const uploadedImages = editorRef.current.getUploadedImages();
+
+      const unusedImages = uploadedImages.filter(url => !usedImageUrls.includes(url));
+
+      for (const url of unusedImages) {
+        const imageRef = ref(storage, url);
+        try {
+          await deleteObject(imageRef);
+          console.log(`Deleted unused image: ${url}`);
+        } catch (error) {
+          console.error(`Failed to delete unused image: ${url}`, error);
+        }
+      }
+    };
+
     const onSubmitHandler = async () => {
       if (title === '') return;
 
       const content = editorRef.current.getInstance().getMarkdown();
+      deleteUnusedImages(content);
+      
       const newHtmlContent = marked(content); // Markdown을 HTML로 변환
       const newImageUrls = extractImageUrls(newHtmlContent);
 
