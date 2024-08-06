@@ -1,7 +1,8 @@
 import React from 'react';
-import { List, Datagrid, TextField, EditButton, DeleteButton, Edit, SimpleForm, TextInput, Create } from 'react-admin';
+import { List, Datagrid, TextField, EditButton, DeleteButton, Edit, SimpleForm, TextInput, Create, SearchInput, DateField, ShowButton } from 'react-admin';
 import axios from 'axios';
 import { stringify } from 'query-string';
+import { FilterSidebar, ListActions } from './FilterSidebar';
 
 const apiUrl = 'http://localhost:8080/admin/AdminReport';
 
@@ -47,12 +48,23 @@ const dataProvider = {
     }
 };
 
+
+const reportFilters = [
+    <SearchInput source="q" />,
+    <TextInput label="Email" source="email" defaultValue="" />,
+    <TextInput label="Category" source="category" defaultValue="" />,
+    <TextInput label="NickName" source="nickname" defaultValue="" />,
+];
+
 export const ReportList = (props) => (
-    <List {...props}>
+    <List {...props} debounce={1000} actions={<ListActions/>}  filters={reportFilters} aside={<FilterSidebar/>}>
         <Datagrid rowClick="edit">
-            <TextField source="email" />
-            <TextField source="name" />
-            <TextField source="nickname" />
+            <TextField source="id" />
+            <TextField source="reporter_id" />
+            <TextField source="reported_id" />
+            <TextField source="content" />
+            <TextField source="writeday" />
+            <ShowButton/>
             <EditButton />
             <DeleteButton />
         </Datagrid>
