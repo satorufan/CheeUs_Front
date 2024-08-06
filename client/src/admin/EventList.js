@@ -1,12 +1,22 @@
 import React from 'react';
-import { List, Datagrid, TextField, EditButton, DeleteButton } from 'react-admin';
+import { List, Datagrid, TextField, EditButton, DeleteButton, SearchInput } from 'react-admin';
 import { Edit, SimpleForm, TextInput, BooleanInput } from 'react-admin';
 import { Create } from 'react-admin';
 import BooleanField from './BooleanField'; 
 import ToggleButton from './ToggleButton'; 
+import { FilterSidebar, ListActions } from './FilterSidebar';
+
+const eventFilters = [
+    <SearchInput source="q" />,
+    <TextInput label="Email" source="email" defaultValue="" />,
+    <TextInput label="Category" source="category" defaultValue="" />,
+    <TextInput label="NickName" source="nickname" defaultValue="" />,
+];
+
+
 
 export const EventList = (props) => (
-    <List {...props}>
+    <List {...props} debounce={1000} actions={<ListActions/>}  filters={eventFilters} aside={<FilterSidebar/>}>
         <Datagrid rowClick="edit">
             <TextField source="id" />
             <TextField source="admin_id" />

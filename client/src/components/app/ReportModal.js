@@ -46,7 +46,7 @@ function ReportModal({ show, handleClose, reportedId }) {
             // 콘솔에 신고 데이터 출력
             console.log('신고 데이터:', reportData);
 
-            await axios.post('http://localhost:8889/api/report', reportData, {
+            await axios.post('http://localhost:8080/admin/AdminReport', reportData, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },

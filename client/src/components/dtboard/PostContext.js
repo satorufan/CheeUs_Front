@@ -93,9 +93,42 @@ export const PostProvider = ({ children }) => {
         .catch(error => console.error(error));
   };
 
+  const addScrap = async (serverUrl, memberEmail, id, title, token) => {
+    const scrapInfo = {
+      memberEmail : memberEmail,
+      boardId : null,
+      togetherId : id,
+      eventId : null,
+      magazineId : null,
+      title : title
+    };
+    const response = await axios.post(`${serverUrl}/profile/addScrap`, scrapInfo, {
+      headers : {
+        "Authorization" : `Bearer ${token}`
+      },
+      withCredentials : true
+    })
+    return response.data.body;
+  };
+
+  const checkScrap = async (serverUrl, memberEmail, id, token) => {
+    const response = await axios.get(`${serverUrl}/profile/scrap`, {
+      params : {
+        email : memberEmail
+      }, 
+      headers : {
+        "Authorization" : `Bearer ${token}`
+      },
+      withCredentials : true
+    })
+    console.log(response);
+    const check = response.data.filter(post=> post.togetherId == id);
+    return check.length > 0 ? true : false;
+  }
+
 
   return (
-    <PostContext.Provider value={{ posts, addPost, modifyPost, selectedPlace, setSelectedPlace, deletePost}}>
+    <PostContext.Provider value={{ posts, addPost, modifyPost, selectedPlace, setSelectedPlace, deletePost, addScrap, checkScrap}}>
       {children}
     </PostContext.Provider>
   );

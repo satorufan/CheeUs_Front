@@ -61,49 +61,6 @@ export const updateBoard = createAsyncThunk(
     }
 );
 
-/*
-// 게시물 목록을 가져오는 thunk
-export const fetchBoards = createAsyncThunk(
-  'board/fetchBoards',
-  async () => {
-    const response = await axios.get('http://localhost:8080/boards');
-    return response.data;
-  }
-);
-*/
-
-/*
-// 게시물 추가를 위한 thunk
-export const addBoard = createAsyncThunk(
-  'board/addBoard',
-  async (boardData) => {
-    const formData = new FormData();
-    formData.append('title', boardData.title);
-    formData.append('content', boardData.content);
-    formData.append('videoFile', boardData.videoFile);
-
-    const response = await axios.post('http://localhost:8080/boards', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    return response.data;
-  }
-);
-*/
-
-/*
-// 게시물 업데이트를 위한 thunk
-export const updateBoard = createAsyncThunk(
-  'board/updateBoard',
-  async (updatedBoard) => {
-    const { id, ...updatedData } = updatedBoard;
-    const response = await axios.put(`http://localhost:8080/boards/${id}`, updatedData);
-    return response.data;
-  }
-);
-*/
-
 const boardSlice = createSlice({
   name: 'board',
   initialState,
@@ -126,17 +83,10 @@ const boardSlice = createSlice({
           (board.title && board.title.toLowerCase().includes(query)) ||
           (board.content && board.content.toLowerCase().includes(query))
       );
-    },
-    /*
-      filterBoards(state) {
-      const query = state.searchQuery.toLowerCase();
-      state.filteredBoards = state.boards.filter(board =>
-        board.title.toLowerCase().includes(query) ||
-        board.content.toLowerCase().includes(query)
-      );
-      },
- */
+    }, 
+      
   },
+    
   extraReducers: (builder) => {
     builder
       .addCase(fetchBoards.fulfilled, (state, action) => {

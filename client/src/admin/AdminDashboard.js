@@ -31,22 +31,22 @@ const AdminDashboard = () => (
 					<Route path="posts" element={<PostList resource="posts" />} />
 					<Route path="posts/create" element={<PostCreate resource="posts" />} />
 					<Route path="posts/edit/:id" element={<PostEdit resource="posts" />} />
-					<Route path="report" element={<ReportList resource="report" />} />
-					<Route path="report/create" element={<ReportCreate resource="report" />} />
-					<Route path="report/edit/:id" element={<ReportEdit resource="report" />} />
-					<Route path="event" element={<EventList resource="event" />} />
-					<Route path="event/create" element={<EventCreate resource="event" />} />
-					<Route path="event/edit/:id" element={<EventEdit resource="event" />} />
-					<Route path="magazine" element={<MagazineList resource="magazine" />} />
-					<Route path="magazine/create" element={<MagazineCreate resource="magazine" />} />
-					<Route path="magazine/edit/:id" element={<MagazineEdit resource="magazine" />} />
+					<Route path="reports" element={<ReportList resource="reports" />} />
+					<Route path="reports/create" element={<ReportCreate resource="reports" />} />
+					<Route path="reports/edit/:id" element={<ReportEdit resource="reports" />} />
+					<Route path="events" element={<EventList resource="events" />} />
+					<Route path="events/create" element={<EventCreate resource="events" />} />
+					<Route path="events/edit/:id" element={<EventEdit resource="events" />} />
+					<Route path="magazines" element={<MagazineList resource="magazines" />} />
+					<Route path="magazines/create" element={<MagazineCreate resource="magazines" />} />
+					<Route path="magazines/edit/:id" element={<MagazineEdit resource="magazines" />} />
                 </Route>
             </CustomRoutes>
             <Resource name="users" list={UserList} edit={UserEdit} create={UserCreate} icon={UserIcon} />
             <Resource name="posts" list={PostList} edit={PostEdit} create={PostCreate} icon={PostIcon} />
-            <Resource name="report" list={ReportList} edit={ReportEdit} create={ReportCreate} icon={ReportIcon} />
-            <Resource name="event" list={EventList} edit={EventEdit} create={EventCreate} icon={EventIcon} />
-            <Resource name="magazine" list={MagazineList} edit={MagazineEdit} create={MagazineCreate} icon={ImportContactsIcon} />
+            <Resource name="reports" list={ReportList} edit={ReportEdit} create={ReportCreate} icon={ReportIcon} />
+            <Resource name="events" list={EventList} edit={EventEdit} create={EventCreate} icon={EventIcon} />
+            <Resource name="magazines" list={MagazineList} edit={MagazineEdit} create={MagazineCreate} icon={ImportContactsIcon} />
         </Admin>
     </AuthProvider>
 );
