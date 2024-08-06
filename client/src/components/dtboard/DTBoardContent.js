@@ -20,9 +20,9 @@ const DTBoardContent = ({ posts, totalPosts, postsPerPage, paginate, onWriteButt
                   src={post.image}
                   alt={`img`}
                   className="rounded-circle mr-3"
-                  style={{ width: '20px', height: '20px' }}
+                  style={{ width: '25px', height: '25px' }}
               />
-              <div>{post.nickname}</div>
+              <div className="dt-post-nick">{post.nickname}</div>
             </div>
             <h5>{post.title}</h5>
             <div className="dtpost-location"> {post.location}</div>
