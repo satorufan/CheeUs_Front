@@ -4,9 +4,11 @@ import { stringify } from 'query-string';
 const apiUrl = 'http://localhost:8080/admin';
 
 const endpoints = {
-    users: `${apiUrl}/UserData`,
-    posts: `${apiUrl}/AdminBoard`,
-    reports: `${apiUrl}/AdminReport`
+    users: `${apiUrl}/AdminUser`,
+    posts: `${apiUrl}/AdminPost`,
+    reports: `${apiUrl}/AdminReport`,
+    events: `${apiUrl}/AdminEvent`,
+    magazines: `${apiUrl}/AdminMagazine`,
 };
 
 const dataProvider = {

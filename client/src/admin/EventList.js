@@ -9,28 +9,25 @@ import { RichTextInput } from 'ra-input-rich-text';
 
 const eventFilters = [
     <SearchInput source="q" />,
-    <TextInput label="Email" source="email" defaultValue="" />,
-    <TextInput label="Category" source="category" defaultValue="" />,
-    <TextInput label="NickName" source="nickname" defaultValue="" />,
+    <TextInput label="id" source="id" defaultValue="" />,
+    <TextInput label="adminId" source="admin_id" defaultValue="" />,
+    <TextInput label="adminName" source="admin_name" defaultValue="" />,
+    <TextInput label="title" source="title" defaultValue="" />,
+    <TextInput label="title2" source="title2" defaultValue="" />,
+    <TextInput label="content" source="content" defaultValue="" />,
+    <TextInput label="writeday" source="writeday" defaultValue="" />,
 ];
-
-
 
 export const EventList = (props) => (
     <List {...props} debounce={1000} actions={<ListActions/>}  filters={eventFilters} aside={<FilterSidebar/>}>
         <Datagrid rowClick="edit">
             <TextField source="id" />
             <TextField source="admin_id" />
-            <TextField source="title" />
             <TextField source="admin_name" />
-            <RichTextField source="content" />
+            <TextField source="title" />
             <TextField source="title2" />
+            <TextField source="content" />
             <TextField source="writeday" />
-            <ChipField source="catagory" />
-            <BooleanField source="pinned" />
-            <BooleanField source="hidden" />
-            <ToggleButton field="pinned" />
-            <ToggleButton field="hidden" />
             <EditButton />
             <DeleteButton />
         </Datagrid>
@@ -51,14 +48,13 @@ const EventToolbar = () =>{
 export const EventCreate = (props) => (
     <Create {...props}>
         <SimpleForm toolbar={<EventToolbar/>}>
+            <TextInput source="id" />
+            <TextInput source="admin_id" />
             <TextInput source="admin_name" />
             <TextInput source="title" />
             <TextInput source="title2" />
-            <RichTextInput source="content" />
+            <TextInput source="content" />
             <TextInput source="writeday" />
-            <SelectInput source="category"choices={[
-			    { id: 'event', name: 'Event' },
-			]} />
             <BooleanInput source="pinned" label="Pinned" />
             <BooleanInput source="hidden" label="Hidden" />
             <SaveButton/>
@@ -69,15 +65,13 @@ export const EventCreate = (props) => (
 export const EventEdit = (props) => (
     <Edit {...props}>
         <SimpleForm toolbar={<EventToolbar/>}>
+            <TextInput source="id" />
+            <TextInput source="admin_id" />
             <TextInput source="admin_name" />
             <TextInput source="title" />
             <TextInput source="title2" />
-            <RichTextInput source="content" />
-            <SelectInput source="category"choices={[
-			    { id: 'event', name: 'Event' },
-			]} />
-            <BooleanInput source="pinned" label="Pinned" />
-            <BooleanInput source="hidden" label="Hidden" />
+            <TextInput source="content" />
+            <TextInput source="writeday" />
             <SaveButton/>
         </SimpleForm>
     </Edit>
