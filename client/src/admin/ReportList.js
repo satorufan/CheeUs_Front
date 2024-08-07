@@ -29,9 +29,11 @@ export const ReportList = (props) => (
 export const ReportEdit = (props) => (
     <Edit {...props}>
         <SimpleForm>
-            <TextInput source="email" disabled />
-            <TextInput source="name" />
-            <TextInput source="nickname" />
+            <TextInput source="id" />
+            <TextInput source="reporter_id" />
+            <TextInput source="reported_id" />
+            <TextInput source="content" />
+            <TextInput source="writeday" />
         </SimpleForm>
     </Edit>
 );

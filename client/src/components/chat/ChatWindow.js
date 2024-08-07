@@ -57,49 +57,43 @@ const ChatWindow = ({
         }
     }, [selectedChat]);
     
-    useEffect(() => {
+    useEffect(() => { // 여기서 병합하려니까 심하게 느려짐 다른 방법 고안 필요
         if (selectedChat && selectedChat.togetherId && !isDataLoaded) {
-            // 단체 채팅 // 멤버 이메일을 기반으로 프로필 데이터 가져오기
             const memberEmails = selectedChat.members.map(member => member.email);
-    
+            
             const fetchProfiles = async () => {
                 try {
                     const responses = await Promise.all(
                         memberEmails.map(email => dispatch(fetchUserProfiles({ serverUrl, memberEmail: email })))
                     );
-    
+        
                     // 모든 프로필 데이터 병합
                     const profiles = responses.flatMap(response => response.payload);
-                    setProfileData(profiles);
+                    const profileMap = profiles.reduce((acc, profile) => {
+                        acc[profile.email] = profile;
+                        return acc;
+                    }, {});
+                    setProfileData(profileMap);
                     setIsDataLoaded(true); 
                 } catch (error) {
                     console.error('Error fetching profiles:', error);
                 }
             };
-    
+        
             fetchProfiles();
         }
-    }, [selectedChat]);
+    }, [selectedChat, isDataLoaded, dispatch, serverUrl]);
 
 
     useEffect(() => {
         if (selectedChat) {
-            console.log('Selected Chat:', selectedChat);
-            
-            // 출력 각 속성
-            console.log('Member 1:', selectedChat.member1);
-            console.log('Member 2:', selectedChat.member2);
-            console.log('Room ID:', selectedChat.roomId);
-            console.log('Match:', selectedChat.match);
-            console.log('Nickname:', selectedChat.nickname);
-            console.log('Profile Image:', selectedChat.image);
             
             const fetchData = async () => {
                 if (!selectedChat || !selectedChat.messages) return;
 
                 const fetchMessages = async () => {
                     const results = await Promise.all(selectedChat.messages.map(async (message, index) => {
-                        
+
                         const messageDate = formatDate(message.write_day);
                         const senderProfile = await getProfileForSender(message.sender_id);
                         const isSameSenderAsPrevious = index > 0 && selectedChat.messages[index - 1].sender_id === message.sender_id;
@@ -121,7 +115,6 @@ const ChatWindow = ({
             };
 
             fetchData();
-    
             // 스크롤을 하단으로 이동
             scrollToBottom();
         }
@@ -143,17 +136,22 @@ const ChatWindow = ({
 
     const isSender = (senderId) => senderId === loggedInUserId;
 
+    //const getOtherUserId = () => {
+    //    if (!selectedChat) return null;
+    //    return selectedChat.member1 === loggedInUserId ? selectedChat.member2 : selectedChat.member1;
+    //};
+
     // 발신자 프로필 불러오기
     const getProfileForSender = async (email) => {
         if (email === "System" || email === memberEmail) {
             return null;
         }
-    
+
         try {
             const response = await axios.get(serverUrl + "/match/chattingPersonal", {
                 params: { email: email }
             });
-    
+
             const profile = response.data;
             return {
                 email : profile.email,
@@ -214,7 +212,9 @@ const ChatWindow = ({
     
        if (activeKey === 'one') {
         return (
+            <>
             <div className="d-flex align-items-center">
+                <div>
                 <img 
                     src={selectedChat.image} 
                     alt={`Profile of ${selectedChat.nickname}`} 
@@ -223,8 +223,12 @@ const ChatWindow = ({
                     onClick={() => navigateToUserProfile(selectedChat)}
                 />
                 <span onClick={() => navigateToUserProfile(selectedChat.id)}>{selectedChat.nickname}</span> 
-                <Button variant="outline-danger" className="report-button" onClick={() => handleReport(selectedChat)}>🚨 신고</Button>
+                </div>
             </div>
+            <div>
+                <button  className="no-style" onClick={() => handleReport(selectedChat)}>🚨</button>
+           </div>
+           </>
         );
     }
     };
@@ -280,16 +284,24 @@ const ChatWindow = ({
     const renderMessagesWithDateSeparators = () => {
         if (!selectedChat || !selectedChat.messages) return null;
     
+        console.log("Messages Data:", selectedChat.messages);
+    
         let lastDate = null;
-
-        return messages.map((message, index) => {
+    
+        return selectedChat.messages.map((message, index) => {
+            if (!message) {
+                console.error('Undefined message at index:', index);
+                return null; // or handle the error as needed
+            }
+    
             const messageDate = formatDate(message.write_day);
             const showDateSeparator = lastDate !== messageDate;
     
             lastDate = messageDate;
     
-            const senderProfile = message.senderProfile;
-            const isSameSenderAsPrevious = index > 0 && messages[index - 1].sender_id === message.sender_id;
+            // 프로필 정보를 가져오기
+            const senderProfile = profileData[message.sender_id] || {};
+            const isSameSenderAsPrevious = index > 0 && selectedChat.messages[index - 1].sender_id === message.sender_id;
     
             return (
                 <React.Fragment key={index}>
@@ -302,13 +314,13 @@ const ChatWindow = ({
                         {(message.sender_id !== "System") && !isSender(message.sender_id) && !isSameSenderAsPrevious && (
                             <div className="message-info">
                                 <img
-                                    src={senderProfile.image}
-                                    alt={`Profile of ${senderProfile.nickname}`}
+                                    src={senderProfile.image || `${process.env.PUBLIC_URL}/images/default-avatar.jpg`}
+                                    alt={`Profile of ${senderProfile.nickname || 'Unknown'}`}
                                     className="profile-img rounded-circle"
                                     onClick={() => navigateToUserProfile(message.sender_id)}
                                 />
                                 <span className="nickname" onClick={() => navigateToUserProfile(message.sender_id)}>
-                                    {senderProfile.nickname}
+                                    {senderProfile.nickname || '왜안떠'}
                                 </span>
                             </div>
                         )}

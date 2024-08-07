@@ -6,7 +6,6 @@ import BooleanField from './BooleanField';
 import { FilterSidebar, ListActions } from './FilterSidebar';
 import { RichTextInput } from 'ra-input-rich-text';
 
-
 const postFilters = [
     <SearchInput source="q" />,
     <TextInput label="Email" source="email" defaultValue="" />,
