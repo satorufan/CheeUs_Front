@@ -18,7 +18,7 @@ const initialState = {
 export const fetchUserProfile = createAsyncThunk(
     'profile/fetchUserProfile',
     async ({ serverUrl, memberEmail, token }) => {
-
+        
         if (memberEmail && token) {
             const response = await axios.get(`${serverUrl}/profile`, {
                 params: { email: memberEmail },
@@ -27,21 +27,24 @@ export const fetchUserProfile = createAsyncThunk(
                 },
                 withCredentials : true
             });
-            console.log(response);
+            
             const imageBlob = [];
             for(let i=0 ; i < response.data.profile.photo ; i ++){
                 imageBlob.push("data:" + response.data.imageType[i]
                     + ";base64," + response.data.imageBlob[i] );
             }
             const scrapList = response.data.scrap.map((scrap)=> {
-                if (scrap.boardId > 0) return {id : scrap.boardId, type : "[일반게시판]", title : scrap.title}
-                if (scrap.eventId > 0) return {id : scrap.eventId, type : "[이벤트게시판]", title : scrap.title}
-                if (scrap.magazineId > 0) return {id : scrap.magazineId, type : "[매거진]", title : scrap.title}
-                if (scrap.togetherId > 0) return {id : scrap.togetherId, type : "[함께마셔요]", title : scrap.title}
+                if (scrap.boardId > 0) return {id : scrap.boardId, type : "[일반게시판]", title : scrap.title, url : scrap.url}
+                if (scrap.eventId > 0) return {id : scrap.eventId, type : "[이벤트게시판]", title : scrap.title, url : scrap.url}
+                if (scrap.magazineId > 0) return {id : scrap.magazineId, type : "[매거진]", title : scrap.title, url : scrap.url}
+                if (scrap.togetherId > 0) return {id : scrap.togetherId, type : "[함께마셔요]", title : scrap.title, url : scrap.url}
             })
+            // 0 - 함께마셔요, 1 - 자유, 2 - 숏폼, 3 - 이벤트
             const myPostList = response.data.myPost.map((post)=> {
-                if (post.category == 'board') return {id : post.id, type : "[일반게시판]", title : post.title}
-                if (post.category == 'dtboard') return {id : post.id, type : "[함께마셔요]", title : post.title}
+                if (post.category == 0) return {id : post.id, type : "[함께마셔요]", title : post.title, url : `http://localhost:3000/dtboard/post/${post.id}`}
+                if (post.category == 1) return {id : post.id, type : "[일반게시판]", title : post.title, url : `http://localhost:3000/board/freeboard/detail/${post.id}`}
+                if (post.category == 2) return {id : post.id, type : "[일반게시판]", title : post.title, url : `http://localhost:3000/board/shortform/detail/${post.id}`}
+                if (post.category == 3) return {id : post.id, type : "[일반게시판]", title : post.title, url : `http://localhost:3000/board/eventboard/detail/${post.id}`}
             })
 
             const profile = {

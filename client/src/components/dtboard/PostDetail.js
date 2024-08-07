@@ -124,7 +124,7 @@ const PostDetail = () => {
   };
 
   const onScrapHandler = async () => {
-    const scrapMessage = await addScrap(serverUrl, memberEmail, id, post.title, token );
+    const scrapMessage = await addScrap(serverUrl, memberEmail, id, post.title, token, window.location.href );
     Swal.fire({
       title: `${scrapMessage}!`,
       icon: '',

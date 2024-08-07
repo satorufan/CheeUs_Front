@@ -44,13 +44,8 @@ const MyProfilePage = () => {
         }
     };
 
-    const handleGoPost = (id, type) => {
-        if (type === "[함께마셔요]") {
-            navigate(`/dtboard/post/${id}`)
-        } else if(type=="[일반게시판]"){
-            navigate(`/board/freeboard/detail/${id}`)
-        }
-        // 다른 게시판 유형에 따라 적절한 경로로 이동하도록 설정
+    const handleGoPost = (url) => {
+        window.location.href = url;
     };
 
     const hasScrapPosts = userProfile?.profile.scrap.length > 0;
@@ -93,7 +88,7 @@ const MyProfilePage = () => {
                                             userProfile.profile.scrap.map(post => (
                                                 <tr key={post.id}>
                                                     <td>{post.type}</td>
-                                                    <td onClick={() => handleGoPost(post.id, post.type)}>{post.title}</td>
+                                                    <td onClick={() => handleGoPost(post.url)}>{post.title}</td>
                                                 </tr>
                                             ))
                                         ) : (
@@ -117,7 +112,7 @@ const MyProfilePage = () => {
                                             userProfile.profile.myPost.map(post => (
                                                 <tr key={post.id}>
                                                     <td>{post.type}</td>
-                                                    <td onClick={() => handleGoPost(post.id, post.type)}>{post.title}</td>
+                                                    <td onClick={() => handleGoPost(post.url)}>{post.title}</td>
                                                 </tr>
                                             ))
                                         ) : (
