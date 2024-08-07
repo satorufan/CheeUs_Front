@@ -146,15 +146,15 @@ const ChatPage = () => {
         }
     };
 
-    const sendMessage = async () => {
-        if (!selectedChat || !messageInput.trim() || !loggedInUserId) {
+    const sendMessage = async (inputMessage) => {
+        if (!selectedChat || !inputMessage.trim() || !loggedInUserId) {
             console.log('Cannot send message: No selected chat, empty input, or missing user ID.');
             return;
         }
 
         const newMessage = {
             sender_id: loggedInUserId,
-            message: messageInput,
+            message: inputMessage,
             write_day: new Date().toISOString(),
             read: 0,
             ...(activeKey === 'one' ? { chat_room_id: selectedChat.roomId } : { room_id: selectedChat.roomId, read: [loggedInUserId] })
@@ -203,7 +203,6 @@ const ChatPage = () => {
                                 <div className="col-md-8 chat-right">
                                     <ChatWindow
                                         selectedChat={selectedChat}
-                                        messageInput={messageInput}
                                         showMessageInput={showMessageInput}
                                         formatMessageTime={formatMessageTime}
                                         sendMessage={sendMessage}
@@ -229,7 +228,6 @@ const ChatPage = () => {
                                 <div className="col-md-8 chat-right">
                                     <ChatWindow
                                         selectedChat={selectedChat}
-                                        messageInput={messageInput}
                                         showMessageInput={showMessageInput}
                                         formatMessageTime={formatMessageTime}
                                         sendMessage={sendMessage}
