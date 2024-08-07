@@ -1,6 +1,6 @@
 import React from 'react';
-import { List, Datagrid, TextField, EditButton, DeleteButton, SearchInput, Toolbar, SaveButton } from 'react-admin';
-import { Edit, SimpleForm, TextInput, BooleanInput, SelectInput, ChipField, RichTextField, DateInput, DateField } from 'react-admin';
+import { List, Datagrid, TextField, EditButton, DeleteButton, SearchInput, Toolbar, SaveButton, DateInput } from 'react-admin';
+import { Edit, SimpleForm, TextInput, BooleanInput, SelectInput, ChipField, RichTextField, DateField } from 'react-admin';
 import { Create } from 'react-admin';
 import BooleanField from './BooleanField'; 
 import ToggleButton from './ToggleButton'; 
@@ -55,8 +55,6 @@ export const EventCreate = (props) => (
             <TextInput source="title2" />
             <TextInput source="content" />
             <DateInput source="writeday" />
-            <BooleanInput source="pinned" label="Pinned" />
-            <BooleanInput source="hidden" label="Hidden" />
             <SaveButton/>
         </SimpleForm>
     </Create>
