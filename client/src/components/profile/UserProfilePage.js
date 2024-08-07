@@ -2,13 +2,14 @@ import React, { useContext, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import ProfileCard from './ProfileCard';
-import { fetchOtherProfile, selectOtherProfile} from '../../store/ProfileSlice';
+import { fetchOtherProfile, selectOtherProfile } from '../../store/ProfileSlice';
 import './userProfilePage.css';
 import { AuthContext } from '../login/OAuth';
+import ProfileSkeleton from '../skeleton/ProfileSkeleton';
 
 const UserProfilePage = () => {
     const { email } = useParams();
-    const {serverUrl, memberEmail, token} = useContext(AuthContext);
+    const { serverUrl, token } = useContext(AuthContext);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -19,47 +20,52 @@ const UserProfilePage = () => {
     useEffect(() => {
         if (email) {
             console.log(`Fetching user profile for email: ${email}`);
-            dispatch(fetchOtherProfile({serverUrl, otherEmail : email, token}));
-            // dispatch(fetchUserProfile({serverUrl, memberEmail, token}));
+            dispatch(fetchOtherProfile({ serverUrl, otherEmail: email, token }));
         }
     }, [dispatch, email, serverUrl, token]);
-
 
     const handleGoBack = () => {
         navigate(-1);
     };
 
-    if (otherStatus === 'loading') {
-        return <p>로딩 중...</p>;
-    }
-
-    if (otherStatus === 'failed') {
-        return <p>오류: {error}</p>;
-    }
-
-    if (!otherProfile || !otherProfile.profile) {
-        console.log('UserProfile is not defined or profile is missing');
-        return <p>프로필을 찾을 수 없습니다.</p>;
-    }
-
-    console.log('UserProfile loaded:', otherProfile);
-
     return (
         <div className="myprofile-container user">
-            <div className="user-profile-nickname">{otherProfile.profile.nickname}님의 Profile</div>
-                <div className="inner-content">
-                <div className="profile-container user">
-                    <ProfileCard 
-                        profileInfo={otherProfile} 
-                        loggedInUserId={otherProfile.profile.email} 
-                        type="other"
-                    />
-                </div>
+            <div className="user-profile-nickname">
+                {otherStatus === 'loading'
+                    ? 'Loading...' // 로딩 상태일 때의 텍스트
+                    : otherProfile && otherProfile.profile
+                        ? `${otherProfile.profile.nickname}님의 Profile`
+                        : '프로필을 찾을 수 없습니다.'}
             </div>
-            <div>
-                <button 
-                    type="button" 
-                    className="btn btn-light back-page-btn" 
+
+            {otherStatus === 'loading' ? (
+                <div className="inner-content">
+                    <div className="profile-container user">
+                        <ProfileSkeleton />
+                    </div>
+                </div>
+            ) : (
+                <div className="inner-content">
+                    <div className="profile-container user">
+                        {otherProfile && otherProfile.profile ? (
+                            <ProfileCard
+                                profileInfo={otherProfile}
+                                loggedInUserId={otherProfile.profile.email}
+                                type="other"
+                            />
+                        ) : (
+                            <p>프로필을 찾을 수 없습니다.</p>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {otherStatus === 'failed' && <p>오류: {error}</p>}
+
+            <div className="footer-btn">
+                <button
+                    type="button"
+                    className="btn btn-light back-page-btn"
                     onClick={handleGoBack}
                 >
                     뒤로가기
@@ -67,7 +73,6 @@ const UserProfilePage = () => {
             </div>
         </div>
     );
-
 };
 
 export default UserProfilePage;
