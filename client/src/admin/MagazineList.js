@@ -26,10 +26,7 @@ export const MagazineList = (props) => (
             <DateField source="writeday" />
             <TextField source="like" />
             <ChipField source="category" />
-            <BooleanField source="pinned" />
             <BooleanField source="hidden" />
-            <ToggleButton field="pinned" />
-            <ToggleButton field="hidden" />
             <CreateButton/>
             <EditButton />
             <DeleteButton />
@@ -62,7 +59,6 @@ export const MagazineCreate = (props) => (
 			    { id: 'recipe', name: 'Recipe' },
 			    { id: 'recommend', name: 'Recommend' },
 			]} />
-            <BooleanInput source="pinned" label="Pinned" />
             <BooleanInput source="hidden" label="Hidden" />
             <SaveButton/>
         </SimpleForm>
@@ -82,7 +78,6 @@ export const MagazineEdit = (props) => (
 			    { id: 'recipe', name: 'Recipe' },
 			    { id: 'recommend', name: 'Recommend' },
 			]} />
-            <BooleanInput source="pinned" label="Pinned" />
             <BooleanInput source="hidden" label="Hidden" />
             <SaveButton/>
         </SimpleForm>

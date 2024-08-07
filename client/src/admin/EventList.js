@@ -27,10 +27,7 @@ export const EventList = (props) => (
             <TextField source="title2" />
             <DateField source="writeday" />
             <ChipField source="catagory" />
-            <BooleanField source="pinned" />
             <BooleanField source="hidden" />
-            <ToggleButton field="pinned" />
-            <ToggleButton field="hidden" />
             <EditButton />
             <DeleteButton />
         </Datagrid>
@@ -59,7 +56,6 @@ export const EventCreate = (props) => (
             <SelectInput source="category"choices={[
 			    { id: 'event', name: 'Event' },
 			]} />
-            <BooleanInput source="pinned" label="Pinned" />
             <BooleanInput source="hidden" label="Hidden" />
             <SaveButton/>
         </SimpleForm>
@@ -76,7 +72,6 @@ export const EventEdit = (props) => (
             <SelectInput source="category"choices={[
 			    { id: 'event', name: 'Event' },
 			]} />
-            <BooleanInput source="pinned" label="Pinned" />
             <BooleanInput source="hidden" label="Hidden" />
             <SaveButton/>
         </SimpleForm>
