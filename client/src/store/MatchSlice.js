@@ -111,6 +111,7 @@ const MatchSlice = createSlice({
         resetIndex(state) {
             state.currentIndex = -1;
         },
+        /*
         updateConfirmedList(state, action) {
             const { profileId } = action.payload;
             if (state.loggedInUserId) {
@@ -124,7 +125,7 @@ const MatchSlice = createSlice({
                     return profile;
                 });
             }
-        },
+        },*/
     },
     extraReducers: (builder) => {
         builder
