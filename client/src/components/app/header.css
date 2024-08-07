@@ -2,7 +2,7 @@
   font-family: 'GwangyangTouching';
   position: sticky;
   top: 0px;
-  z-index: 0;
+  z-index: 1;
 }
 
 .header-box {
