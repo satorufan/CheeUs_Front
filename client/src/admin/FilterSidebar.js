@@ -1,8 +1,9 @@
 import CategoryIcon from '@mui/icons-material/LocalOffer';
 import PushPinIcon from '@mui/icons-material/PushPin';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import BlockIcon from '@mui/icons-material/Block';
 import { Card, CardContent } from '@mui/material';
-import { CreateButton, FilterButton, FilterList, FilterListItem, FilterLiveSearch, TopToolbar } from 'react-admin';
+import { CreateButton, ExportButton, FilterButton, FilterList, FilterListItem, FilterLiveSearch, TopToolbar } from 'react-admin';
 
 
 export const FilterSidebar = () => (
@@ -25,6 +26,9 @@ export const FilterSidebar = () => (
             <FilterList label="HIDDEN POST" icon={<VisibilityOffIcon />}>
                 <FilterListItem label="Hidden" value={{ hidden: true }} />
             </FilterList>
+            <FilterList label="BANNED USER" icon={<BlockIcon />}>
+                <FilterListItem label="Banned" value={{ banned: true }} />
+            </FilterList>
         </CardContent>
     </Card>
 );
@@ -32,6 +36,6 @@ export const FilterSidebar = () => (
 export const ListActions = () => (
     <TopToolbar>
         <FilterButton/>
-        <CreateButton/>
+        <ExportButton/>
     </TopToolbar>
 );

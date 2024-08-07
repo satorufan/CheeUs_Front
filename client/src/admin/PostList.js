@@ -1,11 +1,10 @@
 import React from 'react';
-import { List, Datagrid, TextField, EditButton, DeleteButton, TopToolbar, FilterButton, SearchInput, CreateButton,  ShowButton, DateField, ChipField} from 'react-admin';
+import { List, Datagrid, TextField, EditButton, DeleteButton, SearchInput,  ShowButton, ChipField} from 'react-admin';
 import { Edit, SimpleForm, TextInput, BooleanInput } from 'react-admin';
-import { DateInput, NumberInput, ReferenceInput } from 'react-admin';
-import { Create } from 'react-admin';
+import { NumberInput } from 'react-admin';
 import BooleanField from './BooleanField'; 
 import { FilterSidebar, ListActions } from './FilterSidebar';
-import ToggleButton from './ToggleButton'; 
+import { RichTextInput } from 'ra-input-rich-text';
 
 
 const postFilters = [
@@ -30,8 +29,6 @@ export const PostList = (props) => (
             <TextField source="writeday" />
             <BooleanField source="pinned" />
             <BooleanField source="hidden" />
-         {/*<ToggleButton field="pinned" />*/}
-         {/*<ToggleButton field="hidden" />*/}
             <ShowButton/>
             <EditButton />
             <DeleteButton />
@@ -47,7 +44,7 @@ export const PostEdit = (props) => (
             <TextInput source="nickname" />
             <NumberInput source="category" />
             <TextInput source="title" />
-            <TextInput source="content" />
+            <RichTextInput source="content" />
             <TextInput source="photoes" />
             <TextInput source="media" />
             <TextInput source="author_id"/>
@@ -55,20 +52,4 @@ export const PostEdit = (props) => (
             <BooleanInput source="hidden" label="Hidden" />
         </SimpleForm>
     </Edit>
-);
-
-export const PostCreate = (props) => (
-    <Create {...props}>
-        <SimpleForm>
-            <TextInput source="id" />
-            <TextInput source="author_id" />
-            <TextInput source="nickname" />
-            <TextInput source="category" />
-            <TextInput source="title" />
-            <TextInput source="content" />
-            <TextInput source="writeday" />
-            <BooleanInput source="pinned" label="Pinned" />
-            <BooleanInput source="hidden" label="Hidden" />
-        </SimpleForm>
-    </Create>
 );

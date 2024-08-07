@@ -1,5 +1,5 @@
 import React from 'react';
-import { List, Datagrid, TextField, EditButton, DeleteButton, SearchInput } from 'react-admin';
+import { List, Datagrid, TextField, EditButton, DeleteButton, SearchInput, Toolbar, SaveButton } from 'react-admin';
 import { Edit, SimpleForm, TextInput, BooleanInput } from 'react-admin';
 import { Create } from 'react-admin';
 import BooleanField from './BooleanField'; 
@@ -36,9 +36,33 @@ export const EventList = (props) => (
     </List>
 );
 
+const EventToolbar = () =>{
+	<Toolbar>
+		<SaveButton/>
+		<SaveButton
+			label = "post.action.save_and_notify"
+			transform={data => ({...data, notify: true})}
+			type="button"
+		/>
+	</Toolbar>
+};
+
+export const EventCreate = (props) => (
+    <Create {...props}>
+        <SimpleForm toolbar={<EventToolbar/>}>
+            <TextInput source="admin_name" />
+            <TextInput source="title" />
+            <TextInput source="title2" />
+            <TextInput source="category" />
+            <BooleanInput source="pinned" label="Pinned" />
+            <BooleanInput source="hidden" label="Hidden" />
+        </SimpleForm>
+    </Create>
+);
+
 export const EventEdit = (props) => (
     <Edit {...props}>
-        <SimpleForm>
+        <SimpleForm toolbar={<EventToolbar/>}>
             <TextInput source="id" disabled />
             <TextInput source="title" />
             <TextInput source="content" />
@@ -48,17 +72,4 @@ export const EventEdit = (props) => (
             <BooleanInput source="hidden" label="Hidden" />
         </SimpleForm>
     </Edit>
-);
-
-export const EventCreate = (props) => (
-    <Create {...props}>
-        <SimpleForm>
-            <TextInput source="title" />
-            <TextInput source="content" />
-            <TextInput source="title2" />
-            <TextInput source="category" />
-            <BooleanInput source="pinned" label="Pinned" />
-            <BooleanInput source="hidden" label="Hidden" />
-        </SimpleForm>
-    </Create>
 );
