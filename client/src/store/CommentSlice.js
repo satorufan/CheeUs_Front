@@ -29,15 +29,6 @@ export const fetchComments = createAsyncThunk(
         return { boardId, comments };
     }
 );
-/*
-export const fetchComments = createAsyncThunk(
-    'comments/fetchComments',
-    async (boardId) => {
-      const response = await axios.get(`http://localhost:8080/boards/${boardId}/comments`);
-      return { boardId, comments: response.data };
-    }
-);
-*/
 
 // 댓글 추가를 위한 thunk
 export const addComment = createAsyncThunk(

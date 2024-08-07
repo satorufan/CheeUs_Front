@@ -25,7 +25,7 @@ const EventDetail = () => {
       <EventTop />
       <div className="event-detail-content">
         <h2 className="event-detail-title">{data.title}</h2>
-        <p className="event-detail-date">작성일: {data.date}</p>
+        <p className="event-detail-date">작성일: {data.writeday}</p>
         <p className="event-detail-text">{data.title2}</p>
         <img src={data.photoes} alt={data.title} className="event-detail-image" />
         <p className="event-detail-ctext">{data.content}</p>

@@ -43,16 +43,26 @@ const EventEnd = () => {
     return eventMonth < currentMonth;
   };
 
+    // 데이터 로딩 완료 전 대기
+    if (!events) {
+        return <div>Loading...</div>;
+    }
+
+    // 이벤트 데이터 추출
+    const eventList = events.event;
+
+    // 로그 추출용
+    // console.log(" *eventList* " + eventList);
+    // console.log(" >>>events<<< " + events);
+    // console.log("Events Data:", JSON.stringify(events, null, 2));
+
   // 페이지네이션
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentEvents = Object.values(events.event)
-    .filter(event => isEndedEvent(event.date) && (event.title.includes(searchQuery) || event.title2.includes(searchQuery)))
-    .slice(startIndex, startIndex + itemsPerPage);
-  const totalPages = Math.ceil(
-    Object.values(events.event)
-      .filter(event => isEndedEvent(event.date) && (event.title.includes(searchQuery) || event.title2.includes(searchQuery)))
-      .length / itemsPerPage
-  );
+    const filteredEvents = eventList
+        .filter(event => isEndedEvent(event.writeday) && (event.title.includes(searchQuery) || event.title2.includes(searchQuery)));
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const currentEvents = filteredEvents.slice(startIndex, startIndex + itemsPerPage);
+    const totalPages = Math.ceil(filteredEvents.length / itemsPerPage);
 
   const handleChange = (event, value) => {
     setCurrentPage(value);

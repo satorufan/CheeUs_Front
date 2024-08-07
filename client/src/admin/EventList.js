@@ -8,11 +8,14 @@ import { FilterSidebar, ListActions } from './FilterSidebar';
 
 const eventFilters = [
     <SearchInput source="q" />,
-    <TextInput label="Email" source="email" defaultValue="" />,
-    <TextInput label="Category" source="category" defaultValue="" />,
-    <TextInput label="NickName" source="nickname" defaultValue="" />,
+    <TextInput label="id" source="id" defaultValue="" />,
+    <TextInput label="adminId" source="admin_id" defaultValue="" />,
+    <TextInput label="adminName" source="admin_name" defaultValue="" />,
+    <TextInput label="title" source="title" defaultValue="" />,
+    <TextInput label="title2" source="title2" defaultValue="" />,
+    <TextInput label="content" source="content" defaultValue="" />,
+    <TextInput label="category" source="category" defaultValue="" />,
 ];
-
 
 
 export const EventList = (props) => (
@@ -20,45 +23,41 @@ export const EventList = (props) => (
         <Datagrid rowClick="edit">
             <TextField source="id" />
             <TextField source="admin_id" />
-            <TextField source="title" />
             <TextField source="admin_name" />
-            <TextField source="content" />
+            <TextField source="title" />
             <TextField source="title2" />
+            <TextField source="content" />
             <TextField source="writeday" />
-            <TextField source="catagory" />
-            <BooleanField source="pinned" />
-            <BooleanField source="hidden" />
-            <ToggleButton field="pinned" />
-            <ToggleButton field="hidden" />
             <EditButton />
             <DeleteButton />
         </Datagrid>
     </List>
 );
 
-export const EventEdit = (props) => (
-    <Edit {...props}>
-        <SimpleForm>
-            <TextInput source="id" disabled />
-            <TextInput source="title" />
-            <TextInput source="content" />
-            <TextInput source="title2" />
-            <TextInput source="category" />
-            <BooleanInput source="pinned" label="Pinned" />
-            <BooleanInput source="hidden" label="Hidden" />
-        </SimpleForm>
-    </Edit>
-);
-
 export const EventCreate = (props) => (
     <Create {...props}>
         <SimpleForm>
+            <TextInput source="id" />
+            <TextInput source="admin_id" />
+            <TextInput source="admin_name" />
             <TextInput source="title" />
-            <TextInput source="content" />
             <TextInput source="title2" />
-            <TextInput source="category" />
-            <BooleanInput source="pinned" label="Pinned" />
-            <BooleanInput source="hidden" label="Hidden" />
+            <TextInput source="content" />
+            <TextInput source="writeday" />
         </SimpleForm>
     </Create>
+);
+
+export const EventEdit = (props) => (
+    <Edit {...props}>
+        <SimpleForm>
+            <TextInput source="id" />
+            <TextInput source="admin_id" />
+            <TextInput source="admin_name" />
+            <TextInput source="title" />
+            <TextInput source="title2" />
+            <TextInput source="content" />
+            <TextInput source="writeday" />
+        </SimpleForm>
+    </Edit>
 );
