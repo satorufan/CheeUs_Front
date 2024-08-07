@@ -1,6 +1,6 @@
 import React from 'react';
 import { List, Datagrid, TextField, EditButton, DeleteButton, Toolbar, SaveButton, SearchInput, ChipField, CreateButton, RichTextField, SelectInput } from 'react-admin';
-import { Edit, SimpleForm, TextInput, BooleanInput } from 'react-admin';
+import { Edit, SimpleForm, TextInput, BooleanInput, DateField } from 'react-admin';
 import { Create } from 'react-admin';
 import BooleanField from './BooleanField'; 
 import ToggleButton from './ToggleButton'; 
@@ -23,7 +23,7 @@ export const MagazineList = (props) => (
             <TextField source="title" />
             <TextField source="title2" />
             <RichTextField source="content" />
-            <TextField source="writeday" />
+            <DateField source="writeday" />
             <TextField source="like" />
             <ChipField source="category" />
             <BooleanField source="pinned" />

@@ -1,6 +1,6 @@
 import React from 'react';
-import { List, Datagrid, TextField, EditButton, DeleteButton, SearchInput, Toolbar, SaveButton } from 'react-admin';
-import { Edit, SimpleForm, TextInput, BooleanInput, SelectInput, ChipField, RichTextField } from 'react-admin';
+import { List, Datagrid, TextField, EditButton, DeleteButton, SearchInput, Toolbar, SaveButton, DateInput } from 'react-admin';
+import { Edit, SimpleForm, TextInput, BooleanInput, SelectInput, ChipField, RichTextField, DateField } from 'react-admin';
 import { Create } from 'react-admin';
 import BooleanField from './BooleanField'; 
 import ToggleButton from './ToggleButton'; 
@@ -25,7 +25,7 @@ export const EventList = (props) => (
             <TextField source="admin_name" />
             <RichTextField source="content" />
             <TextField source="title2" />
-            <TextField source="writeday" />
+            <DateField source="writeday" />
             <ChipField source="catagory" />
             <BooleanField source="pinned" />
             <BooleanField source="hidden" />
@@ -55,7 +55,7 @@ export const EventCreate = (props) => (
             <TextInput source="title" />
             <TextInput source="title2" />
             <RichTextInput source="content" />
-            <TextInput source="writeday" />
+            <DateInput source="writeday" />
             <SelectInput source="category"choices={[
 			    { id: 'event', name: 'Event' },
 			]} />
