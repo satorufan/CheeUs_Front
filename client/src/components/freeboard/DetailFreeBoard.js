@@ -1,7 +1,7 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { selectBoards } from '../../store/BoardSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectBoards, fetchBoards } from '../../store/BoardSlice';
 import DetailBoard from '../board/DetailBoard';
 import Repl from '../board/Repl';
 import BoardDetailTop from '../board/BoardDetailTop';
@@ -10,6 +10,11 @@ import './detailFreeBoard.css';
 const DetailFreeBoard = () => {
   const { id } = useParams();
   const boards = useSelector(selectBoards);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchBoards('freeboard'));
+  }, [dispatch]);
   
   // 게시물 찾기
   const board = boards.find(b => b.id === parseInt(id) && b.category === 1);

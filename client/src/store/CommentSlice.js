@@ -47,37 +47,20 @@ export const addComment = createAsyncThunk(
         console.log('Comment Data:', commentData);
         const response = await axios.post(`http://localhost:8080/comment/${commentData.id}`, commentData);
         return {
-            id: response.data.id,
-            board_id: response.data.board_id,
-            parent_id: response.data.parent_id,
-            repl_author_id: response.data.repl_author_id,
-            repl_content: response.data.repl_content, // 백엔드에서 사용하는 이름 그대로 사용
-            writeday: response.data.writeday,
-            group: response.data.group
-        };
+          ...response.data,
+          nickname: commentData.nickname // nickname 추가
+      };
     }
 );
 
 // 댓글 수정을 위한 thunk
 export const updateComment = createAsyncThunk(
-    'comments/updateComment',
-    async (updatedComment) => {
-        const { id, ...updatedData } = updatedComment;
-        const response = await axios.put(`http://localhost:8080/comment/${id}`, {
-            ...updatedData,
-            repl_content: updatedData.repl_content // 백엔드에서 사용하는 이름 그대로 사용
-        });
-        return {
-            id: response.data.id,
-            board_id: response.data.board_id,
-            parent_id: response.data.parent_id,
-            repl_author_id: response.data.repl_author_id,
-            nickname: response.data.nickname,
-            repl_content: response.data.repl_content,
-            writeday: response.data.writeday,
-            group: response.data.group
-        };
-    }
+  'comments/updateComment',
+  async (updatedComment) => {
+      const { id, ...updatedData } = updatedComment;
+      const response = await axios.put(`http://localhost:8080/comment/${id}`, updatedData);
+      return response.data;
+  }
 );
 
 // 댓글 삭제를 위한 thunk
@@ -134,12 +117,12 @@ const commentsSlice = createSlice({
         })
          */
         .addCase(addComment.fulfilled, (state, action) => {
-            const newComment = action.payload;
-            const boardId = newComment.board_id;
-            // const { boardId, ...newComment } = action.payload;
-            if (!state.comments[boardId]) {
-                state.comments[boardId] = [];
-            }
+          const newComment = action.payload;
+          const boardId = newComment.board_id;
+          if (!state.comments[boardId]) {
+              state.comments[boardId] = [];
+          }
+          state.comments[boardId].push(newComment);
 
             /*
             // 대댓글은 parent_id가 있는 경우, 해당 댓글의 replies에 추가
