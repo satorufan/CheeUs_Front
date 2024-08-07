@@ -21,11 +21,10 @@ function Repl({ boardId }) {
 
     let decodedToken = {};
     if (token) {
-      decodedToken = jwtDecode(token);
+        decodedToken = jwtDecode(token);
     }
 
     const loggedInUserId = decodedToken?.email;
-    // const replNickname= userProfile.nickname; // 백에서 닉네임 조인해서 가져와서 다시 처리 해봅시다
 
     useEffect(() => {
         if (boardId) {
@@ -58,44 +57,41 @@ function Repl({ boardId }) {
         }));
     };
 
-    const handleAddComment = (e) => {
+    const handleAddComment = async (e) => {
         e.preventDefault();
         if (commentText.trim() !== '') {
             const newComment = {
                 board_id: boardId,
-                repl_author_id: loggedInUserId, // 로그인한 사용자 ID 사용
-                nickname : nickname, //
+                repl_author_id: loggedInUserId,
+                nickname: nickname,
                 parent_id: 0,
                 group: 1,
                 writeday: new Date().toISOString().split('T')[0],
                 repl_content: commentText,
             };
-            dispatch(addComment(newComment));
+            await dispatch(addComment(newComment));
             setCommentText('');
-            console.log(JSON.stringify(newComment,null,2)); // logging
+            // 새 댓글을 추가한 후 댓글 목록 갱신
+            dispatch(fetchComments(boardId));
         }
     };
 
-    const handleAddReply = (e) => {
-        // data-parent-id에서 값을 가져와 정수로 변환
+    const handleAddReply = async (e) => {
         const parentId = parseInt(e.currentTarget.getAttribute('data-parent-id'), 10);
-
-        // replyText에서 parentId로 조회한 텍스트가 공백이 아닌 경우만 진행
         if (replyText[parentId]?.trim() !== '') {
             const reply = {
                 board_id: boardId,
                 repl_author_id: loggedInUserId,
-                nickname: nickname, //
+                nickname: nickname,
                 parent_id: parentId,
                 group: 2,
                 writeday: new Date().toISOString().split('T')[0],
                 repl_content: replyText[parentId],
             };
-            console.log(JSON.stringify(reply,null,2)); //logging
-            console.log('Dispatching Reply Data:', reply); // Thunk 호출 전 데이터 출력
-            dispatch(addComment(reply));
+            await dispatch(addComment(reply));
             setReplyText(prevState => ({ ...prevState, [parentId]: '' }));
             setShowReplyInput(prevState => ({ ...prevState, [parentId]: false }));
+            dispatch(fetchComments(boardId)); // 새 대댓글을 추가한 후 댓글 목록 갱신
         }
     };
 
@@ -135,12 +131,13 @@ function Repl({ boardId }) {
     };
     */
 
-    const handleDeleteComment = (commentId) => {
-        dispatch(deleteComment(commentId));
+    const handleDeleteComment = async (commentId) => {
+        await dispatch(deleteComment(commentId));
+        dispatch(fetchComments(boardId)); 
     };
-
-    const handleDeleteReply = (replyId) => {
-        dispatch(deleteComment(replyId));
+    const handleDeleteReply = async (replyId) => {
+        await dispatch(deleteComment(replyId));
+        dispatch(fetchComments(boardId)); 
     };
 
     const toggleReplyInput = (commentId) => {
