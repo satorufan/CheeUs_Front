@@ -75,16 +75,17 @@ const AuthProvider = ({ children }) => {
 
 	//로그인
 	const requestSignIn = (nickname) => {
-		Swal.fire({
-			title: `<span style="font-weight: 300;">${nickname}님 환영합니다.</span>`, // font-weight 조정
-			confirmButtonText: '확인',
-		});
+		if (nickname !== null && nickname !== undefined) {
+			Swal.fire({
+				title: `<span style="font-weight: 300;">${nickname}님 환영합니다.</span>`, // font-weight 조정
+				confirmButtonText: '확인',
+			});
+		};
 	}
 
 	//로그아웃
 	const requestSignOut = () => {
 		window.location.href = serverUrl+"/logout";
-		console.log("로그아웃")
 	}
 
 	//쿠키에서 JWT 토큰 불러오기.
