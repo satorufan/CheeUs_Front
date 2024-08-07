@@ -1,11 +1,11 @@
 import React from 'react';
-import { List, Datagrid, TextField, EditButton, DeleteButton, SearchInput,  ShowButton, RichTextField, FunctionField, SaveButton} from 'react-admin';
-import { Edit, SimpleForm, TextInput, BooleanInput, Toolbar } from 'react-admin';
+import { List, Datagrid, TextField, EditButton, DeleteButton, SearchInput,  ShowButton, RichTextField, FunctionField} from 'react-admin';
+import { Edit, SimpleForm, TextInput, BooleanInput, DateInput, DateField } from 'react-admin';
 import { SelectInput } from 'react-admin';
 import BooleanField from './BooleanField'; 
 import { FilterSidebar, ListActions } from './FilterSidebar';
 import { RichTextInput } from 'ra-input-rich-text';
-import BackButton from './custom/BackButton';
+
 
 const categoryMap = {
     '1': 'FreeBoard',
@@ -27,8 +27,8 @@ const postFilters = [
     <TextInput label="NickName" source="nickname" defaultValue="" />,
     <TextInput label="Title" source="title" defaultValue="" />,
     <TextInput label="WriteDay" source="writeday" defaultValue="" />,
-    <BooleanInput label ="Pinned" source="pinned" defaultValue={true}/>,
-    <BooleanInput label ="Hidden" source="hidden" defaultValue={true}/>,
+    <BooleanInput label ="Pinned" source="pinned" defaultValue={false}/>,
+    <BooleanInput label ="Hidden" source="hidden" defaultValue={false}/>,
 ];
 
 export const PostList = (props) => (
@@ -40,7 +40,7 @@ export const PostList = (props) => (
             <TextField source="title" />
             <CustomCategoryField source="category" />
             <RichTextField source = "content"/>
-            <TextField source="writeday" />
+            <DateField source="writeday" />
             <BooleanField source="pinned" />
             <BooleanField source="hidden" />
             <ShowButton/>
@@ -50,20 +50,13 @@ export const PostList = (props) => (
     </List>
 );
 
-const PostToolbar = () =>{
-	<Toolbar>
-		<SaveButton/>
-		<SaveButton
-			label = "post.action.save_and_notify"
-			transform={data => ({...data, notify: true})}
-			type="button"
-		/>
-	</Toolbar>
-};
 
 export const PostEdit = (props) => (
     <Edit {...props}>
-        <SimpleForm toolbar={<PostToolbar/>}>
+        <SimpleForm>
+            <TextInput source="id" />
+            <TextInput source="author_id" />
+            <TextInput source="nickname" />
             <TextInput source="title" />
             <SelectInput source="category" choices={[
 			    { id: '1', name: 'FreeBoard' },
@@ -71,10 +64,9 @@ export const PostEdit = (props) => (
 			    { id: '3', name: 'EventBoard' },
 			]} />
             <RichTextInput source="content" />
+            <DateInput source="writeday" />
             <BooleanInput source="pinned" label="Pinned" />
             <BooleanInput source="hidden" label="Hidden" />
-            <SaveButton/>
         </SimpleForm>
-        <BackButton/>
     </Edit>
 );
