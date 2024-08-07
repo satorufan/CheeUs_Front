@@ -35,6 +35,7 @@ export const FilterSidebar = () => (
 
 export const ListActions = () => (
     <TopToolbar>
+    	<CreateButton/>
         <FilterButton/>
         <ExportButton/>
     </TopToolbar>
