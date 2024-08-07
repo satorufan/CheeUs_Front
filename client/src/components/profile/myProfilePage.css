@@ -139,3 +139,14 @@ table tbody {
         width: 100%;
     }
 }
+/* 제목 고정 스타일 */
+.my-board thead, .my-posts thead {
+    position: sticky;
+    top: 0;
+    background-color: whgite;
+    z-index: 10;
+}
+
+.my-board th, .my-posts th {
+    background-color:black;
+}
