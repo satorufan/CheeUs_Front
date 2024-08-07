@@ -4,7 +4,6 @@ import ArrowOutwardIcon from '@mui/icons-material/ArrowOutward';
 import "./MagazineCategory.css";
 
 function MagazineCategory() {
-    const [activeIndex, setActiveIndex] = useState(0);
     const navigate = useNavigate();
 
     const cards = [
@@ -34,12 +33,8 @@ function MagazineCategory() {
         },
     ];
 
-    const handleCardClick = (index, path) => {
-        if (activeIndex === index) {
-            navigate(path); // 같은 카드를 두 번 클릭하면 해당 경로로 이동
-        } else {
-            setActiveIndex(index); // 다른 카드를 클릭하면 활성화
-        }
+    const handleCardClick = (path) => {
+        navigate(path);
     };
 
     return (
@@ -47,8 +42,8 @@ function MagazineCategory() {
             {cards.map((card, index) => (
                 <div
                     key={index}
-                    className={`magazine-page-card ${activeIndex === index ? "active" : ""}`}
-                    onClick={() => handleCardClick(index, card.path)}
+                    className="magazine-page-card"
+                    onClick={() => handleCardClick(card.path)}
                     style={{ backgroundImage: `url(${card.bgImage})` }}
                 >
                     <div className="magazine-page-content">
