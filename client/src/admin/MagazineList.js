@@ -6,6 +6,8 @@ import BooleanField from './BooleanField';
 import ToggleButton from './ToggleButton'; 
 import { FilterSidebar, ListActions } from './FilterSidebar';
 import { RichTextInput } from 'ra-input-rich-text';
+import BackButton from './custom/BackButton';
+
 
 const magazineFilters = [
     <SearchInput source="q" />,
@@ -62,6 +64,7 @@ export const MagazineCreate = (props) => (
             <BooleanInput source="hidden" label="Hidden" />
             <SaveButton/>
         </SimpleForm>
+        <BackButton/>
     </Create>
 );
 
@@ -81,6 +84,7 @@ export const MagazineEdit = (props) => (
             <BooleanInput source="hidden" label="Hidden" />
             <SaveButton/>
         </SimpleForm>
+        <BackButton/>
     </Edit>
 );
 

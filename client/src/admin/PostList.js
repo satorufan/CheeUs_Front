@@ -1,11 +1,11 @@
 import React from 'react';
-import { List, Datagrid, TextField, EditButton, DeleteButton, SearchInput,  ShowButton, RichTextField, FunctionField} from 'react-admin';
-import { Edit, SimpleForm, TextInput, BooleanInput } from 'react-admin';
+import { List, Datagrid, TextField, EditButton, DeleteButton, SearchInput,  ShowButton, RichTextField, FunctionField, SaveButton} from 'react-admin';
+import { Edit, SimpleForm, TextInput, BooleanInput, Toolbar } from 'react-admin';
 import { SelectInput } from 'react-admin';
 import BooleanField from './BooleanField'; 
 import { FilterSidebar, ListActions } from './FilterSidebar';
 import { RichTextInput } from 'ra-input-rich-text';
-
+import BackButton from './custom/BackButton';
 
 const categoryMap = {
     '1': 'FreeBoard',
@@ -50,10 +50,20 @@ export const PostList = (props) => (
     </List>
 );
 
+const PostToolbar = () =>{
+	<Toolbar>
+		<SaveButton/>
+		<SaveButton
+			label = "post.action.save_and_notify"
+			transform={data => ({...data, notify: true})}
+			type="button"
+		/>
+	</Toolbar>
+};
 
 export const PostEdit = (props) => (
     <Edit {...props}>
-        <SimpleForm>
+        <SimpleForm toolbar={<PostToolbar/>}>
             <TextInput source="title" />
             <SelectInput source="category" choices={[
 			    { id: '1', name: 'FreeBoard' },
@@ -63,6 +73,8 @@ export const PostEdit = (props) => (
             <RichTextInput source="content" />
             <BooleanInput source="pinned" label="Pinned" />
             <BooleanInput source="hidden" label="Hidden" />
+            <SaveButton/>
         </SimpleForm>
+        <BackButton/>
     </Edit>
 );

@@ -1,11 +1,11 @@
 import React from 'react';
 import { List, Datagrid, TextField, EditButton, DeleteButton, SearchInput, Toolbar, SaveButton, DateInput } from 'react-admin';
-import { Edit, SimpleForm, TextInput, BooleanInput, SelectInput, ChipField, RichTextField, DateField } from 'react-admin';
+import { Edit, SimpleForm, TextInput, BooleanInput, RichTextField, DateField } from 'react-admin';
 import { Create } from 'react-admin';
-import BooleanField from './BooleanField'; 
-import ToggleButton from './ToggleButton'; 
 import { FilterSidebar, ListActions } from './FilterSidebar';
 import { RichTextInput } from 'ra-input-rich-text';
+import BackButton from './custom/BackButton';
+import BooleanField from './BooleanField';
 
 const eventFilters = [
     <SearchInput source="q" />,
@@ -26,8 +26,9 @@ export const EventList = (props) => (
             <TextField source="admin_name" />
             <TextField source="title" />
             <TextField source="title2" />
-            <TextField source="content" />
+            <RichTextField source="content" />
             <DateField source="writeday" />
+            <BooleanField source="hidden" />
             <EditButton />
             <DeleteButton />
         </Datagrid>
@@ -53,10 +54,12 @@ export const EventCreate = (props) => (
             <TextInput source="admin_name" />
             <TextInput source="title" />
             <TextInput source="title2" />
-            <TextInput source="content" />
+            <RichTextInput source="content" />
             <DateInput source="writeday" />
-            <SaveButton/>
+            <BooleanInput source="hidden" label="Hidden" />
+            <SaveButton />
         </SimpleForm>
+        <BackButton />
     </Create>
 );
 
@@ -70,7 +73,9 @@ export const EventEdit = (props) => (
             <TextInput source="title2" />
             <TextInput source="content" />
             <DateInput source="writeday" />
+            <BooleanInput source="hidden" label="Hidden" />
             <SaveButton/>
         </SimpleForm>
+        <BackButton />
     </Edit>
 );

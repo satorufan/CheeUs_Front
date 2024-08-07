@@ -1,6 +1,7 @@
 import React from 'react';
-import { List, Datagrid, TextField, EditButton, Edit, SimpleForm, TextInput, SearchInput, BooleanField, ShowButton, BooleanInput} from 'react-admin';
+import { List, Datagrid, TextField, EditButton, Edit, SimpleForm, TextInput, SearchInput, BooleanField, ShowButton, BooleanInput, Toolbar, SaveButton} from 'react-admin';
 import { FilterSidebar, ListActions } from './FilterSidebar';
+import BackButton from './custom/BackButton';
 
 const userFilters = [
     <SearchInput source="q" alwaysOn />,
@@ -27,15 +28,28 @@ export const UserList = (props) => (
     </List>
 );
 
+const UserToolbar = () =>{
+	<Toolbar>
+		<SaveButton/>
+		<SaveButton
+			label = "post.action.save_and_notify"
+			transform={data => ({...data, notify: true})}
+			type="button"
+		/>
+	</Toolbar>
+};
+
 export const UserEdit = (props) => (
     <Edit {...props}>
-        <SimpleForm>
+        <SimpleForm toolbar={<UserToolbar/>}>
             <TextInput source="email" disabled />
             <TextInput source="name" />
             <TextInput source="nickname" />
             <TextInput source="tel" />
             <TextInput source="birth" />
             <BooleanInput source='banned' label="Banned"/>
+            <SaveButton/>
         </SimpleForm>
+        <BackButton/>
     </Edit>
 );
