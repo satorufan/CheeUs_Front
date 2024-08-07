@@ -89,8 +89,9 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
 
     const isNewMessage = (room) => {
         const lastMessage = getLastMessage(room);
+        console.log(lastMessage);
         if (isTogether) {
-            return !lastMessage.read.includes(loggedInUserId);
+            return !(lastMessage.read ?. includes(loggedInUserId));
         }
         return lastMessage.read === 0 && lastMessage.sender_id !== loggedInUserId;
     };

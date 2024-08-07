@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState, useRef } from 'react';
+import React, { useEffect, useContext, useState, useRef, useCallback, useMemo } from 'react';
 import { AuthContext } from '../login/OAuth';
 import { jwtDecode } from 'jwt-decode';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
@@ -15,24 +15,24 @@ import axios from 'axios';
 
 const ChatWindow = ({
     selectedChat,
-    messageInput,
     showMessageInput,
     formatMessageTime,
     sendMessage,
     setMessageInput,
     activeKey,
 }) => {
-    const { token, serverUrl, memberEmail } = useContext(AuthContext);
-    const scrollRef = useRef(null);
-    const [loggedInUserId, setLoggedInUserId] = useState(null);
-    const [showParticipants, setShowParticipants] = useState(false);
-    const [participants, setParticipants] = useState([]);
-    const profiles = useSelector(selectProfiles);
     const navigate = useNavigate(); 
     const dispatch = useDispatch();
-    const [profileData, setProfileData] = useState([]);
-    const [isDataLoaded, setIsDataLoaded] = useState(false);
-    const [messages, setMessages] = useState([]);   // 채팅내역, 방번호, 작성일, 프로필(이메일, 사진, 닉네임)
+
+    const { token, serverUrl, memberEmail } = useContext(AuthContext);
+
+    const inputMessageRef = useRef(null);
+    const scrollRef = useRef(null);
+
+    const [loggedInUserId, setLoggedInUserId] = useState(null);
+    const [showParticipants, setShowParticipants] = useState(false);
+    const [participants, setParticipants] = useState([]);   // 현재 참여자
+    const [profileData, setProfileData] = useState([]); // 프로필 정보 캐시
 
     // 신고 모달
     const [showReportModal, setShowReportModal] = useState(false);
@@ -40,6 +40,12 @@ const ChatWindow = ({
     const handleReportModalOpen = () => setShowReportModal(true);
     const handleReportModalClose = () => setShowReportModal(false);
     
+    // 날짜 포멧
+    const formatDate = (date) => {
+        // 예시 형식: 2024년 8월 2일
+        return new Intl.DateTimeFormat('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(date));
+    };
+
     useEffect(() => {
         if (token) {
             try {
@@ -51,74 +57,18 @@ const ChatWindow = ({
         }
     }, [token]);
 
+    // 채팅 참여자 불러오기
     useEffect(() => {
         if (selectedChat) {
-            setParticipants(selectedChat.members || []);
+            if (activeKey === 'together') {
+                setParticipants(selectedChat.members || []);
+            } else {
+                setParticipants([selectedChat.member1, selectedChat.member2] || []);
+            }
         }
-    }, [selectedChat]);
-    
-    useEffect(() => { // 여기서 병합하려니까 심하게 느려짐 다른 방법 고안 필요
-        if (selectedChat && selectedChat.togetherId && !isDataLoaded) {
-            const memberEmails = selectedChat.members.map(member => member.email);
-            
-            const fetchProfiles = async () => {
-                try {
-                    const responses = await Promise.all(
-                        memberEmails.map(email => dispatch(fetchUserProfiles({ serverUrl, memberEmail: email })))
-                    );
-        
-                    // 모든 프로필 데이터 병합
-                    const profiles = responses.flatMap(response => response.payload);
-                    const profileMap = profiles.reduce((acc, profile) => {
-                        acc[profile.email] = profile;
-                        return acc;
-                    }, {});
-                    setProfileData(profileMap);
-                    setIsDataLoaded(true); 
-                } catch (error) {
-                    console.error('Error fetching profiles:', error);
-                }
-            };
-        
-            fetchProfiles();
-        }
-    }, [selectedChat, isDataLoaded, dispatch, serverUrl]);
+        scrollToBottom();
+    }, [selectedChat, activeKey]);
 
-
-    useEffect(() => {
-        if (selectedChat) {
-            
-            const fetchData = async () => {
-                if (!selectedChat || !selectedChat.messages) return;
-
-                const fetchMessages = async () => {
-                    const results = await Promise.all(selectedChat.messages.map(async (message, index) => {
-
-                        const messageDate = formatDate(message.write_day);
-                        const senderProfile = await getProfileForSender(message.sender_id);
-                        const isSameSenderAsPrevious = index > 0 && selectedChat.messages[index - 1].sender_id === message.sender_id;
-
-                        return {
-                            ...message,
-                            messageDate,
-                            senderProfile,
-                            isSameSenderAsPrevious
-                        };
-                    }));
-
-                    return results;
-                };
-
-                const messagesWithInfo = await fetchMessages();
-                console.log(messagesWithInfo);
-                setMessages(messagesWithInfo);
-            };
-
-            fetchData();
-            // 스크롤을 하단으로 이동
-            scrollToBottom();
-        }
-    }, [selectedChat, selectedChat?.messages]);
 
     const scrollToBottom = () => {
         if (scrollRef.current) {
@@ -134,36 +84,54 @@ const ChatWindow = ({
         }
     };
 
-    const isSender = (senderId) => senderId === loggedInUserId;
-
-    //const getOtherUserId = () => {
-    //    if (!selectedChat) return null;
-    //    return selectedChat.member1 === loggedInUserId ? selectedChat.member2 : selectedChat.member1;
-    //};
-
-    // 발신자 프로필 불러오기
     const getProfileForSender = async (email) => {
         if (email === "System" || email === memberEmail) {
             return null;
         }
+        try {
+            const response = await axios.get(`${serverUrl}/match/chattingPersonal`, {
+                params: { email }
+            });
+            const profile = response.data;
+            const profileData = {
+                email: profile.email,
+                nickname: profile.nickname,
+                image: profile && profile.imageBlob.length > 0
+                    ? `data:${profile.imageType};base64,${profile.imageBlob}`
+                    : `${process.env.PUBLIC_URL}/images/default-user-icon.png`
+            };
+            return profileData;
+        } catch (error) {
+            console.error('프로필 이미지 가져오기 오류:', error);
+            return `${process.env.PUBLIC_URL}/images/default-user-icon.png`;
+        }
+    }
+
+    // 프로필 사진 저장 함수
+    useMemo(async () => {
+        console.log(selectedChat)
+        if (!selectedChat || !selectedChat.messages) return;
+
+        // 참여자 로드
+        const newSenderIds = [...new Set(selectedChat.messages.map(msg => msg.sender_id))]
+                                .filter(id => !profileData[id]);
 
         try {
-            const response = await axios.get(serverUrl + "/match/chattingPersonal", {
-                params: { email: email }
-            });
+            const profilePromises = newSenderIds.map(id => getProfileForSender(id));
+            const profilesData = await Promise.all(profilePromises);
 
-            const profile = response.data;
-            return {
-                email : profile.email,
-                nickname : profile.nickname,
-                image : profile && profile.imageBlob.length > 0 ? `data:${profile.imageType};base64,${profile.imageBlob}`
-                    : `${process.env.PUBLIC_URL}/images/default-avatar.jpg`
-            }
+            const newProfiles = profilesData.reduce((acc, profile, index) => {
+                if (profile) acc[newSenderIds[index]] = profile;
+                return acc;
+            }, {});
+
+            setProfileData(prevProfiles => ({ ...prevProfiles, ...newProfiles }));
         } catch (error) {
-            console.error('Error fetching profile image:', error);
-            return `${process.env.PUBLIC_URL}/images/default-avatar.jpg`;
+            console.error('프로필 사진 로딩 오류:', error);
         }
-    };
+    }, [participants]);
+
+    const isSender = (senderId) => senderId === loggedInUserId;
 
     // 상단
     const getDisplayName = () => {
@@ -220,7 +188,7 @@ const ChatWindow = ({
                     alt={`Profile of ${selectedChat.nickname}`} 
                     className="profile-img rounded-circle" 
                     style={{ width: '40px', height: '40px', marginRight: '10px' }}
-                    onClick={() => navigateToUserProfile(selectedChat)}
+                    onClick={() => navigateToUserProfile(selectedChat.id)}
                 />
                 <span onClick={() => navigateToUserProfile(selectedChat.id)}>{selectedChat.nickname}</span> 
                 </div>
@@ -256,24 +224,12 @@ const ChatWindow = ({
         setShowParticipants(!showParticipants);
     };
 
-    const getNickname = (email) => { // 단체채팅 닉네임 가져오기
-        const profile = profiles.find(p => p.profile.email === email);
-        return profile ? profile.profile.nickname : email;
-    };
-
-    // 날짜 포멧
-    const formatDate = (date) => {
-        // 예시 형식: 2024년 8월 2일
-        return new Intl.DateTimeFormat('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(date));
-    };
-
     // id로 이동하도록 바꿔야함
-    const navigateToUserProfile = (profile) => {
-        const opponent = loggedInUserId == profile.member1 ? profile.member2 : profile.member1;
-        if (opponent) {
-            navigate(`/userprofile/${opponent}`);
+    const navigateToUserProfile = (email) => {
+        if (email) {
+            navigate(`/userprofile/${email}`);
         } else {
-            console.error('User ID not found for email:', opponent);
+            console.error('User ID not found for email:', email);
         }
     };
 
@@ -314,13 +270,13 @@ const ChatWindow = ({
                         {(message.sender_id !== "System") && !isSender(message.sender_id) && !isSameSenderAsPrevious && (
                             <div className="message-info">
                                 <img
-                                    src={senderProfile.image || `${process.env.PUBLIC_URL}/images/default-avatar.jpg`}
+                                    src={senderProfile.image || `${process.env.PUBLIC_URL}/images/default-user-icon.png`}
                                     alt={`Profile of ${senderProfile.nickname || 'Unknown'}`}
                                     className="profile-img rounded-circle"
                                     onClick={() => navigateToUserProfile(message.sender_id)}
                                 />
                                 <span className="nickname" onClick={() => navigateToUserProfile(message.sender_id)}>
-                                    {senderProfile.nickname || '왜안떠'}
+                                    {senderProfile ?. nickname || '알수없음'}
                                 </span>
                             </div>
                         )}
@@ -372,8 +328,6 @@ const ChatWindow = ({
         handleReportModalOpen();
     };
 
-    
-
     return (
         <>
             <div className="chat-window-top">
@@ -388,10 +342,10 @@ const ChatWindow = ({
                 )}
             </div>
     
-            {selectedChat && (
+            {selectedChat ? (
                 <div className="chat active-chat" data-chat={`person${selectedChat.roomId}`} ref={scrollRef}>
                     {selectedChat.messages && selectedChat.messages.length > 0 ? (
-                        renderMessagesWithDateSeparators()
+                        profileData && renderMessagesWithDateSeparators()
                     ) : (
                         <div className="no-messages">
                             <div>{DefaultMessage()}</div>
@@ -399,7 +353,9 @@ const ChatWindow = ({
                     )}
                     <div ref={scrollRef}></div>
                 </div>
-            )}
+            ) : (<div className="no-messages">
+                <div>잠시만 기다려주세요</div>
+            </div>)}
 
             {showMessageInput && (
                 <div className="chat-write d-flex align-items-center">
@@ -407,11 +363,13 @@ const ChatWindow = ({
                         type="text"
                         className="form-control flex-grow-1 chat-input"
                         placeholder="메시지를 입력하세요..."
-                        value={messageInput}
-                        onChange={(e) => setMessageInput(e.target.value)}
+                        ref={inputMessageRef}
+                        // value={inputMessageRef.current}
+                        // onChange={(e) => setMessageInput(e.target.value)}
                         onKeyPress={(e) => {
                             if (e.key === 'Enter') {
-                                sendMessage();
+                                sendMessage(inputMessageRef.current.value);
+                                inputMessageRef.current.value = null;
                                 scrollToBottom();
                             }
                         }}
@@ -420,7 +378,7 @@ const ChatWindow = ({
                         className="send-icon"
                         fontSize="large"
                         onClick={() => {
-                            sendMessage();
+                            sendMessage(inputMessageRef.current);
                             scrollToBottom();
                         }}
                     />
@@ -439,7 +397,7 @@ const ChatWindow = ({
                                 <li key={index} className="participant-modal-item">
                                     <img
                                         src={member.image}
-                                        alt={`Profile of ${getNickname(member)}`}
+                                        alt={`Profile of`}
                                         className="participant-modal-img"
                                         onClick={() => navigateToUserProfile(member)}
                                     />
