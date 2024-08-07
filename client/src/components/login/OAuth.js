@@ -75,8 +75,10 @@ const AuthProvider = ({ children }) => {
 
 	//로그인
 	const requestSignIn = (nickname) => {
-		console.log("로그인");
-		sweetalert(nickname + "님 환영합니다.", "", "", "확인");
+		Swal.fire({
+			title: `<span style="font-weight: 300;">${nickname}님 환영합니다.</span>`, // font-weight 조정
+			confirmButtonText: '확인',
+		});
 	}
 
 	//로그아웃

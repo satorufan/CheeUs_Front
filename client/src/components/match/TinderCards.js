@@ -4,6 +4,7 @@ import TinderCard from 'react-tinder-card';
 import ProfileCard from '../profile/ProfileCard';
 import './tinderCards.css';
 import IconButton from '@mui/material/IconButton';
+import ProfileSkeleton from '../skeleton/ProfileSkeleton';
 import { 
   selectProfiles, 
   selectShuffledProfiles, 
@@ -26,21 +27,36 @@ const TinderCards = () => {
   const shuffledProfiles = useSelector(selectShuffledProfiles);
   const currentIndex = useSelector(selectCurrentIndex);
   const [showMessages, setShowMessages] = React.useState([]);
-  const {memberEmail, serverUrl} = useContext(AuthContext);
+  const { memberEmail, serverUrl } = useContext(AuthContext);
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   useEffect(() => {
-    if (profiles.length > 0) {
-      const filteredProfiles = profiles.filter(profile =>
-        profile.profile.locationOk === true && 
-        profile.profile.matchOk === true && 
-        profile.profile.email !== memberEmail
-      );
-      setCards([...filteredProfiles]);
+    const loadProfiles = async () => {
+      if (profilesStatus === 'loading') {
+        return; // 데이터 로딩 중이면 아무 것도 하지 않음
+      }
 
-      const shuffled = shuffleArray(filteredProfiles);
-      dispatch(setShuffledProfiles(shuffled));
-    }
-  }, [dispatch, profiles]);
+      if (profiles.length > 0) {
+        const filteredProfiles = profiles.filter(profile =>
+          profile.profile.locationOk === true && 
+          profile.profile.matchOk === true && 
+          profile.profile.email !== memberEmail
+        );
+        setCards(filteredProfiles);
+
+        const shuffled = shuffleArray(filteredProfiles);
+        dispatch(setShuffledProfiles(shuffled));
+      } else {
+        // 카드가 없을 때 상태 업데이트
+        setCards([]);
+        dispatch(setShuffledProfiles([]));
+      }
+
+      setIsDataLoaded(true); // 데이터 로딩 완료 상태로 업데이트
+    };
+
+    loadProfiles();
+  }, [dispatch, profiles, profilesStatus, memberEmail]);
 
   const shuffleArray = (array) => {
     const shuffled = [...array];
@@ -69,7 +85,7 @@ const TinderCards = () => {
     formData.append('type', direction);
     axios.post(serverUrl + "/match/swipe", formData)
     .then((res)=>{
-      if (res.data.matchState == 2) {
+      if (res.data.matchState === 2) {
         Swal.fire({
           title: '매치 성공!',
           text: '즐거운 대화를 나누어 보아요!',
@@ -90,40 +106,36 @@ const TinderCards = () => {
     console.log(`Confirmedlist updated for profileId ${profileId}:`, shuffledProfiles[index].confirmedlist);
   };
 
-  
   // 채팅방 생성 + 시스템 메시지 전송
   const sendMessage = async (data) => {
-      if (!memberEmail) {
-          console.log('Cannot send message: No selected chat, empty input, or missing user ID.');
-          return;
-      }
+    if (!memberEmail) {
+      console.log('Cannot send message: No selected chat, empty input, or missing user ID.');
+      return;
+    }
 
-      const newRoom = {
-        id : data.id,
-        member1 : data.member1,
-        member2 : data.member2,
-        match : data.matchState
-      }
+    const newRoom = {
+      id: data.id,
+      member1: data.member1,
+      member2: data.member2,
+      match: data.matchState
+    };
 
-      const newMessage = {
-          sender_id: 'System',
-          message: '매칭 성공! 즐거운 대화를 나누어 보아요',
-          write_day: new Date().toISOString(),
-          read: 0,
-          chat_room_id : data.id
-      };
+    const newMessage = {
+      sender_id: 'System',
+      message: '매칭 성공! 즐거운 대화를 나누어 보아요',
+      write_day: new Date().toISOString(),
+      read: 0,
+      chat_room_id: data.id
+    };
 
-      //socket.current.emit('sendMessage', newMessage);
-
-      try {
-          const createRoom = 'http://localhost:8889/api/createOneoneRoom';
-          const sendMessage = 'http://localhost:8889/api/messages';
-          await axios.post(createRoom, newRoom);
-          await axios.post(sendMessage, newMessage);
-          //dispatch(setMessageInput(''));
-      } catch (error) {
-          console.error('Error sending message:', error);
-      }
+    try {
+      const createRoom = 'http://localhost:8889/api/createOneoneRoom';
+      const sendMessage = 'http://localhost:8889/api/messages';
+      await axios.post(createRoom, newRoom);
+      await axios.post(sendMessage, newMessage);
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
   };
 
   const outOfFrame = (name, idx) => {
@@ -132,13 +144,6 @@ const TinderCards = () => {
     }
   };
 
-  // const swipe = async (dir, index) => {
-  //   if (!canSwipe || index < 0 || index >= shuffledProfiles.length || !childRefs[index]?.current) {
-  //     return;
-  //   }
-
-  //   await childRefs[index].current.swipe(dir);
-  // };
   const swipe = async (dir, index) => {
     if (!canSwipe || index < 0 || index >= profileCards.length || !childRefs[index]?.current) {
       return;
@@ -159,21 +164,29 @@ const TinderCards = () => {
     await swipe('right', index);
   };
 
+  if (!isDataLoaded) {
+    return (
+      <div className='skeleton-card-container'>
+        <div className="profile-container-tinder">
+          <ProfileSkeleton />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="tinderCard_container">
-      {profilesStatus == 'loading' ? (<div className="permissionMessage" >
-              <p>잠시만 기다려주세요...</p>
-            </div>) : profileCards.length === 0 || currentIndex === -1 ? (
+      {profileCards.length === 0 ? (
         <div className="noMoreCardsMessage">
-          <div className="noMessge">
-            <span>매칭 할 카드가 없습니다.</span><br/>
-            <span>함께 마셔요 게시판에는 </span> <br/><span>있을지도~?</span>
+          <div className="noMessage">
+            <div>매칭 할 카드가 없습니다.</div>
+            <span style={{ color: '#FF6B6B' }}>함께 마셔요</span><span> 게시판도 둘러보세요!</span>
           </div>
         </div>
       ) : (
         <>
-          <div className='cardButtonContainer'>
-            <div className='swipeButton'>
+          <div className="cardButtonContainer">
+            <div className="swipeButton">
               {canSwipe && (
                 <IconButton onClick={handleSwipeLeft} disabled={!canSwipe}>
                   <div className="buttonContent">
@@ -183,11 +196,11 @@ const TinderCards = () => {
                 </IconButton>
               )}
             </div>
-            <div className='cardContainer'>
-              {profileCards ? profileCards.map((profile, index) => (
+            <div className="cardContainer">
+              {profileCards.map((profile, index) => (
                 <TinderCard
                   ref={childRefs[index]}
-                  className='swipe'
+                  className="swipe"
                   key={profile.profile.email}
                   onSwipe={(dir) => swiped(dir, profile.profile.email, index)}
                   onCardLeftScreen={() => outOfFrame(profile.profile.email, index)}
@@ -204,9 +217,9 @@ const TinderCards = () => {
                     </div>
                   </div>
                 </TinderCard>
-              )) : <></>}
+              ))}
             </div>
-            <div className='swipeButton'>
+            <div className="swipeButton">
               {canSwipe && (
                 <IconButton onClick={handleSwipeRight} disabled={!canSwipe}>
                   <div className="buttonContent">
@@ -221,6 +234,6 @@ const TinderCards = () => {
       )}
     </div>
   );
-}
+};
 
 export default TinderCards;
