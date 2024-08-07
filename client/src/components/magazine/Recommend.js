@@ -44,7 +44,7 @@ const Recommend = () => {
     // 디버깅용
     // console.log("<<magazines.magazine>>JSON ", JSON.stringify(magazines, null, 2));
 
-    // "popup" 카테고리의 JSON만 필터링
+    // "recommend" 카테고리의 JSON만 필터링
     const filteredMagazines = magazineList
         .filter(magazine => magazine.category === 'recommend' &&
             (magazine.title.includes(searchQuery) || magazine.title2.includes(searchQuery)));
