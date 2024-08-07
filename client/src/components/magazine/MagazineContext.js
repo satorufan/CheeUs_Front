@@ -1,11 +1,46 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, {createContext, useContext, useEffect, useState} from 'react';
+import axios from 'axios';
 
 const MagazineContext = createContext();
 
-export const useMagazines = () => {
-  return useContext(MagazineContext);
+export const useMagazines = () => useContext(MagazineContext);
+
+export const MagazineProvider = ({ children }) => {
+  const [magazines, setMagazines] = useState(null);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/admin/AdminMagazine');
+        const fetchedMagazines = response.data;
+
+        // 데이터 구조 확인
+        console.log("Fetched Magazines Data:", fetchedMagazines);
+
+        // 데이터 구조를 확인하고 적절하게 처리
+        if (Array.isArray(fetchedMagazines)) {
+          setMagazines({ magazine: fetchedMagazines }); // 배열을 객체 형태로 감싸기
+        } else {
+          setMagazines(fetchedMagazines); // 원래 형태를 유지
+          console.log(" *EventContext* " + fetchedMagazines); // 데이터를 확인하는 부분
+        }
+      } catch (error) {
+        console.error("Error fetching events data: ", error);
+      }
+    };
+
+    fetchEvents();
+  }, []);
+
+  return (
+      <MagazineContext.Provider value={{ magazines }}>
+        {children}
+      </MagazineContext.Provider>
+  );
 };
 
+
+/*
 const dummyData = {
   popup: {
     1: {
@@ -277,6 +312,7 @@ const dummyData = {
   },
 };
 
+
 export const MagazineProvider = ({ children }) => {
   const [magazines, setMagazines] = useState(dummyData);
 
@@ -287,4 +323,4 @@ export const MagazineProvider = ({ children }) => {
   );
 };
 
-
+ */

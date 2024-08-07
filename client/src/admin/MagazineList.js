@@ -1,6 +1,6 @@
 import React from 'react';
 import { List, Datagrid, TextField, EditButton, DeleteButton, Toolbar, SaveButton, SearchInput, ChipField, CreateButton, RichTextField, SelectInput } from 'react-admin';
-import { Edit, SimpleForm, TextInput, BooleanInput, DateField } from 'react-admin';
+import { Edit, SimpleForm, TextInput, BooleanInput, DateField, ChipInput, DateInput } from 'react-admin';
 import { Create } from 'react-admin';
 import BooleanField from './BooleanField'; 
 import ToggleButton from './ToggleButton'; 
@@ -9,9 +9,15 @@ import { RichTextInput } from 'ra-input-rich-text';
 
 const magazineFilters = [
     <SearchInput source="q" />,
-    <TextInput label="Email" source="email" defaultValue="" />,
-    <TextInput label="Category" source="category" defaultValue="" />,
-    <TextInput label="NickName" source="nickname" defaultValue="" />,
+    <TextInput label="id" source="id" defaultValue="" />,
+    <TextInput label="adminId" source="admin_id" defaultValue="" />,
+    <TextInput label="adminName" source="admin_name" defaultValue="" />,
+    <SelectInput label="category" source="category" defaultValue="" />,
+    <TextInput label="title" source="title" defaultValue="" />,
+    <TextInput label="title2" source="title2" defaultValue="" />,
+    <TextInput label="content" source="content" defaultValue="" />,
+    <TextInput label="writeday" source="writeday" defaultValue="" />,
+    <BooleanInput label="hidden" source="hidden" defaultValue="" />
 ];
 
 export const MagazineList = (props) => (
@@ -20,12 +26,11 @@ export const MagazineList = (props) => (
             <TextField source="id" />
             <TextField source="admin_id" />
             <TextField source="admin_name" />
+            <ChipField source="category" />
             <TextField source="title" />
             <TextField source="title2" />
             <RichTextField source="content" />
             <DateField source="writeday" />
-            <TextField source="like" />
-            <ChipField source="category" />
             <BooleanField source="hidden" />
             <CreateButton/>
             <EditButton />
@@ -48,17 +53,19 @@ const MagazineToolbar = () =>{
 export const MagazineCreate = (props) => (
     <Create {...props}>
         <SimpleForm toolbar={<MagazineToolbar/>}>
+            <TextInput source="id" />
+            <TextInput source="admin_id" />
             <TextInput source="admin_name" />
+            <SelectInput source="category"choices={[
+                { id: 'popup', name: 'POP-UP' },
+                { id: 'tmi', name: 'TMI' },
+                { id: 'recipe', name: 'Recipe' },
+                { id: 'recommend', name: 'Recommend' },
+            ]} />
             <TextInput source="title" />
             <TextInput source="title2" />
             <RichTextInput source="content" />
-            <TextInput source="writeday" />
-            <SelectInput source="category"choices={[
-			    { id: 'popup', name: 'POP-UP' },
-			    { id: 'tmi', name: 'TMI' },
-			    { id: 'recipe', name: 'Recipe' },
-			    { id: 'recommend', name: 'Recommend' },
-			]} />
+            <DateInput source="writeday" />
             <BooleanInput source="hidden" label="Hidden" />
             <SaveButton/>
         </SimpleForm>
@@ -68,16 +75,19 @@ export const MagazineCreate = (props) => (
 export const MagazineEdit = (props) => (
     <Edit {...props}>
         <SimpleForm toolbar={MagazineToolbar}>
+            <TextInput source="id" />
+            <TextInput source="admin_id" />
             <TextInput source="admin_name" />
+            <SelectInput source="category"choices={[
+                { id: 'popup', name: 'POP-UP' },
+                { id: 'tmi', name: 'TMI' },
+                { id: 'recipe', name: 'Recipe' },
+                { id: 'recommend', name: 'Recommend' },
+            ]} />
             <TextInput source="title" />
             <TextInput source="title2" />
             <RichTextInput source="content" />
-            <SelectInput source="category"choices={[
-			    { id: 'popup', name: 'POP-UP' },
-			    { id: 'tmi', name: 'TMI' },
-			    { id: 'recipe', name: 'Recipe' },
-			    { id: 'recommend', name: 'Recommend' },
-			]} />
+            <DateInput source="writeday" />
             <BooleanInput source="hidden" label="Hidden" />
             <SaveButton/>
         </SimpleForm>

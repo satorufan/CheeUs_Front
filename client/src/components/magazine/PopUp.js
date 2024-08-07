@@ -32,12 +32,28 @@ const PopUp = () => {
     navigate(`/magazine/detail/popup/${id}`);
   };
 
-  // 페이지네이션
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentMagazines = Object.values(magazines.popup).filter(magazine => (magazine.title.includes(searchQuery) || magazine.title2.includes(searchQuery))).slice(startIndex, startIndex + itemsPerPage);
-  const totalPages = Math.ceil(Object.values(magazines.popup).filter(magazine => (magazine.title.includes(searchQuery) || magazine.title2.includes(searchQuery))).length / itemsPerPage);
+    // 데이터 로딩 완료 전 대기
+    if (!magazines) {
+        return <div>Loading...</div>;
+    }
 
-  const handleChange = (event, value) => {
+    // 이벤트 데이터 추출
+    const magazineList = magazines.magazine;
+
+    // 디버깅용
+    // console.log("<<magazines.magazine>>JSON ", JSON.stringify(magazines, null, 2));
+    
+    // "popup" 카테고리의 JSON만 필터링
+    const filteredMagazines = magazineList
+        .filter(magazine => magazine.category === 'popup' &&
+            (magazine.title.includes(searchQuery) || magazine.title2.includes(searchQuery)));
+
+  // 페이지네이션
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const currentMagazines = filteredMagazines.slice(startIndex, startIndex + itemsPerPage);
+    const totalPages = Math.ceil(filteredMagazines.length / itemsPerPage);
+
+    const handleChange = (event, value) => {
     setCurrentPage(value);
   };
 
