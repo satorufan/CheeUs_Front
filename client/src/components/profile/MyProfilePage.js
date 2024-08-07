@@ -43,6 +43,13 @@ const MyProfilePage = () => {
         }
     };
 
+    const handleGoPost = (id, type) => {
+        if (type == "[함께마셔요]") navigate(`/dtboard/post/${id}`);
+        // else if (type == "[일반게시판]") navigate(`/dtboard/post/${id}`);
+        // else if (type == "[매거진]") navigate(`/dtboard/post/${id}`);
+        // else if (type == "[이벤트게시판]") navigate(`/dtboard/post/${id}`);
+    }
+
     return (
         <div className="myprofile-container">
             <div className="user-profile-nickname">My Profile</div>
@@ -57,6 +64,9 @@ const MyProfilePage = () => {
                     )}
                 </div>
                 <div className="my-info-container">
+                    {profileStatus === 'loading' ? (
+                        <p></p>
+                    ) : (<>
                     <div className="my-board">
                         <table>
                             <thead>
@@ -65,21 +75,14 @@ const MyProfilePage = () => {
                                 </tr>
                             </thead>
                             <tbody>
+                                <tr><td></td><td></td></tr>
                                 {/* 데이터바인딩 예시 */}
-                                {/* likedPosts.map(post => (
+                                {profileStatus === 'succeeded' && userProfile ?. profile.scrap.map(post => (
                                 <tr key={post.id}>
-                                    <td>{post.title}</td>
-                                    <td>{post.content}</td>
+                                    <td>{post.type}</td>
+                                    <td onClick={()=>handleGoPost(post.id, post.type)}>{post.title}</td>
                                 </tr>
-                                )) */}
-                                <tr>
-                                    <td>게시물 1</td>
-                                    <td>내용 1</td>
-                                </tr>
-                                <tr>
-                                    <td>게시물 2</td>
-                                    <td>내용 2</td>
-                                </tr>
+                                ))}
                             </tbody>
                         </table>
                     </div>
@@ -91,24 +94,16 @@ const MyProfilePage = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {/* myPosts.map(post => (
+                                {profileStatus === 'succeeded' && userProfile ?. profile.myPost.map(post => (
                                 <tr key={post.id}>
-                                    <td>{post.title}</td>
-                                    <td>{post.content}</td>
+                                    <td>{post.type}</td>
+                                    <td onClick={()=>handleGoPost(post.id, post.type)}>{post.title}</td>
                                 </tr>
-                                )) */}
-                                <tr>
-                                    <td>게시물 1</td>
-                                    <td>내용 1</td>
-                                </tr>
-                                <tr>
-                                    <td>게시물 2</td>
-                                    <td>내용 2</td>
-                                </tr>
+                                ))}
                             </tbody>
                         </table>
-                    </div>
-                </div>``
+                    </div></>)}
+                </div>
             </div>
             <div>
             </div>

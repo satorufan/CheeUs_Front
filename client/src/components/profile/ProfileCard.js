@@ -6,11 +6,12 @@ import './profileCard.css';
 import axios from 'axios';
 import { AuthContext } from '../login/OAuth';
 
-const ProfileCard = ({ profileInfo, loggedInUserId, showLikeButton }) => {
+const ProfileCard = ({ profileInfo, loggedInUserId, type }) => {
     const dispatch = useDispatch();
     const userLocation = useSelector((state) => state.profile.userLocation);
+    console.log(profileInfo);
 
-    const {serverUrl, memberEmail} = useContext(AuthContext);
+    const {serverUrl, memberEmail, token} = useContext(AuthContext);
     const [showModal, setShowModal] = useState(false);
     const [modalIndex, setModalIndex] = useState(0);
 
@@ -97,25 +98,19 @@ const ProfileCard = ({ profileInfo, loggedInUserId, showLikeButton }) => {
     const handleCloseModal = () => {
         setShowModal(false);
     };
-
-    // 좋아요 버튼 기존
-    // const handleLike = () => {
-    //     if (showLikeButton) {
-    //         if (isLiked) {
-    //             dispatch(unlikeProfile(profileInfo.profile.id));
-    //         } else {
-    //             dispatch(likeProfile(profileInfo.profile.id));
-    //         }
-    //     }
-    // };
-
+    
     // 좋아요 버튼 새 로직
     const handleLike = () => {
         console.log("like!")
         axios.post(serverUrl + "/profile/addLike", {
             email : profileInfo.profile.email,
             liker : memberEmail
-        });
+        }, {
+            headers : {
+                'Authorization': `Bearer ${token}`
+            },
+            withCredentials : true
+        }).then((res)=>console.log(res));
         if (isLiked) {
             setLikeCnt(()=>likeCnt - 1);
         } else {

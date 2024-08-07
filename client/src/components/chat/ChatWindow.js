@@ -40,7 +40,6 @@ const ChatWindow = ({
     const handleReportModalOpen = () => setShowReportModal(true);
     const handleReportModalClose = () => setShowReportModal(false);
     
-
     useEffect(() => {
         if (token) {
             try {
@@ -141,6 +140,7 @@ const ChatWindow = ({
     //    if (!selectedChat) return null;
     //    return selectedChat.member1 === loggedInUserId ? selectedChat.member2 : selectedChat.member1;
     //};
+
     // 발신자 프로필 불러오기
     const getProfileForSender = async (email) => {
         if (email === "System" || email === memberEmail) {
@@ -210,14 +210,6 @@ const ChatWindow = ({
             );
         }
     
-        //const otherUserId = getOtherUserId();
-        //if (!otherUserId) {
-        //    return <span>상대방 정보 없음</span>;
-        //}
-        
-        //const nickname = getNickname(otherUserId);
-       // const profileImage = getProfileImage(otherUserId);
-    
        if (activeKey === 'one') {
         return (
             <>
@@ -228,7 +220,7 @@ const ChatWindow = ({
                     alt={`Profile of ${selectedChat.nickname}`} 
                     className="profile-img rounded-circle" 
                     style={{ width: '40px', height: '40px', marginRight: '10px' }}
-                    onClick={() => navigateToUserProfile(selectedChat.id)}
+                    onClick={() => navigateToUserProfile(selectedChat)}
                 />
                 <span onClick={() => navigateToUserProfile(selectedChat.id)}>{selectedChat.nickname}</span> 
                 </div>
@@ -269,17 +261,6 @@ const ChatWindow = ({
         return profile ? profile.profile.nickname : email;
     };
 
-    const getProfileImage = (email) => { // 단체채팅 이미지 가져오기
-        const profile = profiles.find(p => p.profile.email === email);
-        return profile && profile.imageBlob.length > 0
-           ? profile.imageBlob[0]
-            : 'https://www.example.com/default-profile.jpg';
-    };
-
-    const getUserId = (email) => {
-        const profile = profiles.find(p => p.profile.email === email);
-        return profile ? profile.profile.id : null;
-    };
     // 날짜 포멧
     const formatDate = (date) => {
         // 예시 형식: 2024년 8월 2일
@@ -287,28 +268,13 @@ const ChatWindow = ({
     };
 
     // id로 이동하도록 바꿔야함
-    const navigateToUserProfile = (email) => {
-        const userId = getUserId(email);
-        if (userId) {
-            navigate(`/user/${userId}`);
+    const navigateToUserProfile = (profile) => {
+        const opponent = loggedInUserId == profile.member1 ? profile.member2 : profile.member1;
+        if (opponent) {
+            navigate(`/userprofile/${opponent}`);
         } else {
-            console.error('User ID not found for email:', email);
+            console.error('User ID not found for email:', opponent);
         }
-    };
-
-    const getMessageSenderInfo = (senderId) => {
-        const senderProfile = (activeKey === 'one')
-            ? profiles.find(p => p.profile.email === senderId)
-            : profileData.find(p => p.profile.email === senderId);
-    
-        return {
-            nickname: senderProfile ? senderProfile.profile.nickname : senderId,
-            profileImage: senderProfile && senderProfile.imageBlob.length > 0
-                ? senderProfile.imageBlob[0]
-                : <Avatar
-                src={`${process.env.PUBLIC_URL}/images/default-avatar.jpg`}
-            />
-        };
     };
 
     const getChatBubbleClasses = (senderId) => {
