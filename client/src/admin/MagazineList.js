@@ -1,5 +1,5 @@
 import React from 'react';
-import { List, Datagrid, TextField, EditButton, DeleteButton, Toolbar, SaveButton, SearchInput, ImageField, ChipField, CreateButton, RichTextField } from 'react-admin';
+import { List, Datagrid, TextField, EditButton, DeleteButton, Toolbar, SaveButton, SearchInput, ChipField, CreateButton, RichTextField, SelectInput } from 'react-admin';
 import { Edit, SimpleForm, TextInput, BooleanInput } from 'react-admin';
 import { Create } from 'react-admin';
 import BooleanField from './BooleanField'; 
@@ -56,9 +56,15 @@ export const MagazineCreate = (props) => (
             <TextInput source="title2" />
             <RichTextInput source="content" />
             <TextInput source="writeday" />
-            <TextInput source="category" />
+            <SelectInput source="category"choices={[
+			    { id: 'popup', name: 'POP-UP' },
+			    { id: 'tmi', name: 'TMI' },
+			    { id: 'recipe', name: 'Recipe' },
+			    { id: 'recommend', name: 'Recommend' },
+			]} />
             <BooleanInput source="pinned" label="Pinned" />
             <BooleanInput source="hidden" label="Hidden" />
+            <SaveButton/>
         </SimpleForm>
     </Create>
 );
@@ -70,9 +76,15 @@ export const MagazineEdit = (props) => (
             <TextInput source="title" />
             <TextInput source="title2" />
             <RichTextInput source="content" />
-            <TextInput source="category" />
+            <SelectInput source="category"choices={[
+			    { id: 'popup', name: 'POP-UP' },
+			    { id: 'tmi', name: 'TMI' },
+			    { id: 'recipe', name: 'Recipe' },
+			    { id: 'recommend', name: 'Recommend' },
+			]} />
             <BooleanInput source="pinned" label="Pinned" />
             <BooleanInput source="hidden" label="Hidden" />
+            <SaveButton/>
         </SimpleForm>
     </Edit>
 );

@@ -1,10 +1,11 @@
 import React from 'react';
 import { List, Datagrid, TextField, EditButton, DeleteButton, SearchInput, Toolbar, SaveButton } from 'react-admin';
-import { Edit, SimpleForm, TextInput, BooleanInput } from 'react-admin';
+import { Edit, SimpleForm, TextInput, BooleanInput, SelectInput, ChipField, RichTextField } from 'react-admin';
 import { Create } from 'react-admin';
 import BooleanField from './BooleanField'; 
 import ToggleButton from './ToggleButton'; 
 import { FilterSidebar, ListActions } from './FilterSidebar';
+import { RichTextInput } from 'ra-input-rich-text';
 
 const eventFilters = [
     <SearchInput source="q" />,
@@ -22,10 +23,10 @@ export const EventList = (props) => (
             <TextField source="admin_id" />
             <TextField source="title" />
             <TextField source="admin_name" />
-            <TextField source="content" />
+            <RichTextField source="content" />
             <TextField source="title2" />
             <TextField source="writeday" />
-            <TextField source="catagory" />
+            <ChipField source="catagory" />
             <BooleanField source="pinned" />
             <BooleanField source="hidden" />
             <ToggleButton field="pinned" />
@@ -53,9 +54,14 @@ export const EventCreate = (props) => (
             <TextInput source="admin_name" />
             <TextInput source="title" />
             <TextInput source="title2" />
-            <TextInput source="category" />
+            <RichTextInput source="content" />
+            <TextInput source="writeday" />
+            <SelectInput source="category"choices={[
+			    { id: 'event', name: 'Event' },
+			]} />
             <BooleanInput source="pinned" label="Pinned" />
             <BooleanInput source="hidden" label="Hidden" />
+            <SaveButton/>
         </SimpleForm>
     </Create>
 );
@@ -63,13 +69,16 @@ export const EventCreate = (props) => (
 export const EventEdit = (props) => (
     <Edit {...props}>
         <SimpleForm toolbar={<EventToolbar/>}>
-            <TextInput source="id" disabled />
+            <TextInput source="admin_name" />
             <TextInput source="title" />
-            <TextInput source="content" />
             <TextInput source="title2" />
-            <TextInput source="category" />
+            <RichTextInput source="content" />
+            <SelectInput source="category"choices={[
+			    { id: 'event', name: 'Event' },
+			]} />
             <BooleanInput source="pinned" label="Pinned" />
             <BooleanInput source="hidden" label="Hidden" />
+            <SaveButton/>
         </SimpleForm>
     </Edit>
 );

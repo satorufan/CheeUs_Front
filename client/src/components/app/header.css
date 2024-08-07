@@ -1,5 +1,8 @@
 .header-container{
   font-family: 'GwangyangTouching';
+  position: sticky;
+  top: 0px;
+  z-index: 9999;
 }
 
 .header-box {
