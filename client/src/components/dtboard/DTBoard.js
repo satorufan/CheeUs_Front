@@ -8,6 +8,7 @@ import { fetchUserProfiles, selectProfiles,  } from '../../store/MatchSlice';
 import { selectUserProfile } from '../../store/ProfileSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { AuthContext } from '../login/OAuth';
+import RoomSharpIcon from '@mui/icons-material/RoomSharp';
 
 
 const DTBoard = () => {
@@ -70,7 +71,13 @@ const DTBoard = () => {
         <DTBoardMap selectedPostId={selectedPostId} /> {/* 선택된 게시물 ID를 전달 */}
       </div>
       ): memberEmail ? (<div className="permissionMessage" >
-              <p>잠시만 기다려주세요...</p>
+              <div className="moving-container">
+                <div>모임 정보 확인중...
+                <div className="moving-icon">
+                  <RoomSharpIcon fontSize="large" />
+                </div>
+                </div>
+              </div>
             </div>) : (<div className="permissionMessage" >
               <p onClick={goLogin}>로그인 후 이용할 수 있습니다.</p>
             </div>)}

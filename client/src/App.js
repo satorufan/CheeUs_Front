@@ -49,6 +49,7 @@ import EventEnd from './components/event/EventEnd';
 import EventDetail from './components/event/EventDetail';
 import { EventProvider } from './components/event/EventContext';
 import { MagazineProvider } from './components/magazine/MagazineContext';
+import PinnedPost from './admin/Pinned/PinnedPost';
 
 const ChatPage = lazy(() => import('./components/chat/ChatPage'));
 
@@ -56,7 +57,7 @@ function App() {
   return (
     <div className="App">
       <AuthProvider>
-      <BrowserRouter>
+      <Router>
         <PostProvider>
         <MagazineProvider>
         <EventProvider>
@@ -105,13 +106,14 @@ function App() {
               <Route path="*" element={<NotFound/>} />
               <Route path="/event/detail/:category/:id" element={<EventDetail />} />
               <Route path="/admin/*" element={<AdminDashboard />} />
+              <Route path="/pinnedpost" element={<PinnedPost/>} />
             </Routes>
 	       </Suspense>
 	      <Footer />
 	    </EventProvider>
 	    </MagazineProvider>
         </PostProvider>
-      </BrowserRouter>
+      </Router>
       </AuthProvider>
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useEffect, useRef, useContext,  useCallback,  } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Nav } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -49,38 +49,6 @@ const ChatPage = () => {
         }
     }, [token]);
 
-    /*
-    useEffect(() => {
-        socket.current = io('http://localhost:8888'); 
-    
-        const handleReceiveMessage = (message) => {
-            console.log('Received message:', message);
-
-        // 현재 활성화된 탭에 따라 채팅방 목록의 마지막 메시지를 업데이트
-        if (activeKey === 'one') {
-            dispatch(updateLastMessageInChatRooms({ roomId: message.chat_room_id, message }));
-        } else if (activeKey === 'together') {
-            dispatch(updateLastMessageInTogetherChatRooms({ roomId: message.room_id, message }));
-        }
-
-        // UI 업데이트는 선택된 채팅방이 있는 경우에만
-        if (selectedChat && selectedChat.roomId) {
-            if (activeKey === 'one' && message.chat_room_id === selectedChat.roomId) {
-                dispatch(appendMessageToChat(message));
-            } else if (activeKey === 'together' && message.room_id === selectedChat.roomId) {
-                dispatch(appendMessageToChat(message));
-            }
-        }
-    };
-    
-        socket.current.on('receiveMessage', handleReceiveMessage);
-    
-        return () => {
-            socket.current.off('receiveMessage', handleReceiveMessage);
-            socket.current.disconnect();
-        };
-    }, [dispatch, activeKey, selectedChat]);
-    */
     const socket = useSocketIo(activeKey, selectedChat); // 커스텀훅
 
     useEffect(() => {
@@ -97,7 +65,7 @@ const ChatPage = () => {
     }, [activeKey, dispatch]);
 
 
-    const handlePersonClick = async (roomId) => {
+    const handlePersonClick = useCallback(async (roomId) => {
         try {
             const selectedRoom = chatRooms.find(room => room.roomId === roomId);
             if (!selectedRoom) {
@@ -117,19 +85,17 @@ const ChatPage = () => {
         } catch (error) {
             console.error('메시지를 불러오는 중 에러 발생:', error);
         }
-    };
-    const handleTogetherRoomClick = async (roomId) => {
+    }, [chatRooms, dispatch]);
+
+    const handleTogetherRoomClick = useCallback(async (roomId) => {
         const userId = loggedInUserId;
         try {
-            console.log('handleTogetherRoomClick called with roomId:', roomId, 'userId:', userId);
-            
             const selectedRoom = togetherChatRooms.find(room => room.roomId === roomId);
             if (!selectedRoom) {
                 console.error(`roomId ${roomId}에 해당하는 단체 채팅방을 찾을 수 없습니다.`);
                 return;
             }
-            console.log('Updated together chat room read array:', selectedRoom);
-            
+
             const response = await axios.get(`http://localhost:8889/api/togetherMessages/${roomId}`);
             const messages = response.data.map(message => ({
                 ...message,
@@ -144,7 +110,7 @@ const ChatPage = () => {
         } catch (error) {
             console.error('메시지를 불러오는 중 에러 발생:', error);
         }
-    };
+    }, [loggedInUserId, togetherChatRooms, dispatch]);
 
     const sendMessage = async (inputMessage) => {
         if (!selectedChat || !inputMessage.trim() || !loggedInUserId) {

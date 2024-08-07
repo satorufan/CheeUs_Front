@@ -4,7 +4,7 @@ import './Admin.css';
 import axios from 'axios';
 import { useLogin, useNotify, Notification } from 'react-admin';
 
-const AdminLogin = ({theme}) => { 
+const AdminLogin = () => { 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const login = useLogin();

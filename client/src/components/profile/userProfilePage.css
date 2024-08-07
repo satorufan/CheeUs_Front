@@ -1,18 +1,6 @@
 .profile-tags li.like-btn {
     cursor: pointer;
 }
-.back-page-btn{
-    font-family : 'YeojuCeramic';
-    padding: 5px 20px;
-    border: solid 2px white;
-    margin-left: calc(60% - 30px);
-}
-
-.back-page-btn:hover{
-    background-color: black;
-    border: solid 2px white;
-    color: white;
-}
 
 .user-profile-nickname{
     font-family : 'YeojuCeramic';
@@ -26,3 +14,27 @@
     align-items: center;
     min-height: calc(100vh - 100px); 
   }
+
+  .footer-btn {
+    display: flex;
+    justify-content: flex-end; 
+    width: 100%;
+    margin-top: 20px;
+    margin-right: 100px;
+}
+
+.back-page-btn {
+    font-family: 'YeojuCeramic';
+    padding: 5px 20px;
+    border: solid 2px black;
+    background-color: black; 
+    color: white; 
+}
+
+.back-page-btn :hover {
+    font-family: 'YeojuCeramic';
+    padding: 5px 20px;
+    border: solid 2px black;
+    background-color: rgb(255, 255, 255);
+    color: rgb(0, 0, 0); 
+}

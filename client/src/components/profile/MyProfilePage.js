@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import ProfileCard from './ProfileCard';
@@ -6,6 +6,7 @@ import { fetchUserProfile, selectUserProfile, selectProfileStatus, selectProfile
 import './myProfilePage.css';
 import { AuthContext } from '../login/OAuth';
 import Swal from 'sweetalert2';
+import ProfileSkeleton from '../skeleton/ProfileSkeleton';
 
 const MyProfilePage = () => {
     
@@ -24,11 +25,11 @@ const MyProfilePage = () => {
     const userProfile = useSelector(selectUserProfile);
     const profileStatus = useSelector(selectProfileStatus);
     const profileError = useSelector(selectProfileError);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         dispatch(fetchUserProfile({ serverUrl, memberEmail, token }));
     }, [dispatch, serverUrl, memberEmail]);
-
 
     useEffect(() => {
         if (profileError) {
@@ -44,11 +45,16 @@ const MyProfilePage = () => {
     };
 
     const handleGoPost = (id, type) => {
-        if (type == "[함께마셔요]") navigate(`/dtboard/post/${id}`);
-        // else if (type == "[일반게시판]") navigate(`/dtboard/post/${id}`);
-        // else if (type == "[매거진]") navigate(`/dtboard/post/${id}`);
-        // else if (type == "[이벤트게시판]") navigate(`/dtboard/post/${id}`);
-    }
+        if (type === "[함께마셔요]") {
+            navigate(`/dtboard/post/${id}`)
+        } else if(type=="[일반게시판]"){
+            navigate(`/board/freeboard/detail/${id}`)
+        }
+        // 다른 게시판 유형에 따라 적절한 경로로 이동하도록 설정
+    };
+
+    const hasScrapPosts = userProfile?.profile.scrap.length > 0;
+    const hasMyPosts = userProfile?.profile.myPost.length > 0;
 
     return (
         <div className="myprofile-container">
@@ -56,7 +62,7 @@ const MyProfilePage = () => {
             <div className="userprofile-container">
                 <div className="profile-container">
                     {profileStatus === 'loading' ? (
-                        <p>로딩 중...</p>
+                        <ProfileSkeleton />
                     ) : userProfile ? (
                         <ProfileCard profileInfo={userProfile} loggedInUserId={memberEmail} />
                     ) : (
@@ -65,47 +71,66 @@ const MyProfilePage = () => {
                 </div>
                 <div className="my-info-container">
                     {profileStatus === 'loading' ? (
-                        <p></p>
-                    ) : (<>
-                    <div className="my-board">
-                        <table>
-                            <thead>
-                                <tr colspan ='2'>
-                                    <th width="30%">찜한 목록</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr><td></td><td></td></tr>
-                                {/* 데이터바인딩 예시 */}
-                                {profileStatus === 'succeeded' && userProfile ?. profile.scrap.map(post => (
-                                <tr key={post.id}>
-                                    <td>{post.type}</td>
-                                    <td onClick={()=>handleGoPost(post.id, post.type)}>{post.title}</td>
-                                </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div className="my-posts">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th width="30%">내가 쓴 글</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {profileStatus === 'succeeded' && userProfile ?. profile.myPost.map(post => (
-                                <tr key={post.id}>
-                                    <td>{post.type}</td>
-                                    <td onClick={()=>handleGoPost(post.id, post.type)}>{post.title}</td>
-                                </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div></>)}
+                        <>
+                            <div className="my-board" >
+                                <div className="my-board-inner"></div>
+                            </div>
+                            <div className="my-posts"><div className="my-board-inner"></div>
+                            </div>
+                            </>
+                    ) : (
+                        <>
+                            <div className="my-board">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th width="30%">찜한 목록</th>
+                                            <th style={{ background: 'white' }}></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {hasScrapPosts ? (
+                                            userProfile.profile.scrap.map(post => (
+                                                <tr key={post.id}>
+                                                    <td>{post.type}</td>
+                                                    <td onClick={() => handleGoPost(post.id, post.type)}>{post.title}</td>
+                                                </tr>
+                                            ))
+                                        ) : (
+                                            <tr>
+                                                <td colSpan="2">찜한 목록이 없습니다.</td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div className="my-posts">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th width="30%">내가 쓴 글</th>
+                                            <th style={{ background: 'white' }}></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {hasMyPosts ? (
+                                            userProfile.profile.myPost.map(post => (
+                                                <tr key={post.id}>
+                                                    <td>{post.type}</td>
+                                                    <td onClick={() => handleGoPost(post.id, post.type)}>{post.title}</td>
+                                                </tr>
+                                            ))
+                                        ) : (
+                                            <tr>
+                                                <td colSpan="2">내 게시물이 없습니다.</td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </>
+                    )}
                 </div>
-            </div>
-            <div>
             </div>
             <div className="mybtn-container">
                 <button
@@ -115,7 +140,7 @@ const MyProfilePage = () => {
                 >
                     내 정보 수정
                 </button>
-                </div>
+            </div>
         </div>
     );
 };

@@ -5,7 +5,7 @@ body{
   display: flex;
   flex-direction: column;
   height: 100vh;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
 }
 
 /* 게시판과 지도 영역 */
@@ -228,4 +228,27 @@ body{
 }
 .dt-post-nick {
   margin-left: 10px;
+}
+.moving-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; 
+}
+
+.moving-icon {
+  animation: moveUpDown 0.5s ease-in-out infinite;
+}
+
+/* 애니메이션 정의 */
+@keyframes moveUpDown {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px); 
+  }
+  100% {
+    transform: translateY(0);
+  }
 }
