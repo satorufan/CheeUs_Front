@@ -22,35 +22,35 @@
 }
 
 .grey {
-    position: relative;
     width: 100%;
     padding: 20px;
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: white;
     margin-top: 500px;
     z-index: 2;
-    height: 480px;
     overflow-y: auto;
+    cursor:pointer;
 }
 
 .main-section {
-    position: sticky;
     top: 60px; 
-    height: 350px;
     background-color: rgba(255, 255, 255);
     display: flex;
     align-items: center;
-    margin: 50px auto;
+    margin:80px auto;
     padding: 20px;
     z-index: 1;
     transition: opacity 0.3s, transform 0.3s;
     justify-content: center;
 }
 
+
 /* 이미지 기본 스타일 */
 .main-section-image img {
     width: 500px;
     height: 300px;
     object-fit: cover;
+    transition: width 0.6s ease; 
+    transition: height 0.6s ease; 
 }
 
 .main-section-text {
@@ -65,47 +65,13 @@
 
 @media (max-width: 768px) {
     .main-section-text {
-        font-size: 20px; 
+        font-size: 15px; 
     }
 
     .main-section-image img {
-        opacity: 0; 
-        display: none;
+        width : 100px;
+        height:60px;
     }
-}
-
-
-/* 캐러셀 설정 */
-.main-carousel {
-    position: relative;
-    width: 100%;
-    max-width: 100vw;
-    margin-top: 20px;
-    z-index: 3;
-}
-
-.main-carousel .carousel-caption {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    padding: 20px;
-    text-align: center;
-    transition: bottom 0.3s;
-}
-
-.main-carousel .carousel-inner {
-    height: 50vh;
-    width: 100vw;
-    font-family: 'TOkki';
-    position: relative;
-}
-
-.main-carousel .carousel-item {
-    position: relative;
-    height: 100%;
 }
 
 /* 비디오 콘텐츠 설정 */

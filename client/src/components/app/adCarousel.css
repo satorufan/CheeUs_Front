@@ -1,16 +1,47 @@
 .ad-carousel {
-    width: 50%;
-    margin: 0 auto; 
-    border-radius: 20px; 
-    overflow: hidden; 
-  }
-  
-  .ad-carousel .carousel-item {
-    height: 200px;
-  }
-  
-  .ad-carousel img {
-    width: 100%; 
-    height: 100%;
-    object-fit: cover;
-  }
+  position: relative;
+  width: 100%;
+  max-width: 900px; 
+  margin: 0 auto; 
+  margin-top: 20px;
+  z-index: 3;
+  border-radius: 50px; 
+  overflow: hidden;
+}
+
+.ad-carousel .carousel-inner {
+  height: 60vh;
+  width: 100%;
+  font-family: 'TOkki';
+  position: relative;
+  border-radius: 50px; 
+}
+
+.ad-carousel .carousel-item {
+  position: relative;
+  height: 100%;
+}
+
+.ad-carousel .carousel-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
+  border-radius: 50px; 
+}
+
+.ad-carousel .carousel-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 10px;
+  text-align: center;
+  transition: bottom 0.3s;
+}
+
+.ad-carousel .carousel-caption h3,
+.ad-carousel .carousel-caption p {
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
