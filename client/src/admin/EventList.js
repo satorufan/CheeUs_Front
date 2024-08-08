@@ -70,7 +70,7 @@ export const EventEdit = (props) => (
             <TextInput source="admin_name" />
             <TextInput source="title" />
             <TextInput source="title2" />
-            <TextInput source="content" />
+            <RichTextInput source="content" />
             <DateInput source="writeday" />
             <BooleanInput source="hidden" label="Hidden" />
             <SaveButton/>
