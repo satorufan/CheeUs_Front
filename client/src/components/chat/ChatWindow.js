@@ -324,7 +324,6 @@ const ChatWindow = ({
         // 신고할 유저의 email을 상태로 저장
         setReportedId(memberId.email);
     
-        // 신고 모달을 엽니다.
         handleReportModalOpen();
     };
 
@@ -353,11 +352,13 @@ const ChatWindow = ({
                     )}
                     <div ref={scrollRef}></div>
                 </div>
-            ) : (<div className="no-messages">
-                <div>잠시만 기다려주세요</div>
+            ) : ( <div className="chat active-chat">
+                 <div className="no-messages">
+                    <div>{DefaultMessage()}</div>
+                </div>
             </div>)}
 
-            {showMessageInput && (
+            {showMessageInput && selectedChat && (
                 <div className="chat-write d-flex align-items-center">
                     <input
                         type="text"
@@ -378,7 +379,8 @@ const ChatWindow = ({
                         className="send-icon"
                         fontSize="large"
                         onClick={() => {
-                            sendMessage(inputMessageRef.current);
+                            sendMessage(inputMessageRef.current.value);
+                            inputMessageRef.current.value = null;
                             scrollToBottom();
                         }}
                     />
