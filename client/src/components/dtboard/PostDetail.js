@@ -6,7 +6,7 @@ import PostDetailMap from './PostDetailMap';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import './DTBinputForm.css';
 import 'react-datepicker/dist/react-datepicker.css';
-import profileImg from '../images/google.png';
+import profileImg from '../images/noimage.jpg';
 import Swal from 'sweetalert2';
 import { fetchUserProfiles} from '../../store/MatchSlice';
 import { useDispatch, useSelector} from 'react-redux';
@@ -191,7 +191,7 @@ const PostDetail = () => {
         <div className="textareaHeader">
           <div className="textareaBox">{post.title}</div>
         </div>
-        <div className="contentContainer2">
+        <div className="contentContainer">
             <div className="contentHeader">
             </div>
             <br />

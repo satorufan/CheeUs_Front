@@ -28,7 +28,9 @@
   border-radius: 10px;
   outline: none;
 }
-
+.contentBox{
+	height: 86.5vh
+}
 .dt-input-mypage-box {
   flex: 1;
   padding: 10px;

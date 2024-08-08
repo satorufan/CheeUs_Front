@@ -1,15 +1,17 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import profileImg from '../images/noimage.jpg';
+import UseAuthorImages from '../images/UseAuthorImage';
 
 const DTBoardContent = ({ posts, totalPosts, postsPerPage, paginate, onWriteButtonClick, onPostClick }) => {
   const pageNumbers = [];
-  const navigate = useNavigate();
+  const authorImages = UseAuthorImages(posts);
+
 
   for (let i = 1; i <= Math.ceil(totalPosts / postsPerPage); i++) { // Math.ceil로 계산한 값을 올림하여 필요한 페이지 수를 구한다.
     pageNumbers.push(i); // 계산한 페이지 수를 1~n까지 구해 pageNumbers에 넣고 pagination으로 연결해 표시한다.
   }
 
-  console.log(posts);
+  //console.log(posts);
   return (
     <div className="board-left">
       {posts.map((post) => (
@@ -17,7 +19,7 @@ const DTBoardContent = ({ posts, totalPosts, postsPerPage, paginate, onWriteButt
           <div className = "postClickArea" onClick={() => onPostClick(post.id)}>
             <div className='post-img-nick'>
               <img
-                  src={post.image}
+                  src={authorImages[post.author_id] || profileImg}
                   alt={`img`}
                   className="rounded-circle mr-3"
                   style={{ width: '25px', height: '25px' }}
