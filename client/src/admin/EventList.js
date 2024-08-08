@@ -1,5 +1,5 @@
 import React from 'react';
-import { List, Datagrid, TextField, EditButton, DeleteButton, SearchInput, Toolbar, SaveButton, DateInput } from 'react-admin';
+import { List, Datagrid, TextField, EditButton, DeleteButton, SearchInput, Toolbar, SaveButton, DateInput, ImageInput, ImageField } from 'react-admin';
 import { Edit, SimpleForm, TextInput, BooleanInput, RichTextField, DateField } from 'react-admin';
 import { Create } from 'react-admin';
 import { FilterSidebar, ListActions } from './FilterSidebar';
@@ -26,7 +26,6 @@ export const EventList = (props) => (
             <TextField source="admin_name" />
             <TextField source="title" />
             <TextField source="title2" />
-            <RichTextField source="content" />
             <DateField source="writeday" />
             <BooleanField source="hidden" />
             <EditButton />
