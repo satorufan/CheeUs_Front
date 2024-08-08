@@ -55,7 +55,9 @@ const dataProvider = {
         return { data: params.ids };
     },
     create: async (resource, params) => {
+        console.log('params.data:', params.data);
         const url = endpoints[resource];
+        console.log("create params.data " + params.data);
         const { data } = await axios.post(url, params.data);
         return { data: { ...params.data, id: data.email || data.id } };
     },
