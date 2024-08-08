@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useRef, useContext,  useCallback,  } from 'react';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Nav } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './chatPage.css';
-import io from 'socket.io-client';
+import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
+import { AuthContext } from '../login/OAuth';
 import { 
     fetchChatRooms, 
     fetchTogetherChatRooms, 
@@ -11,18 +13,15 @@ import {
     setMessageInput, 
     setShowMessageInput, 
     setActiveKey, 
-    appendMessageToChat, 
-    updateLastMessageInChatRooms, 
-    updateLastMessageInTogetherChatRooms,
     updateMessageReadStatus,
-    updateTogetherMessageReadStatus
+    updateTogetherMessageReadStatus,
+    updateOneOnOneChatRoomStatus,
+    removeUserFromTogetherChatRoom
 } from '../../store/ChatSlice';
 import ChatList from './ChatList';
 import ChatWindow from './ChatWindow';
-import { jwtDecode } from 'jwt-decode';
-import { AuthContext } from '../login/OAuth';
-import axios from 'axios';
 import useSocketIo from '../../hooks/useSocketIo';
+import { useNavigate } from 'react-router-dom';
 
 const ChatPage = () => {
     const dispatch = useDispatch();
@@ -34,9 +33,8 @@ const ChatPage = () => {
     const showMessageInput = useSelector(state => state.chat.showMessageInput);
 
     const { token, serverUrl } = useContext(AuthContext);
-    //const socket = useRef(null);
-
     const [loggedInUserId, setLoggedInUserId] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (token) {
@@ -63,7 +61,6 @@ const ChatPage = () => {
         dispatch(setMessageInput(''));
         dispatch(setShowMessageInput(false));
     }, [activeKey, dispatch]);
-
 
     const handlePersonClick = useCallback(async (roomId) => {
         try {
@@ -102,7 +99,7 @@ const ChatPage = () => {
                 write_day: new Date(message.writeDay || message.write_day).toISOString(),
                 read: Array.isArray(message.read) ? message.read : [message.read]
             }));
-        
+
             dispatch(setSelectedChat({ ...selectedRoom, messages }));
             dispatch(setShowMessageInput(true));
             dispatch(setMessageInput(''));
@@ -142,6 +139,30 @@ const ChatPage = () => {
         return `${date.getHours()}:${date.getMinutes()}`;
     };
 
+    const handleExitChat = (roomId) => {
+        if (activeKey === 'one') {
+            if (window.confirm('정말로 이 1:1 채팅방을 나가시겠습니까?')) {
+                dispatch(updateOneOnOneChatRoomStatus({ roomId, match: 3 }))
+                    .then(() => {
+                        dispatch(fetchChatRooms({ serverUrl, loggedInUserId }));
+                        setSelectedChat(null); // Go back to default screen
+                        navigate('/chatpage');
+                    })
+                    .catch(err => console.error('1:1 채팅방 match 업데이트 오류:', err));
+            }
+        } else {
+            if (window.confirm('정말로 이 단체 채팅방에서 나가시겠습니까?')) {
+                dispatch(removeUserFromTogetherChatRoom({ roomId, userId: loggedInUserId }))
+                    .then(() => {
+                        dispatch(fetchTogetherChatRooms({ serverUrl, userId: loggedInUserId }));
+                        setSelectedChat(null); // Go back to default screen
+                        navigate('/chatpage');
+                    })
+                    .catch(err => console.error('단체 채팅방에서 사용자 제거 오류:', err));
+            }
+        }
+    };
+
     return (
         <div className="chat-container">
             <div className="container-fluid chat-wrapper">
@@ -163,6 +184,7 @@ const ChatPage = () => {
                                         chatRooms={chatRooms}
                                         selectedChat={selectedChat}
                                         handlePersonClick={handlePersonClick}
+                                        handleExitChat={handleExitChat} // Pass the handler here
                                         isTogether={false}
                                     />
                                 </div>
@@ -188,6 +210,7 @@ const ChatPage = () => {
                                         chatRooms={togetherChatRooms}
                                         selectedChat={selectedChat}
                                         handlePersonClick={handleTogetherRoomClick}
+                                        handleExitChat={handleExitChat} // Pass the handler here
                                         isTogether={true}
                                     />
                                 </div>

@@ -3,21 +3,20 @@ import { Search } from '@mui/icons-material';
 import { jwtDecode } from 'jwt-decode';
 import { AuthContext } from '../login/OAuth';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchChatRooms, fetchTogetherChatRooms, updateOneOnOneChatRoomStatus, removeUserFromTogetherChatRoom } from '../../store/ChatSlice';
-import { selectUserProfile, fetchUserProfiles, selectProfiles } from '../../store/MatchSlice';
+import { fetchChatRooms, fetchTogetherChatRooms } from '../../store/ChatSlice';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import ChatListSkeleton from '../skeleton/ChtListSkeleton'; 
+import ChatListSkeleton from '../skeleton/ChtListSkeleton';
 
-const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
-    const { token, serverUrl, memberEmail } = useContext(AuthContext);
+const ChatList = ({ selectedChat, handlePersonClick, handleExitChat, isTogether }) => {
+    const { token, serverUrl } = useContext(AuthContext);
     const [search, setSearch] = useState('');
     const [loggedInUserId, setLoggedInUserId] = useState(null);
-    const [dataLoaded, setDataLoaded] = useState(false); // 데이터 로딩 완료 상태
 
     const dispatch = useDispatch();
     const updatedChatRooms = useSelector(state => state.chat.chatRooms);
     const updatedTogetherChatRooms = useSelector(state => state.chat.togetherChatRooms);
     const status = useSelector(state => state.chat.status);
+    const error = useSelector(state => state.chat.error);
 
     useEffect(() => {
         if (token) {
@@ -33,20 +32,11 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
                         console.error('Failed to fetch together chat rooms:', err);
                     });
                 }
-                dispatch(fetchUserProfiles({ serverUrl, memberEmail })).catch(err => {
-                    console.error('Failed to fetch user profiles:', err);
-                });
             } catch (err) {
                 console.error('Token decoding error:', err);
             }
         }
-    }, [token, dispatch, isTogether, serverUrl, memberEmail]);
-
-    useEffect(() => {
-        if (status !== 'loading') {
-            setDataLoaded(true); // 데이터 로딩 완료 상태 업데이트
-        }
-    }, [status]);
+    }, [token, dispatch, isTogether, serverUrl]);
 
     const formatDate = (dateString) => {
         if (!dateString) return '메시지가 없습니다'; 
@@ -89,32 +79,16 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
 
     const isNewMessage = (room) => {
         const lastMessage = getLastMessage(room);
-        console.log(lastMessage);
         if (isTogether) {
             return !(lastMessage.read ?. includes(loggedInUserId));
         }
         return lastMessage.read === 0 && lastMessage.sender_id !== loggedInUserId;
     };
 
-    const handleExitChat = (roomId) => {
-        if (isTogether) {
-            if (window.confirm('정말로 이 단체 채팅방에서 나가시겠습니까?')) {
-                dispatch(removeUserFromTogetherChatRoom({ roomId, userId: loggedInUserId }))
-                    .then(() => {
-                        dispatch(fetchTogetherChatRooms({ serverUrl, userId: loggedInUserId }));
-                    })
-                    .catch(err => console.error('단체 채팅방에서 사용자 제거 오류:', err));
-            }
-        } else {
-            if (window.confirm('정말로 이 1:1 채팅방을 삭제하시겠습니까?')) {
-                dispatch(updateOneOnOneChatRoomStatus({ roomId, match: 3 }))
-                    .then(() => {
-                        dispatch(fetchChatRooms({ serverUrl, userId: loggedInUserId }));
-                    })
-                    .catch(err => console.error('1:1 채팅방 match 업데이트 오류:', err));
-            }
-        }
-    };
+    const isError = status === 'failed';
+    const isSuccess = status === 'succeeded';
+    const isLoading = status === 'loading';
+    const hasChats = filteredChatRooms.length > 0;
 
     return (
         <>
@@ -128,59 +102,64 @@ const ChatList = ({ selectedChat, handlePersonClick, isTogether }) => {
                 />
                 <Search className="search-icon ml-2" />
             </div>
-            {status === 'loading' ? (
+            {isLoading && (
                 <ChatListSkeleton isTogether={isTogether} />
-            ) : (
+            )}
+            {isError && (
+                <div className="error-message">
+                    <ChatListSkeleton isTogether={isTogether} />
+                </div>
+            )}
+            {isSuccess && hasChats && (
                 <ul className="chat-people list-unstyled">
-                    {dataLoaded ? (
-                        filteredChatRooms.length > 0 ? ( 
-                            filteredChatRooms.map(room => {
-                                const lastMessage = getLastMessage(room);
-                                return (
-                                    <li
-                                        key={room.roomId}
-                                        className={`chat-person ${selectedChat && selectedChat.roomId === room.roomId ? 'chat-active' : ''}`}
-                                        onClick={() => handlePersonClick(room.roomId)}
-                                    >
-                                        <div className="d-flex align-items-center justify-content-between">
-                                            <div className="d-flex align-items-center">
-                                                {!isTogether && (
-                                                    <img
-                                                        src={room.image}
-                                                        alt={`${room.email}의 프로필`}
-                                                        className="rounded-circle mr-3"
-                                                    />
-                                                )}
-                                                <span className="chat-name">
-                                                    {room.nickname}
-                                                </span>
-                                                {isTogether && (
-                                                    <div className="together-id">
-                                                        {room.togetherId}
-                                                    </div>
-                                                )}
-                                                {isNewMessage(room) && <span className="receive-new">New</span>}
+                    {filteredChatRooms.map(room => {
+                        const lastMessage = getLastMessage(room);
+                        return (
+                            <li
+                                key={room.roomId}
+                                className={`chat-person ${selectedChat && selectedChat.roomId === room.roomId ? 'chat-active' : ''}`}
+                                onClick={() => handlePersonClick(room.roomId)}
+                            >
+                                <div className="d-flex align-items-center justify-content-between">
+                                    <div className="d-flex align-items-center">
+                                        {!isTogether && (
+                                            <img
+                                                src={room.image}
+                                                alt={`${room.email}의 프로필`}
+                                                className="rounded-circle mr-3"
+                                            />
+                                        )}
+                                        <span className="chat-name">
+                                            {room.nickname}
+                                        </span>
+                                        {isTogether && (
+                                            <div className="together-id">
+                                                {room.togetherId}
                                             </div>
-                                            <span className="chat-time">
-                                                {formatDate(lastMessage.write_day)}
-                                            </span>
-                                        </div>
-                                        <div className="chat-preview">
-                                            <div className="message-content">
-                                                {lastMessage.message}
-                                            </div>
-                                            <div className="delete-icon">
-                                                <DeleteForeverIcon onClick={() => handleExitChat(room.roomId)} />
-                                            </div>
-                                        </div>
-                                    </li>
-                                );
-                            })
-                        ) : (
-                            <li className="no-chat-list">채팅이 없습니다</li>
-                        )
-                    ) : null}
+                                        )}
+                                        {isNewMessage(room) && <span className="receive-new">New</span>}
+                                    </div>
+                                    <span className="chat-time">
+                                        {formatDate(lastMessage.write_day)}
+                                    </span>
+                                </div>
+                                <div className="chat-preview">
+                                    <div className="message-content">
+                                        {lastMessage.message}
+                                    </div>
+                                    <div className="delete-icon">
+                                        <DeleteForeverIcon onClick={() => handleExitChat(room.roomId)} />
+                                    </div>
+                                </div>
+                            </li>
+                        );
+                    })}
                 </ul>
+            )}
+            {isSuccess && !hasChats && (
+                <div className="no-chats-message">
+                    채팅 목록이 없습니다.
+                </div>
             )}
         </>
     );
