@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import TinderCard from 'react-tinder-card';
 import ProfileCard from '../profile/ProfileCard';
@@ -30,10 +30,12 @@ const TinderCards = () => {
   const { memberEmail, serverUrl } = useContext(AuthContext);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
+  const childRefs = useRef([]); // 리랜더링 돼도 참조 유지
+
   useEffect(() => {
     const loadProfiles = async () => {
       if (profilesStatus === 'loading') {
-        return; // 데이터 로딩 중이면 아무 것도 하지 않음
+        return; 
       }
 
       if (profiles.length > 0) {
@@ -42,12 +44,11 @@ const TinderCards = () => {
           profile.profile.matchOk === true && 
           profile.profile.email !== memberEmail
         );
-        setCards(filteredProfiles);
 
         const shuffled = shuffleArray(filteredProfiles);
-        dispatch(setShuffledProfiles(shuffled));
+        setCards(shuffled); 
+        dispatch(setShuffledProfiles(shuffled)); 
       } else {
-        // 카드가 없을 때 상태 업데이트
         setCards([]);
         dispatch(setShuffledProfiles([]));
       }
@@ -67,11 +68,6 @@ const TinderCards = () => {
     return shuffled;
   };
 
-  const childRefs = useMemo(
-    () => profileCards.map(() => React.createRef()),
-    [profileCards]
-  );
-
   const canSwipe = currentIndex >= 0;
 
   const swiped = (direction, profileId, index) => {
@@ -84,7 +80,7 @@ const TinderCards = () => {
     formData.append('member2', profileId);
     formData.append('type', direction);
     axios.post(serverUrl + "/match/swipe", formData)
-    .then((res)=>{
+    .then((res) => {
       if (res.data.matchState === 2) {
         Swal.fire({
           title: '매치 성공!',
@@ -101,12 +97,10 @@ const TinderCards = () => {
     });
 
     setShowMessages(newShowMessages); // 상태 업데이트
-    dispatch(updateConfirmedList(profileId));
+    //dispatch(updateConfirmedList(profileId));
     dispatch(decrementIndex());
-    console.log(`Confirmedlist updated for profileId ${profileId}:`, shuffledProfiles[index].confirmedlist);
   };
 
-  // 채팅방 생성 + 시스템 메시지 전송
   const sendMessage = async (data) => {
     if (!memberEmail) {
       console.log('Cannot send message: No selected chat, empty input, or missing user ID.');
@@ -145,11 +139,11 @@ const TinderCards = () => {
   };
 
   const swipe = async (dir, index) => {
-    if (!canSwipe || index < 0 || index >= profileCards.length || !childRefs[index]?.current) {
+    if (!canSwipe || index < 0 || index >= profileCards.length || !childRefs.current[index]?.swipe) {
       return;
     }
 
-    await childRefs[index].current.swipe(dir);
+    await childRefs.current[index].swipe(dir);
   };
 
   const handleSwipeLeft = async () => {
@@ -176,7 +170,7 @@ const TinderCards = () => {
 
   return (
     <div className="tinderCard_container">
-      {profileCards.length === 0 ? (
+      {profileCards.length === 0 || !canSwipe ? (
         <div className="noMoreCardsMessage">
           <div className="noMessage">
             <div>매칭 할 카드가 없습니다.</div>
@@ -199,7 +193,7 @@ const TinderCards = () => {
             <div className="cardContainer">
               {profileCards.map((profile, index) => (
                 <TinderCard
-                  ref={childRefs[index]}
+                  ref={(el) => (childRefs.current[index] = el)}
                   className="swipe"
                   key={profile.profile.email}
                   onSwipe={(dir) => swiped(dir, profile.profile.email, index)}

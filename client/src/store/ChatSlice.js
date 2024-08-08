@@ -314,7 +314,6 @@ const chatSlice = createSlice({
                 } : room
             );
         },
-
         chatRoomStatusUpdated(state, action) {
             const { roomId, isTogether } = action.payload;
             if (isTogether) {
@@ -331,12 +330,16 @@ const chatSlice = createSlice({
         },
         userRemovedFromChatRoom(state, action) {
             const { roomId, userId } = action.payload;
-            state.togetherChatRooms = state.togetherChatRooms.map(room => 
+            state.togetherChatRooms = state.togetherChatRooms.map(room =>
                 room.roomId === roomId ? {
                     ...room,
                     members: room.members.filter(member => member !== userId)
                 } : room
             );
+            // 선택된 채팅방에서 나간 경우, selectedChat을 null로 설정
+            if (state.selectedChat && state.selectedChat.roomId === roomId) {
+                state.selectedChat = null;
+            }
         },
     },
     
@@ -377,6 +380,10 @@ const chatSlice = createSlice({
                         members: room.members.filter(member => member !== userId)
                     } : room
                 );
+                // 선택된 채팅방에서 나간 경우, selectedChat을 null로 설정
+                if (state.selectedChat && state.selectedChat.roomId === roomId) {
+                    state.selectedChat = null;
+                }
             })
             .addCase(updateOneOnOneChatRoomStatus.rejected, (state, action) => {
                 state.status = 'failed';
