@@ -5,12 +5,13 @@ import BackButton from './custom/BackButton';
 
 const userFilters = [
     <SearchInput source="q" alwaysOn />,
+    <TextInput label="Id" source="id" defaultValue="" />,
     <TextInput label="Email" source="email" defaultValue="" />,
     <TextInput label="Name" source="namel" defaultValue="" />,
     <TextInput label="NickName" source="nickname" defaultValue="" />,
     <TextInput label="Tel" source="tel" defaultValue="" />,
     <TextInput label="Birth" source="birth" defaultValue="" />,
-    <BooleanInput label ="Banned" source="banned" defaultValue={true}/>,    
+    <BooleanInput label ="Blacklist" source="blacklist" defaultValue={false}/>,
 ];
 
 export const UserList = (props) => (
@@ -21,7 +22,7 @@ export const UserList = (props) => (
             <TextField source="nickname" />
             <TextField source="tel" />
             <TextField source="birth" />
-            <BooleanField source='banned'/>
+            <BooleanField source='blacklist'/>
             <ShowButton/>
             <EditButton />
         </Datagrid>
@@ -42,12 +43,12 @@ const UserToolbar = () =>{
 export const UserEdit = (props) => (
     <Edit {...props}>
         <SimpleForm toolbar={<UserToolbar/>}>
-            <TextInput source="email" disabled />
+            <TextInput source="email" />
             <TextInput source="name" />
             <TextInput source="nickname" />
             <TextInput source="tel" />
             <TextInput source="birth" />
-            <BooleanInput source='banned' label="Banned"/>
+            <BooleanInput source='blacklist' label="Blacklist"/>
             <SaveButton/>
         </SimpleForm>
         <BackButton/>
