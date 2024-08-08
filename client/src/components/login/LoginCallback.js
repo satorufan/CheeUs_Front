@@ -50,8 +50,9 @@ const LoginCallback = () => {
                         title : '제한된 사용자입니다',
                         text : '',
                         icon : 'error'
-                    }).then(()=>{
-                       requestSignOut();
+                    }).then((res)=>{
+                        console.log(res);
+                        requestSignOut();
                     });
                 }
             });

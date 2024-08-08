@@ -8,6 +8,8 @@ import Card from '@mui/joy/Card';
 import CardCover from '@mui/joy/CardCover';
 import Favorite from '@mui/icons-material/Favorite';
 import Visibility from '@mui/icons-material/Visibility';
+import PushPinIcon from '@mui/icons-material/PushPin';
+import Chip from '@mui/material/Chip';
 import BoardTop from '../board/BoardTop';
 import { selectBoards, toggleLike, selectLikedMap, filterBoards, setSearchQuery, selectFilteredBoards, fetchBoards } from '../../store/BoardSlice';
 import Pagination from '@mui/material/Pagination';
@@ -52,8 +54,11 @@ const EventBoard = () => {
 
   // 페이지네이션
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentBoards = filteredBoards.filter(board => board.category === 3).slice(startIndex, startIndex + itemsPerPage);
-  const totalPages = Math.ceil(filteredBoards.filter(board => board.category === 3).length / itemsPerPage);
+  const visibleBoards = filteredBoards.filter(board => !board.hidden);
+  const pinnedBoards = visibleBoards.filter(board => board.category === 3 && board.pinned);
+  const regularBoards = visibleBoards.filter(board => board.category === 3 && !board.pinned);
+  const currentBoards = [...pinnedBoards, ...regularBoards].slice(startIndex, startIndex + itemsPerPage);
+  const totalPages = Math.ceil(visibleBoards.filter(board => board.category === 3).length / itemsPerPage);
 
   const handleChange = (event, value) => {
     setCurrentPage(value);
@@ -71,6 +76,12 @@ const EventBoard = () => {
               className="freeboard-card"
               onClick={() => handleCardClick(board.id)}
             >
+               {board.pinned && (
+                <Box className="pinned-icon-container">
+                  <PushPinIcon className="pinned-icon" />
+                  <Chip label="공지" size="small" className="notice-chip" />
+                </Box>
+              )}
               <Box className="card-video">
                 <AspectRatio ratio="4/3">
                   {board.photoes ? (

@@ -40,6 +40,10 @@ const FreeBoard = () => {
     dispatch(filterBoards()); // 검색어에 따라 필터링
   }, [location.search, dispatch]);
 
+  useEffect(() => {
+    console.log('Filtered Boards:', filteredBoards);
+  }, [filteredBoards]);
+
   const handleLikeClick = (id) => {
     dispatch(toggleLike(id));
   };
@@ -54,13 +58,10 @@ const FreeBoard = () => {
 
   // 페이지네이션
   const startIndex = (currentPage - 1) * itemsPerPage;
-  
   const visibleBoards = filteredBoards.filter(board => !board.hidden);
-  
   const pinnedBoards = visibleBoards.filter(board => board.category === 1 && board.pinned);
   const regularBoards = visibleBoards.filter(board => board.category === 1 && !board.pinned);
   const currentBoards = [...pinnedBoards, ...regularBoards].slice(startIndex, startIndex + itemsPerPage);
-  
   const totalPages = Math.ceil(visibleBoards.filter(board => board.category === 1).length / itemsPerPage);
 
   const handleChange = (event, value) => {

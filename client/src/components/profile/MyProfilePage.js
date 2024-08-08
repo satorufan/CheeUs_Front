@@ -9,16 +9,6 @@ import Swal from 'sweetalert2';
 import ProfileSkeleton from '../skeleton/ProfileSkeleton';
 
 const MyProfilePage = () => {
-    
-    const sweetalert = (title, contents, icon, confirmButtonText) => {
-        Swal.fire({
-          title: title,
-          text: contents,
-          icon: icon,
-          confirmButtonText: confirmButtonText
-        });
-    };
-
     const { serverUrl, memberEmail, token } = useContext(AuthContext);
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -33,8 +23,16 @@ const MyProfilePage = () => {
 
     useEffect(() => {
         if (profileError) {
-            sweetalert("잘못된 접근 입니다", "", "error", "확인");
-            navigate('/');
+            console.log(profileError);
+            Swal.fire({
+                title: "잘못된 접근 입니다",
+                text: "",
+                icon: "error",
+                confirmButtonText: "확인"
+            }).then(()=>{
+                navigate('/');
+                window.location.reload();
+            });
         }
     }, [profileError, navigate]);
 
