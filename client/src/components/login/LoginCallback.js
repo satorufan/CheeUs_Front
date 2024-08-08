@@ -16,7 +16,7 @@ const LoginCallback = () => {
         });
     };
 
-    const {requestSignIn, serverUrl, token} = useContext(AuthContext);
+    const {requestSignIn, requestSignOut, serverUrl, token} = useContext(AuthContext);
     const navigate = useNavigate();
 
 
@@ -44,6 +44,16 @@ const LoginCallback = () => {
                 if (err.response.data.message == "존재하지 않는 이메일입니다.") {
                     sweetalert("회원가입 페이지로 이동합니다.", '','','확인');
                     navigate('/signup');
+                }
+                if (err.response.data.message == "제한된 사용자입니다 ㅉㅉ") {
+                    Swal.fire({
+                        title : '제한된 사용자입니다',
+                        text : '',
+                        icon : 'error'
+                    }).then((res)=>{
+                        console.log(res);
+                        requestSignOut();
+                    });
                 }
             });
         }

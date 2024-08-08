@@ -1,56 +1,47 @@
 import React from 'react';
-import { List, Datagrid, TextField, EditButton, DeleteButton, Toolbar, SaveButton, SearchInput } from 'react-admin';
-import { Edit, SimpleForm, TextInput, BooleanInput } from 'react-admin';
+import { List, Datagrid, TextField, EditButton, DeleteButton, Toolbar, SaveButton, SearchInput, ChipField, CreateButton, RichTextField, SelectInput } from 'react-admin';
+import { Edit, SimpleForm, TextInput, BooleanInput, DateField, ChipInput, DateInput } from 'react-admin';
 import { Create } from 'react-admin';
 import BooleanField from './BooleanField'; 
 import ToggleButton from './ToggleButton'; 
 import { FilterSidebar, ListActions } from './FilterSidebar';
+import { RichTextInput } from 'ra-input-rich-text';
+import BackButton from './custom/BackButton';
+
 
 const magazineFilters = [
     <SearchInput source="q" />,
-    <TextInput label="Email" source="email" defaultValue="" />,
-    <TextInput label="Category" source="category" defaultValue="" />,
-    <TextInput label="NickName" source="nickname" defaultValue="" />,
+    <TextInput label="id" source="id" defaultValue="" />,
+    <TextInput label="adminId" source="admin_id" defaultValue="" />,
+    <TextInput label="adminName" source="admin_name" defaultValue="" />,
+    <SelectInput label="category" source="category" defaultValue="" />,
+    <TextInput label="title" source="title" defaultValue="" />,
+    <TextInput label="title2" source="title2" defaultValue="" />,
+    <TextInput label="content" source="content" defaultValue="" />,
+    <TextInput label="writeday" source="writeday" defaultValue="" />,
+    <BooleanInput label="hidden" source="hidden" defaultValue="" />
 ];
-
-
-
 
 export const MagazineList = (props) => (
     <List {...props} debounce={1000} actions={<ListActions/>}  filters={magazineFilters} aside={<FilterSidebar/>}>
         <Datagrid rowClick="edit">
             <TextField source="id" />
             <TextField source="admin_id" />
-            <TextField source="title" />
             <TextField source="admin_name" />
-            <TextField source="content" />
+            <ChipField source="category" />
+            <TextField source="title" />
             <TextField source="title2" />
-            <TextField source="category" />
-            <BooleanField source="pinned" />
+            <RichTextField source="content" />
+            <DateField source="writeday" />
             <BooleanField source="hidden" />
-            <ToggleButton field="pinned" />
-            <ToggleButton field="hidden" />
+            <CreateButton/>
             <EditButton />
             <DeleteButton />
         </Datagrid>
     </List>
 );
 
-export const MagazineEdit = (props) => (
-    <Edit {...props}>
-        <SimpleForm>
-            <TextInput source="id" disabled />
-            <TextInput source="title" />
-            <TextInput source="content" />
-            <TextInput source="title2" />
-            <TextInput source="category" />
-            <BooleanInput source="pinned" label="Pinned" />
-            <BooleanInput source="hidden" label="Hidden" />
-        </SimpleForm>
-    </Edit>
-);
-
-const MagazineCreateToolbar = () =>{
+const MagazineToolbar = () =>{
 	<Toolbar>
 		<SaveButton/>
 		<SaveButton
@@ -59,17 +50,52 @@ const MagazineCreateToolbar = () =>{
 			type="button"
 		/>
 	</Toolbar>
-}
+};
 
 export const MagazineCreate = (props) => (
     <Create {...props}>
-        <SimpleForm toolbar={<MagazineCreateToolbar/>}>
+        <SimpleForm toolbar={<MagazineToolbar/>}>
+            <TextInput source="id" />
+            <TextInput source="admin_id" />
+            <TextInput source="admin_name" />
+            <SelectInput source="category"choices={[
+                { id: 'popup', name: 'POP-UP' },
+                { id: 'tmi', name: 'TMI' },
+                { id: 'recipe', name: 'Recipe' },
+                { id: 'recommend', name: 'Recommend' },
+            ]} />
             <TextInput source="title" />
             <TextInput source="title2" />
-            <TextInput source="content" />
-            <TextInput source="category" />
-            <BooleanInput source="pinned" label="Pinned" />
+            <RichTextInput source="content" />
+            <DateInput source="writeday" />
             <BooleanInput source="hidden" label="Hidden" />
+            <SaveButton/>
         </SimpleForm>
+        <BackButton/>
     </Create>
 );
+
+export const MagazineEdit = (props) => (
+    <Edit {...props}>
+        <SimpleForm toolbar={MagazineToolbar}>
+            <TextInput source="id" />
+            <TextInput source="admin_id" />
+            <TextInput source="admin_name" />
+            <SelectInput source="category"choices={[
+                { id: 'popup', name: 'POP-UP' },
+                { id: 'tmi', name: 'TMI' },
+                { id: 'recipe', name: 'Recipe' },
+                { id: 'recommend', name: 'Recommend' },
+            ]} />
+            <TextInput source="title" />
+            <TextInput source="title2" />
+            <RichTextInput source="content" />
+            <DateInput source="writeday" />
+            <BooleanInput source="hidden" label="Hidden" />
+            <SaveButton/>
+        </SimpleForm>
+        <BackButton/>
+    </Edit>
+);
+
+

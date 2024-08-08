@@ -1,64 +1,80 @@
 import React from 'react';
-import { List, Datagrid, TextField, EditButton, DeleteButton, SearchInput } from 'react-admin';
-import { Edit, SimpleForm, TextInput, BooleanInput } from 'react-admin';
+import { List, Datagrid, TextField, EditButton, DeleteButton, SearchInput, Toolbar, SaveButton, DateInput, ImageInput, ImageField } from 'react-admin';
+import { Edit, SimpleForm, TextInput, BooleanInput, RichTextField, DateField } from 'react-admin';
 import { Create } from 'react-admin';
-import BooleanField from './BooleanField'; 
-import ToggleButton from './ToggleButton'; 
 import { FilterSidebar, ListActions } from './FilterSidebar';
+import { RichTextInput } from 'ra-input-rich-text';
+import BackButton from './custom/BackButton';
+import BooleanField from './BooleanField';
 
 const eventFilters = [
     <SearchInput source="q" />,
-    <TextInput label="Email" source="email" defaultValue="" />,
-    <TextInput label="Category" source="category" defaultValue="" />,
-    <TextInput label="NickName" source="nickname" defaultValue="" />,
+    <TextInput label="id" source="id" defaultValue="" />,
+    <TextInput label="adminId" source="admin_id" defaultValue="" />,
+    <TextInput label="adminName" source="admin_name" defaultValue="" />,
+    <TextInput label="title" source="title" defaultValue="" />,
+    <TextInput label="title2" source="title2" defaultValue="" />,
+    <TextInput label="content" source="content" defaultValue="" />,
+    <TextInput label="writeday" source="writeday" defaultValue="" />,
 ];
-
-
 
 export const EventList = (props) => (
     <List {...props} debounce={1000} actions={<ListActions/>}  filters={eventFilters} aside={<FilterSidebar/>}>
         <Datagrid rowClick="edit">
             <TextField source="id" />
             <TextField source="admin_id" />
-            <TextField source="title" />
             <TextField source="admin_name" />
-            <TextField source="content" />
+            <TextField source="title" />
             <TextField source="title2" />
-            <TextField source="writeday" />
-            <TextField source="catagory" />
-            <BooleanField source="pinned" />
+            <DateField source="writeday" />
             <BooleanField source="hidden" />
-            <ToggleButton field="pinned" />
-            <ToggleButton field="hidden" />
             <EditButton />
             <DeleteButton />
         </Datagrid>
     </List>
 );
 
-export const EventEdit = (props) => (
-    <Edit {...props}>
-        <SimpleForm>
-            <TextInput source="id" disabled />
-            <TextInput source="title" />
-            <TextInput source="content" />
-            <TextInput source="title2" />
-            <TextInput source="category" />
-            <BooleanInput source="pinned" label="Pinned" />
-            <BooleanInput source="hidden" label="Hidden" />
-        </SimpleForm>
-    </Edit>
-);
+const EventToolbar = () =>{
+	<Toolbar>
+		<SaveButton/>
+		<SaveButton
+			label = "post.action.save_and_notify"
+			transform={data => ({...data, notify: true})}
+			type="button"
+		/>
+	</Toolbar>
+};
 
 export const EventCreate = (props) => (
     <Create {...props}>
-        <SimpleForm>
+        <SimpleForm toolbar={<EventToolbar/>}>
+            <TextInput source="id" />
+            <TextInput source="admin_id" />
+            <TextInput source="admin_name" />
             <TextInput source="title" />
-            <TextInput source="content" />
             <TextInput source="title2" />
-            <TextInput source="category" />
-            <BooleanInput source="pinned" label="Pinned" />
+            <RichTextInput source="content" />
+            <DateInput source="writeday" />
             <BooleanInput source="hidden" label="Hidden" />
+            <SaveButton />
         </SimpleForm>
+        <BackButton />
     </Create>
+);
+
+export const EventEdit = (props) => (
+    <Edit {...props}>
+        <SimpleForm toolbar={<EventToolbar/>}>
+            <TextInput source="id" />
+            <TextInput source="admin_id" />
+            <TextInput source="admin_name" />
+            <TextInput source="title" />
+            <TextInput source="title2" />
+            <RichTextInput source="content" />
+            <DateInput source="writeday" />
+            <BooleanInput source="hidden" label="Hidden" />
+            <SaveButton/>
+        </SimpleForm>
+        <BackButton />
+    </Edit>
 );

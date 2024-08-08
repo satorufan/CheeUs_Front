@@ -15,6 +15,7 @@ import {
 import { AuthContext } from '../login/OAuth';
 import { fetchUserProfile, selectProfileStatus, selectUserProfile } from '../../store/ProfileSlice';
 import { useNavigate } from 'react-router-dom';
+import Spinner from 'react-bootstrap/Spinner';
 
 const Match = () => {
   const dispatch = useDispatch();
@@ -106,7 +107,11 @@ const Match = () => {
     <div className="match_container">
       {profiles && userProfile ?  (userProfile.profile.locationOk === null ? (
         <div className="permissionMessage">
-          <p>위치 정보 확인 중...</p>
+          <div>위치 정보 확인 중...
+            <div>
+              <Spinner animation="border" variant="dark" />
+            </div>
+          </div>
         </div>
       ) : userProfile.profile.locationOk && userLocation && !userProfile.profile.matchOk ? (
         <div className="permissionMessage">
@@ -136,7 +141,11 @@ const Match = () => {
           </div>
         </div>
       )) : memberEmail ? (<div className="permissionMessage" >
-              <p>잠시만 기다려주세요...</p>
+            <div>매칭 서비스 이용 동의 여부 확인 중...
+              <div>
+              <Spinner animation="border" variant="dark" />
+              </div>
+            </div>
             </div>) : (<div className="permissionMessage" >
               <p onClick={goLogin}>로그인 후 이용할 수 있습니다.</p>
             </div>)}

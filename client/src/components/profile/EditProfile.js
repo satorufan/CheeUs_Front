@@ -163,9 +163,9 @@ const EditProfile = ({ onClose = () => {} }) => {
         );
     };
 
-    if (!profile) {
-        return <p>로딩 중...</p>;
-    }
+    //if (!profile) {
+     //   return <p>로딩 중...</p>;
+    //}
 
     return (
         <form className="edit-profile-container" onSubmit={handleSubmit}>

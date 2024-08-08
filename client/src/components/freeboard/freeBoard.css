@@ -156,3 +156,20 @@
     border : solid 2px black;
     
 }
+
+.pinned-icon-container {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1;
+}
+
+.pinned-icon {
+  color: red;
+}
+.notice-chip {
+  margin-top: 4px;
+  background-color: yellow;
+  color: black;
+  font-weight: bold;
+}

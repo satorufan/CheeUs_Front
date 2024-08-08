@@ -12,7 +12,6 @@
   justify-content: center;
   align-items: center;
   width: 60%; 
-
 }
 
 .cardButtonContainer {
@@ -21,7 +20,7 @@
   justify-content: space-between;
   width: 100%;
   text-align: center;
-  height:600px;
+  height: 600px;
 }
 
 .swipe {
@@ -85,7 +84,7 @@
 .infoText.nope {
   position: absolute;
   top: 5px;
-  left:0px;
+  left: 0px;
   color: #FF6B6B;
   border: 5px solid #FF6B6B;
 }
@@ -100,12 +99,17 @@
 
 .noMoreCardsMessage {
   display: flex;
-  justify-content: center; /* 수평 가운데 정렬 */
-  align-items: center; /* 수직 가운데 정렬 */
-  height: 600px; /* 부모 컨테이너의 전체 높이 사용 */
+  justify-content: center; 
+  align-items: center; 
+  height: 600px;
   text-align: center;
   font-family: 'Tokki';
-  font-size: 5vw; /* 절대적인 단위 사용, 필요에 따라 조정 가능 */
+  font-size: 5vw; 
+  white-space: nowrap;
+}
+
+.noMoreCardsMessage span{
+  font-size: 3vw; 
   white-space: nowrap;
 }
 
@@ -130,9 +134,7 @@
 .show-like {
   font-size: 50px;
   opacity: 1;
-  transition: opacity 0.3s ease-in-out;
-  transition: font-size 0.3s ease-in-out;
-  opacity: 1;
+  transition: opacity 0.3s ease-in-out, font-size 0.3s ease-in-out;
 }
 
 .show-nope {
@@ -145,11 +147,11 @@
   color: #2d8636;
 }
 
-@media (max-width: 768px) {
-
+@media (max-width: 1200px) {
   .favorite_button,
   .close_button {
     opacity: 0;
+    pointer-events: none; 
   }
   .show-nope,
   .show-like {
@@ -169,16 +171,14 @@
 }
 
 .close_button,
-.favorite_button{
-  width:45px;
-  height:45px;
+.favorite_button {
+  width: 45px;
+  height: 45px;
   border-radius: 50px;
-  transition: transform 0.3s ease-in-out;
-  opacity: 1;
-  transition: opacity 0.3s ease-in-out;
+  transition: transform 0.1s ease-in-out, opacity 0.1s ease-in-out;
   text-align: center;
   background-color: white;
-  padding:5px;
+  padding: 5px;
   font-size: 20px;
   font-weight: 800;
   display: flex;
@@ -188,16 +188,16 @@
 
 .close_button {
   color: #FF6B6B;
-  border : solid 3px #FF6B6B;
+  border: solid 3px #FF6B6B;
 }
+
 .favorite_button {
   color: #2d8636;
-  border : solid 3px #2d8636;
+  border: solid 3px #2d8636;
   border-radius: 50px;
 }
 
 .close_button:hover,
 .favorite_button:hover {
   transform: scale(1.1);
-  transition: transform 0.3s ease-in-out;
 }

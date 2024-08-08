@@ -18,7 +18,7 @@ const WriteFreeBoard = () => {
   const editorRef = useRef();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { token } = useContext(AuthContext); // 현재 사용자 정보 가져오기
+  const { serverUrl, memberEmail, token } = useContext(AuthContext); // 현재 사용자 정보 가져오기
   const userProfile = useSelector(selectUserProfile); // Redux의 selectUserProfile selector를 사용하여 userProfile 가져옴
   const boards = useSelector(state => state.board.boards); // boards 변수를 Redux 상태에서 가져옴
   const [nickname, setNickname] = useState('');
@@ -30,9 +30,9 @@ const WriteFreeBoard = () => {
 
   useEffect(() => {
     if (!userProfile) {
-      dispatch(fetchUserProfile({ serverUrl: 'http://localhost:8080', decodedToken }));
+      dispatch(fetchUserProfile({ serverUrl, memberEmail, token }));
     }
-  }, [dispatch, decodedToken, userProfile]); // userProfile이 변경되거나 로드되지 않았을 때 프로필을 다시 가져오기 위해 useEffect 사용
+  }, [dispatch, decodedToken, serverUrl, token, memberEmail]); // userProfile이 변경되거나 로드되지 않았을 때 프로필을 다시 가져오기 위해 useEffect 사용
 
   if (!decodedToken || !userProfile) {
     return <div>Loading...</div>;

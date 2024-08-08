@@ -27,7 +27,7 @@ export const PostProvider = ({ children }) => {
         });
   };
 
-  const addPost = async (title, content, time, nickname, memberEmail ) => {
+  const addPost = async (title, content, time, nickname, memberEmail) => {
     var id;
     const newPost = {
       title,
@@ -93,14 +93,15 @@ export const PostProvider = ({ children }) => {
         .catch(error => console.error(error));
   };
 
-  const addScrap = async (serverUrl, memberEmail, id, title, token) => {
+  const addScrap = async (serverUrl, memberEmail, id, title, token, url) => {
     const scrapInfo = {
       memberEmail : memberEmail,
       boardId : null,
       togetherId : id,
       eventId : null,
       magazineId : null,
-      title : title
+      title : title,
+      url : url
     };
     const response = await axios.post(`${serverUrl}/profile/addScrap`, scrapInfo, {
       headers : {

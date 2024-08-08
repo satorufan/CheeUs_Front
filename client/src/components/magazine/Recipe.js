@@ -32,14 +32,30 @@ const Recipe = () => {
     navigate(`/magazine/detail/recipe/${id}`);
   };
 
-  // 페이지네이션
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentMagazines = Object.values(magazines.recipe).filter(magazine => (magazine.title.includes(searchQuery) || magazine.title2.includes(searchQuery))).slice(startIndex, startIndex + itemsPerPage);
-  const totalPages = Math.ceil(Object.values(magazines.recipe).filter(magazine => (magazine.title.includes(searchQuery) || magazine.title2.includes(searchQuery))).length / itemsPerPage);
+    // 데이터 로딩 완료 전 대기
+    if (!magazines) {
+        return <div>Loading...</div>;
+    }
 
-  const handleChange = (event, value) => {
-    setCurrentPage(value);
-  };
+    // 이벤트 데이터 추출
+    const magazineList = magazines.magazine;
+
+    // 디버깅용
+    // console.log("<<magazines.magazine>>JSON ", JSON.stringify(magazines, null, 2));
+
+    // "recipe" 카테고리의 JSON만 필터링
+    const filteredMagazines = magazineList
+        .filter(magazine => magazine.category === 'recipe' &&
+            (magazine.title.includes(searchQuery) || magazine.title2.includes(searchQuery)));
+
+    // 페이지네이션
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const currentMagazines = filteredMagazines.slice(startIndex, startIndex + itemsPerPage);
+    const totalPages = Math.ceil(filteredMagazines.length / itemsPerPage);
+
+    const handleChange = (event, value) => {
+        setCurrentPage(value);
+    };
 
   return (
     <>

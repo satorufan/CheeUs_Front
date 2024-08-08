@@ -30,15 +30,6 @@ export const NAVER_AUTH_URL =`https://nid.naver.com/oauth2.0/authorize?response_
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
-	const sweetalert = (title, contents, icon, confirmButtonText) => {
-        Swal.fire({
-            title: title,
-            text: contents,
-            icon: icon,
-            confirmButtonText: confirmButtonText
-        });
-    };
-
 	const [memberEmail, setEmail] = useState('');
 	const [token, setToken] = useState('');
 	const serverUrl = "http://localhost:8080";
@@ -65,9 +56,22 @@ const AuthProvider = ({ children }) => {
 					date.setTime(date.getTime() + (5 * 60 * 1000)); // 현재 시간에 5분을 추가합니다.
 					const expires = `expires=${date.toUTCString()}`;
 					document.cookie = `${"Authorization"}=${loadToken}; ${expires};`;
-                } else {
-					sweetalert("만료되었습니다. 다시 로그인해주세요", "","","확인");
-					requestSignOut();
+                } else if (err.response.data.message == "제한된 사용자입니다 ㅉㅉ") {
+					Swal.fire({
+					    title : '제한된 사용자입니다',
+					    text : '',
+					    icon : 'error'
+					}).then(()=>{
+					   requestSignOut();
+					});
+                } else if (err.response.data.message == "토큰 만료"){
+					Swal.fire({
+                        title : '만료되었습니다. 다시 로그인해주세요',
+                        text : '',
+                        icon : 'error'
+                    }).then(()=>{
+                       requestSignOut();
+                    });
 				}
 			});
 		}
@@ -75,14 +79,17 @@ const AuthProvider = ({ children }) => {
 
 	//로그인
 	const requestSignIn = (nickname) => {
-		console.log("로그인");
-		sweetalert(nickname + "님 환영합니다.", "", "", "확인");
+		if (nickname !== null && nickname !== undefined) {
+			Swal.fire({
+				title: `<span style="font-weight: 300;">${nickname}님 환영합니다.</span>`, // font-weight 조정
+				confirmButtonText: '확인',
+			});
+		};
 	}
 
 	//로그아웃
 	const requestSignOut = () => {
 		window.location.href = serverUrl+"/logout";
-		console.log("로그아웃")
 	}
 
 	//쿠키에서 JWT 토큰 불러오기.
