@@ -30,15 +30,6 @@ export const NAVER_AUTH_URL =`https://nid.naver.com/oauth2.0/authorize?response_
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
-	const sweetalert = (title, contents, icon, confirmButtonText) => {
-        Swal.fire({
-            title: title,
-            text: contents,
-            icon: icon,
-            confirmButtonText: confirmButtonText
-        });
-    };
-
 	const [memberEmail, setEmail] = useState('');
 	const [token, setToken] = useState('');
 	const serverUrl = "http://localhost:8080";
@@ -65,9 +56,22 @@ const AuthProvider = ({ children }) => {
 					date.setTime(date.getTime() + (5 * 60 * 1000)); // 현재 시간에 5분을 추가합니다.
 					const expires = `expires=${date.toUTCString()}`;
 					document.cookie = `${"Authorization"}=${loadToken}; ${expires};`;
-                } else {
-					sweetalert("만료되었습니다. 다시 로그인해주세요", "","","확인");
-					requestSignOut();
+                } else if (err.response.data.message == "제한된 사용자입니다 ㅉㅉ") {
+					Swal.fire({
+					    title : '제한된 사용자입니다',
+					    text : '',
+					    icon : 'error'
+					}).then(()=>{
+					   requestSignOut();
+					});
+                } else if (err.response.data.message == "토큰 만료"){
+					Swal.fire({
+                        title : '만료되었습니다. 다시 로그인해주세요',
+                        text : '',
+                        icon : 'error'
+                    }).then(()=>{
+                       requestSignOut();
+                    });
 				}
 			});
 		}
