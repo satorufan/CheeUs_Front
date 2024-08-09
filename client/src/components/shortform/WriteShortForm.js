@@ -77,7 +77,7 @@ function WriteShortForm() {
         views: 0,
         like: 0,
         repl_cnt: 0,
-        photoes: '',
+        photoes: 1,
         media: '',
         file: file 
       };
@@ -96,7 +96,8 @@ function WriteShortForm() {
           swal('게시물이 성공적으로 등록되었습니다!', {
             icon: 'success',
           }).then(() => {
-            // navigate('/board/shortform'); // Fix the route according to your application logic
+            navigate('/board/shortform'); // Fix the route according to your application logic
+            window.location.reload();
           });
         } else {
           swal('게시물 제출이 취소되었습니다.');
@@ -118,6 +119,7 @@ function WriteShortForm() {
   
       const fileUrl = URL.createObjectURL(selectedFile);
       setVideoUrl(fileUrl);
+      console.log(fileUrl)
   
       // videoRef.current가 정의되어 있는지 확인한 후 load() 메서드 호출
       if (videoRef.current) {

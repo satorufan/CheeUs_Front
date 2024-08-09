@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { selectBoards } from '../../store/BoardSlice';  // 수정 필요
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchBoards, fetchBoardsAuthor, fetchBoardsMedia, selectBoards, selectPageBoardsMedia } from '../../store/BoardSlice';  // 수정 필요
 import DetailBoard from '../board/DetailBoard';
 import Repl from '../board/Repl';
 import './detailShortForm.css';
@@ -10,16 +10,27 @@ import BoardDetailTop from '../board/BoardDetailTop';
 function DetailShortForm() {
   const { id } = useParams();  // URL에서 파라미터(id)를 가져옴
   const navigate = useNavigate();  // 프로그래밍 방식으로 경로 이동을 제공하는 Hook
+  const dispatch = useDispatch();
   const boards = useSelector(selectBoards);  // Redux의 store에서 boards 데이터를 가져옴
 
   // 숏폼 게시물 찾기
   const board = boards.find(b => b.id === parseInt(id, 10) && b.category === 2);
 
   useEffect(() => {
+    dispatch(fetchBoards('shortform'));
+
     console.log('ID from URL:', id);
     console.log('Boards from Redux:', boards);
     console.log('Found Board:', board);
-  }, [id, boards, board]);
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (board) {
+      dispatch(fetchBoardsMedia({category: 'shortform', perPageBoards: boards}));
+      dispatch(fetchBoardsAuthor({category: 'shortform', perPageBoards: boards}));
+    }
+  }, [dispatch, board]);
+
 
   // 게시물이 없을 경우
   if (!board) {

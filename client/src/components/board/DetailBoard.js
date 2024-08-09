@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { selectBoards } from '../../store/BoardSlice';
+import { selectBoardAuthors, selectBoards, selectPageBoardsMedia } from '../../store/BoardSlice';
 import Avatar from '@mui/material/Avatar';
 import { Favorite, Visibility, Bookmark } from '@mui/icons-material';
 import { AuthContext } from '../login/OAuth'; // AuthContext 가져오기
@@ -14,6 +14,9 @@ const DetailBoard = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const boards = useSelector(selectBoards);
+  const medias = useSelector(selectPageBoardsMedia);
+  const authors = useSelector(selectBoardAuthors);
+  const [isLoaded, setIsLoaded] = useState(false);
   const { token } = useContext(AuthContext); // 현재 사용자 정보 가져오기
   const [lastCategory, setLastCategory] = useState(null);
 
@@ -26,6 +29,12 @@ const DetailBoard = () => {
 
   const [liked, setLiked] = useState(false);
   const [scraped, setScraped] = useState(false);
+
+  useEffect(()=>{
+    if(medias && Object.keys(medias).length > 0) {
+      setIsLoaded(true);
+    }
+  }, [medias]);
 
   useEffect(() => {
     if (!board) return;
@@ -154,16 +163,26 @@ const DetailBoard = () => {
   };
 */
 
+const navigateToUserProfile = (email) => {
+  if (email) {
+      navigate(`/userprofile/${email}`);
+  } else {
+      console.error('User ID not found for email:', email);
+  }
+};
+
   if (!board) return <div>게시물을 찾을 수 없습니다.</div>;
 
   return (
     <div className="detail-container">
+      {isLoaded && (
       <div className="detail-post">
         <div className="detail-avatar-container">
           <Avatar
-            src={board.author_photo} 
+            src={authors[board.author_id]} 
             sx={{ width: 40, height: 40 }}
             className="detail-avatar"
+            onClick={()=>navigateToUserProfile(board.author_id)}
           />
           <div className="detail-author">{board.nickname}</div>
         </div>
@@ -176,7 +195,7 @@ const DetailBoard = () => {
             <div className="detail-video-container">
               <div className="detail-video-wrapper">
                 <video className="detail-video" controls>
-                  <source src={board.videoUrl} type="video/mp4" />
+                  <source src={medias[board.id]} type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
               </div>
@@ -295,7 +314,7 @@ const DetailBoard = () => {
           )}
             */}
         </div>
-      </div>
+      </div>)}
     </div>
   );
 };

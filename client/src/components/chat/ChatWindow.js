@@ -240,8 +240,6 @@ const ChatWindow = ({
     const renderMessagesWithDateSeparators = () => {
         if (!selectedChat || !selectedChat.messages) return null;
     
-        console.log("Messages Data:", selectedChat.messages);
-    
         let lastDate = null;
     
         return selectedChat.messages.map((message, index) => {
@@ -255,9 +253,9 @@ const ChatWindow = ({
     
             lastDate = messageDate;
     
-            // 프로필 정보를 가져오기
             const senderProfile = profileData[message.sender_id] || {};
             const isSameSenderAsPrevious = index > 0 && selectedChat.messages[index - 1].sender_id === message.sender_id;
+            const isProfileLoading = !profileData[message.sender_id]; // Check if profile data is still loading
     
             return (
                 <React.Fragment key={index}>
@@ -269,14 +267,23 @@ const ChatWindow = ({
                     <div className={`chat-bubble-container ${isSender(message.sender_id) ? 'me' : 'you'}`}>
                         {(message.sender_id !== "System") && !isSender(message.sender_id) && !isSameSenderAsPrevious && (
                             <div className="message-info">
-                                <img
-                                    src={senderProfile.image || `${process.env.PUBLIC_URL}/images/default-user-icon.png`}
-                                    alt={`Profile of ${senderProfile.nickname || 'Unknown'}`}
-                                    className="profile-img rounded-circle"
-                                    onClick={() => navigateToUserProfile(message.sender_id)}
-                                />
+                                {isProfileLoading ? (
+                                    <div className="skeleton-img skeleton-loading"></div>
+                                ) : (
+                                    <img
+                                        src={senderProfile.image || `${process.env.PUBLIC_URL}/images/default-user-icon.png`}
+                                        alt={`Profile of ${senderProfile.nickname || 'Unknown'}`}
+                                        className="profile-img rounded-circle"
+                                        style={{ width: '40px', height: '40px' }}
+                                        onClick={() => navigateToUserProfile(message.sender_id)}
+                                    />
+                                )}
                                 <span className="nickname" onClick={() => navigateToUserProfile(message.sender_id)}>
-                                    {senderProfile ?. nickname || '알수없음'}
+                                    {isProfileLoading ? (
+                                        <div className="skeleton-nick skeleton-loading"></div>
+                                    ) : (
+                                        senderProfile.nickname || '알수없음'
+                                    )}
                                 </span>
                             </div>
                         )}
@@ -289,6 +296,7 @@ const ChatWindow = ({
             );
         });
     };
+    
 
     //강퇴
     const handleKick = (userEmailObj) => {
