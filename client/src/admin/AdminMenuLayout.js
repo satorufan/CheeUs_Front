@@ -3,7 +3,7 @@ import { AdminMenu } from './AdminMenu';
 import { forwardRef } from 'react';
 import { MenuItem, createTheme } from '@mui/material';
 import ExitIcon from '@mui/icons-material/PowerSettingsNew';
-import { useNavigate } from 'react-router-dom';e
+import { useNavigate } from 'react-router-dom';
 
 
 const AdminLogoutButton = forwardRef((props, ref) => {
