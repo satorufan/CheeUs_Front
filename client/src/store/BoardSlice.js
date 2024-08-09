@@ -21,6 +21,7 @@ export const fetchBoards = createAsyncThunk(
         eventboard: 'http://localhost:8080/board/eventboard'
       };
       const response = await axios.get(urlMap[category]);
+      console.log(response);
       return { category, data: response.data };
     }
 );

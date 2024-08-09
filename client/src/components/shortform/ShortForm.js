@@ -25,14 +25,8 @@ const ShortForm = () => {
   const filteredBoards = useSelector(selectFilteredBoards);
   const medias = useSelector(selectPageBoardsMedia);
   const authors = useSelector(selectBoardAuthors);
-  console.log(authors);
   const [isLoaded, setIsLoaded] = useState(false);
-  // useEffect(()=>{
-  //   if (medias) {
-  //     setIsLoaded(true);
-  //   }
-  //   console.log(isLoaded);
-  // },[medias])
+  
   useEffect(() => {
     if (medias && Object.keys(medias).length > 0) {
       setIsLoaded(true);
