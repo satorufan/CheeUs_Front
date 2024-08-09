@@ -3,10 +3,10 @@ import { useSelector, useDispatch } from 'react-redux';
 import { TextField } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import NearMeIcon from '@mui/icons-material/NearMe';
-import { fetchComments, addComment, deleteComment, fetchCommentsAuthorImg } from '../../store/CommentSlice';
-import { AuthContext } from '../login/OAuth'; // AuthContext 가져오기
-import {jwtDecode} from "jwt-decode"; // jwt-decode 패키지 import
 import './repl.css';
+import { fetchComments, addComment, deleteComment, fetchCommentsAuthorImg } from '../../store/CommentSlice';
+import { AuthContext } from '../login/OAuth';
+import { jwtDecode } from "jwt-decode";
 import { fetchUserProfile, selectUserProfile } from '../../store/ProfileSlice';
 import { useNavigate } from 'react-router-dom';
 
@@ -14,13 +14,14 @@ function Repl({ boardId }) {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const comments = useSelector(state => state.comments.comments[boardId] || []);
-    const authorImg = useSelector(state => state.comments.commentAuthorsImg || []);
+    const authorImg = useSelector(state => state.comments.commentAuthorsImg || {});
     const [commentText, setCommentText] = useState('');
     const [replyText, setReplyText] = useState({});
     const [showReplyInput, setShowReplyInput] = useState({});
     const { token } = useContext(AuthContext);
     const userProfile = useSelector(selectUserProfile);
     const [nickname, setNickname] = useState('');
+    const [loadingImages, setLoadingImages] = useState(true); // 이미지 로딩 상태
 
     let decodedToken = {};
     if (token) {
@@ -35,20 +36,18 @@ function Repl({ boardId }) {
         }
     }, [dispatch, boardId]);
 
-    // 프로필 정보 로딩용
     useEffect(() => {
-        dispatch(fetchCommentsAuthorImg(comments))
+        dispatch(fetchCommentsAuthorImg(comments));
         if (userProfile) {
             setNickname(userProfile.profile.nickname);
         }
-    }, [comments]);
+    }, [comments, userProfile]);
 
-    // 로그 확인용
-    /*
     useEffect(() => {
-        console.log('Comments:', comments);
-    }, [comments]);
-    */
+        if (Object.keys(authorImg).length > 0) {
+            setLoadingImages(false); // 이미지 로딩이 완료되면 상태 변경
+        }
+    }, [authorImg]);
 
     const handleInputChange = (e) => {
         setCommentText(e.target.value);
@@ -75,7 +74,6 @@ function Repl({ boardId }) {
             };
             await dispatch(addComment(newComment));
             setCommentText('');
-            // 새 댓글을 추가한 후 댓글 목록 갱신
             dispatch(fetchComments(boardId));
         }
     };
@@ -95,17 +93,18 @@ function Repl({ boardId }) {
             await dispatch(addComment(reply));
             setReplyText(prevState => ({ ...prevState, [parentId]: '' }));
             setShowReplyInput(prevState => ({ ...prevState, [parentId]: false }));
-            dispatch(fetchComments(boardId)); // 새 대댓글을 추가한 후 댓글 목록 갱신
+            dispatch(fetchComments(boardId));
         }
     };
 
     const handleDeleteComment = async (commentId) => {
         await dispatch(deleteComment(commentId));
-        dispatch(fetchComments(boardId)); 
+        dispatch(fetchComments(boardId));
     };
+
     const handleDeleteReply = async (replyId) => {
         await dispatch(deleteComment(replyId));
-        dispatch(fetchComments(boardId)); 
+        dispatch(fetchComments(boardId));
     };
 
     const toggleReplyInput = (commentId) => {
@@ -125,20 +124,21 @@ function Repl({ boardId }) {
 
     const renderComments = (comments) => {
         return comments
-            /* 로그 추적용
-            .filter(comment =>{
-                console.log('Filtering comment:', comment);
-                return comment.parent_id === null || comment.parent_id === 0;
-            })
-             */
-            .filter(comment => comment.group === 1) // 댓글 필터링
+            .filter(comment => comment.group === 1)
             .map(comment => (
                 <div key={comment.id} className="comment-container">
                     <div className="detail-comment">
                         <div className="comment-user-info">
-                            <img src={authorImg[comment.repl_author_id]} alt="Profile" 
-                            className="reply-profile-pic" 
-                            onClick={()=>navigateToUserProfile(comment.repl_author_id)}/>
+                            {loadingImages ? (
+                                <div className="skeleton skeleton-small" />
+                            ) : (
+                                <img
+                                    src={authorImg[comment.repl_author_id]}
+                                    alt="Profile"
+                                    className="reply-profile-pic"
+                                    onClick={() => navigateToUserProfile(comment.repl_author_id)}
+                                />
+                            )}
                             <span className="reply-nickname">{comment.nickname}</span>
                         </div>
                         <div className="comment-content">
@@ -154,23 +154,23 @@ function Repl({ boardId }) {
                         </div>
                     </div>
 
-                    {/* 대댓글 목록 */}
                     <div className="detail-reply-list">
                         {comments
-                            /* 로그 추적용
-                            .filter(reply =>{
-                                console.log('Filtering rely:', reply);
-                                return ~구현하고 싶은 로직 구현~;
-                            })
-                            */
-                            .filter(reply => reply.group === 2 && reply.parent_id === comment.id)// 대댓글 필터링
+                            .filter(reply => reply.group === 2 && reply.parent_id === comment.id)
                             .map(reply => (
                                 <div key={reply.id} className="reply-container">
                                     <div className="detail-reply">
                                         <div className="reply-user-info">
-                                            <img src={authorImg[comment.repl_author_id]} alt="Profile" 
-                                            className="reply-profile-pic"
-                                            onClick={()=>navigateToUserProfile(comment.repl_author_id)}/>
+                                            {loadingImages ? (
+                                                <div className="skeleton-small" />
+                                            ) : (
+                                                <img
+                                                    src={authorImg[reply.repl_author_id]}
+                                                    alt="Profile"
+                                                    className="reply-profile-pic"
+                                                    onClick={() => navigateToUserProfile(reply.repl_author_id)}
+                                                />
+                                            )}
                                             <span className="reply-nickname">{reply.nickname}</span>
                                         </div>
                                         <div className="reply-content">
@@ -189,7 +189,6 @@ function Repl({ boardId }) {
                             ))}
                     </div>
 
-                    {/* 대댓글 작성 입력창 토글 */}
                     <div style={{ textAlign: 'right' }}>
                         <span
                             onClick={() => toggleReplyInput(comment.id)}
