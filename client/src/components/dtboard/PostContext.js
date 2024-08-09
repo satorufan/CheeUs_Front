@@ -112,6 +112,7 @@ export const PostProvider = ({ children }) => {
     return response.data.body;
   };
 
+  // 😍★☆연결해야함☆★😍
   const checkScrap = async (serverUrl, memberEmail, id, token) => {
     const response = await axios.get(`${serverUrl}/profile/scrap`, {
       params : {
