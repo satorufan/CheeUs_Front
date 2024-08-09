@@ -1,6 +1,8 @@
 import React from 'react';
 import profileImg from '../images/noimage.jpg';
 import UseAuthorImages from '../images/UseAuthorImage';
+import Favorite from '@mui/icons-material/Favorite';
+import Visibility from '@mui/icons-material/Visibility';
 
 const DTBoardContent = ({ posts, totalPosts, postsPerPage, paginate, onWriteButtonClick, onPostClick }) => {
   const pageNumbers = [];
@@ -26,7 +28,15 @@ const DTBoardContent = ({ posts, totalPosts, postsPerPage, paginate, onWriteButt
               />
               <div className="dt-post-nick">{post.nickname}</div>
             </div>
-            <h5>{post.title}</h5>
+            <div className='dtpostHeader'>
+            	<h5>{post.title}</h5>
+            	<div className='dticonBox'>
+            	<Favorite className = 'likeIcon'/>
+            	<span>{post.like}</span>
+            	<Visibility className='viewIcon'/>
+            	<span>{post.views}</span>
+            	</div>
+            </div>
             <div className="dtpost-location"> {post.location}</div>
             <div className="dtpost-time"> {post.time}</div>
             <div className='contentHidden'>{post.content}</div>
