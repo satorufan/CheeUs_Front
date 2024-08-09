@@ -3,15 +3,18 @@ import { useSelector, useDispatch } from 'react-redux';
 import { TextField } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import NearMeIcon from '@mui/icons-material/NearMe';
-import { fetchComments, addComment, deleteComment } from '../../store/CommentSlice';
+import { fetchComments, addComment, deleteComment, fetchCommentsAuthorImg } from '../../store/CommentSlice';
 import { AuthContext } from '../login/OAuth'; // AuthContext 가져오기
 import {jwtDecode} from "jwt-decode"; // jwt-decode 패키지 import
 import './repl.css';
 import { fetchUserProfile, selectUserProfile } from '../../store/ProfileSlice';
+import { useNavigate } from 'react-router-dom';
 
 function Repl({ boardId }) {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const comments = useSelector(state => state.comments.comments[boardId] || []);
+    const authorImg = useSelector(state => state.comments.commentAuthorsImg || []);
     const [commentText, setCommentText] = useState('');
     const [replyText, setReplyText] = useState({});
     const [showReplyInput, setShowReplyInput] = useState({});
@@ -34,10 +37,11 @@ function Repl({ boardId }) {
 
     // 프로필 정보 로딩용
     useEffect(() => {
+        dispatch(fetchCommentsAuthorImg(comments))
         if (userProfile) {
             setNickname(userProfile.profile.nickname);
         }
-    }, [userProfile]);
+    }, [comments]);
 
     // 로그 확인용
     /*
@@ -111,6 +115,14 @@ function Repl({ boardId }) {
         }));
     };
 
+    const navigateToUserProfile = (email) => {
+        if (email) {
+            navigate(`/userprofile/${email}`);
+        } else {
+            console.error('User ID not found for email:', email);
+        }
+    };
+
     const renderComments = (comments) => {
         return comments
             /* 로그 추적용
@@ -124,7 +136,9 @@ function Repl({ boardId }) {
                 <div key={comment.id} className="comment-container">
                     <div className="detail-comment">
                         <div className="comment-user-info">
-                            <img src={'https://via.placeholder.com/30'} alt="Profile" className="reply-profile-pic" />
+                            <img src={authorImg[comment.repl_author_id]} alt="Profile" 
+                            className="reply-profile-pic" 
+                            onClick={()=>navigateToUserProfile(comment.repl_author_id)}/>
                             <span className="reply-nickname">{comment.nickname}</span>
                         </div>
                         <div className="comment-content">
@@ -154,7 +168,9 @@ function Repl({ boardId }) {
                                 <div key={reply.id} className="reply-container">
                                     <div className="detail-reply">
                                         <div className="reply-user-info">
-                                            <img src={'https://via.placeholder.com/30'} alt="Profile" className="reply-profile-pic" />
+                                            <img src={authorImg[comment.repl_author_id]} alt="Profile" 
+                                            className="reply-profile-pic"
+                                            onClick={()=>navigateToUserProfile(comment.repl_author_id)}/>
                                             <span className="reply-nickname">{reply.nickname}</span>
                                         </div>
                                         <div className="reply-content">

@@ -6,7 +6,10 @@ import ExitIcon from '@mui/icons-material/PowerSettingsNew';
 
 const AdminLogoutButton = forwardRef((props, ref) => {
     const logout = useLogout();
-    const handleClick = () => logout();
+    const handleClick = () => {
+        logout()
+        window.location.href = "http://localhost:8080/logout";
+    };
     return (
         <MenuItem
             onClick={handleClick}

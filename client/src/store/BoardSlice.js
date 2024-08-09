@@ -5,6 +5,8 @@ import { fetchComments, addComment, deleteComment, updateComment } from './Comme
 const initialState = {
   boards: [],
   filteredBoards: [],
+  perPageBoardsMedia: [],
+  boardsAuthors: [],
   searchQuery: '',
   likedMap: {},
 };
@@ -23,22 +25,69 @@ export const fetchBoards = createAsyncThunk(
     }
 );
 
+// 이미지 및 영상 불러오기
+export const fetchBoardsMedia = createAsyncThunk(
+  'board.fetchBoardsMedia',
+  async ({category, perPageBoards}) => {
+    const urlMap = {
+      freeboard: 'http://localhost:8080/board/freeboard/media',
+      shortform: 'http://localhost:8080/board/shortform/media',
+      eventboard: 'http://localhost:8080/board/eventboard/media'
+    };
+    const parameter = perPageBoards.map(board => ({
+      id: board.id,
+      photoes: board.photoes
+    }));
+    const encodedParameter = encodeURIComponent(JSON.stringify(parameter));
+    const response = await axios.get(urlMap[category], {
+      params: { board: encodedParameter }
+    });
+    const mediaMap = response.data.reduce((acc, data) => {
+      acc[data.id] = "data:" + data.types[0] + ";base64," + data.medias[0];
+      return acc;
+    }, {});
+    return mediaMap;
+  }
+)
+
+// 작성자 부럴오기
+export const fetchBoardsAuthor = createAsyncThunk(
+  'board.fetchBoardsAuthor',
+  async ({category, perPageBoards}) => {
+    const parameter = perPageBoards.map(board => ({
+      email : board.author_id
+    }));
+    const encodedParameter = encodeURIComponent(JSON.stringify(parameter));
+    const response = await axios.get('http://localhost:8080/match/loadBoardAuthor', {
+      params : {emails : encodedParameter}
+    });
+    const mediaMap = response.data.reduce((acc, data) => {
+      acc[data.email] = "data:" + data.imageType + ";base64," + data.imageBlob;
+      return acc;
+    }, {});
+    return mediaMap;
+  }
+)
+
 // 게시물 추가를 위한 thunk
 export const addBoard = createAsyncThunk(
     'board/addBoard',
     async (boardData) => {
+      const file = boardData.file;
+      const board = {...boardData};
+      delete board.file;
       const formData = new FormData();
-      formData.append('board', JSON.stringify(boardData)); // JSON 형태의 게시물 데이터
-      if (boardData.file) {
-        formData.append('file', boardData.file); // 파일 추가
+      formData.append('board', JSON.stringify(board)); // JSON 형태의 게시물 데이터
+      if (file) {
+        formData.append('file', file); // 파일 추가
       }
-      console.log(boardData)
-      // const response = await axios.post('http://localhost:8080/board/insert', formData, {
-      //   headers: {
-      //     'Content-Type': 'multipart/form-data'
-      //   }
-      // });
-      // return response.data;
+      console.log(board)
+      const response = await axios.post('http://localhost:8080/board/insert', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      return response.data;
     }
 );
 
@@ -93,6 +142,12 @@ const boardSlice = createSlice({
         state.boards = action.payload.data; // 게시물 목록 업데이트
         state.filteredBoards = action.payload.data; // 초기 필터링된 게시물 목록 설정
       })
+      .addCase(fetchBoardsMedia.fulfilled, (state, action) => {
+        state.perPageBoardsMedia = action.payload; // 게시물 사진 업데이트
+      })
+      .addCase(fetchBoardsAuthor.fulfilled, (state, action) => {
+        state.boardsAuthors = action.payload; // 게시물 사진 업데이트
+      })
       .addCase(addBoard.fulfilled, (state, action) => {
         state.boards.push(action.payload); // 새로운 게시물 추가
         state.filteredBoards.push(action.payload); // 새로운 게시물도 필터링 목록에 추가
@@ -135,6 +190,8 @@ const boardSlice = createSlice({
 
 export const { toggleLike, deleteBoard, setSearchQuery, filterBoards } = boardSlice.actions;
 export const selectBoards = (state) => state.board.boards;
+export const selectPageBoardsMedia = (state) => state.board.perPageBoardsMedia;
+export const selectBoardAuthors = (state) => state.board.boardsAuthors;
 export const selectFilteredBoards = (state) => state.board.filteredBoards;
 export const selectSearchQuery = (state) => state.board.searchQuery;
 export const selectLikedMap = (state) => state.board.likedMap;
