@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import './MagazineDetail.css';
+import Favorite from '@mui/icons-material/Favorite';
+import Visibility from '@mui/icons-material/Visibility';
 import MagazineTop from './MagazineTop';
 import { useMagazines } from './MagazineContext';
 
@@ -35,8 +37,8 @@ const MagazineDetail = () => {
         <div className="magazine-detail-footer">
           <div className="magazine-detail-admin">에디터 : {data.admin_name}<a className = 'hidden'>{data.admin_id}</a></div>
           <div className="magazine-detail-stats">
-            <span className="magazine-detail-likes">Likes: {data.like}</span>
-            <span className="magazine-detail-views">Views: {data.views}</span>
+            <span className="magazine-detail-likes"><Favorite/>{data.like}</span>
+            <span className="magazine-detail-views"><Visibility/>{data.views}</span>
           </div>
         </div>
       </div>
