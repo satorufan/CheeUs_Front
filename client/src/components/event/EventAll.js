@@ -21,6 +21,10 @@ const EventAll = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
 
+  // 현재 날짜 가져오기
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth() + 1; // 월은 0부터 시작하므로 +1 필요
+
   // URL 쿼리에서 검색어를 읽어와 상태에 설정
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -32,15 +36,37 @@ const EventAll = () => {
     navigate(`/event/detail/event/${id}`);
   };
 
-  // 페이지네이션
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentEvents = Object.values(events.event).filter(event => event.title.includes(searchQuery) || event.title2.includes(searchQuery)).slice(startIndex, startIndex + itemsPerPage);
-  const totalPages = Math.ceil(Object.values(events.event).filter(event => event.title.includes(searchQuery) || event.title2.includes(searchQuery)).length / itemsPerPage);
+  // 날짜 필터링
+  const isOngoingEvent = (eventDate) => {
+    const event = new Date(eventDate);
+    const eventMonth = event.getMonth() + 1;
+    return eventMonth === currentMonth;
+  };
+  
+    // 데이터 로딩 완료 전 대기
+    if (!events) {
+        return <div>Loading...</div>;
+    }
+
+    // 이벤트 데이터 추출
+    const eventList = events.event;
+    
+    // 로그 추출용
+    // console.log(" *eventList* " + eventList);
+    // console.log(" >>>events<<< " + events);
+    // console.log("Events Data:", JSON.stringify(events, null, 2));
+
+    // 페이지네이션
+    const filteredEvents = eventList
+        .filter(event => isOngoingEvent(event.writeday) && (event.title.includes(searchQuery) || event.title2.includes(searchQuery)));
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const currentEvents = filteredEvents.slice(startIndex, startIndex + itemsPerPage);
+    const totalPages = Math.ceil(filteredEvents.length / itemsPerPage);
 
   const handleChange = (event, value) => {
     setCurrentPage(value);
   };
-
   return (
     <>
       <EventTop />

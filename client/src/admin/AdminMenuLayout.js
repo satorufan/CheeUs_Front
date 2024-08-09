@@ -1,7 +1,7 @@
-import { AppBar, Layout, UserMenu, useLogout } from 'react-admin';
+import { AppBar, Layout, ThemeProvider, UserMenu, useLogout } from 'react-admin';
 import { AdminMenu } from './AdminMenu';
 import { forwardRef } from 'react';
-import { MenuItem } from '@mui/material';
+import { MenuItem, createTheme } from '@mui/material';
 import ExitIcon from '@mui/icons-material/PowerSettingsNew';
 
 const AdminLogoutButton = forwardRef((props, ref) => {
@@ -28,8 +28,18 @@ const AdminUserMenu = () => (
 
 const MyAppBar = () => <AppBar userMenu={<AdminUserMenu />} />;
 
-export const AdminMenuLayout = ({ children }) => (
-    <Layout menu={AdminMenu} appBar={MyAppBar}>
-        {children}
-    </Layout>
-);
+export const AdminMenuLayout = ({ children }) => {
+    const lightTheme = createTheme({
+        palette: {
+            mode: 'light',
+        },
+    });
+
+    return (
+        <ThemeProvider theme={lightTheme}>
+            <Layout menu={AdminMenu} appBar={MyAppBar}>
+                {children}
+            </Layout>
+        </ThemeProvider>
+    );
+};

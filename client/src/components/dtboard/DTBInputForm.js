@@ -30,6 +30,7 @@ function DTBInputForm() {
   const profiles = useSelector(selectProfiles);  
   const [nickname, setNickname] = useState('');
   
+  
   useEffect(() => {
     dispatch(fetchUserProfiles({ serverUrl, memberEmail }));
   }, [dispatch, serverUrl, memberEmail]);  
@@ -46,10 +47,10 @@ function DTBInputForm() {
        }
    }, [userProfile]);  
 
-  const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => {
+  const ExampleCustomInput = forwardRef(({ value, onClick}, ref) => {
     const formattedValue = format(startDate, '약속시간 : yyyy.MM.dd') + ' ' + format(startDate, 'HH:mm');
     return (
-      <button className="example-custom-input" onClick={onClick} ref={ref} style={{ whiteSpace: 'pre-wrap' }}>
+      <button className='example-custom-input' onClick={onClick} ref={ref} style={{ whiteSpace: 'pre-wrap' }}>
         {formattedValue}
       </button>
     );
@@ -125,6 +126,7 @@ function DTBInputForm() {
                   timeIntervals={15}
                   timeCaption="시간"
                   customInput={<ExampleCustomInput />}
+                  wrapperClassName='datepicker-wrapper'
                 />
               </div>
             </div>
