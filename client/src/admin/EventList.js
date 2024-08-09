@@ -6,6 +6,7 @@ import { FilterSidebar, ListActions } from './FilterSidebar';
 import { RichTextInput } from 'ra-input-rich-text';
 import BackButton from './custom/BackButton';
 import BooleanField from './BooleanField';
+import TuiEditorInput from './custom/TuiEditorInput';
 
 const eventFilters = [
     <SearchInput source="q" />,
@@ -53,7 +54,7 @@ export const EventCreate = (props) => (
             <TextInput source="admin_name" />
             <TextInput source="title" />
             <TextInput source="title2" />
-            <RichTextInput source="content" />
+            <TuiEditorInput source="content" />
             <DateInput source="writeday" />
             <BooleanInput source="hidden" label="Hidden" />
             <SaveButton />
@@ -70,7 +71,7 @@ export const EventEdit = (props) => (
             <TextInput source="admin_name" />
             <TextInput source="title" />
             <TextInput source="title2" />
-            <RichTextInput source="content" />
+            <TuiEditorInput source="content" />
             <DateInput source="writeday" />
             <BooleanInput source="hidden" label="Hidden" />
             <SaveButton/>
