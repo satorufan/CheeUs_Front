@@ -10,6 +10,8 @@ import { AuthContext } from '../login/OAuth';
 import swal from 'sweetalert';
 import { jwtDecode } from "jwt-decode";
 import BoardDetailTop from '../board/BoardDetailTop';
+import { ref, deleteObject } from "firebase/storage";
+import { storage } from "../firebase/firebase";
 
 const WriteFreeBoard = () => {
   const [title, setTitle] = useState('');
@@ -38,27 +40,34 @@ const WriteFreeBoard = () => {
     return <div>Loading...</div>;
   }
 
-  // 본문 내용에서 이미지 마크업을 추출하는 함수
-  const extractImages = (content) => {
-    const imagePattern = /!\[.*?\]\((.*?)\)/g; // ![...](url) 패턴을 찾기 위한 정규식
-    const images = [];
+  // 이미지 URL 추출 함수
+  const extractImageUrls = (content) => {
+    const regex = /!\[.*?\]\((.*?)\)/g;
+    let urls = [];
     let match;
-
-    while ((match = imagePattern.exec(content)) !== null) {
-      images.push(match[1]); // 이미지 URL
+    while ((match = regex.exec(content)) !== null) {
+      urls.push(match[1]);
     }
-
-    return images;
+    return urls;
   };
 
-  // 본문 내용에서 이미지 마크업을 제거하는 함수
-  const removeImagePlaceholders = (content) => {
-    let index = 0;
-    return content.replace(/!\[.*?\]\((.*?)\)/g, (match, p1) => {
-      return `{{imagePlaceholder${index++}}}`; // 인덱스 붙이기
-    });
-  };
+  // 사용되지 않는 이미지 삭제 함수
+  const deleteUnusedImages = async (currentContent) => {
+    const usedImageUrls = extractImageUrls(currentContent);
+    const uploadedImages = editorRef.current.getUploadedImages();
 
+    const unusedImages = uploadedImages.filter(url => !usedImageUrls.includes(url));
+
+    for (const url of unusedImages) {
+      const imageRef = ref(storage, url);
+      try {
+        await deleteObject(imageRef);
+        console.log(`Deleted unused image: ${url}`);
+      } catch (error) {
+        console.error(`Failed to delete unused image: ${url}`, error);
+      }
+    }
+  };
 
   const onSubmitHandler = async () => {
     if (title === '') return;
@@ -87,6 +96,8 @@ const WriteFreeBoard = () => {
     //   console.error('게시물 제출 실패:', error);
     // }
 
+    await deleteUnusedImages(content);
+    
     const findMaxId = () => {
       let maxId = 0;
       boards.forEach(board => {

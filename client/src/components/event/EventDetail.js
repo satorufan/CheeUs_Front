@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import './EventDetail.css';
+import Favorite from '@mui/icons-material/Favorite';
+import Visibility from '@mui/icons-material/Visibility';
 import EventTop from './EventTop';
 import { useEvents } from './EventContext';
 
@@ -33,8 +35,8 @@ const EventDetail = () => {
           <div className="event-detail-admin">에디터 : {data.admin_name}</div>
           <a className="hidden">{data.admin_id}</a>
           <div className="event-detail-stats">
-            <span className="event-detail-likes">Likes: {data.like}</span>
-            <span className="event-detail-views">Views: {data.views}</span>
+            <span className="event-detail-likes"><Favorite/>{data.like}</span>
+            <span className="event-detail-views"><Visibility/>{data.views}</span>
           </div>
         </div>
       </div>
