@@ -40,7 +40,6 @@ export const PostList = (props) => (
             <TextField source="nickname" />
             <TextField source="title" />
 			<CustomCategoryField source="category" />            
-            <RichTextField source = "content"/>
             <DateField source="writeday" />
             <BooleanField source="pinned" />
             <BooleanField source="hidden" />

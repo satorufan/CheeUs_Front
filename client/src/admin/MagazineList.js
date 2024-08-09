@@ -31,7 +31,6 @@ export const MagazineList = (props) => (
             <ChipField source="category" />
             <TextField source="title" />
             <TextField source="title2" />
-            <RichTextField source="content" />
             <DateField source="writeday" />
             <BooleanField source="hidden" />
             <CreateButton/>
