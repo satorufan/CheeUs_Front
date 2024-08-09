@@ -6,16 +6,40 @@
   overflow: hidden;
 }
 
+.textareaHeader {
+  display: flex;
+  justify-content: space-between;
+}
+
 .textareaBox input {
-  border: 1px solid #ccc; 
+  border: none;
+  font-size: 1.8vw;
+  margin-left: 30px;
+}
+.textareaBox input {
   padding: 8px;
   border-radius: 4px;
   outline: none;
 }
-
 .textareaBox input:focus {
   border: none !important;
   box-shadow: none !important; 
+}
+.textareaBoxRight{
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.iconBox{
+  margin-right: 20px;
+  transition: color 0.3s;
+}
+.likeIcon{
+  cursor: pointer;
+}
+.viewIcon{
+  margin-left: 10px;
 }
 
 .dt-input-left-box {
@@ -63,17 +87,6 @@
   box-shadow: 0px -1px 5px rgba(0, 0, 0, 0.1);
 }
 
-.textareaHeader {
-  display: flex;
-  justify-content: space-between;
-}
-
-.textareaBox input {
-  border: none;
-  font-size: 1.8vw;
-  margin-left: 30px;
-}
-
 .example-custom-input {
   background-color: white; 
   color: black; 
@@ -84,6 +97,39 @@
   margin-right: 20px;
   margin-top: 10px;
 }
+
+
+/* .react-datepicker__header.react-datepicker__header--time 클래스에 대한 스타일 */
+.react-datepicker__header.react-datepicker__header--time {
+  height: auto !important;  /* 높이 자동 설정 */
+  line-height: 1.2 !important;  /* 라인 높이 설정 */
+  padding: 10px 0 !important;  /* 위아래 패딩 추가 */
+  font-size: 14px !important;  /* 폰트 크기 조정 */
+  display: flex !important;  /* 플렉스 박스 사용 */
+  align-items: center !important;  /* 수직 중앙 정렬 */
+  justify-content: center !important;  /* 수평 중앙 정렬 */
+  text-align: center !important;  /* 텍스트 중앙 정렬 */
+}
+
+/* .react-datepicker-time__header 클래스에 대한 스타일 */
+.react-datepicker-time__header {
+  height: auto !important;  /* 높이 자동 설정 */
+  line-height: 1.35 !important;  /* 라인 높이 설정 */
+  padding: 10px 0 !important;  /* 위아래 패딩 추가 */
+  font-size: 14px !important;  /* 폰트 크기 조정 */
+  display: flex !important;  /* 플렉스 박스 사용 */
+  align-items: center !important;  /* 수직 중앙 정렬 */
+  justify-content: center !important;  /* 수평 중앙 정렬 */
+  text-align: center !important;  /* 텍스트 중앙 정렬 */
+}
+.react-datepicker__time-list {
+  height: 170px !important; /* 시간 목록의 높이를 전체 컨테이너에 맞추기 */
+}
+.react-datepicker-popper {
+  z-index: 9999 !important;
+}
+
+
 
 .mapping {
   font-size: 1.5vw;
@@ -215,6 +261,7 @@
   border-radius: 5px;
 }
 
+
 @media (max-width: 768px) {
   .input-Container {
     flex-direction: column;
@@ -233,6 +280,7 @@
     height: 300px; 
   }
 }
+
 
 @media (max-width: 480px) {
   .bottomContainer {
