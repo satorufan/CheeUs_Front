@@ -9,15 +9,17 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 
 const PrivateRoute = () => {
-    const { isLoggedIn } = useAuth();
+    const { isLoggedIn, tokenCheck } = useAuth();
     const location = useLocation();
     const navigate = useNavigate();
 
     useEffect(() => {
+        tokenCheck();
         if (!isLoggedIn && location.pathname.startsWith('/admin')) {
             navigate('/admin/adminlogin');
         }
-    }, [isLoggedIn, location, navigate]);
+        console.log(isLoggedIn);
+    }, [isLoggedIn, location, navigate, tokenCheck]);
 
     return isLoggedIn ? <Outlet /> : null;
 };

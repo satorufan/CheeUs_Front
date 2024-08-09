@@ -32,12 +32,13 @@ export const addBoard = createAsyncThunk(
       if (boardData.file) {
         formData.append('file', boardData.file); // 파일 추가
       }
-      const response = await axios.post('http://localhost:8080/board/insert', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-      return response.data;
+      console.log(boardData)
+      // const response = await axios.post('http://localhost:8080/board/insert', formData, {
+      //   headers: {
+      //     'Content-Type': 'multipart/form-data'
+      //   }
+      // });
+      // return response.data;
     }
 );
 
