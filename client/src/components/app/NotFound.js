@@ -12,8 +12,10 @@ function NotFoundPage() {
 
   const imageStyle = {
     maxWidth: '100%', 
-    height: 'auto',
-  };
+    height: '600px', 
+    objectFit: 'cover',
+    objectPosition: 'center', 
+};
 
   return (
     <div style={containerStyle}>
