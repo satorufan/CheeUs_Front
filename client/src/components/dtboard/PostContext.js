@@ -112,6 +112,7 @@ export const PostProvider = ({ children }) => {
     return response.data.body;
   };
 
+  // 😍★☆연결해야함☆★😍
   const checkScrap = async (serverUrl, memberEmail, id, token) => {
     const response = await axios.get(`${serverUrl}/profile/scrap`, {
       params : {
@@ -127,9 +128,33 @@ export const PostProvider = ({ children }) => {
     return check.length > 0 ? true : false;
   }
 
+  const toggleLike = async (serverUrl, memberEmail, postId, token) => {
+	  try{
+		  const response = await axios.post(
+			  `${serverUrl}/dtboard/toggleLike/${postId}`,{},{
+				  headers : {
+					  "Authorization" : `Bearer ${token}`,
+				  },
+				  withCredentials: true,
+			  }
+		  );
+		  if(response.data.success) {
+			  setPosts((prevPosts)=>
+			  	prevPosts.map((post)=>
+			  		post.id === postId
+			  		 ?{...post, like: response.data.updatedLikeCount}
+			  		 : post
+			  	)
+			  );
+		  }
+	  } catch (error){
+		  console.error('좋아요 토글에서 에러남 ', error);
+	  }
+  };
+
 
   return (
-    <PostContext.Provider value={{ posts, addPost, modifyPost, selectedPlace, setSelectedPlace, deletePost, addScrap, checkScrap}}>
+    <PostContext.Provider value={{ posts, addPost, modifyPost, selectedPlace, setSelectedPlace, deletePost, addScrap, checkScrap, toggleLike}}>
       {children}
     </PostContext.Provider>
   );

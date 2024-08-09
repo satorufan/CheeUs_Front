@@ -6,16 +6,41 @@
   overflow: hidden;
 }
 
+.textareaHeader {
+  display: flex;
+  justify-content: space-between;
+}
+
+.textareaBox input {
+  border: none;
+  font-size: 1.8vw;
+  margin-left: 30px;
+}
 .textareaBox input {
   border: 1px solid #ccc; 
   padding: 8px;
   border-radius: 4px;
   outline: none;
 }
-
 .textareaBox input:focus {
   border: none !important;
   box-shadow: none !important; 
+}
+.textareaBoxRight{
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.iconBox{
+  margin-right: 20px;
+  transition: color 0.3s;
+}
+.likeIcon{
+  cursor: pointer;
+}
+.viewIcon{
+  margin-left: 10px;
 }
 
 .dt-input-left-box {
@@ -63,16 +88,7 @@
   box-shadow: 0px -1px 5px rgba(0, 0, 0, 0.1);
 }
 
-.textareaHeader {
-  display: flex;
-  justify-content: space-between;
-}
 
-.textareaBox input {
-  border: none;
-  font-size: 1.8vw;
-  margin-left: 30px;
-}
 
 .example-custom-input {
   background-color: white; 
