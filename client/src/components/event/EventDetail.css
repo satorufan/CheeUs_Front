@@ -57,6 +57,7 @@
 .event-detail-stats {
   display: flex;
   gap: 15px;
+  transition: color 0.3s;
 }
 
 .event-detail-likes,

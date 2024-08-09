@@ -32,10 +32,55 @@ export const EventProvider = ({ children }) => {
     fetchEvents();
   }, []);
 
+  const incrementViewCount = async (serverUrl, id, token) => {
+    try {
+      await axios.post(`${serverUrl}/event/incrementView/${id}`, {}, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
+
+      setEvents(prevEvents => {
+        const updatedEvents = { ...prevEvents };
+        const eventToUpdate = Object.values(updatedEvents.event).find(event => event.id === id);
+        if (eventToUpdate) {
+          eventToUpdate.views += 1;
+        }
+        return updatedEvents;
+      });
+    } catch (error) {
+      console.error('조회수 카운팅 에러-EventContext.js', error);
+    }
+  };
+
+  const toggleLike = async (serverUrl, id, token) => {
+    try {
+      const response = await axios.post(`${serverUrl}/event/toggleLike/${id}`, {}, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
+
+      if (response.data.success) {
+        setEvents(prevEvents => {
+          const updatedEvents = { ...prevEvents };
+          const eventToUpdate = Object.values(updatedEvents.event).find(event => event.id === id);
+          if (eventToUpdate) {
+            eventToUpdate.like = response.data.liked ? eventToUpdate.like + 1 : eventToUpdate.like - 1;
+          }
+          return updatedEvents;
+        });
+      }
+    } catch (error) {
+      console.error('좋아요 토글 에러-EventContext.js', error);
+    }
+  };
 
 
   return (
-      <EventContext.Provider value={{ events, setEvents }}>
+      <EventContext.Provider value={{ events, setEvents, incrementViewCount, toggleLike }}>
         {children}
       </EventContext.Provider>
   );
