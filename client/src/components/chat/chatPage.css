@@ -21,7 +21,7 @@ body {
 .no-chat-list{
     margin-top: 30px;
     text-align: center;
-    font-size: clamp(1rem, 5vw, 2rem);
+    font-size: clamp(1rem, 3vw, 2rem);
     font-family: 'Tokki';
     white-space: nowrap;
 }
@@ -446,3 +446,38 @@ body {
     justify-content: flex-end;
     background-color: none;
 }
+
+.skeleton-img {
+    background: #ddd;
+    border-radius: 50%; 
+    display: inline-block;
+    width: 30px; 
+    height: 30px;
+    animation: pulse 1.5s infinite ease-in-out;
+  }
+  
+  .skeleton-loading {
+    animation: pulse 1.5s infinite ease-in-out;
+  }
+
+  .skeleton-nick{
+    background: #ddd;
+    border-radius: 10px; 
+    display: inline-block;
+    width: 60px; 
+    height: 20px;
+    animation: pulse 1.5s infinite ease-in-out;
+    margin-top: 5px;
+  }
+  
+  @keyframes pulse {
+    0% {
+      background-color: #ddd;
+    }
+    50% {
+      background-color: #ccc;
+    }
+    100% {
+      background-color: #ddd;
+    }
+  }
