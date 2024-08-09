@@ -54,7 +54,7 @@ export const EventCreate = (props) => (
             <TextInput source="admin_name" />
             <TextInput source="title" />
             <TextInput source="title2" />
-            <TuiEditorInput source="content" />
+            <TuiEditorInput source="content" defaultValue="" />
             <DateInput source="writeday" />
             <BooleanInput source="hidden" label="Hidden" />
             <SaveButton />
