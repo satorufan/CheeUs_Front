@@ -60,7 +60,17 @@
   padding: 10px;
   border-radius: 10px;
 }
-
+.profile1 img{
+	cursor: pointer;
+}
+.DTprofileName{
+	cursor: pointer;
+	text-decoration: none;
+	color: black;
+}
+.DTprofileName:hover{
+	color: #555;
+}
 .dt-input-right-box {
   flex: 1;
   display: flex;
@@ -71,7 +81,6 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
 }
-
 .mapContainer {
   flex: 1;
   overflow: hidden;

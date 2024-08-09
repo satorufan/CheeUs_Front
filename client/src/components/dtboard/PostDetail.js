@@ -208,12 +208,12 @@ const PostDetail = () => {
     <div className="board-page-top">함께 마셔요</div>
     <div className="detailContainer">
       <div className="dt-detail-left-box">
-      <div className="profileContainer" onClick={() => navigate("/userprofile/"+authorInfo.email)}>
+      <div className="profileContainer">
           <div className="profile1">
-            <img className="rounded-circle mr-3" src={authorInfo ? authorInfo.image : profileImg} alt="Profile" style={{ width: '40px', height: '40px' }}/>
+            <img className="rounded-circle mr-3" onClick={() => navigate("/userprofile/"+authorInfo.email)} src={authorInfo ? authorInfo.image : profileImg} alt="Profile" style={{ width: '40px', height: '40px' }}/>
           </div>
           <div className="profile2">
-            <a>{post.nickname}</a>
+            <a className = "DTprofileName" onClick={() => navigate("/userprofile/"+authorInfo.email)}>{post.nickname}</a>
           </div>
         </div>
         <div className="textareaHeader">
