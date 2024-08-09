@@ -30,7 +30,7 @@ const TuiEditorInput = ({ label, source, ...props }) => {
                 initialValue={value}
                 previewStyle="vertical"
                 height="400px"
-                initialEditType="wysiwyg"
+                initialEditType="markdown"
 	            toolbarItems={[
 	              ["heading", "bold", "italic", "strike"],
 	              ["hr", "quote"],

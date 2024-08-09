@@ -79,6 +79,7 @@ const dataProvider = {
     },
     create: async (resource, params) => {
         console.log('params.data:', params.data);
+        console.log('Content:', params.data.content);
         const url = endpoints[resource];
         console.log("create params.data " + params.data);
         const { data } = await axios.post(url, params.data, httpHeader);

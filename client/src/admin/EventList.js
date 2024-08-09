@@ -1,5 +1,5 @@
 import React from 'react';
-import { List, Datagrid, TextField, EditButton, DeleteButton, SearchInput, Toolbar, SaveButton, DateInput, ImageInput, ImageField } from 'react-admin';
+import { List, Datagrid, TextField, EditButton, DeleteButton, SearchInput, Toolbar, SaveButton, DateInput, ImageInput, ImageField, useNotify } from 'react-admin';
 import { Edit, SimpleForm, TextInput, BooleanInput, RichTextField, DateField } from 'react-admin';
 import { Create } from 'react-admin';
 import { FilterSidebar, ListActions } from './FilterSidebar';
@@ -18,7 +18,7 @@ const eventFilters = [
     <TextInput label="content" source="content" defaultValue="" />,
     <TextInput label="writeday" source="writeday" defaultValue="" />,
 ];
-
+	
 export const EventList = (props) => (
     <List {...props} debounce={1000} actions={<ListActions/>}  filters={eventFilters} aside={<FilterSidebar/>}>
         <Datagrid rowClick="edit">
@@ -47,7 +47,7 @@ const EventToolbar = () =>{
 };
 
 export const EventCreate = (props) => (
-    <Create {...props}>
+    <Create  {...props}>
         <SimpleForm toolbar={<EventToolbar/>}>
             <TextInput source="id" />
             <TextInput source="admin_id" />

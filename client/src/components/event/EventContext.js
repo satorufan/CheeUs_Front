@@ -32,6 +32,8 @@ export const EventProvider = ({ children }) => {
     fetchEvents();
   }, []);
 
+
+
   return (
       <EventContext.Provider value={{ events, setEvents }}>
         {children}
