@@ -17,6 +17,10 @@
   border-radius: 50px; 
 }
 
+.carousel-caption{
+  height:200px;
+}
+
 .ad-carousel .carousel-item {
   position: relative;
   height: 100%;
@@ -41,7 +45,8 @@
   transition: bottom 0.3s;
 }
 
-.ad-carousel .carousel-caption h3,
 .ad-carousel .carousel-caption p {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+  margin-bottom : 10px;
+  font-size:25px;
 }

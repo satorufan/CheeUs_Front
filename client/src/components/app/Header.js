@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useMemo, useCallback } from 'react';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import Container from 'react-bootstrap/Container';
@@ -11,21 +11,20 @@ import { AuthContext } from '../login/OAuth';
 import './header.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUserProfile, selectProfileStatus, selectUserProfile } from '../../store/ProfileSlice';
-import { jwtDecode } from 'jwt-decode';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { fetchUserProfiles, selectProfiles } from '../../store/MatchSlice';
-import axios from 'axios';
 
-function Header() {
-    const [isUnread, setIsUnread] = useState(true); // 채팅 읽지 않은 상태
+const Header = React.memo(function Header() {
+    const [isUnread, setIsUnread] = useState(true);
+    const [isNavExpanded, setIsNavExpanded] = useState(false);
+
     const { token, serverUrl, requestSignOut, memberEmail } = useContext(AuthContext);
-    const [isNavExpanded, setIsNavExpanded] = useState(false); // Navbar 확장 상태 확인
-
-    const userProfile = useSelector(selectUserProfile); // Redux에서 사용자 프로필 가져오기
-    const profiles = useSelector(selectProfiles);
+    const userProfile = useSelector(selectUserProfile);
     const profileStatus = useSelector(selectProfileStatus);
     const dispatch = useDispatch();
     const location = useLocation();
+    const navigate = useNavigate();
+
+    const defaultProfileImage = `${process.env.PUBLIC_URL}/images/default-avatar.jpg`;
 
     useEffect(() => {
         if (token) {
@@ -33,72 +32,48 @@ function Header() {
         }
     }, [token, dispatch, serverUrl, memberEmail]);
 
-    const handleLogout = () => {
-        requestSignOut();
-    };
-
-    const handleReadMessage = () => {
-        setIsUnread(false);
-    };
-
-    const handleNavToggle = () => {
-        setIsNavExpanded(!isNavExpanded);
-    };
-   const navigate = useNavigate();
-   const handleLinkClick = (e) => {
-     e.preventDefault();
-     navigate('/dtboard');
-     window.location.reload();
-   };
-
-   const springSecurity = async() => {
-    await axios.get(serverUrl + "/member/signIn2", {params : {email : "test"},
-        headers : {
-            "Authorization" : `Bearer ${token}`
-        },
-        withCredentials : true
-    })
-    .then((res)=>{
-        console.log(res);
-    }).catch((err)=>{
-        console.log(err)
-        if (err.response.status == 401) {
-            alert("토큰 만료 다시 로그인해주셈");
-            window.location.reload();
+    useEffect(() => {
+        if (userProfile && userProfile.imageBlob && userProfile.imageBlob.length > 0) {
+            // 로컬스토리지에 저장
+            localStorage.setItem('profileImage', userProfile.imageBlob[0]);
         }
-        });
-    }
+    }, [userProfile]);
 
-   const springSecurityPost = async() => {
-    await axios.post(serverUrl + "/member/signIn3", "test", {
-        headers : {
-            "Authorization" : `Bearer ${token}`
-        },
-        withCredentials : true
-    })
-    .then((res)=>{
-        console.log(res);
-    }).catch((err)=>console.log(err));
-    }
+    // 로컬스토리지에서 프로필 이미지 가져오기
+    const profileImage = useMemo(() => {
+        const storedImage = localStorage.getItem('profileImage');
+        if (storedImage) {
+            return storedImage;
+        }
+        return userProfile && userProfile.imageBlob && userProfile.imageBlob.length > 0
+            ? userProfile.imageBlob[0]
+            : defaultProfileImage;
+    }, [userProfile]);
 
-    const springRedis = async() => {
-        console.log("Redis");
-        axios.get(serverUrl+"/member/redis").then(res=>console.log(res))
-        .catch((err)=>console.log(err));
+    const handleLogout = useCallback(() => {
+        requestSignOut();
+    }, [requestSignOut]);
+
+    const handleReadMessage = useCallback(() => {
+        setIsUnread(false);
+    }, []);
+
+    const handleNavToggle = useCallback(() => {
+        setIsNavExpanded((prev) => !prev);
+    }, []);
+
+    const handleLinkClick = useCallback((e) => {
+        e.preventDefault();
+        navigate('/dtboard');
+        window.location.reload();
+    }, [navigate]);
+
+    if (location.pathname.startsWith("/admin")) {
+        return null;
     }
 
     const isLoggedIn = memberEmail !== '';
-    
-	if(location.pathname.startsWith ("/admin")){
-	 return null;
-	};
 
-    const defaultProfileImage = `${process.env.PUBLIC_URL}/images/default-avatar.jpg`;
-
-    const profileImage = userProfile && userProfile.imageBlob && userProfile.imageBlob.length > 0
-        ? userProfile.imageBlob[0] // Get the first imageBlob if available
-        : defaultProfileImage;
-	
     return (
         <div className="header-container">
             {/* <button onClick={springSecurity}>스프링시큐리티 GET 테스트 버튼</button>
@@ -118,10 +93,10 @@ function Header() {
                     <Navbar.Collapse id="navbarNav">
                         <Nav className="ms-auto">
                             <Nav.Link href="/match" className="nav-link-list">둘이 마셔요</Nav.Link>
-                            <Nav.Link href="/dtboard"className="nav-link-list" onClick = {handleLinkClick}>함께 마셔요</Nav.Link>
-                            <Nav.Link href="/board" className="nav-link-list" >게시판</Nav.Link>
-                            <Nav.Link href="/event"className="nav-link-list" >이벤트</Nav.Link>
-                            <Nav.Link href="/magazine"className="nav-link-list" >매거진</Nav.Link>
+                            <Nav.Link href="/dtboard" className="nav-link-list" onClick={handleLinkClick}>함께 마셔요</Nav.Link>
+                            <Nav.Link href="/board" className="nav-link-list">게시판</Nav.Link>
+                            <Nav.Link href="/event" className="nav-link-list">이벤트</Nav.Link>
+                            <Nav.Link href="/magazine" className="nav-link-list">매거진</Nav.Link>
 
                             {isLoggedIn ? (
                                 <>
@@ -132,7 +107,7 @@ function Header() {
                                             <Stack direction="row" alignItems="center">
                                                 <Avatar
                                                     alt="User Avatar"
-                                                    src={profileImage} // Profile image source
+                                                    src={profileImage}
                                                     sx={{ width: 32, height: 32 }}
                                                 />
                                             </Stack>
@@ -172,6 +147,6 @@ function Header() {
             </Navbar>
         </div>
     );
-}
+});
 
 export default Header;
