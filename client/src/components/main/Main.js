@@ -77,7 +77,8 @@ function Main() {
             <div className="main-section-text">
               <h1>둘이 마셔요</h1>
               <div>
-                나와 술 취향이 같은 사람을 찾아 스와이프 해보세요!<br />
+                나와 술 취향이 같은 사람을 찾아<br/>
+                스와이프 해보세요!<br />
                 좋은 술 친구를 얻게 될거에요
               </div>
             </div>

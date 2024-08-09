@@ -51,7 +51,6 @@ import { EventProvider } from './components/event/EventContext';
 import { MagazineProvider } from './components/magazine/MagazineContext';
 
 const ChatPage = lazy(() => import('./components/chat/ChatPage'));
-
 function App() {
   return (
     <div className="App">
