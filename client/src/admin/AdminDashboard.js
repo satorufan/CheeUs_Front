@@ -22,8 +22,8 @@ const AdminDashboard = () => (
     <AuthProvider>
         <Admin basename="/admin" dataProvider={dataProvider} layout={AdminMenuLayout}>
             <CustomRoutes>
-                <Route path="/adminlogin" element={<AdminLogin />} />
-                <Route path="/" element={<AdminHome />} />
+                <Route path="/" element={<AdminLogin />} />
+                <Route path="/home" element={<AdminHome />} />
                 <Route path="/*" element={<PrivateRoute />}>
 					<Route path="users" element={<UserList resource="users" />} />
 					<Route path="users/edit/:id" element={<UserEdit resource="users" />} />

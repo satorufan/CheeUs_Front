@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 export const AdminMenu = () => (
     <Menu>
         <Menu.Item
-            to="/admin/"
+            to="/admin/home"
             primaryText="Home"
             leftIcon={<HomeIcon />}
             component={Link}
