@@ -78,7 +78,8 @@ function WriteShortForm() {
         like: 0,
         repl_cnt: 0,
         photoes: '',
-        media: ''
+        media: '',
+        file: file 
       };
   
       console.log('제출될 게시물 정보:', newBoard); // 콘솔에 제출될 게시물 정보 출력
@@ -95,7 +96,7 @@ function WriteShortForm() {
           swal('게시물이 성공적으로 등록되었습니다!', {
             icon: 'success',
           }).then(() => {
-            navigate('/board/shortform'); // Fix the route according to your application logic
+            // navigate('/board/shortform'); // Fix the route according to your application logic
           });
         } else {
           swal('게시물 제출이 취소되었습니다.');

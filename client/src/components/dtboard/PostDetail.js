@@ -1,12 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { BsArrowLeft } from 'react-icons/bs';
 import { usePosts } from './PostContext';
 import PostDetailMap from './PostDetailMap';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import './DTBinputForm.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import profileImg from '../images/noimage.jpg';
+import Favorite from '@mui/icons-material/Favorite';
+import Visibility from '@mui/icons-material/Visibility';
 import Swal from 'sweetalert2';
 import { fetchUserProfiles} from '../../store/MatchSlice';
 import { useDispatch, useSelector} from 'react-redux';
@@ -15,38 +16,15 @@ import { selectUserProfile } from '../../store/ProfileSlice';
 import axios from 'axios';
 import { fetchTogetherChatRooms } from '../../store/ChatSlice';
 
-// // 로그인한 사용자의 아이디를 가져오는 함수
-// const useAuth = (author) => {
-//   const dispatch = useDispatch();
-//   const { memberEmail, serverUrl, token } = useContext(AuthContext);
-//   var authorInfo;
-  
-//   useEffect(() => {
-//     dispatch(fetchUserProfiles({ serverUrl, memberEmail }));
-//     dispatch(fetchTogetherChatRooms({serverUrl, userId : memberEmail}));
-//     axios.get(serverUrl + '/match/chattingPersonal', {params : {
-//       email : author
-//     }}).then((res)=>{
-//       console.log(res)
-//       authorInfo = res.data
-//     });
-//   }, [dispatch, serverUrl, memberEmail, author]);
-  
-//   const loggedInUserId = memberEmail;	//바꾸면 찜하기 보임
-  
-//   return { loggedInUserId, authorInfo };
-// };
-
 const PostDetail = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const { memberEmail, serverUrl, token } = useContext(AuthContext);
-
+  const [liked, setLiked] = useState(false);
   const [authorInfo, setAuthorInfo] = useState();
   const [isScrapped, setIsScrapped] = useState(false);
-  const { posts, deletePost, addScrap, checkScrap } = usePosts();
+  const { posts, deletePost, addScrap, checkScrap, toggleLike } = usePosts();
   const post = posts.find((post) => post.id === parseInt(id));
-  // const { loggedInUserId, authorInfo } = useAuth(post ?. author_id);
   const navigate = useNavigate();
   const userProfile = useSelector(selectUserProfile);
   // 유저가 해당 게시글 채팅방에 참여중인지 확인
@@ -80,6 +58,56 @@ const PostDetail = () => {
     };
     fetchData();
   }, [dispatch, serverUrl, memberEmail, token]);
+
+  useEffect(() => {
+    if (post) {
+      // 조회수 증가 요청
+      const incrementViewCount = async () => {
+        try {
+          await axios.post(`${serverUrl}/dtboard/incrementView/${post.id}`, {}, {
+            headers: {
+              "Authorization": `Bearer ${token}`,
+            },
+            withCredentials: true,
+          });
+        } catch (error) {
+          console.error('Error incrementing view count:', error);
+        }
+      };
+      
+      incrementViewCount();
+    }
+  }, [post, serverUrl, token]);
+
+
+  useEffect(() => {
+    // 현재 포스트의 좋아요 확인
+    const checkIfLiked = async () => {
+      try {
+        const response = await axios.get(`${serverUrl}/dtboard/checkLike`, {
+          params: { postId: post.id, userEmail: memberEmail },
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+          withCredentials: true,
+        });
+        setLiked(response.data.liked);
+      } catch (error) {
+        console.error('좋아요 에러낫슈', error);
+      }
+    };
+
+    if (post) {
+      checkIfLiked();
+    }
+  }, [post, serverUrl, memberEmail, token]);
+
+  const handleLikeClick = async () => {
+    if (post) {
+      await toggleLike(serverUrl, memberEmail, post.id, token);
+      setLiked(!liked); // 좋아요 누르면 ui 바뀜
+    }
+  };
 
   if (!post) return <div>Post not found</div>;
   
@@ -190,6 +218,20 @@ const PostDetail = () => {
         </div>
         <div className="textareaHeader">
           <div className="textareaBox">{post.title}</div>
+          <div className='textareaBoxRight'>
+          	<div className = 'iconBox'>
+          		<Favorite 
+	              className='likeIcon' 
+	              color={liked ? 'error' : 'action'} 
+	              onClick={handleLikeClick} 
+            	/>
+            	<span>{post.like}</span>
+          		<Visibility className='viewIcon'/>
+          		<span>{post.views}</span>
+          	</div>
+          	<div>
+          	</div>
+          </div>
         </div>
         <div className="contentContainer">
             <div className="contentHeader">
