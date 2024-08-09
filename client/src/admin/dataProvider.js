@@ -46,7 +46,7 @@ const dataProvider = {
     getOne: async (resource, params) => {
         console.log('params:', params);
         const url = `${endpoints[resource]}/${params.email || params.id}`;
-        const { data } = await axios.get(url, {headers : httpHeader});
+        const { data } = await axios.get(url, httpHeader);
         // 응답 데이터가 `id` 필드를 포함하도록 변환
         const result = { ...data, id: data.email }; // 여기서 data.email을 id로 사용
         return { data: result };
@@ -54,7 +54,7 @@ const dataProvider = {
     },
     getMany: async (resource, params) => {
         const url = `${endpoints[resource]}?${stringify(params)}`;
-        const { data } = await axios.get(url, {headers : httpHeader});
+        const { data } = await axios.get(url, httpHeader);
         return { data };
     },
     getManyReference: async (resource, params) => {
@@ -66,13 +66,13 @@ const dataProvider = {
         console.log('params.data:', params.data);
         const url = `${endpoints[resource]}/${params.data.email || params.data.id}`;
         console.log("update params.data " + params.data);
-        await axios.put(url, params.data);
+        await axios.put(url, params.data, httpHeader);
         return { data: params.data };
     },
     updateMany: async (resource, params) => {
         const promises = params.ids.map(id => {
             const url = `${endpoints[resource]}/${id}`;
-            return axios.put(url, params.data);
+            return axios.put(url, params.data, httpHeader);
         });
         await Promise.all(promises);
         return { data: params.ids };
@@ -81,18 +81,18 @@ const dataProvider = {
         console.log('params.data:', params.data);
         const url = endpoints[resource];
         console.log("create params.data " + params.data);
-        const { data } = await axios.post(url, params.data);
+        const { data } = await axios.post(url, params.data, httpHeader);
         return { data: { ...params.data, id: data.email || data.id } };
     },
     delete: async (resource, params) => {
         const url = `${endpoints[resource]}/${params.email || params.id}`;
-        await axios.delete(url);
+        await axios.delete(url, httpHeader);
         return { data: params.previousData };
     },
     deleteMany: async (resource, params) => {
         const promises = params.ids.map(id => {
             const url = `${endpoints[resource]}/${id}`;
-            return axios.delete(url);
+            return axios.delete(url, httpHeader);
         });
         await Promise.all(promises);
         return { data: params.ids };

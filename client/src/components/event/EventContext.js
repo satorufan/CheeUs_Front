@@ -11,7 +11,7 @@ export const EventProvider = ({ children }) => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/admin/AdminEvent');
+        const response = await axios.get('http://localhost:8080/Event');
         const fetchedEvents = response.data;
 
         // 데이터 구조 확인
