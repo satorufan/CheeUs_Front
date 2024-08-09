@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useLogin, useNotify, Notification } from 'react-admin';
 
 const AdminLogin = () => { 
-    const [email, setEmail] = useState('');
+    const [id, setId] = useState('');
     const [password, setPassword] = useState('');
     const login = useLogin();
     const notify = useNotify();
@@ -13,9 +13,9 @@ const AdminLogin = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:8080/adminlogin', { id: email, password });
+            const response = await axios.post('http://localhost:8080/adminlogin', { id: id, password });
             localStorage.setItem('token', response.data.token);
-            await login({email, password});
+            await login({id, password});
             notify('로그인 성공!')
         } catch (error) {
             notify('이메일 또는 비밀번호가 올바르지 않습니다.')
@@ -34,11 +34,11 @@ const AdminLogin = () => {
 			        	<div className = "adminInfo">
 			        		<div className = "adminId">
 					            <input
-					            	placeholder='이메일을 입력해주세요'
-					                name="email"
-					                type="email"
-					                value={email}
-					                onChange={e => setEmail(e.target.value)}
+					            	placeholder='아이디를 입력해주세요'
+					                name="id"
+					                type="id"
+					                value={id}
+					                onChange={e => setId(e.target.value)}
 					            />
 				            </div>
 				            <div className = "adminPasswd">
