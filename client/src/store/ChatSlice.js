@@ -10,7 +10,8 @@ const initialState = {
     showMessageInput: false,
     activeKey: 'one',
     status: 'idle',
-    error: null
+    error: null,
+    unreadMessages: {},
 };
 
 // 1:1 채팅방을 가져오는 비동기 Thunk
@@ -213,6 +214,7 @@ export const getUnreadUsersInTogetherChat = (room, loggedInUserId) => {
     const unreadUsers = members.filter(member => !lastMessage.read.includes(member) && member !== loggedInUserId);
     return unreadUsers;
 };
+export const selectUnreadStatus = (state) => state.chat.unreadStatus; 
 
 const chatSlice = createSlice({
     name: 'chat',
@@ -380,6 +382,25 @@ const chatSlice = createSlice({
                 state.selectedChat = null;
             }
         },
+        updateUnreadStatus(state, action) {
+            const { roomId, userEmail, readStatus } = action.payload;
+            if (!state[roomId]) {
+                state[roomId] = {};
+            }
+            state[roomId][userEmail] = readStatus;
+        },
+        clearUnreadStatus(state, action) {
+            const { roomId } = action.payload;
+            if (roomId && state[roomId]) {
+                state[roomId] = {}; // 특정 방의 읽음 상태를 초기화
+            }
+        },
+        clearAllUnreadStatus(state, action) {
+            // 모든 방의 읽음 상태를 초기화합니다.
+            Object.keys(state).forEach(roomId => {
+                state[roomId] = {};
+            });
+        }
     },
     
     extraReducers: (builder) => {
@@ -446,6 +467,9 @@ export const {
     markTogetherMessagesAsRead,
     chatRoomStatusUpdated,
     userRemovedFromChatRoom,
+    updateUnreadStatus,
+    clearUnreadStatus,
+    clearAllUnreadStatus
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

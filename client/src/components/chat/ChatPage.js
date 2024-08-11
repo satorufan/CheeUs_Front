@@ -47,7 +47,7 @@ const ChatPage = () => {
         }
     }, [token]);
 
-    const socket = useSocketIo(activeKey, selectedChat, loggedInUserId); // 커스텀훅
+    const socket = useSocketIo(activeKey, selectedChat); // 커스텀훅
 
     useEffect(() => {
         if (loggedInUserId) {
@@ -113,32 +113,50 @@ const ChatPage = () => {
             console.error('메시지를 불러오는 중 에러 발생:', error);
         }
     }, [loggedInUserId, togetherChatRooms, dispatch]);
-    
+
     const sendMessage = async (inputMessage) => {
-        if (!selectedChat || !inputMessage.trim() || !loggedInUserId) {
-            console.log('Cannot send message: No selected chat, empty input, or missing user ID.');
+        if (!inputMessage.trim() || !loggedInUserId) {
+            console.log('Cannot send message: Empty input or missing user ID.');
             return;
         }
-
-        const newMessage = {
+    
+        // DB에 저장할 메시지
+        const dbMessage = {
             sender_id: loggedInUserId,
             message: inputMessage,
             write_day: new Date().toISOString(),
             read: 0,
-            ...(activeKey === 'one' ? { chat_room_id: selectedChat.roomId } : { room_id: selectedChat.roomId, read: [loggedInUserId] })
+            ...(activeKey === 'one' ? { chat_room_id: selectedChat?.roomId } : { room_id: selectedChat?.roomId, read: [loggedInUserId] })
         };
-
-        socket.current.emit('sendMessage', newMessage);
-
+    
+        // 소켓으로 보낼 메시지
+        const socketMessage = {
+            ...dbMessage,
+            ...(activeKey === 'one' ? {
+                member: [selectedChat?.member1, selectedChat?.member2].filter(member => member !== loggedInUserId)
+            } : {
+                member: (selectedChat?.members || [])
+            .filter(member => member.email !== loggedInUserId) // 디버깅: member 객체에 이메일 속성이 있는지 확인
+            .map(member => member.email) // 디버깅: 이메일 맵핑 확인
+    })
+        };
+    
+        // 소켓으로 메시지 전송
+        if (socket.current) {
+            socket.current.emit('sendMessage', socketMessage);
+        } else {
+            console.error('Socket is not connected.');
+        }
+    
         try {
             const endpoint = activeKey === 'one' ? 'http://localhost:8889/api/messages' : 'http://localhost:8889/api/togetherMessages';
-            await axios.post(endpoint, newMessage);
+            await axios.post(endpoint, dbMessage);
             dispatch(setMessageInput(''));
         } catch (error) {
             console.error('Error sending message:', error);
         }
     };
-
+    
     const formatMessageTime = (writeDay) => {
         const date = new Date(writeDay);
         return `${date.getHours()}:${date.getMinutes()}`;

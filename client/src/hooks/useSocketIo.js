@@ -4,10 +4,10 @@ import { useDispatch } from 'react-redux';
 import { 
     appendMessageToChat, 
     updateLastMessageInChatRooms, 
-    updateLastMessageInTogetherChatRooms 
+    updateLastMessageInTogetherChatRooms, 
 } from '../store/ChatSlice';
 
-const useSocketIo = (activeKey, selectedChat) => {
+const useSocketIo = (activeKey, selectedChat, userEmail, setHasUnreadMessages) => {
     const dispatch = useDispatch();
     const socket = useRef(null);
 
@@ -15,47 +15,69 @@ const useSocketIo = (activeKey, selectedChat) => {
         socket.current = io('http://localhost:8888');
 
         const handleReceiveMessage = (message) => {
-            console.log('Received message:', message);
-
-            // message 객체에 room_id와 members를 추가한 새로운 객체를 만듦
+            console.log('받은 메시지:', message);
+            
+            if (!message) {
+                console.error('잘못된 메시지 수신:', message);
+                return;
+            }
+            
+            console.log('전체 메시지 객체:', message);
+            
+            // 올바른 속성 이름 사용 'member'
+            const { chat_room_id, room_id, member = [] } = message;
+        
+            console.log('Member 배열:', member);
+            console.log('Member 배열 타입:', Array.isArray(member));
+            
+            // 모든 멤버를 문자열로 변환
+            const membersAsString = member.map(m => (m ? m.toString().trim() : ''));
+            console.log('문자열로 변환된 Member 배열:', membersAsString);
+            
             const enrichedMessage = {
                 ...message,
-                room_id: activeKey === 'one' ? message.chat_room_id : message.room_id,
-                members: message.members,  // 메시지에 멤버 데이터가 포함되어 있다고 가정
+                room_id: activeKey === 'one' ? chat_room_id : room_id,
+                member
             };
-
-            // activeKey에 따라 1:1 채팅방 또는 단체 채팅방의 마지막 메시지를 업데이트
+            
             if (activeKey === 'one') {
                 dispatch(updateLastMessageInChatRooms({ 
-                    roomId: message.chat_room_id, 
+                    roomId: chat_room_id, 
                     message: enrichedMessage 
                 }));
             } else if (activeKey === 'together') {
                 dispatch(updateLastMessageInTogetherChatRooms({ 
-                    roomId: message.room_id, 
+                    roomId: room_id, 
                     message: enrichedMessage 
                 }));
             }
-
-            // 선택된 채팅방이 현재 활성화된 상태인지 확인 후 메시지를 추가
+            
             if (selectedChat && selectedChat.roomId) {
-                if (activeKey === 'one' && message.chat_room_id === selectedChat.roomId) {
+                if (activeKey === 'one' && chat_room_id === selectedChat.roomId) {
                     dispatch(appendMessageToChat(enrichedMessage));
-                } else if (activeKey === 'together' && message.room_id === selectedChat.roomId) {
+                } else if (activeKey === 'together' && room_id === selectedChat.roomId) {
                     dispatch(appendMessageToChat(enrichedMessage));
                 }
             }
+            
+            // 사용자 이메일이 멤버 배열에 포함되어 있는지 확인
+            if (userEmail && membersAsString.includes(userEmail.trim())) {
+                console.log('읽지 않은 메시지 상태를 true로 설정합니다.');
+                setHasUnreadMessages(true);
+            } else {
+                console.log('멤버 배열에 사용자 이메일이 없습니다.');
+            }
         };
 
-        // 소켓 이벤트 리스너 설정
         socket.current.on('receiveMessage', handleReceiveMessage);
 
-        // 컴포넌트가 언마운트될 때 소켓 이벤트 리스너 제거 및 소켓 연결 해제
         return () => {
             socket.current.off('receiveMessage', handleReceiveMessage);
-            socket.current.disconnect();
+            if (socket.current) {
+                socket.current.disconnect();
+            }
         };
-    }, [dispatch, activeKey, selectedChat]);
+    }, [dispatch, activeKey, selectedChat, userEmail]);
 
     return socket;
 };
