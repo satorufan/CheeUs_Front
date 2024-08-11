@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectBoards, fetchBoards } from '../../store/BoardSlice';
+import { selectBoards, fetchBoards, fetchBoardsAuthor } from '../../store/BoardSlice';
 import DetailBoard from '../board/DetailBoard';
 import Repl from '../board/Repl';
 import BoardDetailTop from '../board/BoardDetailTop';
@@ -19,6 +19,9 @@ const DetailFreeBoard = () => {
   // 게시물 찾기
   const board = boards.find(b => b.id === parseInt(id) && b.category === 1);
 
+  useEffect(()=>{
+    dispatch(fetchBoardsAuthor({category : 'freeboard', perPageBoards : [board]}));
+  }, [dispatch, boards]);
 
   // 게시물이 없을 경우
   if (!board) return <div>게시물을 찾을 수 없습니다.</div>;

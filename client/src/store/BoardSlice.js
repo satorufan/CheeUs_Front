@@ -21,6 +21,7 @@ export const fetchBoards = createAsyncThunk(
         eventboard: 'http://localhost:8080/board/eventboard'
       };
       const response = await axios.get(urlMap[category]);
+      console.log(response);
       return { category, data: response.data };
     }
 );
@@ -147,6 +148,7 @@ const boardSlice = createSlice({
       })
       .addCase(fetchBoardsAuthor.fulfilled, (state, action) => {
         state.boardsAuthors = action.payload; // 게시물 사진 업데이트
+        console.log(action);
       })
       .addCase(addBoard.fulfilled, (state, action) => {
         state.boards.push(action.payload); // 새로운 게시물 추가

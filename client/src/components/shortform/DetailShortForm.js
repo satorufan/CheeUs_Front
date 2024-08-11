@@ -26,8 +26,8 @@ function DetailShortForm() {
 
   useEffect(() => {
     if (board) {
-      dispatch(fetchBoardsMedia({category: 'shortform', perPageBoards: boards}));
-      dispatch(fetchBoardsAuthor({category: 'shortform', perPageBoards: boards}));
+      dispatch(fetchBoardsMedia({category: 'shortform', perPageBoards: [board]}));
+      dispatch(fetchBoardsAuthor({category: 'shortform', perPageBoards: [board]}));
     }
   }, [dispatch, board]);
 

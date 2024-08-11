@@ -14,6 +14,7 @@ import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import { ref, deleteObject } from 'firebase/storage';
 import { storage } from '../firebase/firebase'; // Firebase 저장소 가져오기
+import BoardDetailSkeleton from '../skeleton/BoardDetailSkeleton';
 
 
 const DetailBoard = () => {
@@ -32,15 +33,19 @@ const DetailBoard = () => {
   }
 
   const board = boards.find(b => b.id === parseInt(id, 10)); // id를 정수형으로 변환
+  console.log(medias, board);
 
   const [liked, setLiked] = useState(false);
   const [scraped, setScraped] = useState(false);
 
   useEffect(()=>{
-    if(medias && Object.keys(medias).length > 0) {
+    if(board.category == 2 && authors && Object.keys(authors).length > 0 && Object.keys(medias).length > 0) {
+      setIsLoaded(true);
+    } else if(board.category != 2 && authors && Object.keys(authors).length > 0) {
       setIsLoaded(true);
     }
-  }, [medias]);
+  }, [authors, medias]);
+  console.log(isLoaded);
 
   useEffect(() => {
     if (!board) return;
@@ -210,7 +215,7 @@ const navigateToUserProfile = (email) => {
 
   return (
     <div className="detail-container">
-      {isLoaded && (
+      {isLoaded ? (
       <div className="detail-post">
         <div className="detail-avatar-container">
           <Avatar
@@ -226,7 +231,7 @@ const navigateToUserProfile = (email) => {
           <div className="detail-writeday">{board.writeday}</div>
         </div>
         <div className="detail-content-container">
-          {board.category === 2 ? (
+          {board.category === 2 && isLoaded ? (
             <div className="detail-video-container">
               <div className="detail-video-wrapper">
                 <video className="detail-video" controls>
@@ -241,11 +246,11 @@ const navigateToUserProfile = (email) => {
           ) : (
             <>
               <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>{board.content}</ReactMarkdown>
-              {board.photoes && (
+              {/* {board.photoes && (
                 <div className="detail-image-container">
                   <img className="detail-image" src={board.photoes} alt={board.title} />
                 </div>
-              )}
+              )} */}
             </>
           )}
         </div>
@@ -349,7 +354,7 @@ const navigateToUserProfile = (email) => {
           )}
             */}
         </div>
-      </div>)}
+      </div>) : <BoardDetailSkeleton />}
     </div>
   );
 };

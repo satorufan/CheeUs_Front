@@ -11,12 +11,13 @@ import Visibility from '@mui/icons-material/Visibility';
 import PushPinIcon from '@mui/icons-material/PushPin';
 import Chip from '@mui/material/Chip';
 import BoardTop from '../board/BoardTop';
-import {selectBoards, toggleLike, selectLikedMap, filterBoards, setSearchQuery, selectFilteredBoards, fetchBoards} from '../../store/BoardSlice';
+import {selectBoards, toggleLike, selectLikedMap, filterBoards, setSearchQuery, selectFilteredBoards, fetchBoards, selectBoardAuthors, fetchBoardsAuthor} from '../../store/BoardSlice';
 import Pagination from '@mui/material/Pagination';
 import './freeBoard.css';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
+import BoardSkeleton from '../skeleton/BoardSkeleton';
 
 const FreeBoard = () => {
   const dispatch = useDispatch();
@@ -24,16 +25,19 @@ const FreeBoard = () => {
   const location = useLocation();
   
   const boards = useSelector(selectBoards);
+  const authors = useSelector(selectBoardAuthors);
+  const [isLoaded, setIsLoaded] = useState(false);
+  console.log(authors);
   const likedMap = useSelector(selectLikedMap);
   const filteredBoards = useSelector(selectFilteredBoards);
   
   const itemsPerPage = 8;
   const [currentPage, setCurrentPage] = useState(1);
 
-    // 보드 목록 로딩
-    useEffect(() => {
-        dispatch(fetchBoards('freeboard'));
-    }, [dispatch]);
+  // 보드 목록 로딩
+  useEffect(() => {
+      dispatch(fetchBoards('freeboard'));
+  }, [dispatch]);
 
   // URL 쿼리에서 검색어를 읽어와 상태에 설정
   useEffect(() => {
@@ -66,6 +70,21 @@ const FreeBoard = () => {
   const regularBoards = visibleBoards.filter(board => board.category === 1 && !board.pinned);
   const currentBoards = [...pinnedBoards, ...regularBoards].slice(startIndex, startIndex + itemsPerPage);
   const totalPages = Math.ceil(visibleBoards.filter(board => board.category === 1).length / itemsPerPage);
+  
+  function arraysEqualAsSets(arr1, arr2) {
+    return new Set(arr1).size === new Set([...arr1, ...arr2]).size;
+  }
+
+  const perPageAuthors = [];
+  currentBoards?.map(board => {
+    if (!perPageAuthors.includes(board.author_id)) perPageAuthors.push(board.author_id);
+  });
+
+  useEffect(() => {
+    if (currentBoards.length > 0 && !arraysEqualAsSets(Object.keys(authors), perPageAuthors)) {
+      dispatch(fetchBoardsAuthor({category: 'freeboard', perPageBoards: currentBoards}));
+    }
+  }, [dispatch, currentBoards, boards]);
 
   const handleChange = (event, value) => {
     setCurrentPage(value);
@@ -76,7 +95,7 @@ const FreeBoard = () => {
       <BoardTop />
       <div className="freeboard-container">
         <div className="freeboard-card-container">
-          {currentBoards.map((board) => (
+          {arraysEqualAsSets(Object.keys(authors), perPageAuthors) ? currentBoards.map((board) => (
             <Card
               key={board.id}
               variant="plain"
@@ -118,7 +137,7 @@ const FreeBoard = () => {
               </Box>
               <Box className="card-content">
                 <Avatar
-                  src={`https://images.unsplash.com/profile-${board.author_id}?dpr=2&auto=format&fit=crop&w=32&h=32&q=60&crop=faces&bg=fff`}
+                  src={authors[board.author_id]}
                   size="sm"
                   sx={{ '--Avatar-size': '1.5rem' }}
                   className="card-avatar"
@@ -146,7 +165,7 @@ const FreeBoard = () => {
                 </div>
               </Box>
             </Card>
-          ))}
+          )) : <BoardSkeleton />}
         </div>
       </div>
       <div className="create-post-container">

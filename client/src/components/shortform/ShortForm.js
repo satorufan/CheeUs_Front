@@ -14,6 +14,7 @@ import BoardTop from '../board/BoardTop';
 import Pagination from '@mui/material/Pagination';
 import { selectBoards, toggleLike, selectLikedMap, filterBoards, setSearchQuery, selectFilteredBoards, fetchBoards, fetchBoardsMedia, selectPageBoardsMedia, fetchBoardsAuthor, selectBoardAuthors} from '../../store/BoardSlice';
 import './shortForm.css';
+import BoardSkeleton from '../skeleton/BoardSkeleton';
 
 const ShortForm = () => {
   const dispatch = useDispatch();
@@ -25,19 +26,14 @@ const ShortForm = () => {
   const filteredBoards = useSelector(selectFilteredBoards);
   const medias = useSelector(selectPageBoardsMedia);
   const authors = useSelector(selectBoardAuthors);
-  console.log(authors);
   const [isLoaded, setIsLoaded] = useState(false);
-  // useEffect(()=>{
-  //   if (medias) {
-  //     setIsLoaded(true);
-  //   }
-  //   console.log(isLoaded);
-  // },[medias])
+  
   useEffect(() => {
     if (medias && Object.keys(medias).length > 0) {
       setIsLoaded(true);
     }
-  }, [medias]);
+  }, [medias, boards]);
+  console.log(isLoaded, medias);
   const searchQuery = useSelector(state => state.board.searchQuery);
 
   const itemsPerPage = 8;
@@ -84,20 +80,27 @@ const ShortForm = () => {
   const currentBoards = [...pinnedBoards, ...regularBoards].slice(startIndex, startIndex + itemsPerPage);
   const totalPages = Math.ceil(visibleBoards.filter(board => board.category === 2).length / itemsPerPage);
 
+  function arraysEqualAsSets(arr1, arr2) {
+    return new Set(arr1).size === new Set([...arr1, ...arr2]).size;
+  }
+  
+  const perPageAuthors = [];
+  currentBoards.map(board => {
+    if (!perPageAuthors.includes(board.author_id)) perPageAuthors.push(board.author_id);
+  });
 
   useEffect(() => {
-    if (currentBoards.length > 0 && Object.keys(medias).length === 0) {
+    if (currentBoards.length > 0 && (!arraysEqualAsSets(Object.keys(authors), perPageAuthors) || medias.length == 0)) {
       dispatch(fetchBoardsMedia({category: 'shortform', perPageBoards: currentBoards}));
-      dispatch(fetchBoardsAuthor({category: 'shortform', perPageBoards: currentBoards}));
+      dispatch(fetchBoardsAuthor({category: 'eventboard', perPageBoards: currentBoards}));
     }
-  }, [dispatch, currentBoards, medias]);
+  }, [dispatch, currentBoards, perPageAuthors]);
 
   const handleChange = (event, value) => {
     setCurrentPage(value);
   };
 
   const handleMouseLeave = (videoUrl) => {
-    console.log("hover")
     setHoveredBoard(null);
     const boardElement = boardRefs.current[videoUrl];
     if (boardElement && !boardElement.paused) {
@@ -121,7 +124,7 @@ const ShortForm = () => {
       <BoardTop />
       <div className="shortform-container">
         <div className="video-card-container">
-          {isLoaded && currentBoards.map((board) => (
+          {isLoaded && arraysEqualAsSets(Object.keys(authors), perPageAuthors) ? currentBoards.map((board) => (
             board.category === 2 && ( // 카테고리가 2인 경우에만 렌더링
               <Card
                 key={board.id}
@@ -191,7 +194,7 @@ const ShortForm = () => {
                 </Box>
               </Card>
             )
-          ))}
+          )) : <BoardSkeleton />}
         </div>
       </div>
       <div className="create-post-container">
