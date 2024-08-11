@@ -9,8 +9,6 @@ import { AuthContext } from '../login/OAuth';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
-import { ref, deleteObject } from 'firebase/storage';
-import { storage } from '../firebase/firebase'; // Firebase 저장소 가져오기
 
 const EventDetail = () => {
   const { id } = useParams();
