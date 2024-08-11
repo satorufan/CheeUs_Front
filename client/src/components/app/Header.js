@@ -12,10 +12,16 @@ import './header.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUserProfile, selectProfileStatus, selectUserProfile } from '../../store/ProfileSlice';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { clearAllUnreadStatus } from '../../store/ChatSlice';
+import useSocketIo from '../../hooks/useSocketIo';
 
 const Header = React.memo(function Header() {
-    const [isUnread, setIsUnread] = useState(true);
     const [isNavExpanded, setIsNavExpanded] = useState(false);
+    const [hasUnreadMessages, setHasUnreadMessages] = useState(() => {
+        // localStorage에서 값을 불러와 초기 상태를 설정합니다.
+        const storedUnreadStatus = localStorage.getItem('hasUnreadMessages');
+        return storedUnreadStatus ? JSON.parse(storedUnreadStatus) : false;
+    });
 
     const { token, serverUrl, requestSignOut, memberEmail } = useContext(AuthContext);
     const userProfile = useSelector(selectUserProfile);
@@ -24,42 +30,47 @@ const Header = React.memo(function Header() {
     const location = useLocation();
     const navigate = useNavigate();
 
+    // useSocketIo 훅에서 읽지 않은 메시지 상태를 업데이트
+    useSocketIo('one', null, memberEmail, setHasUnreadMessages);
+
     const defaultProfileImage = `${process.env.PUBLIC_URL}/images/default-avatar.jpg`;
 
+    // 토큰이 있을 때 사용자 프로필을 가져옵니다.
     useEffect(() => {
         if (token) {
             dispatch(fetchUserProfile({ serverUrl, memberEmail, token }));
         }
     }, [token, dispatch, serverUrl, memberEmail]);
 
+    // 읽지 않은 메시지 상태를 로컬 스토리지에 저장합니다.
+    useEffect(() => {
+        console.log('Saving hasUnreadMessages to localStorage:', hasUnreadMessages);
+        localStorage.setItem('hasUnreadMessages', JSON.stringify(hasUnreadMessages));
+    }, [hasUnreadMessages]);
+
+    // 사용자 프로필 이미지 처리
     useEffect(() => {
         if (userProfile && userProfile.imageBlob && userProfile.imageBlob.length > 0) {
-            // 로컬스토리지에 저장
             localStorage.setItem('profileImage', userProfile.imageBlob[0]);
         }
     }, [userProfile]);
 
-    // 로컬스토리지에서 프로필 이미지 가져오기
+    const storedImage = localStorage.getItem('profileImage');
     const profileImage = useMemo(() => {
-        const storedImage = localStorage.getItem('profileImage');
         if (storedImage) {
             return storedImage;
         }
         return userProfile && userProfile.imageBlob && userProfile.imageBlob.length > 0
             ? userProfile.imageBlob[0]
             : defaultProfileImage;
-    }, [userProfile]);
+    }, [storedImage, userProfile]);
 
     const handleLogout = useCallback(() => {
         requestSignOut();
     }, [requestSignOut]);
 
-    const handleReadMessage = useCallback(() => {
-        setIsUnread(false);
-    }, []);
-
     const handleNavToggle = useCallback(() => {
-        setIsNavExpanded((prev) => !prev);
+        setIsNavExpanded(prev => !prev);
     }, []);
 
     const handleLinkClick = useCallback((e) => {
@@ -68,6 +79,14 @@ const Header = React.memo(function Header() {
         window.location.reload();
     }, [navigate]);
 
+    const handleChatLinkClick = useCallback(() => {
+        console.log('Clearing unread messages status');
+        dispatch(clearAllUnreadStatus()); 
+        setHasUnreadMessages(false); 
+        localStorage.setItem('hasUnreadMessages', JSON.stringify(false)); // 상태를 클리어 하기 위해 로컬 스토리지에 저장
+    }, [dispatch]);
+
+    // 관리 페이지로 시작하는 경로에서는 헤더를 표시하지 않습니다.
     if (location.pathname.startsWith("/admin")) {
         return null;
     }
@@ -76,9 +95,6 @@ const Header = React.memo(function Header() {
 
     return (
         <div className="header-container">
-            {/* <button onClick={springSecurity}>스프링시큐리티 GET 테스트 버튼</button>
-            <button onClick={springSecurityPost}>스프링시큐리티 POST 테스트 버튼</button>
-            <button onClick={springRedis}>스프링 Redis 테스트 버튼</button> */}
             <Navbar bg="#f2d420" expand="lg" style={{ backgroundColor: 'white' }} expanded={isNavExpanded}>
                 <Container fluid className="header-box">
                     <Navbar.Brand href="/main" className="header-logo">
@@ -113,12 +129,12 @@ const Header = React.memo(function Header() {
                                             </Stack>
                                         )}
                                     </Nav.Link>
-                                    <Nav.Link onClick={handleReadMessage} href="/chatpage" className="nav-link-list">
+                                    <Nav.Link href="/chatpage" className="nav-link-list" onClick={handleChatLinkClick}>
                                         {isNavExpanded ? (
                                             "채팅방"
                                         ) : (
                                             <Box sx={{ color: 'action.active' }}>
-                                                <Badge color="warning" variant={isUnread ? 'dot' : 'standard'}>
+                                                <Badge color="warning" variant={hasUnreadMessages ? 'dot' : 'standard'}>
                                                     <MailIcon />
                                                 </Badge>
                                             </Box>

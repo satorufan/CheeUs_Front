@@ -9,9 +9,9 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { Modal, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { removeUserFromTogetherChatRoom, fetchTogetherChatRooms } from '../../store/ChatSlice';
-import Avatar from '@mui/material/Avatar';
 import ReportModal from '../app/ReportModal';
 import axios from 'axios';
+import { useToast } from '../app/ToastProvider';
 
 const ChatWindow = ({
     selectedChat,
@@ -33,6 +33,8 @@ const ChatWindow = ({
     const [showParticipants, setShowParticipants] = useState(false);
     const [participants, setParticipants] = useState([]);   // 현재 참여자
     const [profileData, setProfileData] = useState([]); // 프로필 정보 캐시
+
+    const { toggleNotifications, isNotificationsEnabled } = useToast();
 
     // 신고 모달
     const [showReportModal, setShowReportModal] = useState(false);
@@ -136,7 +138,14 @@ const ChatWindow = ({
     // 상단
     const getDisplayName = () => {
         if (!selectedChat || (!selectedChat.member1 && !selectedChat.member2 && !selectedChat.togetherId)) {
-            return <div className='chat-window-top-no'>나랑 같이 취할 사람 찾으러 가기!</div>; 
+            return (
+                <>
+                    <div className='chat-window-top-no'>나랑 같이 취할 사람 찾으러 가기!</div>
+                    <button className="notification-toggle no-style" onClick={toggleNotifications}>
+                        {isNotificationsEnabled ? '🔔' : '🔕'}
+                    </button>
+                </>
+            ); 
         }
     
         if (selectedChat.togetherId) {
@@ -224,6 +233,7 @@ const ChatWindow = ({
         setShowParticipants(!showParticipants);
     };
 
+
     // id로 이동하도록 바꿔야함
     const navigateToUserProfile = (email) => {
         if (email) {
@@ -245,7 +255,7 @@ const ChatWindow = ({
         return selectedChat.messages.map((message, index) => {
             if (!message) {
                 console.error('Undefined message at index:', index);
-                return null; // or handle the error as needed
+                return null; 
             }
     
             const messageDate = formatDate(message.write_day);
@@ -255,7 +265,7 @@ const ChatWindow = ({
     
             const senderProfile = profileData[message.sender_id] || {};
             const isSameSenderAsPrevious = index > 0 && selectedChat.messages[index - 1].sender_id === message.sender_id;
-            const isProfileLoading = !profileData[message.sender_id]; // Check if profile data is still loading
+            const isProfileLoading = !profileData[message.sender_id]; 
     
             return (
                 <React.Fragment key={index}>
@@ -409,11 +419,11 @@ const ChatWindow = ({
                                         src={member.image}
                                         alt={`Profile of`}
                                         className="participant-modal-img"
-                                        onClick={() => navigateToUserProfile(member)}
+                                        onClick={() => navigateToUserProfile(member.email)}
                                     />
                                     <span
                                         className="modal-nickname"
-                                        onClick={() => navigateToUserProfile(member)} 
+                                        onClick={() => navigateToUserProfile(member.email)} 
                                     >
                                         {member.nickname}
                                     </span>
