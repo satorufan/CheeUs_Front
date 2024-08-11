@@ -11,6 +11,9 @@ import EventTop from "./EventTop";
 import Pagination from '@mui/material/Pagination';
 import './Event.css';
 import { useEvents } from './EventContext';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 
 const EventAll = () => {
   const navigate = useNavigate();
@@ -21,7 +24,6 @@ const EventAll = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // URL 쿼리에서 검색어를 읽어와 상태에 설정
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const query = params.get('search') || '';
@@ -32,10 +34,13 @@ const EventAll = () => {
     navigate(`/event/detail/event/${id}`);
   };
 
-  // 페이지네이션
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentEvents = Object.values(events.event).filter(event => event.title.includes(searchQuery) || event.title2.includes(searchQuery)).slice(startIndex, startIndex + itemsPerPage);
-  const totalPages = Math.ceil(Object.values(events.event).filter(event => event.title.includes(searchQuery) || event.title2.includes(searchQuery)).length / itemsPerPage);
+  const currentEvents = Object.values(events.event)
+    .filter(event => event.title.includes(searchQuery) || event.title2.includes(searchQuery))
+    .slice(startIndex, startIndex + itemsPerPage);
+  const totalPages = Math.ceil(Object.values(events.event)
+    .filter(event => event.title.includes(searchQuery) || event.title2.includes(searchQuery))
+    .length / itemsPerPage);
 
   const handleChange = (event, value) => {
     setCurrentPage(value);
@@ -55,13 +60,17 @@ const EventAll = () => {
             >
               <Box className="card-video">
                 <AspectRatio ratio="4/3">
-                  {event.photoes ? (
+                  {event.thumbnail ? (
                     <CardCover className="card-cover">
-                      <img
-                        src={event.photoes}
-                        alt="게시물 사진"
-                        className="card-photo"
-                      />
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        rehypePlugins={[rehypeRaw]}
+                        components={{
+                          img: ({ node, ...props }) => <img {...props} className="card-photo" />
+                        }}
+                      >
+                        {event.thumbnail}
+                      </ReactMarkdown>
                       <div className="card-overlay-text">
                         {event.title2}
                       </div>

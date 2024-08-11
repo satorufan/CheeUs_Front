@@ -11,6 +11,9 @@ import EventTop from "./EventTop";
 import Pagination from '@mui/material/Pagination';
 import './Event.css';
 import { useEvents } from './EventContext';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 
 const EventEnd = () => {
   const navigate = useNavigate();
@@ -82,13 +85,17 @@ const EventEnd = () => {
             >
               <Box className="card-video">
                 <AspectRatio ratio="4/3">
-                  {event.photoes ? (
+                  {event.thumbnail ? (
                     <CardCover className="card-cover">
-                      <img
-                        src={event.photoes}
-                        alt="게시물 사진"
-                        className="card-photo"
-                      />
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        rehypePlugins={[rehypeRaw]}
+                        components={{
+                          img: ({ node, ...props }) => <img {...props} className="card-photo" />
+                        }}
+                      >
+                        {event.thumbnail}
+                      </ReactMarkdown>
                       <div className="card-overlay-text">
                         {event.title2}
                       </div>

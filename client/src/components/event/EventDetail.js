@@ -45,6 +45,13 @@ const EventDetail = () => {
   if (!data) {
     return <div>Loading...</div>;
   }
+  
+  
+  const thumbnail = data.content.match(/!\[alt text]\(https:\/\/[^\s]+\)/)?.[0];
+
+  console.log("썸네일?", thumbnail);
+
+
 
   return (
     <div className="event-detail-container">
@@ -52,10 +59,18 @@ const EventDetail = () => {
       <div className="event-detail-content">
         <h2 className="event-detail-title">{data.title}</h2>
         <p className="event-detail-date">작성일: {data.writeday}</p>
-        <p className="event-detail-text">{data.title2}</p>
-        <img src={data.photoes} alt={data.title} className="event-detail-image" />
+        <p className="event-detail-title2">{data.title2}</p>
         <p className="event-detail-ctext">
-        <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>{data.content}</ReactMarkdown>
+        	<ReactMarkdown 
+	        	remarkPlugins={[remarkGfm]} 
+	        	rehypePlugins={[rehypeRaw]}
+	        	components={{
+				    p: ({ node, ...props }) => <p className="event-detail-text" {...props} />,
+				    img: ({ node, ...props }) => <img className="event-detail-image" {...props} />
+				}}
+	        >
+	        	{data.content}
+        	</ReactMarkdown>
         </p>
         <div className="event-detail-footer">
           <div className="event-detail-admin">에디터 : {data.admin_name}</div>
