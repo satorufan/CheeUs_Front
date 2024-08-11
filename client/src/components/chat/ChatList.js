@@ -80,10 +80,12 @@ const ChatList = ({ selectedChat, handlePersonClick, handleExitChat, isTogether 
     const isNewMessage = (room) => {
         const lastMessage = getLastMessage(room);
         if (isTogether) {
-            return !(lastMessage.read ?. includes(loggedInUserId));
+            return Array.isArray(lastMessage.read) && !lastMessage.read.includes(loggedInUserId);
         }
         return lastMessage.read === 0 && lastMessage.sender_id !== loggedInUserId;
     };
+    
+    
 
     const isError = status === 'failed';
     const isSuccess = status === 'succeeded';
@@ -150,16 +152,16 @@ const ChatList = ({ selectedChat, handlePersonClick, handleExitChat, isTogether 
                                     <div className="delete-icon">
                                         <DeleteForeverIcon onClick={() => handleExitChat(room.roomId)} />
                                     </div>
+                                    {!hasChats && (
+                                        <div className="no-chat-list">
+                                            채팅 목록이 없습니다.
+                                        </div>
+                                    )}
                                 </div>
                             </li>
                         );
                     })}
                 </ul>
-            )}
-            {isSuccess && !hasChats && (
-                <div className="no-chat-list">
-                    채팅 목록이 없습니다.
-                </div>
             )}
         </>
     );

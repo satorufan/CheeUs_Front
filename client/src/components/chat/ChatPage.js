@@ -47,7 +47,7 @@ const ChatPage = () => {
         }
     }, [token]);
 
-    const socket = useSocketIo(activeKey, selectedChat); // 커스텀훅
+    const socket = useSocketIo(activeKey, selectedChat, loggedInUserId); // 커스텀훅
 
     useEffect(() => {
         if (loggedInUserId) {
@@ -72,12 +72,15 @@ const ChatPage = () => {
             const response = await axios.get(`http://localhost:8889/api/messages/${roomId}`);
             const messages = response.data.map(message => ({
                 ...message,
-                write_day: new Date(message.writeDay || message.write_day).toISOString()
+                write_day: new Date(message.writeDay || message.write_day).toISOString(),
+                read: 1 // 메시지의 read 상태를 1로 설정
             }));
-
+    
             dispatch(setSelectedChat({ ...selectedRoom, messages }));
             dispatch(setShowMessageInput(true));
             dispatch(setMessageInput(''));
+    
+            // 서버에 읽음 상태를 업데이트 요청
             dispatch(updateMessageReadStatus({ roomId }));
         } catch (error) {
             console.error('메시지를 불러오는 중 에러 발생:', error);
@@ -92,23 +95,25 @@ const ChatPage = () => {
                 console.error(`roomId ${roomId}에 해당하는 단체 채팅방을 찾을 수 없습니다.`);
                 return;
             }
-
+    
             const response = await axios.get(`http://localhost:8889/api/togetherMessages/${roomId}`);
             const messages = response.data.map(message => ({
                 ...message,
                 write_day: new Date(message.writeDay || message.write_day).toISOString(),
-                read: Array.isArray(message.read) ? message.read : [message.read]
+                read: Array.isArray(message.read) ? [...new Set([...message.read, userId])] : [userId] // 로그인한 사용자 아이디 추가
             }));
-
+    
             dispatch(setSelectedChat({ ...selectedRoom, messages }));
             dispatch(setShowMessageInput(true));
             dispatch(setMessageInput(''));
+    
+            // 서버에 읽음 상태를 업데이트 요청
             dispatch(updateTogetherMessageReadStatus({ roomId, userId }));
         } catch (error) {
             console.error('메시지를 불러오는 중 에러 발생:', error);
         }
     }, [loggedInUserId, togetherChatRooms, dispatch]);
-
+    
     const sendMessage = async (inputMessage) => {
         if (!selectedChat || !inputMessage.trim() || !loggedInUserId) {
             console.log('Cannot send message: No selected chat, empty input, or missing user ID.');

@@ -409,11 +409,11 @@ const ChatWindow = ({
                                         src={member.image}
                                         alt={`Profile of`}
                                         className="participant-modal-img"
-                                        onClick={() => navigateToUserProfile(member)}
+                                        onClick={() => navigateToUserProfile(member.email)}
                                     />
                                     <span
                                         className="modal-nickname"
-                                        onClick={() => navigateToUserProfile(member)} 
+                                        onClick={() => navigateToUserProfile(member.email)} 
                                     >
                                         {member.nickname}
                                     </span>
