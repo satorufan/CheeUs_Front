@@ -15,11 +15,9 @@ import { storage } from "../firebase/firebase";
 
 const WriteFreeBoard = () => {
   const [title, setTitle] = useState('');
-  const [files, setFiles] = useState([]);
   const editorRef = useRef();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
   const { serverUrl, memberEmail, token } = useContext(AuthContext); // 현재 사용자 정보 가져오기
   const userProfile = useSelector(selectUserProfile); // Redux의 selectUserProfile selector를 사용하여 userProfile 가져옴
   const boards = useSelector(state => state.board.boards); // boards 변수를 Redux 상태에서 가져옴
@@ -72,29 +70,7 @@ const WriteFreeBoard = () => {
   const onSubmitHandler = async () => {
     if (title === '') return;
 
-    const content = editorRef.current?.getInstance().getMarkdown();
-    const images = extractImages(content); // 본문 내용에서 이미지 URL 추출
-    const contentWithoutImages = removeImagePlaceholders(content); // 본문 내용에서 이미지 마크업 제거
-
-    // 이미지 URL과 위치를 저장
-    const imagesWithPositions = images.map((url, index) => ({
-      url,
-      position: `{{imagePlaceholder${index}}}` // 마크업에서의 이미지 위치 표시
-    }));
-    setFiles(imagesWithPositions);
-
-    // const postData = {
-    //   title,
-    //   content: contentWithoutImages, // 본문 내용에서 이미지 마크업 제거
-    //   images: imagesWithPositions
-    // };
-
-    // try {
-    //   await axios.post('/submit', postData);
-    //   navigate('/success'); // 성공 시 이동할 페이지
-    // } catch (error) {
-    //   console.error('게시물 제출 실패:', error);
-    // }
+    const content = editorRef.current.getInstance().getMarkdown();
 
     await deleteUnusedImages(content);
     
@@ -121,14 +97,13 @@ const WriteFreeBoard = () => {
       nickname,
       category: 1,
       title,
-      content : contentWithoutImages,
+      content,
       writeday: new Date().toISOString().split('T')[0],
       views: 0,
       like: 0,
       repl_cnt: 0,
       photoes: '',
-      media: '',
-      images: imagesWithPositions
+      media: ''
     };
 
     swal({
@@ -148,7 +123,7 @@ const WriteFreeBoard = () => {
         swal("게시물이 성공적으로 등록되었습니다!", {
           icon: "success",
         }).then(() => {
-          // navigate('/board/freeboard');
+          navigate('/board/freeboard');
         });
       } else {
         // 사용자가 취소 버튼을 누르면 알림
