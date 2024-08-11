@@ -5,6 +5,7 @@ import { updateUserLocation } from '../../store/ProfileSlice';
 import './profileCard.css';
 import axios from 'axios';
 import { AuthContext } from '../login/OAuth';
+import ReportModal from '../app/ReportModal';
 
 const ProfileCard = ({ profileInfo, loggedInUserId, type }) => {
     const dispatch = useDispatch();
@@ -14,6 +15,8 @@ const ProfileCard = ({ profileInfo, loggedInUserId, type }) => {
     const {serverUrl, memberEmail, token} = useContext(AuthContext);
     const [showModal, setShowModal] = useState(false);
     const [modalIndex, setModalIndex] = useState(0);
+    const [reportedId, setReportedId] = useState(null);
+    const [showReportModal, setShowReportModal] = useState(false);
 
     // 기존 Like
     // const likedProfiles = useSelector((state) => state.profile.likedProfiles);
@@ -137,6 +140,14 @@ const ProfileCard = ({ profileInfo, loggedInUserId, type }) => {
             )} km`;
         }
     }
+    const handleReport = (memberId) => {
+        setReportedId(memberId.email);
+        setShowReportModal(true);
+    };
+
+    const handleReportModalClose = () => {
+        setShowReportModal(false);
+    };
 
     return (
         <div className="profile-card">
@@ -179,24 +190,49 @@ const ProfileCard = ({ profileInfo, loggedInUserId, type }) => {
                         <li className="like-btn" onClick={handleLike}>
                             {isLiked ? '❤️' : '🤍'} {likeCnt}
                         </li>
+                        {memberEmail !== loggedInUserId && (
+                            <button className="no-style" onClick={() => handleReport(profileInfo.profile)}>🚨</button>
+                        )}
                     </ul>
                 </div>
             </div>
-            <Modal show={showModal} onHide={handleCloseModal} centered>
-                <Modal.Body>
-                    <Carousel activeIndex={modalIndex} onSelect={(selectedIndex) => setModalIndex(selectedIndex)}>
-                        {photosToShow.length > 0 ? photosToShow.map((photo, index) => (
-                            <Carousel.Item key={index}>
-                                <img
-                                    src={photo}
-                                    alt={`확대된 ${profileInfo.profile.nickname}의 프로필`}
-                                    className="d-block w-100"
-                                />
-                            </Carousel.Item>
-                        )) : null}
-                    </Carousel>
-                </Modal.Body>
-            </Modal>
+            <Modal
+            show={showModal}
+            onHide={handleCloseModal}
+            centered
+            dialogClassName="modal-dialog-custom"
+            style={{ maxWidth: '80vw' }} 
+        >
+            <Modal.Body
+                style={{ padding: '10' }} 
+            >
+                <Carousel
+                    activeIndex={modalIndex}
+                    onSelect={(selectedIndex) => setModalIndex(selectedIndex)}
+                >
+                    {photosToShow.length > 0 ? photosToShow.map((photo, index) => (
+                        <Carousel.Item key={index}>
+                            <img
+                                src={photo}
+                                alt={`확대된 ${profileInfo.profile.nickname}의 프로필`}
+                                style={{
+                                    width: '100%',
+                                    height: '500px',
+                                    objectFit: 'contain'
+                                }}
+                            />
+                        </Carousel.Item>
+                    )) : null}
+                </Carousel>
+            </Modal.Body>
+        </Modal>
+        <ReportModal
+                show={showReportModal}
+                handleClose={handleReportModalClose}
+                reportedId={reportedId}
+                loggedInUserId={loggedInUserId}
+                serverUrl={serverUrl}
+            />
         </div>
     );
 };

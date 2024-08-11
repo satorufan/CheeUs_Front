@@ -5,6 +5,11 @@ import Favorite from '@mui/icons-material/Favorite';
 import Visibility from '@mui/icons-material/Visibility';
 import EventTop from './EventTop';
 import { useEvents } from './EventContext';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
+import { ref, deleteObject } from 'firebase/storage';
+import { storage } from '../firebase/firebase'; // Firebase 저장소 가져오기
 
 const EventDetail = () => {
   const { id } = useParams();
@@ -30,7 +35,9 @@ const EventDetail = () => {
         <p className="event-detail-date">작성일: {data.writeday}</p>
         <p className="event-detail-text">{data.title2}</p>
         <img src={data.photoes} alt={data.title} className="event-detail-image" />
-        <p className="event-detail-ctext">{data.content}</p>
+        <p className="event-detail-ctext">
+        <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>{data.content}</ReactMarkdown>
+        </p>
         <div className="event-detail-footer">
           <div className="event-detail-admin">에디터 : {data.admin_name}</div>
           <a className="hidden">{data.admin_id}</a>
