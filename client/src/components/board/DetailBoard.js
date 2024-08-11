@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { selectBoards } from '../../store/BoardSlice';
+import { selectBoardAuthors, selectBoards, selectPageBoardsMedia } from '../../store/BoardSlice';
 import Avatar from '@mui/material/Avatar';
 import { Favorite, Visibility, Bookmark } from '@mui/icons-material';
 import { AuthContext } from '../login/OAuth'; // AuthContext 가져오기
@@ -9,11 +9,21 @@ import { jwtDecode } from "jwt-decode";
 import './detailBoard.css';
 import Swal from 'sweetalert2';
 import axios from "axios";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
+import { ref, deleteObject } from 'firebase/storage';
+import { storage } from '../firebase/firebase'; // Firebase 저장소 가져오기
+import BoardDetailSkeleton from '../skeleton/BoardDetailSkeleton';
+
 
 const DetailBoard = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const boards = useSelector(selectBoards);
+  const medias = useSelector(selectPageBoardsMedia);
+  const authors = useSelector(selectBoardAuthors);
+  const [isLoaded, setIsLoaded] = useState(false);
   const { token } = useContext(AuthContext); // 현재 사용자 정보 가져오기
   const [lastCategory, setLastCategory] = useState(null);
 
@@ -23,9 +33,19 @@ const DetailBoard = () => {
   }
 
   const board = boards.find(b => b.id === parseInt(id, 10)); // id를 정수형으로 변환
+  console.log(medias, board);
 
   const [liked, setLiked] = useState(false);
   const [scraped, setScraped] = useState(false);
+
+  useEffect(()=>{
+    if(board.category == 2 && authors && Object.keys(authors).length > 0 && Object.keys(medias).length > 0) {
+      setIsLoaded(true);
+    } else if(board.category != 2 && authors && Object.keys(authors).length > 0) {
+      setIsLoaded(true);
+    }
+  }, [authors, medias]);
+  console.log(isLoaded);
 
   useEffect(() => {
     if (!board) return;
@@ -84,6 +104,17 @@ const DetailBoard = () => {
     setScraped(!scraped);
   };
 
+  // 이미지 URL 추출 함수
+  const extractImageUrls = (content) => {
+    const regex = /!\[.*?\]\((.*?)\)/g;
+    const urls = [];
+    let match;
+    while ((match = regex.exec(content)) !== null) {
+      urls.push(match[1]);
+    }
+    return urls;
+  };
+
   const handleDelete = (id, category) => {
     // console.log("id 수신 확인 : " + board.id);
     // console.log("category 수신 확인 : " + board.category);
@@ -96,8 +127,26 @@ const DetailBoard = () => {
       cancelButtonColor: '#darkgray',
       confirmButtonText: '삭제',
       cancelButtonText: '취소'
-    }).then((result) => {
+    }).then(async(result) => {
       if (result.isConfirmed) {
+        // Firebase Storage에서 모든 이미지 삭제
+        const toBeDeletedImages = extractImageUrls(board.content);
+        if ( toBeDeletedImages.length > 0 ) {
+          const deletePromises = toBeDeletedImages.map(photoUrl => {
+            const imageRef = ref(storage, photoUrl);
+            return deleteObject(imageRef)
+              .then(() => {
+                console.log(`이미지가 성공적으로 삭제되었습니다: ${photoUrl}`);
+              })
+              .catch((error) => {
+                console.error(`이미지 삭제 중 오류가 발생했습니다 (${photoUrl}):`, error);
+              });
+          });
+
+          await Promise.all(deletePromises);
+        }
+
+        // 게시글 삭제 요청
         axios.delete(`http://localhost:8080/board/delete/${board.id}`)
             .then((response) => {
               console.log('게시물이 삭제되었습니다.', response.data);
@@ -154,16 +203,26 @@ const DetailBoard = () => {
   };
 */
 
+const navigateToUserProfile = (email) => {
+  if (email) {
+      navigate(`/userprofile/${email}`);
+  } else {
+      console.error('User ID not found for email:', email);
+  }
+};
+
   if (!board) return <div>게시물을 찾을 수 없습니다.</div>;
 
   return (
     <div className="detail-container">
+      {isLoaded ? (
       <div className="detail-post">
         <div className="detail-avatar-container">
           <Avatar
-            src={board.author_photo} 
+            src={authors[board.author_id]} 
             sx={{ width: 40, height: 40 }}
             className="detail-avatar"
+            onClick={()=>navigateToUserProfile(board.author_id)}
           />
           <div className="detail-author">{board.nickname}</div>
         </div>
@@ -172,11 +231,11 @@ const DetailBoard = () => {
           <div className="detail-writeday">{board.writeday}</div>
         </div>
         <div className="detail-content-container">
-          {board.category === 2 ? (
+          {board.category === 2 && isLoaded ? (
             <div className="detail-video-container">
               <div className="detail-video-wrapper">
                 <video className="detail-video" controls>
-                  <source src={board.videoUrl} type="video/mp4" />
+                  <source src={medias[board.id]} type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
               </div>
@@ -186,12 +245,12 @@ const DetailBoard = () => {
             </div>
           ) : (
             <>
-              <p className="detail-content">{board.content}</p>
-              {board.photoes && (
+              <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>{board.content}</ReactMarkdown>
+              {/* {board.photoes && (
                 <div className="detail-image-container">
                   <img className="detail-image" src={board.photoes} alt={board.title} />
                 </div>
-              )}
+              )} */}
             </>
           )}
         </div>
@@ -295,7 +354,7 @@ const DetailBoard = () => {
           )}
             */}
         </div>
-      </div>
+      </div>) : <BoardDetailSkeleton />}
     </div>
   );
 };

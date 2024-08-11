@@ -123,3 +123,7 @@
 .img-fluid {
     width: 500px;
 }
+.no-style{
+    background-color: none;
+    border:none;
+}

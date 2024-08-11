@@ -157,7 +157,7 @@ const ChatList = ({ selectedChat, handlePersonClick, handleExitChat, isTogether 
                 </ul>
             )}
             {isSuccess && !hasChats && (
-                <div className="no-chats-message">
+                <div className="no-chat-list">
                     채팅 목록이 없습니다.
                 </div>
             )}

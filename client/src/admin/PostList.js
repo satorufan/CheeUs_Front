@@ -39,7 +39,7 @@ export const PostList = (props) => (
             <TextField source="author_id" />
             <TextField source="nickname" />
             <TextField source="title" />
-			<CustomCategoryField source="category" />
+			<CustomCategoryField source="category" />            
             <DateField source="writeday" />
             <BooleanField source="pinned" />
             <BooleanField source="hidden" />

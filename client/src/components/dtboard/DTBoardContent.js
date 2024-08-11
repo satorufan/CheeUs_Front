@@ -15,50 +15,53 @@ const DTBoardContent = ({ posts, totalPosts, postsPerPage, paginate, onWriteButt
 
   //console.log(posts);
   return (
-    <div className="board-left">
-      {posts.map((post) => (
-        <div key={post.id} className="post" > {/* 게시물 클릭 시 선택된 게시물 ID를 설정 */}
-          <div className = "postClickArea" onClick={() => onPostClick(post.id)}>
-            <div className='post-img-nick'>
-              <img
-                  src={authorImages[post.author_id] || profileImg}
-                  alt={`img`}
-                  className="rounded-circle mr-3"
-                  style={{ width: '25px', height: '25px' }}
-              />
-              <div className="dt-post-nick">{post.nickname}</div>
+    <>
+      <div className="dt-left">
+        <div className="board-left">
+          {posts.map((post) => (
+            <div key={post.id} className="post">
+              <div className="postClickArea" onClick={() => onPostClick(post.id)}>
+                <div className='post-img-nick'>
+                  <img
+                    src={authorImages[post.author_id] || profileImg}
+                    alt={`img`}
+                    className="rounded-circle mr-3"
+                    style={{ width: '25px', height: '25px' }}
+                  />
+                  <div className="dt-post-nick">{post.nickname}</div>
+                </div>
+                <div className='dtpostHeader'>
+                  <h5>{post.title}</h5>
+                  <div className='dticonBox'>
+                    <Favorite className='likeIcon'/>
+                    <span>{post.like}</span>
+                    <Visibility className='viewIcon'/>
+                    <span>{post.views}</span>
+                  </div>
+                </div>
+                <div className="dtpost-location">{post.location}</div>
+                <div className="dtpost-time">{post.time}</div>
+                <div className='contentHidden'>{post.content}</div>
+                <div className='contentHidden'>{post.address}</div>
+              </div>
             </div>
-            <div className='dtpostHeader'>
-            	<h5>{post.title}</h5>
-            	<div className='dticonBox'>
-            	<Favorite className = 'likeIcon'/>
-            	<span>{post.like}</span>
-            	<Visibility className='viewIcon'/>
-            	<span>{post.views}</span>
-            	</div>
-            </div>
-            <div className="dtpost-location"> {post.location}</div>
-            <div className="dtpost-time"> {post.time}</div>
-            <div className='contentHidden'>{post.content}</div>
-            <div className='contentHidden'>{post.address}</div>
+          ))}
+        </div>
+        <div className="board-footer">
+          <div className="pagination">
+            {pageNumbers.map(number => (
+              <a key={number} onClick={(e) => { e.preventDefault(); paginate(number); }} href="!#" className="page-link">
+                {number}
+              </a>
+            ))}
+          </div>
+          <div className="footerRight">
+            <button className="write-button" onClick={onWriteButtonClick}>게시글 작성</button>
           </div>
         </div>
-      ))}
-      <div className="board-footer">
-      	<div className = "footerLeft">
-	        <div className="pagination">
-	          {pageNumbers.map(number => (
-	            <a key={number} onClick={(e) => { e.preventDefault(); paginate(number); }} href="!#" className="page-link">
-	              {number} {/* 페이지 넘버를 key값으로 하며, preventDefault와 !#로 페이지 새로고침 막으면서 paginate를 호출하여 페이지를 변경한다. */}
-	            </a>
-	          ))}
-	        </div>
       </div>
-      <div className = "footerRight">
-	          <button className="write-button" onClick={onWriteButtonClick}>게시글 작성</button>
-	      </div>
-	  </div>
-    </div>
+    </>
+
   );
 };
 

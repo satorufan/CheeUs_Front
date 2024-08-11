@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
 import AspectRatio from '@mui/joy/AspectRatio';
@@ -12,8 +12,9 @@ import PushPinIcon from '@mui/icons-material/PushPin';
 import Chip from '@mui/material/Chip';
 import BoardTop from '../board/BoardTop';
 import Pagination from '@mui/material/Pagination';
-import { selectBoards, toggleLike, selectLikedMap, filterBoards, setSearchQuery, selectFilteredBoards, fetchBoards} from '../../store/BoardSlice';
+import { selectBoards, toggleLike, selectLikedMap, filterBoards, setSearchQuery, selectFilteredBoards, fetchBoards, fetchBoardsMedia, selectPageBoardsMedia, fetchBoardsAuthor, selectBoardAuthors} from '../../store/BoardSlice';
 import './shortForm.css';
+import BoardSkeleton from '../skeleton/BoardSkeleton';
 
 const ShortForm = () => {
   const dispatch = useDispatch();
@@ -23,6 +24,16 @@ const ShortForm = () => {
   const boards = useSelector(selectBoards);
   const likedMap = useSelector(selectLikedMap);
   const filteredBoards = useSelector(selectFilteredBoards);
+  const medias = useSelector(selectPageBoardsMedia);
+  const authors = useSelector(selectBoardAuthors);
+  const [isLoaded, setIsLoaded] = useState(false);
+  
+  useEffect(() => {
+    if (medias && Object.keys(medias).length > 0) {
+      setIsLoaded(true);
+    }
+  }, [medias, boards]);
+  console.log(isLoaded, medias);
   const searchQuery = useSelector(state => state.board.searchQuery);
 
   const itemsPerPage = 8;
@@ -69,6 +80,22 @@ const ShortForm = () => {
   const currentBoards = [...pinnedBoards, ...regularBoards].slice(startIndex, startIndex + itemsPerPage);
   const totalPages = Math.ceil(visibleBoards.filter(board => board.category === 2).length / itemsPerPage);
 
+  function arraysEqualAsSets(arr1, arr2) {
+    return new Set(arr1).size === new Set([...arr1, ...arr2]).size;
+  }
+  
+  const perPageAuthors = [];
+  currentBoards.map(board => {
+    if (!perPageAuthors.includes(board.author_id)) perPageAuthors.push(board.author_id);
+  });
+
+  useEffect(() => {
+    if (currentBoards.length > 0 && (!arraysEqualAsSets(Object.keys(authors), perPageAuthors) || medias.length == 0)) {
+      dispatch(fetchBoardsMedia({category: 'shortform', perPageBoards: currentBoards}));
+      dispatch(fetchBoardsAuthor({category: 'eventboard', perPageBoards: currentBoards}));
+    }
+  }, [dispatch, currentBoards, perPageAuthors]);
+
   const handleChange = (event, value) => {
     setCurrentPage(value);
   };
@@ -84,7 +111,7 @@ const ShortForm = () => {
 
   useEffect(() => {
     boards.forEach(board => {
-      boardRefs.current[board.videoUrl] = document.getElementById(board.videoUrl);
+      boardRefs.current[medias[board.id]] = document.getElementById(medias[board.id]);
     });
   }, [boards]);
 
@@ -97,14 +124,14 @@ const ShortForm = () => {
       <BoardTop />
       <div className="shortform-container">
         <div className="video-card-container">
-          {currentBoards.map((board) => (
+          {isLoaded && arraysEqualAsSets(Object.keys(authors), perPageAuthors) ? currentBoards.map((board) => (
             board.category === 2 && ( // 카테고리가 2인 경우에만 렌더링
               <Card
                 key={board.id}
                 variant="plain"
                 className="video-card"
-                onMouseEnter={() => handleMouseEnter(board.videoUrl)}
-                onMouseLeave={() => handleMouseLeave(board.videoUrl)}
+                onMouseEnter={() => handleMouseEnter(medias[board.id])}
+                onMouseLeave={() => handleMouseLeave(medias[board.id])}
                 onClick={() => handleCardClick(board.id)}
               >
               {board.pinned && (
@@ -117,15 +144,15 @@ const ShortForm = () => {
                   <AspectRatio ratio="2/4">
                     <CardCover className="card-cover">
                       <video
-                        id={board.videoUrl}
+                        id={medias[board.id]}
                         loop
                         muted
-                        ref={el => boardRefs.current[board.videoUrl] = el}
+                        ref={el => boardRefs.current[medias[board.id]] = el}
                         className="card-video video-element"
-                        autoPlay={hoveredBoard === board.videoUrl}
+                        autoPlay={hoveredBoard === medias[board.id]}
                       >
                         <source
-                          src={board.videoUrl}
+                          src={medias[board.id]}
                           type="video/mp4"
                         />
                         Your browser does not support the video tag.
@@ -138,7 +165,7 @@ const ShortForm = () => {
                 </div>
                 <Box className="card-content">
                   <Avatar
-                    src={`https://images.unsplash.com/profile-${board.author_id}?dpr=2&auto=format&fit=crop&w=32&h=32&q=60&crop=faces&bg=fff`}
+                    src={authors[board.author_id]}
                     size="sm"
                     sx={{ '--Avatar-size': '1.5rem' }}
                     className="card-avatar"
@@ -167,7 +194,7 @@ const ShortForm = () => {
                 </Box>
               </Card>
             )
-          ))}
+          )) : <BoardSkeleton />}
         </div>
       </div>
       <div className="create-post-container">

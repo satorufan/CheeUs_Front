@@ -4,6 +4,7 @@ import axios from 'axios';
 // 초기 상태 정의
 const initialState = {
     comments: {},
+    commentAuthorsImg: [],
     loading: false,
     error: null,
 };
@@ -25,10 +26,29 @@ export const fetchComments = createAsyncThunk(
             writeday: comment.writeday,
             group: comment.group
         }));
-
+        
         return { boardId, comments };
     }
 );
+
+export const fetchCommentsAuthorImg = createAsyncThunk(
+  'comments/fetchCommentsAuthorImg',
+  async (comments) => {
+    const parameter = comments.map(comment=>({
+      email : comment.repl_author_id
+    }));
+    const encodedParameter = encodeURIComponent(JSON.stringify(parameter));
+    const response = await axios.get(`http://localhost:8080/match/loadBoardAuthor`, {
+      params : {emails : encodedParameter}
+    });
+    
+    const imageMap = response.data.reduce((acc, data) => {
+      acc[data.email] = "data:" + data.imageType + ";base64," + data.imageBlob;
+      return acc;
+    }, {});
+    return imageMap;
+}
+)
 
 // 댓글 추가를 위한 thunk
 export const addComment = createAsyncThunk(
@@ -73,6 +93,9 @@ const commentsSlice = createSlice({
         .addCase(fetchComments.fulfilled, (state, action) => {
             const { boardId, comments } = action.payload;
             state.comments[boardId] = comments;
+        })
+        .addCase(fetchCommentsAuthorImg.fulfilled, (state, action) => {
+            state.commentAuthorsImg = action.payload;
         })
         .addCase(addComment.fulfilled, (state, action) => {
           const newComment = action.payload;

@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, BrowserRouter } from 'react-rou
 import './App.css';
 import './fonts/fonts.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Spinner from 'react-bootstrap/Spinner';
 import Main from './components/main/Main';
 import NotFound from './components/app/NotFound';
 import Signup from './components/signup/Signup';
@@ -51,7 +52,6 @@ import { EventProvider } from './components/event/EventContext';
 import { MagazineProvider } from './components/magazine/MagazineContext';
 
 const ChatPage = lazy(() => import('./components/chat/ChatPage'));
-
 function App() {
   return (
     <div className="App">
@@ -61,7 +61,14 @@ function App() {
         <MagazineProvider>
         <EventProvider>
           <Header />
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={
+              <div className="permissionMessage">
+                  <div>잠시만 기다려 주세요...
+                    <div>
+                      <Spinner animation="border" variant="dark" />
+                    </div>
+                  </div>
+                </div>}>
             <Routes>
               <Route path="/" element={<Main />} />
               <Route path="/signup" element={<Signup />} />

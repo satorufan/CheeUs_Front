@@ -20,7 +20,7 @@ const AdminLogin = () => {
             notify('로그인 성공!')
 			tokenCheck();
         } catch (error) {
-            notify('이메일 또는 비밀번호가 올바르지 않습니다.')
+            notify('아이디 또는 비밀번호가 올바르지 않습니다.')
         }
     };
 
