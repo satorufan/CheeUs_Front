@@ -20,10 +20,11 @@ const PostDetail = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const { memberEmail, serverUrl, token } = useContext(AuthContext);
-  const [liked, setLiked] = useState(false);
+  const [like, setLike] = useState(false);
   const [authorInfo, setAuthorInfo] = useState();
   const [isScrapped, setIsScrapped] = useState(false);
-  const { posts, deletePost, addScrap, checkScrap, toggleLike } = usePosts();
+  const { posts, setPosts, deletePost, addScrap, checkScrap, toggleLike } = usePosts();
+  const [currentPost, setCurrentPost] = useState(null);
   const post = posts.find((post) => post.id === parseInt(id));
   const navigate = useNavigate();
   const userProfile = useSelector(selectUserProfile);
@@ -59,6 +60,7 @@ const PostDetail = () => {
     fetchData();
   }, [dispatch, serverUrl, memberEmail, token]);
 
+  /*
   useEffect(() => {
     if (post) {
       // 조회수 증가 요청
@@ -78,38 +80,87 @@ const PostDetail = () => {
       incrementViewCount();
     }
   }, [post, serverUrl, token]);
-
+*/
 
   useEffect(() => {
+    setCurrentPost(post);
+    if (post) {
+      setLike(post.like > 0);
+    }
+  }, [post]);
+
     // 현재 포스트의 좋아요 확인
+  useEffect(() => {
     const checkIfLiked = async () => {
+      if (post && serverUrl && memberEmail && token) {  // 모든 필요한 값이 존재하는지 확인
+        try {
+          const response = await axios.get(`${serverUrl}/dtBoard/post/${post.id}`,
+              {
+            params: { postId: post.id, userEmail: memberEmail },
+            headers: {
+              "Authorization": `Bearer ${token}`,
+            },
+            withCredentials: true,
+          });
+          console.log(">>>>나와라 like 갯수 로그<<<< " + response.data.like);
+          setLike(response.data.like);
+        } catch (error) {
+          console.error('좋아요 숫자확인 에러낫슈', error);
+        }
+      }
+    };
+
+    checkIfLiked();
+  }, [post, serverUrl, memberEmail, token]);
+
+  /*
+  const handleLikeClick = async () => {
+    if (currentPost) {
       try {
-        const response = await axios.get(`${serverUrl}/dtboard/checkLike`, {
-          params: { postId: post.id, userEmail: memberEmail },
+        const response = await axios.put(`${serverUrl}/toggleLike/${currentPost.id}`, null, {
+          params: { authorId: memberEmail },
           headers: {
             "Authorization": `Bearer ${token}`,
           },
           withCredentials: true,
         });
-        setLiked(response.data.liked);
-      } catch (error) {
-        console.error('좋아요 에러낫슈', error);
-      }
-    };
 
-    if (post) {
-      checkIfLiked();
+        const newLikeCount = response.data.updatedLikeCount;
+
+        setLike(prevLike => !prevLike);
+        // 현재 포스트 업데이트
+        setCurrentPost(prevPost => ({...prevPost, like: newLikeCount}));
+      } catch (error) {
+        console.error('좋아요 처리 중 오류 발생:', error);
+      }
     }
-  }, [post, serverUrl, memberEmail, token]);
+  };
+  */
 
   const handleLikeClick = async () => {
-    if (post) {
-      await toggleLike(serverUrl, memberEmail, post.id, token);
-      setLiked(!liked); // 좋아요 누르면 ui 바뀜
+    if (currentPost) {
+      try {
+        const newLikeCount = await toggleLike(serverUrl, currentPost.id, memberEmail);
+        setLike(prevLike => !prevLike);
+        // 현재 포스트 업데이트
+        setCurrentPost(prevPost => ({...prevPost, like: newLikeCount}));
+      } catch (error) {
+        console.error('좋아요 처리 중 오류 발생:', error);
+      }
     }
   };
 
-  if (!post) return <div>Post not found</div>;
+
+  /*
+  const handleLikeClick = async () => {
+    if (post) {
+      await toggleLike(serverUrl, memberEmail, post.id, token);
+      setLike(!like); // 좋아요 누르면 ui 바뀜
+    }
+  };
+   */
+
+  if (!currentPost) return <div>Post not found</div>;
   
   console.log("post.nickname", post.nickname)
   
@@ -222,7 +273,7 @@ const PostDetail = () => {
           	<div className = 'iconBox'>
           		<Favorite 
 	              className='likeIcon' 
-	              color={liked ? 'error' : 'action'} 
+	              color={like ? 'error' : 'action'}
 	              onClick={handleLikeClick} 
             	/>
             	<span>{post.like}</span>

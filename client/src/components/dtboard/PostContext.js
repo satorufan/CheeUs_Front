@@ -112,7 +112,7 @@ export const PostProvider = ({ children }) => {
     return response.data.body;
   };
 
-  // 😍★☆연결해야함☆★😍
+  /*
   const checkScrap = async (serverUrl, memberEmail, id, token) => {
     const response = await axios.get(`${serverUrl}/profile/scrap`, {
       params : {
@@ -123,21 +123,54 @@ export const PostProvider = ({ children }) => {
       },
       withCredentials : true
     })
-    console.log(response);
     const check = response.data.filter(post=> post.togetherId == id);
     return check.length > 0 ? true : false;
   }
+   */
 
+  const toggleLike = async (serverUrl, id, authorId) => {
+    try {
+      const response = await axios.put(
+          `${serverUrl}/dtBoard/toggleLike/${id}`,
+          {},
+          {
+            params: { authorId }, 
+            withCredentials: true,
+          }
+      );
+      console.log(response);
+      if (response.data.success) {
+        setPosts((prevPosts) =>
+            prevPosts.map((post) =>
+                post.id === id
+                    ? { ...post, like: response.data.updatedLikeCount }
+                    : post
+            )
+        );
+        return response.data.updatedLikeCount;
+      }
+    } catch (error) {
+      console.error('좋아요 토글에서 에러남 ', error);
+      throw error;
+    }
+  };
+
+  /*
+  // 😍★☆연결해야함☆★😍
   const toggleLike = async (serverUrl, memberEmail, postId, token) => {
-	  try{
-		  const response = await axios.post(
-			  `${serverUrl}/dtboard/toggleLike/${postId}`,{},{
+    try{
+		  const response = await axios.put(
+			  `${serverUrl}/dtBoard/toggleLike/${postId}`,
+              {}, // 빈 객체 전달
+              {
 				  headers : {
 					  "Authorization" : `Bearer ${token}`,
 				  },
 				  withCredentials: true,
 			  }
 		  );
+        console.log("요청 url" + serverUrl);
+        console.log(response);
 		  if(response.data.success) {
 			  setPosts((prevPosts)=>
 			  	prevPosts.map((post)=>
@@ -151,10 +184,11 @@ export const PostProvider = ({ children }) => {
 		  console.error('좋아요 토글에서 에러남 ', error);
 	  }
   };
-
+*/
 
   return (
-    <PostContext.Provider value={{ posts, addPost, modifyPost, selectedPlace, setSelectedPlace, deletePost, addScrap, checkScrap, toggleLike}}>
+    <PostContext.Provider value={{ posts, setPosts, addPost, modifyPost, selectedPlace, setSelectedPlace, deletePost, //addScrap, checkScrap,
+      toggleLike}}>
       {children}
     </PostContext.Provider>
   );
