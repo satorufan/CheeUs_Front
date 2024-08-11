@@ -53,7 +53,13 @@ const TuiEditorInput = ({ label, source, ...props }) => {
             <label>{label}</label>
             <ToastEditor
                 height="400px"
+                initialValue={value || ''}
+                ref={editorRef}
+                previewStyle="vertical"
                 initialEditType="markdown"
+                hooks={{
+                    addImageBlobHook: (blob, callback) => onUploadImage(blob, callback, uploadedImages, setUploadedImages),
+                }}
 	            toolbarItems={[
 	              ["heading", "bold", "italic", "strike"],
 	              ["hr", "quote"],
