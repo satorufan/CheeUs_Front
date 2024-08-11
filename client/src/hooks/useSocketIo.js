@@ -6,10 +6,12 @@ import {
     updateLastMessageInChatRooms, 
     updateLastMessageInTogetherChatRooms, 
 } from '../store/ChatSlice';
+import { useToast } from '../components/app/ToastProvider';
 
 const useSocketIo = (activeKey, selectedChat, userEmail, setHasUnreadMessages) => {
     const dispatch = useDispatch();
     const socket = useRef(null);
+    const { notify } = useToast();
 
     useEffect(() => {
         socket.current = io('http://localhost:8888');
@@ -24,7 +26,6 @@ const useSocketIo = (activeKey, selectedChat, userEmail, setHasUnreadMessages) =
             
             console.log('전체 메시지 객체:', message);
             
-            // 올바른 속성 이름 사용 'member'
             const { chat_room_id, room_id, member = [] } = message;
         
             console.log('Member 배열:', member);
@@ -64,6 +65,8 @@ const useSocketIo = (activeKey, selectedChat, userEmail, setHasUnreadMessages) =
             if (userEmail && membersAsString.includes(userEmail.trim())) {
                 console.log('읽지 않은 메시지 상태를 true로 설정합니다.');
                 setHasUnreadMessages(true);
+
+                notify('새로운 메시지가 도착했습니다!');
             } else {
                 console.log('멤버 배열에 사용자 이메일이 없습니다.');
             }
@@ -77,7 +80,7 @@ const useSocketIo = (activeKey, selectedChat, userEmail, setHasUnreadMessages) =
                 socket.current.disconnect();
             }
         };
-    }, [dispatch, activeKey, selectedChat, userEmail]);
+    }, [dispatch, activeKey, selectedChat, userEmail, notify]);
 
     return socket;
 };

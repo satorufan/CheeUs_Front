@@ -73,7 +73,7 @@ const ChatPage = () => {
             const messages = response.data.map(message => ({
                 ...message,
                 write_day: new Date(message.writeDay || message.write_day).toISOString(),
-                read: 1 // 메시지의 read 상태를 1로 설정
+                read: 1 
             }));
     
             dispatch(setSelectedChat({ ...selectedRoom, messages }));
@@ -136,8 +136,8 @@ const ChatPage = () => {
                 member: [selectedChat?.member1, selectedChat?.member2].filter(member => member !== loggedInUserId)
             } : {
                 member: (selectedChat?.members || [])
-            .filter(member => member.email !== loggedInUserId) // 디버깅: member 객체에 이메일 속성이 있는지 확인
-            .map(member => member.email) // 디버깅: 이메일 맵핑 확인
+            .filter(member => member.email !== loggedInUserId) 
+            .map(member => member.email)
     })
         };
     
