@@ -20,7 +20,8 @@ const PostDetail = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const { memberEmail, serverUrl, token } = useContext(AuthContext);
-  const [like, setLike] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  // const [like, setLike] = useState(false);
   const [authorInfo, setAuthorInfo] = useState();
   const [isScrapped, setIsScrapped] = useState(false);
   const { posts, setPosts, deletePost, addScrap, checkScrap, toggleLike } = usePosts();
@@ -83,12 +84,22 @@ const PostDetail = () => {
 */
 
   useEffect(() => {
+    if (post) {
+      setCurrentPost(post);
+      setIsLiked(post.isLiked);  // 추가된 부분
+    }
+  }, [post]);
+
+  /*
+  useEffect(() => {
     setCurrentPost(post);
     if (post) {
       setLike(post.like > 0);
     }
   }, [post]);
+*/
 
+  /*
     // 현재 포스트의 좋아요 확인
   useEffect(() => {
     const checkIfLiked = async () => {
@@ -112,6 +123,7 @@ const PostDetail = () => {
 
     checkIfLiked();
   }, [post, serverUrl, memberEmail, token]);
+  */
 
   /*
   const handleLikeClick = async () => {
@@ -140,13 +152,22 @@ const PostDetail = () => {
   const handleLikeClick = async () => {
     if (currentPost) {
       try {
+        const { updatedLikeCount, isLiked } = await toggleLike(serverUrl, currentPost.id, memberEmail);
+        setCurrentPost(prevPost => ({...prevPost, like: updatedLikeCount}));
+        setIsLiked(isLiked);
+      } catch (error) {
+        console.error('좋아요 처리 중 오류 발생:', error);
+      }
+      /*
+      try {
         const newLikeCount = await toggleLike(serverUrl, currentPost.id, memberEmail);
-        setLike(prevLike => !prevLike);
+        setLike(!like);
         // 현재 포스트 업데이트
         setCurrentPost(prevPost => ({...prevPost, like: newLikeCount}));
       } catch (error) {
         console.error('좋아요 처리 중 오류 발생:', error);
       }
+       */
     }
   };
 
@@ -253,7 +274,7 @@ const PostDetail = () => {
     handleClickJoinBtn();
 
   };
-  
+
   return (
     <div className="dt-detail">
     <div className="board-page-top">함께 마셔요</div>
@@ -273,10 +294,10 @@ const PostDetail = () => {
           	<div className = 'iconBox'>
           		<Favorite 
 	              className='likeIcon' 
-	              color={like ? 'error' : 'action'}
+	              color={isLiked ? 'error' : 'action'}
 	              onClick={handleLikeClick} 
             	/>
-            	<span>{post.like}</span>
+            	<span>{currentPost?.like}</span>
           		<Visibility className='viewIcon'/>
           		<span>{post.views}</span>
           	</div>

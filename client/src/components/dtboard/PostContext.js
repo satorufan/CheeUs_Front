@@ -137,18 +137,19 @@ export const PostProvider = ({ children }) => {
             params: { authorId }, 
             withCredentials: true,
           }
-      );
+        );
       console.log(response);
       if (response.data.success) {
         setPosts((prevPosts) =>
             prevPosts.map((post) =>
                 post.id === id
-                    ? { ...post, like: response.data.updatedLikeCount }
+                    ? { ...post, like: response.data.updatedLikeCount, isLiked: response.data.isLiked }
                     : post
             )
         );
-        return response.data.updatedLikeCount;
+        return { updatedLikeCount: response.data.updatedLikeCount, isLiked: response.data.isLiked };
       }
+      throw new Error('Toggle like failed');
     } catch (error) {
       console.error('좋아요 토글에서 에러남 ', error);
       throw error;
