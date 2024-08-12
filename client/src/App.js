@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route, BrowserRouter } from 'react-rou
 import './App.css';
 import './fonts/fonts.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Spinner from 'react-bootstrap/Spinner';
 import Main from './components/main/Main';
 import NotFound from './components/app/NotFound';
 import Signup from './components/signup/Signup';
@@ -50,8 +49,10 @@ import EventEnd from './components/event/EventEnd';
 import EventDetail from './components/event/EventDetail';
 import { EventProvider } from './components/event/EventContext';
 import { MagazineProvider } from './components/magazine/MagazineContext';
+import ChatPage from './components/chat/ChatPage'
+import ToastProvider from './components/app/ToastProvider';
+import 'react-toastify/dist/ReactToastify.css';
 
-const ChatPage = lazy(() => import('./components/chat/ChatPage'));
 function App() {
   return (
     <div className="App">
@@ -60,15 +61,8 @@ function App() {
         <PostProvider>
         <MagazineProvider>
         <EventProvider>
+        <ToastProvider>
           <Header />
-            <Suspense fallback={
-              <div className="permissionMessage">
-                  <div>잠시만 기다려 주세요...
-                    <div>
-                      <Spinner animation="border" variant="dark" />
-                    </div>
-                  </div>
-                </div>}>
             <Routes>
               <Route path="/" element={<Main />} />
               <Route path="/signup" element={<Signup />} />
@@ -113,8 +107,8 @@ function App() {
               <Route path="/event/detail/:category/:id" element={<EventDetail />} />
               <Route path="/admin/*" element={<AdminDashboard />} />
             </Routes>
-	       </Suspense>
 	      <Footer />
+        </ToastProvider>
 	    </EventProvider>
 	    </MagazineProvider>
         </PostProvider>

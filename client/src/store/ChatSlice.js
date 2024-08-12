@@ -10,48 +10,54 @@ const initialState = {
     showMessageInput: false,
     activeKey: 'one',
     status: 'idle',
-    error: null
+    error: null,
+    unreadMessages: {},
 };
 
 // 1:1 채팅방을 가져오는 비동기 Thunk
 export const fetchChatRooms = createAsyncThunk(
     'chat/fetchChatRooms',
-    async ({serverUrl, loggedInUserId}) => {
+    async ({ serverUrl, loggedInUserId }) => {
         try {
-            // 1:1 채팅방 데이터 요청
             const response = await axios.get('http://localhost:8889/api/chatRooms');
-            // `match`가 2인 채팅방만 필터링
             const chatRooms = response.data.filter(room => room.match === 2 && (room.member1 === loggedInUserId || room.member2 === loggedInUserId));
-            console.log(chatRooms);
 
-            // 각 채팅방의 메시지 가져오기
             const chatRoomsWithMessages = await Promise.all(chatRooms.map(async (room) => {
                 const messagesResponse = await axios.get(`http://localhost:8889/api/messages/${room.roomId}`);
                 const messages = messagesResponse.data;
-
                 const lastMessage = messages.length > 0 ? messages[messages.length - 1] : null;
 
-                
-                // 유저의 간단한 정보 불러오기 -> 
-                const userInfo = await axios.get(serverUrl + '/match/chattingPersonal', {params : {
-                    email : room.member1 === loggedInUserId ? room.member2 : room.member1
-                }});
+                const userInfo = await axios.get(serverUrl + '/match/chattingPersonal', {
+                    params: {
+                        email: room.member1 === loggedInUserId ? room.member2 : room.member1
+                    }
+                });
 
                 return {
                     ...room,
                     lastMessage: lastMessage ? {
                         ...lastMessage,
-                        write_day: new Date(lastMessage.write_day).toISOString() 
+                        roomId: room.roomId,
+                        participants: [room.member1, room.member2],
+                        write_day: new Date(lastMessage.write_day).toISOString()
                     } : {
                         message: '메시지가 없습니다',
+                        roomId: room.roomId,
+                        participants: [room.member1, room.member2],
                         write_day: new Date().toISOString()
                     },
-                    email : userInfo.data.email,
-                    image : 'data:' + userInfo.data.imageType + 
-                        ';base64,' + userInfo.data.imageBlob,
-                    nickname : userInfo.data.nickname
+                    email: userInfo.data.email,
+                    image: 'data:' + userInfo.data.imageType + ';base64,' + userInfo.data.imageBlob,
+                    nickname: userInfo.data.nickname
                 };
             }));
+
+            // 최신순으로 정렬 (마지막 메시지 기준)
+            chatRoomsWithMessages.sort((a, b) => {
+                const dateA = new Date(a.lastMessage?.write_day || 0);
+                const dateB = new Date(b.lastMessage?.write_day || 0);
+                return dateB - dateA;
+            });
 
             return chatRoomsWithMessages;
         } catch (error) {
@@ -64,60 +70,62 @@ export const fetchChatRooms = createAsyncThunk(
 // 단체 채팅방을 가져오는 비동기 Thunk
 export const fetchTogetherChatRooms = createAsyncThunk(
     'together/fetchChatRooms',
-    async ({serverUrl, userId}) => {
+    async ({ serverUrl, userId }) => {
         try {
             const response = await axios.get('http://localhost:8889/api/togetherChatRooms');
-            //const chatRooms = response.data;
-            const chatRooms = response.data.filter(room=>room.members.includes(userId));
+            const chatRooms = response.data.filter(room => room.members.includes(userId));
 
             const chatRoomsWithMessages = await Promise.all(chatRooms.map(async (room) => {
-                try {
-                    const messagesResponse = await axios.get(`http://localhost:8889/api/togetherMessages/${room.roomId}`);
-                    const messages = messagesResponse.data;
-                    const lastMessage = messages.length > 0 ? messages[messages.length - 1] : null;
-                    
-                    // 유저 정보 불러오기
-                    const members = await Promise.all(room.members.map(async (member) => {
-                        const memberInfo = await axios.get(serverUrl+'/match/chattingTogether', {params : {
-                            email : member
-                        }});
-                        return {
-                            email : memberInfo.data.email,
-                            image : 'data:' + memberInfo.data.imageType + 
-                            ';base64,' + memberInfo.data.imageBlob,
-                            nickname : memberInfo.data.nickname
-                        }
-                    }));
+                const messagesResponse = await axios.get(`http://localhost:8889/api/togetherMessages/${room.roomId}`);
+                const messages = messagesResponse.data;
+                const lastMessage = messages.length > 0 ? messages[messages.length - 1] : null;
 
+                const members = await Promise.all(room.members.map(async (member) => {
+                    const memberInfo = await axios.get(serverUrl + '/match/chattingTogether', {
+                        params: { email: member }
+                    });
                     return {
-                        members : members,
-                        messages : room.messages,
-                        roomId : room.roomId,
-                        togetherId : room.togetherId,
-                        lastMessage: lastMessage ? {
-                            ...lastMessage,
-                            write_day: new Date(lastMessage.write_day).toISOString(),read:[]
-                        } : {
-                            message: '메시지가 없습니다',
-                            write_day: new Date().toISOString(),
-                            read:[]
-                        }
+                        email: memberInfo.data.email,
+                        image: 'data:' + memberInfo.data.imageType + 
+                        ';base64,' + memberInfo.data.imageBlob,
+                        nickname: memberInfo.data.nickname
                     };
-                } catch (error) {
-                    console.error(`Messages fetch failed for roomId: ${room.roomId}`, error);
-                    return {
-                        ...room,
-                        lastMessage: { message: '메시지가 없습니다', write_day: new Date().toISOString() }
-                    };
-                }
+                }));
+
+                return {
+                    ...room,
+                    members: members,
+                    lastMessage: lastMessage ? {
+                        ...lastMessage,
+                        roomId: room.roomId,
+                        participants: room.members,
+                        write_day: new Date(lastMessage.write_day).toISOString(),
+                        read: lastMessage.read || []
+                    } : {
+                        message: '메시지가 없습니다',
+                        roomId: room.roomId,
+                        participants: room.members,
+                        write_day: new Date().toISOString(),
+                        read: []
+                    }
+                };
             }));
+
+            // 최신순으로 정렬 (마지막 메시지 기준)
+            chatRoomsWithMessages.sort((a, b) => {
+                const dateA = new Date(a.lastMessage?.write_day || 0);
+                const dateB = new Date(b.lastMessage?.write_day || 0);
+                return dateB - dateA;
+            });
 
             return chatRoomsWithMessages;
         } catch (error) {
+            console.error('Error fetching together chat rooms:', error);
             throw new Error(error.message);
         }
     }
 );
+
 // 1:1채팅방 숨기기
 export const updateOneOnOneChatRoomStatus = createAsyncThunk(
     'chat/updateOneOnOneChatRoomStatus',
@@ -186,7 +194,27 @@ export const updateTogetherMessageReadStatus = createAsyncThunk(
         }
     }
 );
+// 읽지 않은 사용자 1:1
+export const getUnreadUsersInOneOnOneChat = (room) => {
+    if (!room || !room.messages) return [];
 
+    const lastMessage = room.lastMessage;
+    if (!lastMessage) return [];
+
+    return lastMessage.read === 0 ? [room.member1, room.member2].filter(member => member !== room.loggedInUserId) : [];
+};
+
+// 읽지 않은 사용자 단체
+export const getUnreadUsersInTogetherChat = (room, loggedInUserId) => {
+    if (!room || !room.members || !room.lastMessage) return [];
+
+    const { lastMessage, members } = room;
+
+    // 메시지를 읽지 않은 멤버 추출
+    const unreadUsers = members.filter(member => !lastMessage.read.includes(member) && member !== loggedInUserId);
+    return unreadUsers;
+};
+export const selectUnreadStatus = (state) => state.chat.unreadStatus; 
 
 const chatSlice = createSlice({
     name: 'chat',
@@ -215,6 +243,12 @@ const chatSlice = createSlice({
                     ...action.payload,
                     write_day: new Date(action.payload.write_day).toISOString()
                 });
+                state.selectedChat.lastMessage = {
+                    ...action.payload,
+                    roomId: state.selectedChat.roomId,
+                    participants: [state.selectedChat.member1, state.selectedChat.member2],
+                    write_day: new Date(action.payload.write_day).toISOString()
+                };
             }
         },
         appendMessageToTogetherChat(state, action) {
@@ -228,10 +262,13 @@ const chatSlice = createSlice({
                 });
                 existingRoom.lastMessage = {
                     ...message,
-                    write_day: new Date(message.write_day).toISOString()
+                    roomId: existingRoom.roomId,
+                    participants: existingRoom.members,
+                    write_day: new Date(message.write_day).toISOString(),
+                    read: []
                 };
             }
-        },        
+        },
         updateLastMessageInChatRooms(state, action) {
             const { roomId, message } = action.payload;
             state.chatRooms = state.chatRooms.map(room =>
@@ -239,6 +276,8 @@ const chatSlice = createSlice({
                     ...room,
                     lastMessage: {
                         ...message,
+                        roomId: room.roomId,
+                        participants: [room.member1, room.member2],
                         write_day: new Date(message.write_day).toISOString()
                     }
                 } : room
@@ -251,6 +290,8 @@ const chatSlice = createSlice({
                     ...room,
                     lastMessage: {
                         ...message,
+                        roomId: room.roomId,
+                        participants: room.members,
                         write_day: new Date(message.write_day).toISOString(),
                         read: Array.isArray(message.read) ? [...new Set([...message.read, action.payload.userId])] : [action.payload.userId]
                     }
@@ -341,6 +382,25 @@ const chatSlice = createSlice({
                 state.selectedChat = null;
             }
         },
+        updateUnreadStatus(state, action) {
+            const { roomId, userEmail, readStatus } = action.payload;
+            if (!state[roomId]) {
+                state[roomId] = {};
+            }
+            state[roomId][userEmail] = readStatus;
+        },
+        clearUnreadStatus(state, action) {
+            const { roomId } = action.payload;
+            if (roomId && state[roomId]) {
+                state[roomId] = {}; // 특정 방의 읽음 상태를 초기화
+            }
+        },
+        clearAllUnreadStatus(state, action) {
+            // 모든 방의 읽음 상태를 초기화합니다.
+            Object.keys(state).forEach(roomId => {
+                state[roomId] = {};
+            });
+        }
     },
     
     extraReducers: (builder) => {
@@ -407,6 +467,9 @@ export const {
     markTogetherMessagesAsRead,
     chatRoomStatusUpdated,
     userRemovedFromChatRoom,
+    updateUnreadStatus,
+    clearUnreadStatus,
+    clearAllUnreadStatus
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

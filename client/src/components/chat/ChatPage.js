@@ -72,12 +72,15 @@ const ChatPage = () => {
             const response = await axios.get(`http://localhost:8889/api/messages/${roomId}`);
             const messages = response.data.map(message => ({
                 ...message,
-                write_day: new Date(message.writeDay || message.write_day).toISOString()
+                write_day: new Date(message.writeDay || message.write_day).toISOString(),
+                read: 1 
             }));
-
+    
             dispatch(setSelectedChat({ ...selectedRoom, messages }));
             dispatch(setShowMessageInput(true));
             dispatch(setMessageInput(''));
+    
+            // 서버에 읽음 상태를 업데이트 요청
             dispatch(updateMessageReadStatus({ roomId }));
         } catch (error) {
             console.error('메시지를 불러오는 중 에러 발생:', error);
@@ -92,17 +95,19 @@ const ChatPage = () => {
                 console.error(`roomId ${roomId}에 해당하는 단체 채팅방을 찾을 수 없습니다.`);
                 return;
             }
-
+    
             const response = await axios.get(`http://localhost:8889/api/togetherMessages/${roomId}`);
             const messages = response.data.map(message => ({
                 ...message,
                 write_day: new Date(message.writeDay || message.write_day).toISOString(),
-                read: Array.isArray(message.read) ? message.read : [message.read]
+                read: Array.isArray(message.read) ? [...new Set([...message.read, userId])] : [userId] // 로그인한 사용자 아이디 추가
             }));
-
+    
             dispatch(setSelectedChat({ ...selectedRoom, messages }));
             dispatch(setShowMessageInput(true));
             dispatch(setMessageInput(''));
+    
+            // 서버에 읽음 상태를 업데이트 요청
             dispatch(updateTogetherMessageReadStatus({ roomId, userId }));
         } catch (error) {
             console.error('메시지를 불러오는 중 에러 발생:', error);
@@ -110,30 +115,48 @@ const ChatPage = () => {
     }, [loggedInUserId, togetherChatRooms, dispatch]);
 
     const sendMessage = async (inputMessage) => {
-        if (!selectedChat || !inputMessage.trim() || !loggedInUserId) {
-            console.log('Cannot send message: No selected chat, empty input, or missing user ID.');
+        if (!inputMessage.trim() || !loggedInUserId) {
+            console.log('Cannot send message: Empty input or missing user ID.');
             return;
         }
-
-        const newMessage = {
+    
+        // DB에 저장할 메시지
+        const dbMessage = {
             sender_id: loggedInUserId,
             message: inputMessage,
             write_day: new Date().toISOString(),
             read: 0,
-            ...(activeKey === 'one' ? { chat_room_id: selectedChat.roomId } : { room_id: selectedChat.roomId, read: [loggedInUserId] })
+            ...(activeKey === 'one' ? { chat_room_id: selectedChat?.roomId } : { room_id: selectedChat?.roomId, read: [loggedInUserId] })
         };
-
-        socket.current.emit('sendMessage', newMessage);
-
+    
+        // 소켓으로 보낼 메시지
+        const socketMessage = {
+            ...dbMessage,
+            ...(activeKey === 'one' ? {
+                member: [selectedChat?.member1, selectedChat?.member2].filter(member => member !== loggedInUserId)
+            } : {
+                member: (selectedChat?.members || [])
+            .filter(member => member.email !== loggedInUserId) 
+            .map(member => member.email)
+    })
+        };
+    
+        // 소켓으로 메시지 전송
+        if (socket.current) {
+            socket.current.emit('sendMessage', socketMessage);
+        } else {
+            console.error('Socket is not connected.');
+        }
+    
         try {
             const endpoint = activeKey === 'one' ? 'http://localhost:8889/api/messages' : 'http://localhost:8889/api/togetherMessages';
-            await axios.post(endpoint, newMessage);
+            await axios.post(endpoint, dbMessage);
             dispatch(setMessageInput(''));
         } catch (error) {
             console.error('Error sending message:', error);
         }
     };
-
+    
     const formatMessageTime = (writeDay) => {
         const date = new Date(writeDay);
         return `${date.getHours()}:${date.getMinutes()}`;
