@@ -70,7 +70,7 @@ const FreeBoard = () => {
   const regularBoards = visibleBoards.filter(board => board.category === 1 && !board.pinned);
   const currentBoards = [...pinnedBoards, ...regularBoards].slice(startIndex, startIndex + itemsPerPage);
   const totalPages = Math.ceil(visibleBoards.filter(board => board.category === 1).length / itemsPerPage);
-  
+  console.log(currentBoards);
   function arraysEqualAsSets(arr1, arr2) {
     return new Set(arr1).size === new Set([...arr1, ...arr2]).size;
   }
