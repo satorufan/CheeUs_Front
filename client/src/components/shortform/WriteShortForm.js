@@ -12,6 +12,7 @@ import { jwtDecode } from 'jwt-decode';
 import './writeShortForm.css';
 import { Form } from 'react-bootstrap';
 import BoardDetailTop from '../board/BoardDetailTop';
+import Spinner from 'react-bootstrap/Spinner';
 
 function WriteShortForm() {
     const [title, setTitle] = useState('');
@@ -38,7 +39,13 @@ function WriteShortForm() {
     }, [dispatch, decodedToken, userProfile]);
   
     if (!decodedToken || !userProfile) {
-      return <div>Loading...</div>;
+      return (
+        <div>로딩중...
+          <div>
+            <Spinner animation="border" variant="dark" />
+          </div>
+        </div>
+      );
     }
   
     const onSubmitHandler = async () => {

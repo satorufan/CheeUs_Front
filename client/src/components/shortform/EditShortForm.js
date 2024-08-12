@@ -11,6 +11,7 @@ import { AuthContext } from '../login/OAuth';
 import { Form } from 'react-bootstrap';
 import { fetchUserProfile, selectUserProfile } from '../../store/ProfileSlice';
 import BoardDetailTop from '../board/BoardDetailTop';
+import Spinner from 'react-bootstrap/Spinner';
 
 function EditShortForm() {
   const { id } = useParams();
@@ -51,7 +52,13 @@ function EditShortForm() {
   }, [dispatch, decodedToken, userProfile]);
 
   if (!decodedToken || !userProfile) {
-    return <div>Loading...</div>;
+    return (
+      <div>로딩중...
+        <div>
+          <Spinner animation="border" variant="dark" />
+        </div>
+      </div>
+    );
   }
 
   const onSubmitHandler = async () => {

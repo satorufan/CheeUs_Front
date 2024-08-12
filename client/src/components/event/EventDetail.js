@@ -9,6 +9,7 @@ import { AuthContext } from '../login/OAuth';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
+import Spinner from 'react-bootstrap/Spinner';
 
 const EventDetail = () => {
   const { id } = useParams();
@@ -41,7 +42,13 @@ const EventDetail = () => {
   };
 
   if (!data) {
-    return <div>Loading...</div>;
+    return (
+      <div>로딩중...
+        <div>
+          <Spinner animation="border" variant="dark" />
+        </div>
+      </div>
+    );
   }
   
   

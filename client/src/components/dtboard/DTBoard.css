@@ -86,6 +86,22 @@ body{
   background-color: #555;
 }
 
+.dtpost-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 1rem;
+}
+@media (max-width: 1200px) {
+  .dticonBox {
+    display: none;
+  } 
+}
+
+.dticonBox {
+  font-size: 12px;
+} 
+
 /* 페이지네이션, 작성 버튼 */
 .board-footer {
   display: flex;

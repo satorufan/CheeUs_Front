@@ -1,17 +1,23 @@
-import React from 'react';
+import React, {useState} from 'react';
 import profileImg from '../images/noimage.jpg';
 import UseAuthorImages from '../images/UseAuthorImage';
 import Favorite from '@mui/icons-material/Favorite';
 import Visibility from '@mui/icons-material/Visibility';
+import Skeleton from '@mui/material/Skeleton';
 
 const DTBoardContent = ({ posts, totalPosts, postsPerPage, paginate, onWriteButtonClick, onPostClick }) => {
   const pageNumbers = [];
   const authorImages = UseAuthorImages(posts);
+  const [loadedImages, setLoadedImages] = useState({});
 
 
   for (let i = 1; i <= Math.ceil(totalPosts / postsPerPage); i++) { // Math.ceil로 계산한 값을 올림하여 필요한 페이지 수를 구한다.
     pageNumbers.push(i); // 계산한 페이지 수를 1~n까지 구해 pageNumbers에 넣고 pagination으로 연결해 표시한다.
   }
+
+  const handleImageLoad = (authorId) => {
+    setLoadedImages(prevState => ({ ...prevState, [authorId]: true }));
+  };
 
   //console.log(posts);
   return (
@@ -22,16 +28,24 @@ const DTBoardContent = ({ posts, totalPosts, postsPerPage, paginate, onWriteButt
             <div key={post.id} className="post">
               <div className="postClickArea" onClick={() => onPostClick(post.id)}>
                 <div className='post-img-nick'>
-                  <img
-                    src={authorImages[post.author_id] || profileImg}
-                    alt={`img`}
+                <img
+                    src={authorImages[post.author_id] || <Skeleton variant="circular" height={25} width={25} />}
+                    alt="img"
                     className="rounded-circle mr-3"
-                    style={{ width: '25px', height: '25px' }}
+                    style={{ 
+                      width: '25px', 
+                      height: '25px', 
+                      display: loadedImages[post.author_id] ? 'block' : 'none' 
+                    }}
+                    onLoad={() => handleImageLoad(post.author_id)}
                   />
+                  {!loadedImages[post.author_id] && (
+                    <Skeleton variant="circular" height={25} width={25} />
+                  )}
                   <div className="dt-post-nick">{post.nickname}</div>
                 </div>
                 <div className='dtpostHeader'>
-                  <h5>{post.title}</h5>
+                  <div className="dtpost-title">{post.title}</div>
                   <div className='dticonBox'>
                     <Favorite className='likeIcon'/>
                     <span>{post.like}</span>
