@@ -51,6 +51,28 @@ const AuthProvider = ({ children }) => {
 				setEmail(jwtDecode(loadToken).email);
 			}).catch((err)=>{
 				console.log(err);
+				if (err.response && err.response.data) {
+					if (err.response.data.message === "존재하지 않는 이메일입니다.") {
+						// 기존 코드
+					} else if (err.response.data.message === "제한된 사용자입니다 ㅉㅉ") {
+						// 기존 코드
+					} else if (err.response.data.message === "토큰 만료"){
+						// 기존 코드
+					}
+				} else {
+					console.error('Unexpected error:', err);
+					// 예상치 못한 오류에 대한 처리
+					Swal.fire({
+						title: '오류가 발생했습니다',
+						text: '잠시 후 다시 시도해주세요',
+						icon: 'error'
+					});
+				}
+			});	
+
+				/*
+			}).catch((err)=>{
+				console.log(err);
 				if (err.response.data.message == "존재하지 않는 이메일입니다.") {
 					const date = new Date();
 					date.setTime(date.getTime() + (5 * 60 * 1000)); // 현재 시간에 5분을 추가합니다.
@@ -74,6 +96,7 @@ const AuthProvider = ({ children }) => {
                     });
 				}
 			});
+				 */
 		}
 	}, []);
 
