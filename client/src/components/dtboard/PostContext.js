@@ -112,7 +112,6 @@ export const PostProvider = ({ children }) => {
     return response.data.body;
   };
 
-  /*
   const checkScrap = async (serverUrl, memberEmail, id, token) => {
     const response = await axios.get(`${serverUrl}/profile/scrap`, {
       params : {
@@ -126,7 +125,7 @@ export const PostProvider = ({ children }) => {
     const check = response.data.filter(post=> post.togetherId == id);
     return check.length > 0 ? true : false;
   }
-   */
+
 
   const toggleLike = async (serverUrl, id, authorId) => {
     try {
@@ -188,7 +187,7 @@ export const PostProvider = ({ children }) => {
 */
 
   return (
-    <PostContext.Provider value={{ posts, setPosts, addPost, modifyPost, selectedPlace, setSelectedPlace, deletePost, //addScrap, checkScrap,
+    <PostContext.Provider value={{ posts, setPosts, addPost, modifyPost, selectedPlace, setSelectedPlace, deletePost, addScrap, checkScrap,
       toggleLike}}>
       {children}
     </PostContext.Provider>

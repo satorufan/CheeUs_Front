@@ -34,7 +34,72 @@ const PostDetail = () => {
   const isJoined = rooms ?. filter(room => 
     room.roomId == id && room.members.map(member=>
     member.email == memberEmail)).length > 0 ? true : false;
-  
+
+  useEffect(() => {
+    if (post) {
+      const incrementViewCount = async () => {
+        try {
+          const response = await axios.put(`${serverUrl}/dtBoard/incrementView/${post.id}`, {}, {
+            headers: {
+              "Authorization": `Bearer ${token}`,
+            },
+            withCredentials: true,
+          });
+
+          if (response.data.success) {
+            setCurrentPost(prevPost => ({
+              ...prevPost,
+              views: response.data.updatedViewCount
+            }));
+          }
+        } catch (error) {
+          console.error('Error incrementing view count:', error);
+        }
+      };
+
+      incrementViewCount();
+    }
+  }, [post, serverUrl, token]);
+
+  /*
+  // 게시글 정보를 가져오고 조회수를 증가시키는 useEffect
+  useEffect(() => {
+    const fetchPostAndIncrementView = async () => {
+      if (id) {
+        try {
+          // 게시글 정보 가져오기
+          const postResponse = await axios.get(`${serverUrl}/dtBoard/post/${id}`);
+          const fetchedPost = postResponse.data;
+          setCurrentPost(fetchedPost);
+
+          // 조회수 증가
+          const viewResponse = await axios.post(`${serverUrl}/dtBoard/incrementView/${id}`, {}, {
+            headers: {
+              "Authorization": `Bearer ${token}`,
+            },
+            withCredentials: true,
+          });
+
+          if (viewResponse.data.success) {
+            setCurrentPost(prevPost => ({
+              ...prevPost,
+              views: viewResponse.data.updatedViewCount
+            }));
+
+            // 전역 상태의 게시글 목록 업데이트
+            setPosts(prevPosts => prevPosts.map(post =>
+                post.id === parseInt(id) ? { ...post, views: viewResponse.data.updatedViewCount } : post
+            ));
+          }
+        } catch (error) {
+          console.error('게시글 정보를 가져오거나 조회수를 증가시키는 중 오류 발생:', error);
+        }
+      }
+    };
+
+    fetchPostAndIncrementView();
+  }, [id, serverUrl, token, setPosts]);
+
   useEffect(() => {
     dispatch(fetchUserProfiles({ serverUrl, memberEmail }));
     dispatch(fetchTogetherChatRooms({serverUrl, userId : memberEmail}));
@@ -60,6 +125,7 @@ const PostDetail = () => {
     };
     fetchData();
   }, [dispatch, serverUrl, memberEmail, token]);
+   */
 
   /*
   useEffect(() => {
@@ -154,7 +220,7 @@ const PostDetail = () => {
       try {
         const { updatedLikeCount, isLiked } = await toggleLike(serverUrl, currentPost.id, memberEmail);
         setCurrentPost(prevPost => ({...prevPost, like: updatedLikeCount}));
-        setIsLiked(isLiked);
+        setIsLiked(!isLiked);
       } catch (error) {
         console.error('좋아요 처리 중 오류 발생:', error);
       }
@@ -182,7 +248,7 @@ const PostDetail = () => {
    */
 
   if (!currentPost) return <div>Post not found</div>;
-  
+
   console.log("post.nickname", post.nickname)
   
   const onExitHandler = () => {
@@ -274,6 +340,8 @@ const PostDetail = () => {
     handleClickJoinBtn();
 
   };
+
+  if (!currentPost) return <div>로딩 중...</div>;
 
   return (
     <div className="dt-detail">
