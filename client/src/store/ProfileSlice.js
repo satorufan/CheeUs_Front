@@ -30,8 +30,9 @@ export const fetchUserProfile = createAsyncThunk(
             
             const imageBlob = [];
             for(let i=0 ; i < response.data.profile.photo ; i ++){
-                imageBlob.push("data:" + response.data.imageType[i]
-                    + ";base64," + response.data.imageBlob[i] );
+                // imageBlob.push("data:" + response.data.imageType[i]
+                //     + ";base64," + response.data.imageBlob[i] );
+                imageBlob.push(response.data.imageType[i]);
             }
             const scrapList = response.data.scrap.map((scrap)=> {
                 if (scrap.boardId > 0) return {id : scrap.boardId, type : "[일반게시판]", title : scrap.title, url : scrap.url}
@@ -97,8 +98,9 @@ export const updateUserProfileThunk = createAsyncThunk(
 
         const imageBlob = [];
             for(let i=0 ; i < response.data.profile.photo ; i ++){
-                imageBlob.push("data:" + response.data.imageType[i]
-                    + ";base64," + response.data.imageBlob[i] );
+                // imageBlob.push("data:" + response.data.imageType[i]
+                //     + ";base64," + response.data.imageBlob[i] );
+                imageBlob.push(response.data.imageType[i]);
             }
 
         const profile = {
@@ -126,8 +128,9 @@ export const fetchOtherProfile = createAsyncThunk(
             });
             const imageBlob = [];
             for(let i=0 ; i < response.data.profile.photo ; i ++){
-                imageBlob.push("data:" + response.data.imageType[i]
-                    + ";base64," + response.data.imageBlob[i] );
+                // imageBlob.push("data:" + response.data.imageType[i]
+                //     + ";base64," + response.data.imageBlob[i] );
+                imageBlob.push(response.data.imageType[i]);
             }
 
             const profile = {

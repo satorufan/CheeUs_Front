@@ -25,7 +25,9 @@ export const fetchUserProfiles = createAsyncThunk(
         try {
             const response = await axios.get(`${serverUrl}/match`, { params: { email: memberEmail } });
             const profiles = response.data.map(data => {
-                const imageBlob = data.imageBlob.map((blob, index) => `data:${data.imageType[index]};base64,${blob}`);
+                // const imageBlob = data.imageBlob.map((blob, index) => `data:${data.imageType[index]};base64,${blob}`);
+                const imageBlob = data.imageBlob.map((blob, index) => data.imageType[index]);
+                console.log(imageBlob);
                 return {
                     profile: {
                         ...data.profile,

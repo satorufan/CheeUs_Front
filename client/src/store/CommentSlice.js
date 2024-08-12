@@ -43,7 +43,8 @@ export const fetchCommentsAuthorImg = createAsyncThunk(
     });
     
     const imageMap = response.data.reduce((acc, data) => {
-      acc[data.email] = "data:" + data.imageType + ";base64," + data.imageBlob;
+      // acc[data.email] = "data:" + data.imageType + ";base64," + data.imageBlob;
+      acc[data.email] = data.imageType;
       return acc;
     }, {});
     return imageMap;

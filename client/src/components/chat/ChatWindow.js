@@ -98,9 +98,11 @@ const ChatWindow = ({
             const profileData = {
                 email: profile.email,
                 nickname: profile.nickname,
-                image: profile && profile.imageBlob.length > 0
-                    ? `data:${profile.imageType};base64,${profile.imageBlob}`
-                    : `${process.env.PUBLIC_URL}/images/default-user-icon.png`
+                // image: profile && profile.imageBlob.length > 0
+                //     ? `data:${profile.imageType};base64,${profile.imageBlob}`
+                //     : `${process.env.PUBLIC_URL}/images/default-user-icon.png`
+                image: profile
+                    ? profile.imageType : `${process.env.PUBLIC_URL}/images/default-user-icon.png`
             };
             return profileData;
         } catch (error) {

@@ -15,7 +15,8 @@ const UseAuthorImages = (posts) => {
             const response = await axios.get(`${serverUrl}/match/chattingPersonal`, {
               params: { email: post.author_id }
             });
-            images[post.author_id] = `data:${response.data.imageType};base64,${response.data.imageBlob}`;
+            // images[post.author_id] = `data:${response.data.imageType};base64,${response.data.imageBlob}`;
+            images[post.author_id] = response.data.imageType;
           } catch (error) {
             console.error('Error fetching author image:', error);
             images[post.author_id] = null;
