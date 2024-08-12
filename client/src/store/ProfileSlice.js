@@ -117,8 +117,8 @@ export const fetchOtherProfile = createAsyncThunk(
 
         console.log(otherEmail)
         if (otherEmail && token) {
-            const response = await axios.get(`${serverUrl}/profile`, {
-                params: { email: otherEmail },
+            const response = await axios.get(`${serverUrl}/profile/others`, {
+                params: otherEmail,
                 headers : {
                     "Authorization" : `Bearer ${token}`
                 },

@@ -127,13 +127,22 @@ const EditProfile = ({ onClose = () => {} }) => {
     const handleUploadPhoto = (index) => (event) => {
         const file = event.target.files[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
+            const maxSize = 3 * 1024 * 1024; // 5MB를 바이트 단위로 계산
+            if (file.size <= maxSize) {
+              const updatedFiles = [...imageFiles];
+              updatedFiles[index] = file;
+              setImageFiles(updatedFiles);
+        
+              const reader = new FileReader();
+              reader.onloadend = () => {
                 const updatedPhotos = [...photos];
                 updatedPhotos[index] = reader.result;
                 setPhotos(updatedPhotos);
-            };
-            reader.readAsDataURL(file);
+              };
+              reader.readAsDataURL(file);
+            } else {
+              sweetalert("3MB 미만의 이미지를 업로드 해주세요", "", "error", "확인");
+            }
         }
     };
 

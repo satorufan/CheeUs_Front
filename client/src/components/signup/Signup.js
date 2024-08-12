@@ -73,17 +73,22 @@ const Signup = () => {
     const file = event.target.files[0];
 
     if (file) {
-      const updatedFiles = [...imageFiles];
-      updatedFiles[index] = file;
-      setImageFiles(updatedFiles);
-
-      const reader = new FileReader();
-      reader.onloadend = () => {
+      const maxSize = 3 * 1024 * 1024; // 3MB를 바이트 단위로 계산
+      if (file.size <= maxSize) {
+        const updatedFiles = [...imageFiles];
+        updatedFiles[index] = file;
+        setImageFiles(updatedFiles);
+  
+        const reader = new FileReader();
+        reader.onloadend = () => {
           const updatedPhotos = [...photos];
           updatedPhotos[index] = reader.result;
           setPhotos(updatedPhotos);
-      };
-      reader.readAsDataURL(file);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        sweetalert("3MB 미만의 이미지를 업로드 해주세요", "", "error", "확인");
+      }
     }
   };
 
@@ -104,7 +109,7 @@ const Signup = () => {
 
   const nicknameCheck = (nickname) => {
     //axios 들어갈 자리
-    axios.get(serverUrl + '/profile/checkNickname', {params : {
+    axios.get(serverUrl + '/member/checkNickname', {params : {
       nickname : nickname
     }}).then((res) => {
       sweetalert("사용가능한 닉네임입니다." ,"","","확인");
