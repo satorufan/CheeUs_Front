@@ -3,9 +3,10 @@ import Skeleton from '@mui/material/Skeleton';
 import Box from '@mui/joy/Box';
 import Card from '@mui/joy/Card';
 import Avatar from '@mui/joy/Avatar';
+import AspectRatio from '@mui/joy/AspectRatio';
 import './boardSkeleton.css';
 
-const BoardSkeleton = () => {
+const ShortformSkeleton = () => {
   const skeletonArray = Array.from({ length: 4 }, (_, index) => index);
 
   return (
@@ -17,7 +18,7 @@ const BoardSkeleton = () => {
           className="freeboard-card"
         >
           <Box className="card-video">
-            <Skeleton variant="rectangular" width="100%" height={180} />
+            <Skeleton variant="rectangular" width="100%" height={300} />
           </Box>
           <Box>
             <Skeleton variant="text" width="60%" height={40} style={{ margin: '0' }} />
@@ -40,4 +41,4 @@ const BoardSkeleton = () => {
   );
 };
 
-export default BoardSkeleton;
+export default ShortformSkeleton;

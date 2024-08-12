@@ -14,7 +14,7 @@ import BoardTop from '../board/BoardTop';
 import Pagination from '@mui/material/Pagination';
 import { selectBoards, toggleLike, selectLikedMap, filterBoards, setSearchQuery, selectFilteredBoards, fetchBoards, fetchBoardsMedia, selectPageBoardsMedia, fetchBoardsAuthor, selectBoardAuthors} from '../../store/BoardSlice';
 import './shortForm.css';
-import BoardSkeleton from '../skeleton/BoardSkeleton';
+import ShortformSkeleton from '../skeleton/ShortformSkeleon.js';
 
 const ShortForm = () => {
   const dispatch = useDispatch();
@@ -194,7 +194,7 @@ const ShortForm = () => {
                 </Box>
               </Card>
             )
-          )) : <BoardSkeleton />}
+          )) : <ShortformSkeleton />}
         </div>
       </div>
       <div className="create-post-container">
