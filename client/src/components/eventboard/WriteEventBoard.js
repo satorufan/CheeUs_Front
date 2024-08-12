@@ -12,6 +12,7 @@ import { jwtDecode } from "jwt-decode";
 import BoardDetailTop from '../board/BoardDetailTop';
 import { ref, deleteObject } from "firebase/storage";
 import { storage } from "../firebase/firebase";
+import Spinner from 'react-bootstrap/Spinner';
 
 const WriteEventBoard = () => {
   const [title, setTitle] = useState('');
@@ -35,7 +36,13 @@ const WriteEventBoard = () => {
   }, [dispatch, decodedToken, userProfile]); // userProfile이 변경되거나 로드되지 않았을 때 프로필을 다시 가져오기 위해 useEffect 사용
 
   if (!decodedToken || !userProfile) {
-    return <div>Loading...</div>;
+    return (
+      <div>로딩중...
+        <div>
+          <Spinner animation="border" variant="dark" />
+        </div>
+      </div>
+    );
   }
 
   // 이미지 URL 추출 함수

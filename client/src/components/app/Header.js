@@ -18,7 +18,7 @@ import useSocketIo from '../../hooks/useSocketIo';
 const Header = React.memo(function Header() {
     const [isNavExpanded, setIsNavExpanded] = useState(false);
     const [hasUnreadMessages, setHasUnreadMessages] = useState(() => {
-        // localStorage에서 값을 불러와 초기 상태를 설정합니다.
+
         const storedUnreadStatus = localStorage.getItem('hasUnreadMessages');
         return storedUnreadStatus ? JSON.parse(storedUnreadStatus) : false;
     });
@@ -35,14 +35,13 @@ const Header = React.memo(function Header() {
 
     const defaultProfileImage = `${process.env.PUBLIC_URL}/images/default-avatar.jpg`;
 
-    // 토큰이 있을 때 사용자 프로필을 가져옵니다.
     useEffect(() => {
         if (token) {
             dispatch(fetchUserProfile({ serverUrl, memberEmail, token }));
         }
     }, [token, dispatch, serverUrl, memberEmail]);
 
-    // 읽지 않은 메시지 상태를 로컬 스토리지에 저장합니다.
+    // 읽지 않은 메시지 상태를 로컬 스토리지에 저장
     useEffect(() => {
         console.log('Saving hasUnreadMessages to localStorage:', hasUnreadMessages);
         localStorage.setItem('hasUnreadMessages', JSON.stringify(hasUnreadMessages));
@@ -83,10 +82,9 @@ const Header = React.memo(function Header() {
         console.log('Clearing unread messages status');
         dispatch(clearAllUnreadStatus()); 
         setHasUnreadMessages(false); 
-        localStorage.setItem('hasUnreadMessages', JSON.stringify(false)); // 상태를 클리어 하기 위해 로컬 스토리지에 저장
+        localStorage.setItem('hasUnreadMessages', JSON.stringify(false)); 
     }, [dispatch]);
 
-    // 관리 페이지로 시작하는 경로에서는 헤더를 표시하지 않습니다.
     if (location.pathname.startsWith("/admin")) {
         return null;
     }

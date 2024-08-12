@@ -5,6 +5,7 @@ import Favorite from '@mui/icons-material/Favorite';
 import Visibility from '@mui/icons-material/Visibility';
 import MagazineTop from './MagazineTop';
 import { useMagazines } from './MagazineContext';
+import Spinner from 'react-bootstrap/Spinner';
 
 const MagazineDetail = () => {
   const { category, id } = useParams();
@@ -22,7 +23,13 @@ const MagazineDetail = () => {
 
 
   if (!data) {
-    return <div>Loading...</div>;
+    return (
+      <div>로딩중...
+        <div>
+          <Spinner animation="border" variant="dark" />
+        </div>
+      </div>
+    );
   }
 
   return (

@@ -6,6 +6,7 @@ import { fetchOtherProfile, selectOtherProfile } from '../../store/ProfileSlice'
 import './userProfilePage.css';
 import { AuthContext } from '../login/OAuth';
 import ProfileSkeleton from '../skeleton/ProfileSkeleton';
+import Spinner from 'react-bootstrap/Spinner';
 
 const UserProfilePage = () => {
     const { email } = useParams();
@@ -32,7 +33,7 @@ const UserProfilePage = () => {
         <div className="myprofile-container user">
             <div className="user-profile-nickname">
                 {otherStatus === 'loading'
-                    ? 'Loading...' // 로딩 상태일 때의 텍스트
+                    ? <Spinner animation="border" variant="dark" /> // 로딩 상태일 때의 텍스트
                     : otherProfile && otherProfile.profile
                         ? `${otherProfile.profile.nickname}님의 Profile`
                         : '프로필을 찾을 수 없습니다.'}

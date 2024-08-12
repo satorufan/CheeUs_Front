@@ -14,6 +14,7 @@ import { useEvents } from './EventContext';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
+import Spinner from 'react-bootstrap/Spinner';
 
 const EventNow = () => {
   const navigate = useNavigate();
@@ -48,7 +49,13 @@ const EventNow = () => {
   
     // 데이터 로딩 완료 전 대기
     if (!events) {
-        return <div>Loading...</div>;
+      return (
+        <div>로딩중...
+          <div>
+            <Spinner animation="border" variant="dark" />
+          </div>
+        </div>
+      );
     }
 
     // 이벤트 데이터 추출
