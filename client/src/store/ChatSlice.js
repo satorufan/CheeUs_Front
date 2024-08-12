@@ -47,7 +47,8 @@ export const fetchChatRooms = createAsyncThunk(
                         write_day: new Date().toISOString()
                     },
                     email: userInfo.data.email,
-                    image: 'data:' + userInfo.data.imageType + ';base64,' + userInfo.data.imageBlob,
+                    // image: 'data:' + userInfo.data.imageType + ';base64,' + userInfo.data.imageBlob,
+                    image: userInfo.data.imageType,
                     nickname: userInfo.data.nickname
                 };
             }));
@@ -86,8 +87,9 @@ export const fetchTogetherChatRooms = createAsyncThunk(
                     });
                     return {
                         email: memberInfo.data.email,
-                        image: 'data:' + memberInfo.data.imageType + 
-                        ';base64,' + memberInfo.data.imageBlob,
+                        // image: 'data:' + memberInfo.data.imageType + 
+                        // ';base64,' + memberInfo.data.imageBlob,
+                        image: memberInfo.data.imageType,
                         nickname: memberInfo.data.nickname
                     };
                 }));

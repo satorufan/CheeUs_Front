@@ -44,7 +44,8 @@ export const fetchBoardsMedia = createAsyncThunk(
       params: { board: encodedParameter }
     });
     const mediaMap = response.data.reduce((acc, data) => {
-      acc[data.id] = "data:" + data.types[0] + ";base64," + data.medias[0];
+      // acc[data.id] = "data:" + data.types[0] + ";base64," + data.medias[0];
+      acc[data.id] = data.types[0];
       return acc;
     }, {});
     return mediaMap;
@@ -63,7 +64,8 @@ export const fetchBoardsAuthor = createAsyncThunk(
       params : {emails : encodedParameter}
     });
     const mediaMap = response.data.reduce((acc, data) => {
-      acc[data.email] = "data:" + data.imageType + ";base64," + data.imageBlob;
+      // acc[data.email] = "data:" + data.imageType + ";base64," + data.imageBlob;
+      acc[data.email] = data.imageType;
       return acc;
     }, {});
     return mediaMap;
