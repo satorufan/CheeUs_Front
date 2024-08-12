@@ -47,9 +47,9 @@ const DTBoardContent = ({ posts, totalPosts, postsPerPage, paginate, onWriteButt
                 <div className='dtpostHeader'>
                   <div className="dtpost-title">{post.title}</div>
                   <div className='dticonBox'>
-                    <Favorite className='likeIcon'/>
+                    <Favorite className='likeIcon'  style={{ fontSize: '20px' }}/>
                     <span>{post.like}</span>
-                    <Visibility className='viewIcon'/>
+                    <Visibility className='viewIcon'  style={{ fontSize: '20px' }}/>
                     <span>{post.views}</span>
                   </div>
                 </div>
