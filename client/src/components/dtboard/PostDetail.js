@@ -35,6 +35,8 @@ const PostDetail = () => {
     room.roomId == id && room.members.map(member=>
     member.email == memberEmail)).length > 0 ? true : false;
 
+
+
   useEffect(() => {
     if (post) {
       const incrementViewCount = async () => {
@@ -59,7 +61,7 @@ const PostDetail = () => {
 
       incrementViewCount();
     }
-  }, [post, serverUrl, token]);
+  }, [serverUrl, token]);
 
   /*
   // 게시글 정보를 가져오고 조회수를 증가시키는 useEffect
@@ -149,7 +151,7 @@ const PostDetail = () => {
   }, [post, serverUrl, token]);
 */
 
-  useEffect(() => {
+    useEffect(() => {
     if (post) {
       setCurrentPost(post);
       setIsLiked(post.isLiked);  // 추가된 부분
