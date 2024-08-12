@@ -112,7 +112,7 @@ export const PostProvider = ({ children }) => {
     return response.data.body;
   };
 
-  // 😍★☆연결해야함☆★😍
+
   const checkScrap = async (serverUrl, memberEmail, id, token, category) => {
     const response = await axios.get(`${serverUrl}/profile/scrap`, {
       params : {
@@ -129,36 +129,42 @@ export const PostProvider = ({ children }) => {
     if(category == 3) check = response.data.filter(post=> post.eventId == id);
     if(category == 4) check = response.data.filter(post=> post.magazineId == id);
     console.log(check, category)
+
     return check.length > 0 ? true : false;
   }
 
-  const toggleLike = async (serverUrl, memberEmail, postId, token) => {
-	  try{
-		  const response = await axios.post(
-			  `${serverUrl}/dtboard/toggleLike/${postId}`,{},{
-				  headers : {
-					  "Authorization" : `Bearer ${token}`,
-				  },
-				  withCredentials: true,
-			  }
-		  );
-		  if(response.data.success) {
-			  setPosts((prevPosts)=>
-			  	prevPosts.map((post)=>
-			  		post.id === postId
-			  		 ?{...post, like: response.data.updatedLikeCount}
-			  		 : post
-			  	)
-			  );
-		  }
-	  } catch (error){
-		  console.error('좋아요 토글에서 에러남 ', error);
-	  }
+
+  const toggleLike = async (serverUrl, id, authorId) => {
+    try {
+      const response = await axios.put(
+          `${serverUrl}/dtBoard/toggleLike/${id}`,
+          {},
+          {
+            params: { authorId }, 
+            withCredentials: true,
+          }
+        );
+      console.log(response);
+      if (response.data.success) {
+        setPosts((prevPosts) =>
+            prevPosts.map((post) =>
+                post.id === id
+                    ? { ...post, like: response.data.updatedLikeCount, isLiked: response.data.isLiked }
+                    : post
+            )
+        );
+        return { updatedLikeCount: response.data.updatedLikeCount, isLiked: response.data.isLiked };
+      }
+      throw new Error('Toggle like failed');
+    } catch (error) {
+      console.error('좋아요 토글에서 에러남 ', error);
+      throw error;
+    }
   };
 
-
   return (
-    <PostContext.Provider value={{ posts, addPost, modifyPost, selectedPlace, setSelectedPlace, deletePost, addScrap, checkScrap, toggleLike}}>
+    <PostContext.Provider value={{ posts, setPosts, addPost, modifyPost, selectedPlace, setSelectedPlace, deletePost, addScrap, checkScrap,
+      toggleLike}}>
       {children}
     </PostContext.Provider>
   );

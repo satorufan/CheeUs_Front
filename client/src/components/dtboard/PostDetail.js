@@ -20,10 +20,12 @@ const PostDetail = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const { memberEmail, serverUrl, token } = useContext(AuthContext);
-  const [liked, setLiked] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  // const [like, setLike] = useState(false);
   const [authorInfo, setAuthorInfo] = useState();
   const [isScrapped, setIsScrapped] = useState(false);
-  const { posts, deletePost, addScrap, checkScrap, toggleLike } = usePosts();
+  const { posts, setPosts, deletePost, addScrap, checkScrap, toggleLike } = usePosts();
+  const [currentPost, setCurrentPost] = useState(null);
   const post = posts.find((post) => post.id === parseInt(id));
   const navigate = useNavigate();
   const userProfile = useSelector(selectUserProfile);
@@ -32,7 +34,72 @@ const PostDetail = () => {
   const isJoined = rooms ?. filter(room => 
     room.roomId == id && room.members.map(member=>
     member.email == memberEmail)).length > 0 ? true : false;
-  
+
+  useEffect(() => {
+    if (post) {
+      const incrementViewCount = async () => {
+        try {
+          const response = await axios.put(`${serverUrl}/dtBoard/incrementView/${post.id}`, {}, {
+            headers: {
+              "Authorization": `Bearer ${token}`,
+            },
+            withCredentials: true,
+          });
+
+          if (response.data.success) {
+            setCurrentPost(prevPost => ({
+              ...prevPost,
+              views: response.data.updatedViewCount
+            }));
+          }
+        } catch (error) {
+          console.error('Error incrementing view count:', error);
+        }
+      };
+
+      incrementViewCount();
+    }
+  }, [post, serverUrl, token]);
+
+  /*
+  // 게시글 정보를 가져오고 조회수를 증가시키는 useEffect
+  useEffect(() => {
+    const fetchPostAndIncrementView = async () => {
+      if (id) {
+        try {
+          // 게시글 정보 가져오기
+          const postResponse = await axios.get(`${serverUrl}/dtBoard/post/${id}`);
+          const fetchedPost = postResponse.data;
+          setCurrentPost(fetchedPost);
+
+          // 조회수 증가
+          const viewResponse = await axios.post(`${serverUrl}/dtBoard/incrementView/${id}`, {}, {
+            headers: {
+              "Authorization": `Bearer ${token}`,
+            },
+            withCredentials: true,
+          });
+
+          if (viewResponse.data.success) {
+            setCurrentPost(prevPost => ({
+              ...prevPost,
+              views: viewResponse.data.updatedViewCount
+            }));
+
+            // 전역 상태의 게시글 목록 업데이트
+            setPosts(prevPosts => prevPosts.map(post =>
+                post.id === parseInt(id) ? { ...post, views: viewResponse.data.updatedViewCount } : post
+            ));
+          }
+        } catch (error) {
+          console.error('게시글 정보를 가져오거나 조회수를 증가시키는 중 오류 발생:', error);
+        }
+      }
+    };
+
+    fetchPostAndIncrementView();
+  }, [id, serverUrl, token, setPosts]);
+
   useEffect(() => {
     dispatch(fetchUserProfiles({ serverUrl, memberEmail }));
     dispatch(fetchTogetherChatRooms({serverUrl, userId : memberEmail}));
@@ -58,7 +125,9 @@ const PostDetail = () => {
     };
     fetchData();
   }, [dispatch, serverUrl, memberEmail, token]);
+   */
 
+  /*
   useEffect(() => {
     if (post) {
       // 조회수 증가 요청
@@ -78,39 +147,108 @@ const PostDetail = () => {
       incrementViewCount();
     }
   }, [post, serverUrl, token]);
-
+*/
 
   useEffect(() => {
+    if (post) {
+      setCurrentPost(post);
+      setIsLiked(post.isLiked);  // 추가된 부분
+    }
+  }, [post]);
+
+  /*
+  useEffect(() => {
+    setCurrentPost(post);
+    if (post) {
+      setLike(post.like > 0);
+    }
+  }, [post]);
+*/
+
+  /*
     // 현재 포스트의 좋아요 확인
+  useEffect(() => {
     const checkIfLiked = async () => {
+      if (post && serverUrl && memberEmail && token) {  // 모든 필요한 값이 존재하는지 확인
+        try {
+          const response = await axios.get(`${serverUrl}/dtBoard/post/${post.id}`,
+              {
+            params: { postId: post.id, userEmail: memberEmail },
+            headers: {
+              "Authorization": `Bearer ${token}`,
+            },
+            withCredentials: true,
+          });
+          console.log(">>>>나와라 like 갯수 로그<<<< " + response.data.like);
+          setLike(response.data.like);
+        } catch (error) {
+          console.error('좋아요 숫자확인 에러낫슈', error);
+        }
+      }
+    };
+
+    checkIfLiked();
+  }, [post, serverUrl, memberEmail, token]);
+  */
+
+  /*
+  const handleLikeClick = async () => {
+    if (currentPost) {
       try {
-        const response = await axios.get(`${serverUrl}/dtboard/checkLike`, {
-          params: { postId: post.id, userEmail: memberEmail },
+        const response = await axios.put(`${serverUrl}/toggleLike/${currentPost.id}`, null, {
+          params: { authorId: memberEmail },
           headers: {
             "Authorization": `Bearer ${token}`,
           },
           withCredentials: true,
         });
-        setLiked(response.data.liked);
-      } catch (error) {
-        console.error('좋아요 에러낫슈', error);
-      }
-    };
 
-    if (post) {
-      checkIfLiked();
+        const newLikeCount = response.data.updatedLikeCount;
+
+        setLike(prevLike => !prevLike);
+        // 현재 포스트 업데이트
+        setCurrentPost(prevPost => ({...prevPost, like: newLikeCount}));
+      } catch (error) {
+        console.error('좋아요 처리 중 오류 발생:', error);
+      }
     }
-  }, [post, serverUrl, memberEmail, token]);
+  };
+  */
 
   const handleLikeClick = async () => {
-    if (post) {
-      await toggleLike(serverUrl, memberEmail, post.id, token);
-      setLiked(!liked); // 좋아요 누르면 ui 바뀜
+    if (currentPost) {
+      try {
+        const { updatedLikeCount, isLiked } = await toggleLike(serverUrl, currentPost.id, memberEmail);
+        setCurrentPost(prevPost => ({...prevPost, like: updatedLikeCount}));
+        setIsLiked(!isLiked);
+      } catch (error) {
+        console.error('좋아요 처리 중 오류 발생:', error);
+      }
+      /*
+      try {
+        const newLikeCount = await toggleLike(serverUrl, currentPost.id, memberEmail);
+        setLike(!like);
+        // 현재 포스트 업데이트
+        setCurrentPost(prevPost => ({...prevPost, like: newLikeCount}));
+      } catch (error) {
+        console.error('좋아요 처리 중 오류 발생:', error);
+      }
+       */
     }
   };
 
-  if (!post) return <div>Post not found</div>;
-  
+
+  /*
+  const handleLikeClick = async () => {
+    if (post) {
+      await toggleLike(serverUrl, memberEmail, post.id, token);
+      setLike(!like); // 좋아요 누르면 ui 바뀜
+    }
+  };
+   */
+
+  if (!currentPost) return <div>Post not found</div>;
+
   console.log("post.nickname", post.nickname)
   
   const onExitHandler = () => {
@@ -202,7 +340,9 @@ const PostDetail = () => {
     handleClickJoinBtn();
 
   };
-  
+
+  if (!currentPost) return <div>로딩 중...</div>;
+
   return (
     <div className="dt-detail">
     <div className="board-page-top">함께 마셔요</div>
@@ -222,10 +362,10 @@ const PostDetail = () => {
           	<div className = 'iconBox'>
           		<Favorite 
 	              className='likeIcon' 
-	              color={liked ? 'error' : 'action'} 
+	              color={isLiked ? 'error' : 'action'}
 	              onClick={handleLikeClick} 
             	/>
-            	<span>{post.like}</span>
+            	<span>{currentPost?.like}</span>
           		<Visibility className='viewIcon'/>
           		<span>{post.views}</span>
           	</div>
