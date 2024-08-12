@@ -1,8 +1,8 @@
 import React from 'react';
 import EditBoard from '../board/EditBoard';
 
-const EditFreeBoard = () => {
-  return <EditBoard category={1} />;
+const EditEventBoard = () => {
+  return <EditBoard category={3} />;
 };
 
-export default EditFreeBoard;
+export default EditEventBoard;
