@@ -51,7 +51,7 @@ export const fetchBoardsMedia = createAsyncThunk(
   }
 )
 
-// 작성자 부럴오기
+// 작성자 불러오기
 export const fetchBoardsAuthor = createAsyncThunk(
   'board.fetchBoardsAuthor',
   async ({category, perPageBoards}) => {
