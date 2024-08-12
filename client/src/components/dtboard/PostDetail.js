@@ -49,7 +49,7 @@ const PostDetail = () => {
               });
 
               // Check if post is scrapped
-              const isPostScrapped = await checkScrap(serverUrl, memberEmail, post.id, token);
+              const isPostScrapped = await checkScrap(serverUrl, memberEmail, post.id, token, 2);
               setIsScrapped(isPostScrapped);
           } catch (error) {
               console.error('Error fetching data:', error);
@@ -152,7 +152,7 @@ const PostDetail = () => {
   };
 
   const onScrapHandler = async () => {
-    const scrapMessage = await addScrap(serverUrl, memberEmail, id, post.title, token, window.location.href );
+    const scrapMessage = await addScrap(serverUrl, memberEmail, id, post.title, token, window.location.href, 2 );
     Swal.fire({
       title: `${scrapMessage}!`,
       icon: '',

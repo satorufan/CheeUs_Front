@@ -93,13 +93,13 @@ export const PostProvider = ({ children }) => {
         .catch(error => console.error(error));
   };
 
-  const addScrap = async (serverUrl, memberEmail, id, title, token, url) => {
+  const addScrap = async (serverUrl, memberEmail, id, title, token, url, category) => {
     const scrapInfo = {
       memberEmail : memberEmail,
-      boardId : null,
-      togetherId : id,
-      eventId : null,
-      magazineId : null,
+      boardId : category == 1 ? id : null,
+      togetherId : category == 2 ? id : null,
+      eventId : category == 3 ? id : null,
+      magazineId : category == 4 ? id : null,
       title : title,
       url : url
     };
@@ -113,7 +113,7 @@ export const PostProvider = ({ children }) => {
   };
 
   // 😍★☆연결해야함☆★😍
-  const checkScrap = async (serverUrl, memberEmail, id, token) => {
+  const checkScrap = async (serverUrl, memberEmail, id, token, category) => {
     const response = await axios.get(`${serverUrl}/profile/scrap`, {
       params : {
         email : memberEmail
@@ -123,8 +123,12 @@ export const PostProvider = ({ children }) => {
       },
       withCredentials : true
     })
-    console.log(response);
-    const check = response.data.filter(post=> post.togetherId == id);
+    var check;
+    if(category == 1) check = response.data.filter(post=> post.boardId == id);
+    if(category == 2) check = response.data.filter(post=> post.togetherId == id);
+    if(category == 3) check = response.data.filter(post=> post.eventId == id);
+    if(category == 4) check = response.data.filter(post=> post.magazineId == id);
+    console.log(check, category)
     return check.length > 0 ? true : false;
   }
 

@@ -11,6 +11,9 @@ import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import { ref, deleteObject } from 'firebase/storage';
 import { storage } from '../firebase/firebase'; // Firebase 저장소 가져오기
+import Swal from 'sweetalert2';
+import { usePosts } from '../dtboard/PostContext';
+import { Bookmark } from '@mui/icons-material';
 
 const EventDetail = () => {
   const { id } = useParams();
@@ -19,6 +22,8 @@ const EventDetail = () => {
   const [data, setData] = useState(null);
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
+  const [isScrapped, setIsScrapped] = useState(false);
+  const { addScrap, checkScrap } = usePosts();
 
   useEffect(() => {
     if (events && events.event) {
@@ -40,6 +45,34 @@ const EventDetail = () => {
         console.error('좋아요 토글 에러:', error);
       }
     }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (data) {
+          try {
+              // Check if post is scrapped
+              const isPostScrapped = await checkScrap(serverUrl, memberEmail, data.id, token, 3);
+              setIsScrapped(isPostScrapped);
+          } catch (error) {
+              console.error('Error fetching data:', error);
+          }
+        }
+    };
+    fetchData();
+  }, [data, serverUrl, memberEmail, token]);
+
+  const onScrapHandler = async () => {
+    const scrapMessage = await addScrap(serverUrl, memberEmail, id, data.title, token, window.location.href, 3 );
+    Swal.fire({
+      title: `${scrapMessage}!`,
+      icon: '',
+      showCancelButton: true,
+      confirmButtonColor: '#48088A',
+      confirmButtonText: '확인',
+      cancelButtonText: '취소',
+    })
+    setIsScrapped(!isScrapped);
   };
 
   if (!data) {
@@ -76,7 +109,6 @@ const EventDetail = () => {
           <div className="event-detail-admin">에디터 : {data.admin_name}</div>
           <a className="hidden">{data.admin_id}</a>
           <div className="event-detail-stats">
-          	
             <span className="event-detail-likes">
 	            <Favorite
 	          	  color={data.liked ? 'error' : 'action'} 
@@ -84,6 +116,14 @@ const EventDetail = () => {
 	          	/>
 	          	{data.like}
           	</span>
+            <p>
+              <Bookmark 
+                color={isScrapped ? 'primary' : 'action'} 
+                onClick={onScrapHandler}
+                style={{ cursor: 'pointer' }}
+              /> 
+            </p>
+            <span className="event-detail-likes"><Favorite/>{data.like}</span>
             <span className="event-detail-views"><Visibility/>{data.views}</span>
           </div>
         </div>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { usePosts } from '../dtboard/PostContext';
 import { selectBoardAuthors, selectBoards, selectPageBoardsMedia } from '../../store/BoardSlice';
 import Avatar from '@mui/material/Avatar';
 import { Favorite, Visibility, Bookmark } from '@mui/icons-material';
@@ -15,16 +16,16 @@ import rehypeRaw from 'rehype-raw';
 import { ref, deleteObject } from 'firebase/storage';
 import { storage } from '../firebase/firebase'; // Firebase 저장소 가져오기
 import BoardDetailSkeleton from '../skeleton/BoardDetailSkeleton';
-
+import CryptoJS from 'crypto-js';
 
 const DetailBoard = () => {
   const { id } = useParams();
+  const { memberEmail, serverUrl, token } = useContext(AuthContext);
   const navigate = useNavigate();
   const boards = useSelector(selectBoards);
   const medias = useSelector(selectPageBoardsMedia);
   const authors = useSelector(selectBoardAuthors);
   const [isLoaded, setIsLoaded] = useState(false);
-  const { token } = useContext(AuthContext); // 현재 사용자 정보 가져오기
   const [lastCategory, setLastCategory] = useState(null);
 
   let decodedToken;
@@ -33,10 +34,10 @@ const DetailBoard = () => {
   }
 
   const board = boards.find(b => b.id === parseInt(id, 10)); // id를 정수형으로 변환
-  console.log(medias, board);
 
   const [liked, setLiked] = useState(false);
-  const [scraped, setScraped] = useState(false);
+  const [isScrapped, setIsScrapped] = useState(false);
+  const { addScrap, checkScrap } = usePosts();
 
   useEffect(()=>{
     if(board.category == 2 && authors && Object.keys(authors).length > 0 && Object.keys(medias).length > 0) {
@@ -45,7 +46,6 @@ const DetailBoard = () => {
       setIsLoaded(true);
     }
   }, [authors, medias]);
-  console.log(isLoaded);
 
   useEffect(() => {
     if (!board) return;
@@ -101,7 +101,7 @@ const DetailBoard = () => {
   };
 
   const handleScrap = () => {
-    setScraped(!scraped);
+    setIsScrapped(!isScrapped);
   };
 
   // 이미지 URL 추출 함수
@@ -203,12 +203,53 @@ const DetailBoard = () => {
   };
 */
 
+const encodeUserInfo = (email) => {
+  const secretKey = CryptoJS.enc.Utf8.parse(process.env.REACT_APP_secretKey); 
+  const iv = CryptoJS.lib.WordArray.random(16); // 랜덤 IV 생성
+  const encryptedData = CryptoJS.AES.encrypt(JSON.stringify(email), secretKey, { iv: iv }).toString();
+  const urlSafeEncryptedData = encryptedData.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  const encryptedPayload = {
+    iv: iv.toString(CryptoJS.enc.Base64),
+    email: urlSafeEncryptedData,
+  };
+  return encryptedPayload;
+}
+
 const navigateToUserProfile = (email) => {
   if (email) {
-      navigate(`/userprofile/${email}`);
+    console.log(encodeUserInfo(email));
+    navigate(`/userprofile/${encodeUserInfo(email).email}`, {state: encodeUserInfo(email)});
   } else {
-      console.error('User ID not found for email:', email);
+    console.error('User ID not found for email:', email);
   }
+};
+
+useEffect(() => {
+  const fetchData = async () => {
+    if (board) {
+        try {
+            // Check if post is scrapped
+            const isPostScrapped = await checkScrap(serverUrl, memberEmail, board.id, token, 1);
+            setIsScrapped(isPostScrapped);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+      }
+  };
+  fetchData();
+}, [board, serverUrl, memberEmail, token]);
+
+const onScrapHandler = async () => {
+  const scrapMessage = await addScrap(serverUrl, memberEmail, id, board.title, token, window.location.href, 1 );
+  Swal.fire({
+    title: `${scrapMessage}!`,
+    icon: '',
+    showCancelButton: true,
+    confirmButtonColor: '#48088A',
+    confirmButtonText: '확인',
+    cancelButtonText: '취소',
+  })
+  setIsScrapped(!isScrapped);
 };
 
   if (!board) return <div>게시물을 찾을 수 없습니다.</div>;
@@ -258,8 +299,8 @@ const navigateToUserProfile = (email) => {
           <div className="left-info">
               <p>
                 <Bookmark 
-                  color={scraped ? 'primary' : 'action'} 
-                  onClick={handleScrap}
+                  color={isScrapped ? 'primary' : 'action'} 
+                  onClick={onScrapHandler}
                   style={{ cursor: 'pointer' }}
                 /> 
               </p>

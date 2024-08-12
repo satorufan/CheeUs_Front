@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import ProfileCard from './ProfileCard';
 import { fetchOtherProfile, selectOtherProfile } from '../../store/ProfileSlice';
@@ -8,7 +8,9 @@ import { AuthContext } from '../login/OAuth';
 import ProfileSkeleton from '../skeleton/ProfileSkeleton';
 
 const UserProfilePage = () => {
-    const { email } = useParams();
+    // const { email } = useParams();
+    const location = useLocation();
+    const email = location.state;
     const { serverUrl, token } = useContext(AuthContext);
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -18,6 +20,7 @@ const UserProfilePage = () => {
     const error = useSelector((state) => state.profile.otherError);
 
     useEffect(() => {
+        console.log(email);
         if (email) {
             console.log(`Fetching user profile for email: ${email}`);
             dispatch(fetchOtherProfile({ serverUrl, otherEmail: email, token }));
