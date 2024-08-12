@@ -38,7 +38,7 @@ const ToastEditor = forwardRef(({ content }, ref) => {
     <div>
       <Box sx={{ m: 2 }}>
         <Editor
-          height="96vh"
+          height="63vh"
          //placeholder="내용을 입력해주세요."
           initialValue={content || ' '}
           ref={editorRef}

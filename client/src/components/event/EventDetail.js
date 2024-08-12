@@ -14,6 +14,7 @@ import { storage } from '../firebase/firebase'; // Firebase 저장소 가져오�
 import Swal from 'sweetalert2';
 import { usePosts } from '../dtboard/PostContext';
 import { Bookmark } from '@mui/icons-material';
+import Spinner from 'react-bootstrap/Spinner';
 
 const EventDetail = () => {
   const { id } = useParams();
@@ -76,7 +77,13 @@ const EventDetail = () => {
   };
 
   if (!data) {
-    return <div>Loading...</div>;
+    return (
+      <div>로딩중...
+        <div>
+          <Spinner animation="border" variant="dark" />
+        </div>
+      </div>
+    );
   }
   
   

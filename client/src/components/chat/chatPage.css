@@ -335,6 +335,7 @@ body {
 
 .no-style {
     border: none;
+    background-color: white;
 }
 
 .participant-modal-list {

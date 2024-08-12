@@ -11,7 +11,7 @@ import MagazineTop from "./MagazineTop";
 import Pagination from '@mui/material/Pagination';
 import './Magazine.css';
 import { useMagazines } from './MagazineContext';
-
+import Spinner from 'react-bootstrap/Spinner';
 
 const Recommend = () => {
   const navigate = useNavigate();
@@ -35,7 +35,13 @@ const Recommend = () => {
 
     // 데이터 로딩 완료 전 대기
     if (!magazines) {
-        return <div>Loading...</div>;
+      return (
+        <div>로딩중...
+          <div>
+            <Spinner animation="border" variant="dark" />
+          </div>
+        </div>
+      );
     }
 
     // 이벤트 데이터 추출

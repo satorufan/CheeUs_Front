@@ -69,7 +69,7 @@ const PostDetailMap = ({ latitude, longitude, title, location }) => {
 
 
   return (
-    <div id="map" style={{  height: '100%', width: '100%'}}></div>
+    <div id="map" style={{  height: '66vh'}}></div>
   );
 };
 

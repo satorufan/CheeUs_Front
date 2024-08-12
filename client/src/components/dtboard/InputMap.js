@@ -235,7 +235,7 @@ const InputMap = ({ isEditing }) => {
           <button className = "btn btn-secondary dropdown-toggle" onClick={() => setIsSearchResultsVisible(true)}></button>
         )}
       </div>
-      <div id="map" className="map" style={{ height: '96vh' }}></div>
+      <div id="map" className="map" style={{ height: '62.5vh' }}></div>
       {isSearchResultsVisible && (
         <div className="search-result">
           <ul id="placesList">

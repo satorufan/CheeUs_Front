@@ -9,6 +9,7 @@ import { Bookmark } from '@mui/icons-material';
 import { AuthContext } from '../login/OAuth';
 import { usePosts } from '../dtboard/PostContext';
 import Swal from 'sweetalert2';
+import Spinner from 'react-bootstrap/Spinner';
 
 const MagazineDetail = () => {
   const { category, id } = useParams();
@@ -56,7 +57,13 @@ const MagazineDetail = () => {
   };
 
   if (!data) {
-    return <div>Loading...</div>;
+    return (
+      <div>로딩중...
+        <div>
+          <Spinner animation="border" variant="dark" />
+        </div>
+      </div>
+    );
   }
 
   return (
