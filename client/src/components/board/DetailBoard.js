@@ -245,7 +245,7 @@ const navigateToUserProfile = (email) => {
             </div>
           ) : (
             <>
-              <ReactMarkdown 
+			<ReactMarkdown 
               	remarkPlugins={[remarkGfm]} 
               	rehypePlugins={[rehypeRaw]}
               	components={{
@@ -254,7 +254,7 @@ const navigateToUserProfile = (email) => {
 				  }}
               >
               {board.content}
-             </ReactMarkdown>
+            </ReactMarkdown>
               {/* {board.photoes && (
                 <div className="detail-image-container">
                   <img className="detail-image" src={board.photoes} alt={board.title} />
