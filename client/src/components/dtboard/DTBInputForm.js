@@ -131,7 +131,8 @@ function DTBInputForm() {
               </div>
             </div>
             <div className="dt-input-mypage-box">
-            <ToastEditor ref={editorRef} />
+            <ToastEditor 
+            ref={editorRef} />
           </div>
           </div>
           <div className="dt-input-right-box">
