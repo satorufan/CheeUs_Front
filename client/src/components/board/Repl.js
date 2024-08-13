@@ -91,6 +91,16 @@ function Repl({ boardId }) {
     };
 
     const handleAddReply = async (e) => {
+        if(!memberEmail) {
+            Swal.fire({
+                title: `로그인 해주세요!`,
+                icon: '',
+                confirmButtonColor: '#48088A',
+                confirmButtonText: '확인',
+            }).then(()=>{
+                navigate('/');
+            })
+        }
         const parentId = parseInt(e.currentTarget.getAttribute('data-parent-id'), 10);
         if (replyText[parentId]?.trim() !== '') {
             const reply = {

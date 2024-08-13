@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, forwardRef } from 'react';
+import React, { useState, useRef, useEffect, forwardRef, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { BsArrowLeft } from 'react-icons/bs';
 import '@toast-ui/editor/dist/toastui-editor.css';
@@ -11,9 +11,11 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { ko } from 'date-fns/locale';
 import { format } from 'date-fns';
 import swal from 'sweetalert';
+import { AuthContext } from '../login/OAuth';
 
 function PostModify() {
   const { modifyPost, selectedPlace, posts, setSelectedPlace } = usePosts();
+  const { memberEmail } = useContext(AuthContext);
   const { id } = useParams();
   const post = posts.find((post) => post.id === parseInt(id));
   const navigate = useNavigate();
@@ -21,6 +23,20 @@ function PostModify() {
   const [startDate, setStartDate] = useState(new Date());
   const [title, setTitle] = useState('');
   const [time, setTime] = useState(format(new Date(), ' yyyy.MM.dd HH:mm'));
+
+  // url 링크타면 그냥 와져서 이거 무조건 추가해야함
+  useEffect(()=>{
+    if(post && memberEmail !== post?.author_id) {
+      swal({
+        title: '잘못된 접근입니다.',
+        icon: 'warning',
+        button: '확인',
+        className: 'custom-swal-warning'
+    }).then(() => {
+        navigate(-1); // 이전 페이지로 이동
+    });
+    }
+  }, [memberEmail]);
 
   useEffect(() => {
     if (post) {

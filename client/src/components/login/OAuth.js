@@ -55,13 +55,7 @@ const AuthProvider = ({ children }) => {
 					if (err.response.data.message === "존재하지 않는 이메일입니다.") {
 						// 기존 코드
 					} else if (err.response.data.message === "제한된 사용자입니다 ㅉㅉ") {
-						Swal.fire({
-							title : '제한된 사용자입니다',
-							text : '',
-							icon : 'error'
-						}).then(()=>{
-						   requestSignOut();
-						});
+						// 기존 코드
 					} else if (err.response.data.message === "토큰 만료"){
 						Swal.fire({
 							title : '만료되었습니다. 다시 로그인해주세요',
