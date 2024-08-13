@@ -1,11 +1,12 @@
 import React from 'react';
-import { List, Datagrid, TextField, EditButton, DeleteButton, SearchInput,  ShowButton, RichTextField, FunctionField, SaveButton, Toolbar, ChipField, NumberField, NumberInput} from 'react-admin';
+import { List, Datagrid, TextField, EditButton, DeleteButton, SearchInput,  ShowButton, RichTextField, FunctionField, SaveButton, Toolbar, ChipField, NumberField, NumberInput, Create} from 'react-admin';
 import { Edit, SimpleForm, TextInput, BooleanInput, DateInput, DateField } from 'react-admin';
 import { SelectInput } from 'react-admin';
 import BooleanField from './BooleanField'; 
 import { FilterSidebar, ListActions } from './FilterSidebar';
 import { RichTextInput } from 'ra-input-rich-text';
 import BackButton from './custom/BackButton';
+import TuiEditorInput from './custom/TuiEditorInput';
 
 
 const categoryMap = {
@@ -61,6 +62,30 @@ const PostToolbar = () =>{
 	</Toolbar>
 };
 
+export const PostCreate = (props) => (
+	<Create {...props}>
+		<SimpleForm toolbar={<PostToolbar/>}>
+			<NumberInput source='id'/>
+			<TextInput source='author_id'/>
+			<TextInput source='nickname'/>
+			<TextInput source='title'/>
+            <SelectInput source="category" choices={[
+			    { id: 1, name: 'FreeBoard' },
+			    { id: 2, name: 'ShotrForm' },
+			    { id: 3, name: 'EventBoard' },
+			]} />			
+            <TuiEditorInput source="content" defaultValue="" />			
+			<DateInput source='writeday'/>
+            <BooleanInput source="pinned" label="Pinned" />
+            <BooleanInput source="hidden" label="Hidden" />			
+			<SaveButton/>            
+		</SimpleForm>
+		<BackButton/>
+	</Create>
+);
+
+
+
 export const PostEdit = (props) => (
     <Edit {...props}>
         <SimpleForm toolbar = {<PostToolbar/>}>
@@ -73,7 +98,7 @@ export const PostEdit = (props) => (
 			    { id: 2, name: 'ShotrForm' },
 			    { id: 3, name: 'EventBoard' },
 			]} />
-            <RichTextInput source="content" />
+            <TuiEditorInput source="content" defaultValue="" />
             <DateInput source="writeday" />
             <BooleanInput source="pinned" label="Pinned" />
             <BooleanInput source="hidden" label="Hidden" />

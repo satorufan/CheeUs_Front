@@ -63,6 +63,7 @@
 }
 
 .detail-image {
+    margin: 20px 0;
     max-width: 80%;
     height: auto;
     border-radius: 8px;

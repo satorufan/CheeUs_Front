@@ -13,6 +13,7 @@ import BoardDetailTop from '../board/BoardDetailTop';
 import { ref, deleteObject } from "firebase/storage";
 import { storage } from "../firebase/firebase";
 import Spinner from 'react-bootstrap/Spinner';
+import './freeBoard.css';
 
 const WriteFreeBoard = () => {
   const [title, setTitle] = useState('');
@@ -165,7 +166,10 @@ const WriteFreeBoard = () => {
       </div>
       <div className="contentContainer">
         <div className="mypageContainer">
-          <ToastEditor ref={editorRef} />
+          <ToastEditor 
+          	ref={editorRef} 
+          	initialEditType="markdown"
+          />
         </div>
       </div>
       <div className="bottomContainer">
