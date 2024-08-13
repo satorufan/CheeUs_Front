@@ -112,7 +112,6 @@ export const PostProvider = ({ children }) => {
     return response.data.body;
   };
 
-
   const checkScrap = async (serverUrl, memberEmail, id, token, category) => {
     const response = await axios.get(`${serverUrl}/profile/scrap`, {
       params : {
