@@ -29,12 +29,20 @@
     border-radius: 21px;
     font-family: 'GwangyangTouching';
     font-weight: 400;
+    width: 15rem;
+    transition: width 0.3s ease; 
 }
 
 .board-search-icon {
     font-size: 20px;
     color: white;
     margin-left: 8px;
+}
+
+@media (max-width: 768px) {
+    .board-search {
+        width: 5rem; 
+    }
 }
 
 .category-container {

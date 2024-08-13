@@ -35,6 +35,19 @@ const WriteFreeBoard = () => {
   }
 
   useEffect(() => {
+    if (!token) {
+        swal({
+            title: '로그인 후 이용해 주세요',
+            icon: 'warning',
+            button: '확인',
+            className: 'custom-swal-warning'
+        }).then(() => {
+            navigate(-1); // 이전 페이지로 이동
+        });
+    }
+}, [token, navigate]);
+
+  useEffect(() => {
     if (!userProfile) {
       dispatch(fetchUserProfile({ serverUrl, memberEmail, token }));
     }

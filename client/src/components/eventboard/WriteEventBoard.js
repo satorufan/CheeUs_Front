@@ -40,6 +40,19 @@ const WriteEventBoard = () => {
     }
   }, [dispatch, decodedToken, userProfile]); // userProfile이 변경되거나 로드되지 않았을 때 프로필을 다시 가져오기 위해 useEffect 사용
 
+  useEffect(() => {
+    if (!token) {
+        swal({
+            title: '로그인 후 이용해 주세요',
+            icon: 'warning',
+            button: '확인',
+            className: 'custom-swal-warning'
+        }).then(() => {
+            navigate(-1); // 이전 페이지로 이동
+        });
+    }
+  }, [token, navigate]);
+
   if (!decodedToken || !userProfile) {
     return (
       <div>로딩중...

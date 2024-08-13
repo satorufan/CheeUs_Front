@@ -35,9 +35,10 @@ const extractImageUrls = (htmlContent) => {
     const editorRef = useRef();
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { token } = useContext(AuthContext);
+    const { token, memberEmail } = useContext(AuthContext);
     const boards = useSelector(state => state.board.boards);
     const [boardToEdit, setBoardToEdit] = useState(null);
+    console.log(boards);
 
     //파이어베이스 이미지 경로 설정
     var categoryName = "";
@@ -55,6 +56,17 @@ const extractImageUrls = (htmlContent) => {
     useEffect(() => {
       if (id) {
         const board = boards.find(b => b.id === parseInt(id, 10));
+        if(boards.length === 0 || (board && memberEmail !== board?.author_id)) {
+          swal({
+            title: '잘못된 접근입니다.',
+            icon: 'warning',
+            button: '확인',
+            className: 'custom-swal-warning'
+          }).then(() => {
+              navigate(-1); // 이전 페이지로 이동
+          });
+        }
+
         if (board) {
           setBoardToEdit(board);
           setIsEditMode(true);
