@@ -147,34 +147,30 @@ const BoardList = ({ category }) => {
                 </div>
               </Box>
               <Box className="card-content">
-                <Avatar
-                  src={authors[board.author_id]}
-                  size="sm"
-                  sx={{ '--Avatar-size': '1.5rem' }}
-                  className="card-avatar"
-                />
-                <div>
-                  <div className="card-author-name">
-                    {board.nickname}
+                  <div className="nick-avature">
+                    <Avatar
+                      src={authors[board.author_id]}
+                      size="sm"
+                      sx={{ '--Avatar-size': '1.5rem' }}
+                      className="card-avatar"
+                    />
+                    <div>
+                      <div className='short-author'>
+                        {board.nickname}
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div className="card-icons-container">
-                  <div
-                    className="card-icon-like"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleLikeClick(board.id);
-                    }}
-                  >
-                    <Favorite color={likedMap[board.id] ? 'error' : 'action'} />
-                    {likedMap[board.id] ? board.like + 1 : board.like}
+                  <div className="card-icons-container-list">
+                    <div className="card-icon-like">
+                      <Favorite className='likeIcon' style={{ fontSize: '20px', color: '#808080' }} />
+                      {board.like}
+                    </div>
+                    <div className="card-icon">
+                      <Visibility style={{ fontSize: '23px' }} />
+                      {board.views}
+                    </div>
                   </div>
-                  <div className="card-icon">
-                    <Visibility />
-                    {board.views}
-                  </div>
-                </div>
-              </Box>
+                </Box>
             </Card>
           )) : <BoardSkeleton />}
         </div>
