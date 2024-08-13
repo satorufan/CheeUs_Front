@@ -26,6 +26,7 @@ const EventDetail = () => {
   const [isScrapped, setIsScrapped] = useState(false);
   const { addScrap, checkScrap } = usePosts();
 
+  
   useEffect(() => {
     if (events && events.event) {
       const eventData = Object.values(events.event).find(event => event.id.toString() === id);
@@ -34,8 +35,20 @@ const EventDetail = () => {
       setLikeCount(eventData?.like || 0); // 초기 like 카운트 설정
     }
   }, [id, events]);
-  
 
+  const handleLikeClick = async () => {
+    if (data) {
+      try {
+        const result = await toggleLike(serverUrl, data.id, token, memberEmail);
+        setLiked(result.isLiked);
+        setLikeCount(result.updatedLikeCount);
+      } catch (error) {
+        console.error('좋아요 토글 에러:', error);
+      }
+    }
+  };
+  
+/*
   const handleLikeClick = async () => {
     if (data) {
       try {
@@ -46,7 +59,11 @@ const EventDetail = () => {
         console.error('좋아요 토글 에러:', error);
       }
     }
+    console.log(">>><<<<<",data.id);
+    // console.log(">>><<<<<",JSON.stringify(data));
+    // console.log("token",token);
   };
+*/
 
   useEffect(() => {
     const fetchData = async () => {
@@ -130,7 +147,6 @@ const EventDetail = () => {
                 style={{ cursor: 'pointer' }}
               /> 
             </p>
-            <span className="event-detail-likes"><Favorite/>{data.like}</span>
             <span className="event-detail-views"><Visibility/>{data.views}</span>
           </div>
         </div>
