@@ -4,10 +4,12 @@ import { AuthContext } from '../login/OAuth';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
+import Spinner from 'react-bootstrap/Spinner';
 
 const SignupCallback = () => {
     const [signUp, setUp] = useState(false);
     const {token, requestSignIn} = useContext(AuthContext);
+    const [loading, setLoading] = useState(true);
 
     const serverUrl = "http://localhost:8080";
     const navigate = useNavigate();
@@ -45,6 +47,7 @@ const SignupCallback = () => {
                 window.location.reload();
             })
             .catch((err)=>{
+                setLoading(false);
                 console.log(err);
             });
         }
@@ -52,8 +55,15 @@ const SignupCallback = () => {
     }, [signUp])
 
     return (
-        <div>
-            
+        <div className="permissionMessage">
+            {loading ? (
+                <div>
+                    로딩중...
+                    <div>
+                        <Spinner animation="border" variant="dark" />
+                    </div>
+                </div>
+            ) : null}
         </div>
     );
 };
