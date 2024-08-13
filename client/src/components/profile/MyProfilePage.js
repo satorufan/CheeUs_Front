@@ -43,12 +43,26 @@ const MyProfilePage = () => {
     };
 
     const handleDeleteProfile = () => {
-        requestDeleteMember();
+        Swal.fire({
+            title: '정말로 탈퇴하시겠습니까?',
+            text: "탈퇴 후에는 모든 데이터가 삭제됩니다.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#grey',
+            cancelButtonColor: '#black',
+            confirmButtonText: '탈퇴하기',
+            cancelButtonText: '취소'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                requestDeleteMember(); // 탈퇴 요청을 수행하는 함수 호출
+            }
+        });
     };
 
     const handleGoPost = (url) => {
         window.location.href = url;
     };
+    
 
     const hasScrapPosts = userProfile?.profile.scrap.length > 0;
     const hasMyPosts = userProfile?.profile.myPost.length > 0;
@@ -142,13 +156,13 @@ const MyProfilePage = () => {
                 </button>
                 <button
                     type="button"
-                    className="btn btn-light delete-myprofile-btn"
+                    className="btn btn-light edit-myprofile-btn"
                     onClick={handleDeleteProfile}
                 >
                     회원 탈퇴
                 </button>
             </div>
-        </div>
+            </div>
         </div>
     );
 };
