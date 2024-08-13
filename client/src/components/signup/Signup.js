@@ -265,6 +265,50 @@ const Signup = () => {
     setOpenAgreementModal(false);
   };
 
+  const validateBirthdate = (birth) => {
+    const year = parseInt(birth.substring(0, 4));
+    const month = parseInt(birth.substring(4, 6));
+    const day = parseInt(birth.substring(6, 8));
+
+    if (month < 1 || month > 12) {
+        sweetalert("생일을 정확히 입력해주세요! (월은 1~12 사이여야 합니다.)", '', '', '확인');
+        return false;
+    }
+
+    const daysInMonth = new Date(year, month, 0).getDate();
+    if (day < 1 || day > daysInMonth) {
+        sweetalert(`생일을 정확히 입력해주세요! (일은 1~${daysInMonth} 사이여야 합니다.)`, '', '', '확인');
+        return false;
+    }
+
+    return true;
+};
+const calculateAge = (birth) => {
+  const year = parseInt(birth.substring(0, 4));
+  const currentYear = new Date().getFullYear();
+  const age = currentYear - year;
+
+  const month = parseInt(birth.substring(4, 6));
+  const day = parseInt(birth.substring(6, 8));
+  const currentMonth = new Date().getMonth() + 1; 
+  const currentDay = new Date().getDate();
+
+  if (month > currentMonth || (month === currentMonth && day > currentDay)) {
+      return age - 1;
+  }
+
+  return age;
+};
+
+const validateName = (name) => {
+  if (!name || name.trim().length === 0) {
+      return false;
+  }
+
+  const nameRegex = /^[a-zA-Z가-힣]{1,20}$/; 
+  return nameRegex.test(name);
+};
+
   // 제출 - 회원가입 요청
   const handleComplete = async (event) => {
     event.preventDefault();
@@ -272,12 +316,13 @@ const Signup = () => {
 
     if (photos.length == 0) {
       sweetalert("프로필 사진 한 장 이상 추가하여야 합니다", '','','확인');
-    } else if (name == null) {
-      sweetalert("이름을 입력해주세요!", '','','확인');
-    } else if (birth == null || 
-      birth.length != 8 || !/^\d*$/.test(birth)
-    ) {
-      sweetalert("생일을 정확히 입력해주세요!", '','','확인');
+    } else if (!validateName(name)) {
+      sweetalert("이름을 정확히 입력해주세요!", '', '', '확인');
+    } else if (birth == null || birth.length != 8 || !/^\d*$/.test(birth) || !validateBirthdate(birth)) {
+      sweetalert("생일을 정확히 입력해주세요!", '', '', '확인');
+    } else if (calculateAge(birth) < 19) {
+      sweetalert("만 19세 이상만 사용 가능합니다.", '', '', '확인');
+          window.location.href = '/'; 
     } else if (tel == null || 
       tel.length != 11 || !/^\d*$/.test(tel)
     ) {
@@ -599,7 +644,7 @@ const Signup = () => {
           </Dialog>
           <div className="submit-area">
             <button type="submit" className="submit-button">
-              Submit
+              회원가입
             </button>
           </div>
         </form>
