@@ -17,6 +17,7 @@ const eventFilters = [
     <TextInput label="title2" source="title2" defaultValue="" />,
     <TextInput label="content" source="content" defaultValue="" />,
     <TextInput label="writeday" source="writeday" defaultValue="" />,
+    <BooleanInput label="hidden" source="hidden" defaultValue="" />
 ];
 	
 export const EventList = (props) => (

@@ -12,6 +12,9 @@ import Pagination from '@mui/material/Pagination';
 import './Magazine.css';
 import { useMagazines } from './MagazineContext';
 import Spinner from 'react-bootstrap/Spinner';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 
 const Recommend = () => {
   const navigate = useNavigate();
@@ -78,13 +81,17 @@ const Recommend = () => {
             >
               <Box className="card-video">
                 <AspectRatio ratio="4/3">
-                  {magazine.photoes ? (
+                  {magazine.thumbnail ? (
                     <CardCover className="card-cover">
-                      <img
-                        src={magazine.photoes}
-                        alt="게시물 사진"
-                        className="card-photo"
-                      />
+                    <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        rehypePlugins={[rehypeRaw]}
+                        components={{
+                          img: ({ node, ...props }) => <img {...props} className="card-photo" />
+                        }}
+                      >
+                        {magazine.thumbnail}
+                      </ReactMarkdown>
                       <div className="card-overlay-text">
                         {magazine.title2}
                       </div>

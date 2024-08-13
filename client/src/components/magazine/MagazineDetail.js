@@ -5,10 +5,13 @@ import Favorite from '@mui/icons-material/Favorite';
 import Visibility from '@mui/icons-material/Visibility';
 import MagazineTop from './MagazineTop';
 import { useMagazines } from './MagazineContext';
-import { Bookmark } from '@mui/icons-material';
 import { AuthContext } from '../login/OAuth';
-import { usePosts } from '../dtboard/PostContext';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import Swal from 'sweetalert2';
+import { usePosts } from '../dtboard/PostContext';
+import { Bookmark } from '@mui/icons-material';
 import Spinner from 'react-bootstrap/Spinner';
 
 const MagazineDetail = () => {
@@ -66,15 +69,31 @@ const MagazineDetail = () => {
     );
   }
 
+  const thumbnail = data.content.match(/!\[alt text]\(https:\/\/[^\s]+\)/)?.[0];
+
+  console.log("썸네일?", thumbnail);
+
+
+
   return (
     <div className="magazine-detail-container">
       <MagazineTop/>
       <div className="magazine-detail-content">
         <h2 className="magazine-detail-title">{data.title}</h2>
         <p className="magazine-detail-date">작성일: {data.writeday}</p>
-        <p className="magazine-detail-text">{data.title2}</p>
-      	<img src={data.photoes} alt={data.title} className="magazine-detail-image" />
-        <p className="magazine-detail-text" dangerouslySetInnerHTML={{ __html: data.content }}></p>
+        <p className="magazine-detail-title2">{data.title2}</p>
+        <p className="magazine-detail-ctext">
+        	<ReactMarkdown 
+	        	remarkPlugins={[remarkGfm]} 
+	        	rehypePlugins={[rehypeRaw]}
+	        	components={{
+				    p: ({ node, ...props }) => <p className="magazine-detail-text" {...props} />,
+				    img: ({ node, ...props }) => <img className="magazine-detail-image" {...props} />
+				}}
+	        >
+	        	{data.content}
+        	</ReactMarkdown>
+        </p>
         <div className="magazine-detail-footer">
           <div className="magazine-detail-admin">에디터 : {data.admin_name}<a className = 'hidden'>{data.admin_id}</a></div>
           <div className="magazine-detail-stats">

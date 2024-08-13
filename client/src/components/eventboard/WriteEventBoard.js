@@ -24,6 +24,10 @@ const WriteEventBoard = () => {
   const boards = useSelector(state => state.board.boards); // boards 변수를 Redux 상태에서 가져옴
   const [nickname, setNickname] = useState('');
 
+  // 파이어베이스 이미지 저장 경로 설정
+  const category = "eventboard";
+  const postId = boards.length + 1; // 새로운 게시물 ID 추정
+
   let decodedToken;
   if (token) {
     decodedToken = jwtDecode(token);
@@ -164,7 +168,7 @@ const WriteEventBoard = () => {
       </div>
       <div className="contentContainer">
         <div className="mypageContainer">
-          <ToastEditor ref={editorRef} />
+          <ToastEditor ref={editorRef} category ={`${category}`} postId={postId} />
         </div>
       </div>
       <div className="bottomContainer">
