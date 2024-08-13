@@ -9,6 +9,8 @@ import { AuthContext } from '../login/OAuth';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
+import { ref, deleteObject } from 'firebase/storage';
+import { storage } from '../firebase/firebase';
 import Swal from 'sweetalert2';
 import { usePosts } from '../dtboard/PostContext';
 import { Bookmark } from '@mui/icons-material';
@@ -17,12 +19,14 @@ import Spinner from 'react-bootstrap/Spinner';
 const MagazineDetail = () => {
   const { category, id } = useParams();
   const { magazines, toggleLike } = useMagazines();
-  const [data, setData] = useState(null);
   const { memberEmail, serverUrl, token } = useContext(AuthContext);
-  const [isScrapped, setIsScrapped] = useState(false);
-  const { addScrap, checkScrap } = usePosts();
+  const [currentEvent, setCurrentEvent] = useState(null);
+  const [data, setData] = useState(null);
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
+  const [isScrapped, setIsScrapped] = useState(false);
+  const { addScrap, checkScrap } = usePosts();
+
 
   useEffect(() => {
     if (magazines && magazines.magazine) { // magazines 객체에 magazine 배열이 있는지 확인
@@ -52,8 +56,8 @@ const MagazineDetail = () => {
     if (magazines && magazines.magazine) {
       const magazineData = Object.values(magazines.magazine).find(magazine => magazine.id.toString() === id);
       setData(magazineData);
-      setLiked(magazineData?.liked || false); // 초기 liked 상태 설정
-      setLikeCount(magazineData?.like || 0); // 초기 like 카운트 설정
+      setLiked(magazineData?.liked); // 초기 liked 상태 설정
+      setLikeCount(magazineData?.like); // 초기 like 카운트 설정
     }
   }, [id, magazines]);
 
@@ -126,10 +130,10 @@ const MagazineDetail = () => {
           <div className="magazine-detail-stats">
             <span className="magazine-detail-likes">
 	            <Favorite
-                    color={data.liked ? 'error' : 'action'}
+                    color={liked ? 'error' : 'action'}
                     onClick={handleLikeClick}
                 />
-              {data.like}
+              {likeCount}
           	</span>
             <p>
               <Bookmark

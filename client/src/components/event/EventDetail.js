@@ -20,6 +20,7 @@ const EventDetail = () => {
   const { id } = useParams();
   const { events, toggleLike } = useEvents();
   const { serverUrl, token, memberEmail } = useContext(AuthContext);
+  const [currentEvent, setCurrentEvent] = useState(null);
   const [data, setData] = useState(null);
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
@@ -31,8 +32,8 @@ const EventDetail = () => {
     if (events && events.event) {
       const eventData = Object.values(events.event).find(event => event.id.toString() === id);
       setData(eventData);
-      setLiked(eventData?.liked || false); // 초기 liked 상태 설정
-      setLikeCount(eventData?.like || 0); // 초기 like 카운트 설정
+      setLiked(eventData?.liked); // 초기 liked 상태 설정
+      setLikeCount(eventData?.like); // 초기 like 카운트 설정
     }
   }, [id, events]);
   
@@ -134,10 +135,10 @@ const EventDetail = () => {
           <div className="event-detail-stats">
             <span className="event-detail-likes">
 	            <Favorite
-	          	  color={data.liked ? 'error' : 'action'} 
+	          	  color={liked ? 'error' : 'action'}
 	          	  onClick={handleLikeClick}
 	          	/>
-	          	{data.like}
+	          	{likeCount}
           	</span>
             <p>
               <Bookmark 
