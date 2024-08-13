@@ -191,27 +191,39 @@ const ChatWindow = ({
             );
         }
     
-       if (activeKey === 'one') {
-        return (
-            <>
-            <div className="d-flex align-items-center">
-                <div>
-                <img 
-                    src={selectedChat.image} 
-                    alt={`Profile of ${selectedChat.nickname}`} 
-                    className="profile-img rounded-circle" 
-                    style={{ width: '40px', height: '40px', marginRight: '10px' }}
-                    onClick={() => navigateToUserProfile(selectedChat.id)}
-                />
-                <span onClick={() => navigateToUserProfile(selectedChat.id)}>{selectedChat.nickname}</span> 
-                </div>
-            </div>
-            <div>
-                <button  className="no-style" onClick={() => handleReport(selectedChat)}>🚨</button>
-           </div>
-           </>
-        );
-    }
+        if (activeKey === 'one') {
+            let targetUserId;
+        
+            if (selectedChat.member1 === loggedInUserId) {
+                targetUserId = selectedChat.member2;
+            } else if (selectedChat.member2 === loggedInUserId) {
+                targetUserId = selectedChat.member1;
+            }
+        
+            if (targetUserId) {
+                return (
+                    <>
+                        <div className="d-flex align-items-center">
+                            <div>
+                                <img 
+                                    src={selectedChat.image} 
+                                    alt={`Profile of ${selectedChat.nickname}`} 
+                                    className="profile-img rounded-circle" 
+                                    style={{ width: '40px', height: '40px', marginRight: '10px' }}
+                                    onClick={() => navigateToUserProfile(targetUserId)}  // targetUserId로 프로필 이동
+                                />
+                                <span onClick={() => navigateToUserProfile(targetUserId)}>
+                                    {selectedChat.nickname}
+                                </span> 
+                            </div>
+                        </div>
+                        <div>
+                            <button className="no-style" onClick={() => handleReport(selectedChat)}>🚨</button>
+                        </div>
+                    </>
+                );
+            }
+        }
     };
 
     const getDefaultMessage = () => {
