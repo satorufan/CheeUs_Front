@@ -201,3 +201,7 @@
     padding: 10px; 
     overflow: hidden;
   }
+  .ProseMirror toastui-editor-contents p{
+    max-width: 200px;
+    height: auto;
+}

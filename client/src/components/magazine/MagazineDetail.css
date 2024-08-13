@@ -10,16 +10,25 @@
   max-width: 800px;
   height: auto;
   border-radius: 10px;
-  margin-bottom: 20px;
+  margin: 20px 0;
 }
 
-.magazine-detail-content {
+.magazine-detail-ctext {
   max-width: 800px;
   text-align: left;
 }
 
 .magazine-detail-title {
   font-size: 2.5em;
+  font-weight: bold;
+  margin-bottom: 10px;
+  border-top: 1px solid #eee;
+  margin-top: 30px;
+  padding-top: 20px;
+}
+
+.magazine-detail-title2 {
+  font-size: 1.5em;
   font-weight: bold;
   margin-bottom: 10px;
   border-top: 1px solid #eee;

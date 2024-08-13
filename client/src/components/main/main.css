@@ -42,8 +42,8 @@
 
 /* 이미지 기본 스타일 */
 .main-section-image img {
-    width: 500px;
-    height: 300px;
+    width: 640px;
+    height: 250px;
     object-fit: cover;
     transition: width 0.6s ease; 
     transition: height 0.6s ease; 

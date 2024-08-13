@@ -11,27 +11,34 @@ export const MagazineProvider = ({ children }) => {
   const {token} = useContext(AuthContext);
 
   useEffect(() => {
-    const fetchEvents = async () => {
+    const fetchMagazines = async () => {
       try {
         const response = await axios.get('http://localhost:8080/Magazine');
         const fetchedMagazines = response.data;
 
-        // 데이터 구조 확인
-        console.log("Fetched Magazines Data:", fetchedMagazines);
+        // 각 매거진에 thumbnail 값을 추가
+        const magazinesWithThumbnails = fetchedMagazines.map(magazine => {
+          const thumbnailMatch = magazine.content.match(/!\[alt text]\((https:\/\/[^\s]+)\)/);
+          const thumbnail = thumbnailMatch ? thumbnailMatch[0] : null;
+          return {
+            ...magazine,
+            thumbnail: thumbnail || magazine.photoes, // 썸네일이 없으면 기본 이미지 사용
+          };
+        });
 
         // 데이터 구조를 확인하고 적절하게 처리
-        if (Array.isArray(fetchedMagazines)) {
-          setMagazines({ magazine: fetchedMagazines }); // 배열을 객체 형태로 감싸기
+        if (Array.isArray(magazinesWithThumbnails)) {
+          setMagazines({ magazine: magazinesWithThumbnails}); // 배열을 객체 형태로 감싸기
         } else {
-          setMagazines(fetchedMagazines); // 원래 형태를 유지
-          console.log(" *EventContext* " + fetchedMagazines); // 데이터를 확인하는 부분
+          setMagazines(magazinesWithThumbnails); // 원래 형태를 유지
+          console.log(" *MagazineContext* " + magazinesWithThumbnails); // 데이터를 확인하는 부분
         }
       } catch (error) {
-        console.error("Error fetching events data: ", error);
+        console.error("Error fetching magazines data: ", error);
       }
     };
 
-    fetchEvents();
+    fetchMagazines();
   }, []);
 
   return (

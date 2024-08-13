@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { BsArrowLeft } from 'react-icons/bs';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import ToastEditor from '../toast/ToastEditor';
-import { addBoard } from '../../store/BoardSlice';
+import { addBoard, selectMaxId } from '../../store/BoardSlice';
 import { fetchUserProfile, selectUserProfile } from '../../store/ProfileSlice';
 import { AuthContext } from '../login/OAuth'; 
 import swal from 'sweetalert';
@@ -22,7 +22,12 @@ const WriteFreeBoard = () => {
   const { serverUrl, memberEmail, token } = useContext(AuthContext); // 현재 사용자 정보 가져오기
   const userProfile = useSelector(selectUserProfile); // Redux의 selectUserProfile selector를 사용하여 userProfile 가져옴
   const boards = useSelector(state => state.board.boards); // boards 변수를 Redux 상태에서 가져옴
+  const maxId = useSelector(selectMaxId); // maxId 가져오기
   const [nickname, setNickname] = useState('');
+
+  // 파이어베이스 이미지 저장 경로 설정
+  const category = "freeboard";
+  const postId = maxId+ 1; // maxId를 postId로 사용
 
   let decodedToken;
   if (token) {
@@ -165,7 +170,7 @@ const WriteFreeBoard = () => {
       </div>
       <div className="contentContainer">
         <div className="mypageContainer">
-          <ToastEditor ref={editorRef} />
+          <ToastEditor ref={editorRef} category={`${category}`} postId={postId} />        
         </div>
       </div>
       <div className="bottomContainer">

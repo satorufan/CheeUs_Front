@@ -29,6 +29,7 @@ export const PostProvider = ({ children }) => {
 
   const addPost = async (title, content, time, nickname, memberEmail) => {
     var id;
+    console.log(memberEmail);
     const newPost = {
       title,
       content,
@@ -74,6 +75,7 @@ export const PostProvider = ({ children }) => {
   };
   
   const modifyPost = (id, title, content, time, nickname, memberEmail) => {
+    console.log(memberEmail);
     const modifiedPost = {
       id,
       title,
@@ -111,7 +113,6 @@ export const PostProvider = ({ children }) => {
     })
     return response.data.body;
   };
-
 
   const checkScrap = async (serverUrl, memberEmail, id, token, category) => {
     const response = await axios.get(`${serverUrl}/profile/scrap`, {
@@ -162,9 +163,22 @@ export const PostProvider = ({ children }) => {
     }
   };
 
+  const userLiked = async (serverUrl, id, authorId) => {
+    try {
+        const response = await axios.get(`${serverUrl}/dtBoard/userLiked/${id}`, {
+            params: { authorId }, // Query parameter를 전달
+            withCredentials: true,
+        });
+        return response.data.userIsLiked; // 서버에서 반환한 userIsLiked 값을 반환
+    } catch (error) {
+        console.error("API request failed:", error.response?.data || error.message);
+        throw error;
+    }
+  };
+
   return (
     <PostContext.Provider value={{ posts, setPosts, addPost, modifyPost, selectedPlace, setSelectedPlace, deletePost, addScrap, checkScrap,
-      toggleLike}}>
+      toggleLike, userLiked}}>
       {children}
     </PostContext.Provider>
   );

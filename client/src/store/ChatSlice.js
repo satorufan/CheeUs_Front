@@ -31,6 +31,16 @@ export const fetchChatRooms = createAsyncThunk(
                     params: {
                         email: room.member1 === loggedInUserId ? room.member2 : room.member1
                     }
+                }).catch((err)=>{
+                    if (err.response.data.message==="존재하지 않는 유저") {
+                        return {
+                            data : {
+                                email : room.member1 === loggedInUserId ? room.member2 : room.member1,
+                                imageType : null,
+                                nickname : "알 수 없음"
+                            }
+                        };
+                    }
                 });
 
                 return {
@@ -84,7 +94,17 @@ export const fetchTogetherChatRooms = createAsyncThunk(
                 const members = await Promise.all(room.members.map(async (member) => {
                     const memberInfo = await axios.get(serverUrl + '/match/chattingTogether', {
                         params: { email: member }
-                    });
+                    }).catch((err)=>{
+                        if (err.response.data.message==="존재하지 않는 유저") {
+                            return {
+                                data : {
+                                    email : member,
+                                    imageType : null,
+                                    nickname : "알 수 없음"
+                                }
+                            };
+                        }
+                    });;
                     return {
                         email: memberInfo.data.email,
                         // image: 'data:' + memberInfo.data.imageType + 

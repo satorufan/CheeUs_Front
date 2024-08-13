@@ -23,6 +23,7 @@
     "@toast-ui/react-editor": "^3.2.3",
     "axios": "^1.7.2",
     "bootstrap": "^5.3.3",
+    "cropperjs": "^1.6.2",
     "crypto-js": "^4.2.0",
     "date-fns": "^3.6.0",
     "date-fns-tz": "^3.1.3",

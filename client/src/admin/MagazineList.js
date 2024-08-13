@@ -1,13 +1,11 @@
 import React from 'react';
-import { List, Datagrid, TextField, EditButton, DeleteButton, Toolbar, SaveButton, SearchInput, ChipField, CreateButton, RichTextField, SelectInput } from 'react-admin';
+import { List, Datagrid, TextField, EditButton, DeleteButton, Toolbar, SaveButton, SearchInput, ChipField, CreateButton, SelectInput } from 'react-admin';
 import { Edit, SimpleForm, TextInput, BooleanInput, DateField, ChipInput, DateInput } from 'react-admin';
 import { Create } from 'react-admin';
 import BooleanField from './BooleanField'; 
-import ToggleButton from './ToggleButton'; 
 import { FilterSidebar, ListActions } from './FilterSidebar';
-import { RichTextInput } from 'ra-input-rich-text';
 import BackButton from './custom/BackButton';
-
+import TuiEditorInput from './custom/TuiEditorInput';
 
 const magazineFilters = [
     <SearchInput source="q" />,
@@ -65,7 +63,7 @@ export const MagazineCreate = (props) => (
             ]} />
             <TextInput source="title" />
             <TextInput source="title2" />
-            <RichTextInput source="content" />
+            <TuiEditorInput source="content" defaultValue="" />
             <DateInput source="writeday" />
             <BooleanInput source="hidden" label="Hidden" />
             <SaveButton/>
@@ -88,7 +86,7 @@ export const MagazineEdit = (props) => (
             ]} />
             <TextInput source="title" />
             <TextInput source="title2" />
-            <RichTextInput source="content" />
+            <TuiEditorInput source="content" defaultValue="" />
             <DateInput source="writeday" />
             <BooleanInput source="hidden" label="Hidden" />
             <SaveButton/>

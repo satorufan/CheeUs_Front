@@ -12,6 +12,9 @@ import Pagination from '@mui/material/Pagination';
 import './Magazine.css';
 import { useMagazines } from './MagazineContext';
 import Spinner from 'react-bootstrap/Spinner';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 
 const PopUp = () => {
   const navigate = useNavigate();
@@ -36,9 +39,11 @@ const PopUp = () => {
     // 데이터 로딩 완료 전 대기
     if (!magazines) {
       return (
-        <div>로딩중...
-          <div>
-            <Spinner animation="border" variant="dark" />
+        <div className="permissionMessage">
+          <div>로딩중...
+            <div>
+              <Spinner animation="border" variant="dark" />
+            </div>
           </div>
         </div>
       );
@@ -78,13 +83,17 @@ const PopUp = () => {
             >
               <Box className="card-video">
                 <AspectRatio ratio="4/3">
-                  {magazine.photoes ? (
+                  {magazine.thumbnail? (
                     <CardCover className="card-cover">
-                      <img
-                        src={magazine.photoes}
-                        alt="게시물 사진"
-                        className="card-photo"
-                      />
+                    <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        rehypePlugins={[rehypeRaw]}
+                        components={{
+                          img: ({ node, ...props }) => <img {...props} className="card-photo" />
+                        }}
+                      >
+                        {magazine.thumbnail}
+                      </ReactMarkdown>
                       <div className="card-overlay-text">
                         {magazine.title2}
                       </div>

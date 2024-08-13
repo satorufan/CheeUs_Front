@@ -16,6 +16,7 @@
 .textareaHeader {
   display: flex;
   justify-content: space-between;
+  margin-bottom: -5px;
 }
 .textareaBox input {
   border: none;
@@ -58,8 +59,11 @@
   border-radius: 10px;
   outline: none;
 }
+.contentContainer{
+	height: 84.5%;
+}
 .contentBox{
-	height: 65.5vh
+	height: 100%;
 }
 .dt-input-mypage-box {
   flex: 1;
@@ -169,7 +173,7 @@
 }
 
  .detailMapContainer{
-  height: 87.3vh;
+  height: 84.5%;
   }
   
  .board-right {

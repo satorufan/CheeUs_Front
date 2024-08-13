@@ -68,11 +68,14 @@
 .my-board, .my-posts {
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    padding: 20px;
     background-color: #fff;
     flex: 1;
     margin: 10px;
-    overflow-y: auto;
+    overflow-y: hidden;  
+    max-height: 300px; 
+    display: flex;
+    justify-content: center;
+    padding:20px 0 20px 20px;
 }
 
 table {
@@ -85,26 +88,36 @@ table thead th {
     background-color: black;
     color: white;
     padding: 10px;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
     text-align: center;
+    position: sticky;
+    top: 0;
+    border-radius: 15px 15px 0 0;
 }
 
 table th, table td {
     padding: 10px;
     text-align: left;
     background-color: #fff;
-    border-radius: 0;
-    overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
 
 table tbody {
+    max-height: 200px;
+    overflow-y: auto;
+    display: block;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow-x: hidden;
+}
+
+table tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
 }
 
 .mybtn-container {
+    width: 85vw;
     display: flex;
     justify-content: flex-end;
 }
@@ -113,9 +126,9 @@ table tbody {
     padding: 5px 20px;
     font-family: 'YeojuCeramic';
     border: solid 2px white;
-    margin-right: 12%;
     background-color: black;
     color: white;
+    margin:5px !important;
 }
 
 .edit-myprofile-btn:hover {
@@ -143,10 +156,18 @@ table tbody {
 .my-board thead, .my-posts thead {
     position: sticky;
     top: 0;
-    background-color: whgite;
+    background-color: white;
     z-index: 10;
 }
 
 .my-board th, .my-posts th {
     background-color:black;
+}
+
+.table-type {
+    width: 30%;
+}
+
+.table-title {
+    width: 70%;
 }

@@ -4,12 +4,13 @@ import UseAuthorImages from '../images/UseAuthorImage';
 import Favorite from '@mui/icons-material/Favorite';
 import Visibility from '@mui/icons-material/Visibility';
 import Skeleton from '@mui/material/Skeleton';
+import useToProfile from '../../hooks/useToProfile';
 
 const DTBoardContent = ({ posts, totalPosts, postsPerPage, paginate, onWriteButtonClick, onPostClick }) => {
   const pageNumbers = [];
   const authorImages = UseAuthorImages(posts);
   const [loadedImages, setLoadedImages] = useState({});
-
+  const navigateToUserProfile = useToProfile();
 
   for (let i = 1; i <= Math.ceil(totalPosts / postsPerPage); i++) { // Math.ceil로 계산한 값을 올림하여 필요한 페이지 수를 구한다.
     pageNumbers.push(i); // 계산한 페이지 수를 1~n까지 구해 pageNumbers에 넣고 pagination으로 연결해 표시한다.
@@ -38,11 +39,12 @@ const DTBoardContent = ({ posts, totalPosts, postsPerPage, paginate, onWriteButt
                       display: loadedImages[post.author_id] ? 'block' : 'none' 
                     }}
                     onLoad={() => handleImageLoad(post.author_id)}
+                    onClick={()=>navigateToUserProfile(post.author_id)}
                   />
                   {!loadedImages[post.author_id] && (
                     <Skeleton variant="circular" height={25} width={25} />
                   )}
-                  <div className="dt-post-nick">{post.nickname}</div>
+                  <div className="dt-post-nick" onClick={()=>navigateToUserProfile(post.author_id)}>{post.nickname}</div>
                 </div>
                 <div className='dtpostHeader'>
                   <div className="dtpost-title">{post.title}</div>
