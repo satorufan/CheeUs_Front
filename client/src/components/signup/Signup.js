@@ -228,12 +228,27 @@ const Signup = () => {
     setOpenTagModal(false);
   };
   const handleTagToggle = (tag) => {
-    setTags((prevTags) => 
-        prevTags.includes(tag)
-            ? prevTags.filter((t) => t !== tag)
-            : [...prevTags, tag]
-    );
-  };
+    setTags((prevTags) => {
+        if (prevTags.includes(tag)) {
+            return prevTags.filter((t) => t !== tag);
+        } 
+        else if (prevTags.length < 5) {
+            return [...prevTags, tag];
+        } 
+        else {
+            Swal.fire({
+                icon: 'warning',
+                text: '최대 5개의 태그만 선택할 수 있습니다.',
+                confirmButtonText: '확인',
+                customClass: {
+                    popup: 'custom-swal-popup',
+                }
+            });
+            return prevTags;
+        }
+    });
+};
+  
   const handleTagSubmit = () => {
     var tagsString = "";
     tags.map((tag, index)=>{

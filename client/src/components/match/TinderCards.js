@@ -86,11 +86,14 @@ const TinderCards = () => {
           title: '매치 성공!',
           text: '즐거운 대화를 나누어 보아요!',
           icon: 'dark',
-          confirmButtonText: '확인'
-        }).then((result) => {
+          cancelButtonText: '머물기',
+          confirmButtonText: '채팅방으로',
+          showCancelButton: true, 
+          cancelButtonColor: 'dark'
+          }).then((result) => {
           if (result.isConfirmed) {
             window.location.href = `/chatpage`; // 채팅방 URL로 이동
-          }
+          } 
         });
         sendMessage(res.data);
       }
