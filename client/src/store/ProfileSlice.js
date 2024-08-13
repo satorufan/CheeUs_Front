@@ -73,18 +73,24 @@ export const updateUserProfileThunk = createAsyncThunk(
             new Blob([JSON.stringify(updateUserProfile.profile)], 
             {type: 'application/json'})
         );
+        console.log(updateUserProfile);
 
-        updateUserProfile.imageBlob.forEach((files, index) => {
+        updateUserProfile.imageBlob.forEach(async (files, index) => {
 
-            var byteCharacters = atob(files.split(',')[1]);
-            var byteNumbers = new Array(byteCharacters.length);
-            for (var i = 0; i < byteCharacters.length; i++) {
-                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            if(files.startsWith('data')) {
+                var byteCharacters = atob(files.split(',')[1]);
+                var byteNumbers = new Array(byteCharacters.length);
+                for (var i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                var byteArray = new Uint8Array(byteNumbers);
+                var blob = new Blob([byteArray], { type: files.split(':')[1].split(';')[0] });
+
+                formData.append("photos", blob);
+            } else {
+                var emptyBlob = new Blob([], { type: 'application/octet-stream' });
+                formData.append("photos", emptyBlob, 'emptyfile.txt'); // 파일명은 필요에 따라 설정
             }
-            var byteArray = new Uint8Array(byteNumbers);
-            var blob = new Blob([byteArray], { type: files.split(':')[1].split(';')[0] });
-
-            formData.append("photos", blob);
             formData.append("email", updateUserProfile.profile.email + "/" + index);
         });
 
