@@ -8,7 +8,7 @@ export const useMagazines = () => useContext(MagazineContext);
 
 export const MagazineProvider = ({ children }) => {
   const [magazines, setMagazines] = useState(null);
-  const {token} = useContext(AuthContext);
+  const { serverUrl, token, memberEmail } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchMagazines = async () => {
@@ -41,8 +41,33 @@ export const MagazineProvider = ({ children }) => {
     fetchMagazines();
   }, []);
 
+  const toggleLike = async (serverUrl, magazineId, token, memberEmail) => {
+    try {
+      const response = await axios.put(
+          `${serverUrl}/Magazine/toggleLike/${magazineId}`,
+          {},
+          {
+            params: { memberEmail },
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+          }
+      );
+      console.log("Response:", response.data);
+      if (response.data.success) {
+        return {
+          updatedLikeCount: response.data.updatedLikeCount,
+          isLiked: response.data.isLiked
+        };
+      }
+      throw new Error('Toggle like failed');
+    } catch (error) {
+      console.error('좋아요 토글에서 에러남 ', error);
+      throw error;
+    }
+  };
+
   return (
-      <MagazineContext.Provider value={{ magazines }}>
+      <MagazineContext.Provider value={{ magazines, setMagazines, toggleLike }}>
         {children}
       </MagazineContext.Provider>
   );

@@ -35,8 +35,7 @@ const EventDetail = () => {
       setLikeCount(eventData?.like || 0); // 초기 like 카운트 설정
     }
   }, [id, events]);
-
-
+  
   const handleLikeClick = async () => {
     if (data) {
       try {

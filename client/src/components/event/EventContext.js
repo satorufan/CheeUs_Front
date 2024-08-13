@@ -41,10 +41,10 @@ export const EventProvider = ({ children }) => {
     fetchEvents();
   }, []);
 
-  const toggleLike = async (serverUrl, postId, token, memberEmail) => {
+  const toggleLike = async (serverUrl, eventId, token, memberEmail) => {
     try {
       const response = await axios.put(
-          `${serverUrl}/Event/toggleLike/${postId}`,
+          `${serverUrl}/Event/toggleLike/${eventId}`,
           {},
           {
             params: { memberEmail },

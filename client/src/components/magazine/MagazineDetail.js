@@ -16,11 +16,13 @@ import Spinner from 'react-bootstrap/Spinner';
 
 const MagazineDetail = () => {
   const { category, id } = useParams();
-  const { magazines } = useMagazines();
+  const { magazines, toggleLike } = useMagazines();
   const [data, setData] = useState(null);
   const { memberEmail, serverUrl, token } = useContext(AuthContext);
   const [isScrapped, setIsScrapped] = useState(false);
   const { addScrap, checkScrap } = usePosts();
+  const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
 
   useEffect(() => {
     if (magazines && magazines.magazine) { // magazines 객체에 magazine 배열이 있는지 확인
@@ -46,6 +48,28 @@ const MagazineDetail = () => {
     fetchData();
   }, [data, serverUrl, memberEmail, token]);
 
+  useEffect(() => {
+    if (magazines && magazines.magazine) {
+      const magazineData = Object.values(magazines.magazine).find(magazine => magazine.id.toString() === id);
+      setData(magazineData);
+      setLiked(magazineData?.liked || false); // 초기 liked 상태 설정
+      setLikeCount(magazineData?.like || 0); // 초기 like 카운트 설정
+    }
+  }, [id, magazines]);
+
+  // 좋아요 관련
+  const handleLikeClick = async () => {
+    if (data) {
+      try {
+        const result = await toggleLike(serverUrl, data.id, token, memberEmail);
+        setLiked(result.isLiked);
+        setLikeCount(result.updatedLikeCount);
+      } catch (error) {
+        console.error('좋아요 토글 에러:', error);
+      }
+    }
+  };
+  
   const onScrapHandler = async () => {
     const scrapMessage = await addScrap(serverUrl, memberEmail, id, data.title, token, window.location.href, 4 );
     Swal.fire({
@@ -97,16 +121,23 @@ const MagazineDetail = () => {
         	</ReactMarkdown>
         </p>
         <div className="magazine-detail-footer">
-          <div className="magazine-detail-admin">에디터 : {data.admin_name}<a className = 'hidden'>{data.admin_id}</a></div>
+          <div className="magazine-detail-admin">에디터 : {data.admin_name}
+            <a className = 'hidden'>{data.admin_id}</a></div>
           <div className="magazine-detail-stats">
+            <span className="magazine-detail-likes">
+	            <Favorite
+                    color={data.liked ? 'error' : 'action'}
+                    onClick={handleLikeClick}
+                />
+              {data.like}
+          	</span>
             <p>
-                <Bookmark 
-                  color={isScrapped ? 'primary' : 'action'} 
+              <Bookmark
+                  color={isScrapped ? 'primary' : 'action'}
                   onClick={onScrapHandler}
-                  style={{ cursor: 'pointer' }}
-                /> 
+                  style={{cursor: 'pointer'}}
+              />
             </p>
-            <span className="magazine-detail-likes"><Favorite/>{data.like}</span>
             <span className="magazine-detail-views"><Visibility/>{data.views}</span>
           </div>
         </div>
