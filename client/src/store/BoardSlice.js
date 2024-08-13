@@ -114,13 +114,41 @@ export const updateBoard = createAsyncThunk(
     }
 );
 
+// 좋아요 토글 >>>>
+export const likeBoard = createAsyncThunk(
+  'board/likeBoard',
+  async ({ boardId, userEmail }) => { 
+    try {
+      console.log('Sending like request:', { boardId, userEmail });
+
+      const response = await axios.post(
+        `http://localhost:8080/board/like/${boardId}`, 
+        { boardId, userEmail }, 
+        {
+          headers: {
+            'Content-Type': 'application/json'
+            // 'Authorization': `Bearer ${token}` // Authorization 헤더 제거
+          }
+        }
+      );
+      
+      console.log('Response received:', response);
+
+      return response.data;
+    } catch (error) {
+      console.error('Error liking board:', error);
+      throw error;
+    }
+  }
+);
+
 const boardSlice = createSlice({
   name: 'board',
   initialState,
   reducers: {
-    toggleLike(state, action) {
+    toggleLike(state, action) { // 좋아요 상태 토글>>>>
       const id = action.payload;
-      state.likedMap[id] = !state.likedMap[id]; // 좋아요 상태 토글
+      state.likedMap[id] = !state.likedMap[id]; 
     },
     deleteBoard(state, action) {
       const id = action.payload;

@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { usePosts } from '../dtboard/PostContext';
-import { selectBoardAuthors, selectBoards, selectPageBoardsMedia } from '../../store/BoardSlice';
+import { selectBoardAuthors, selectBoards, selectPageBoardsMedia, toggleLike, likeBoard } from '../../store/BoardSlice';
 import Avatar from '@mui/material/Avatar';
 import { Favorite, Visibility, Bookmark } from '@mui/icons-material';
 import { AuthContext } from '../login/OAuth'; // AuthContext 가져오기
@@ -27,6 +27,8 @@ const DetailBoard = () => {
   const authors = useSelector(selectBoardAuthors);
   const [isLoaded, setIsLoaded] = useState(false);
   const [lastCategory, setLastCategory] = useState(null);
+  const [liked, setLiked] = useState(false)
+  const dispatch = useDispatch();
 
   let decodedToken;
   if (token) {
@@ -35,7 +37,6 @@ const DetailBoard = () => {
 
   const board = boards.find(b => b.id === parseInt(id, 10)); // id를 정수형으로 변환
 
-  const [liked, setLiked] = useState(false);
   const [isScrapped, setIsScrapped] = useState(false);
   const { addScrap, checkScrap } = usePosts();
   const navigateToUserProfile = useToProfile();
@@ -74,13 +75,19 @@ const DetailBoard = () => {
     }
   }, [board, id, navigate, lastCategory]);
 
-  const handleAddComment = (e) => {
-    e.preventDefault();
-    // 댓글 추가 로직 구현
-  };
-
-  const handleLike = () => {
-    setLiked(!liked);
+  const handleLike = async () => {
+    if (!memberEmail) {
+      Swal.fire('로그인 후 이용가능합니다');
+      return;
+    }
+    try {
+      await dispatch(likeBoard({ boardId: board.id, userEmail: memberEmail })).unwrap();
+  
+      setLiked(prevLiked => !prevLiked); 
+  
+    } catch (error) {
+      Swal.fire('Oops! 잠시 후 다시 시도해 주세요.');
+    }
   };
 
   const handleScrap = () => {
@@ -181,16 +188,30 @@ useEffect(() => {
 }, [board, serverUrl, memberEmail, token]);
 
 const onScrapHandler = async () => {
-  const scrapMessage = await addScrap(serverUrl, memberEmail, id, board.title, token, window.location.href, 1 );
-  Swal.fire({
-    title: `${scrapMessage}!`,
-    icon: '',
-    showCancelButton: true,
-    confirmButtonColor: '#48088A',
-    confirmButtonText: '확인',
-    cancelButtonText: '취소',
-  })
-  setIsScrapped(!isScrapped);
+  if (!memberEmail) {
+    // 로그인하지 않은 상태에서 스크랩을 시도한 경우
+    Swal.fire('로그인 후 이용가능합니다');
+    return;
+  }
+
+  try {
+    // 스크랩 처리
+    const scrapMessage = await addScrap(serverUrl, memberEmail, id, board.title, token, window.location.href, 1);
+    
+    // 성공 메시지 및 상태 업데이트
+    Swal.fire({
+      title: `${scrapMessage}!`,
+      icon: '',
+      showCancelButton: true,
+      confirmButtonColor: '#48088A',
+      confirmButtonText: '확인',
+      cancelButtonText: '취소',
+    });
+    setIsScrapped(prevIsScrapped => !prevIsScrapped);
+  } catch (error) {
+    // 오류 처리
+    Swal.fire('Oops! 잠시 후 다시 시도해 주세요.');
+  }
 };
 
   if (!board) return <div>게시물을 찾을 수 없습니다.</div>;
