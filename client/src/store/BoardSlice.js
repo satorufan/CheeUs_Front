@@ -13,18 +13,32 @@ const initialState = {
 
 // 카테고리에 따른 게시물 목록을 가져오는 thunk
 export const fetchBoards = createAsyncThunk(
-    'board/fetchBoards',
-    async (category) => {
-      const urlMap = {
-        freeboard: 'http://localhost:8080/board/freeboard',
-        shortform: 'http://localhost:8080/board/shortform',
-        eventboard: 'http://localhost:8080/board/eventboard'
-      };
-      const response = await axios.get(urlMap[category]);
-      console.log(response);
-      return { category, data: response.data };
+  'board/fetchBoards',
+  async (category) => {
+    const urlMap = {
+      freeboard: 'http://localhost:8080/board/freeboard',
+      shortform: 'http://localhost:8080/board/shortform',
+      eventboard: 'http://localhost:8080/board/eventboard'
+    };
+    const response = await axios.get(urlMap[category]);
+    console.log(response);
+
+    let boardList, maxId;
+
+    if (category === 'shortform') {
+      // shortform일 경우에는 maxId를 처리하지 않음
+      boardList = response.data;
+      maxId = null; // maxId가 필요 없는 경우 null로 설정
+    } else {
+      // freeboard 또는 eventboard일 경우에는 maxId를 처리
+      boardList = response.data.boardList;
+      maxId = response.data.maxId;
     }
+
+    return { category, data: boardList, maxId };
+  }
 );
+
 
 // 이미지 및 영상 불러오기
 export const fetchBoardsMedia = createAsyncThunk(
@@ -144,6 +158,7 @@ const boardSlice = createSlice({
       .addCase(fetchBoards.fulfilled, (state, action) => {
         state.boards = action.payload.data; // 게시물 목록 업데이트
         state.filteredBoards = action.payload.data; // 초기 필터링된 게시물 목록 설정
+        state.maxId = action.payload.maxId || 0; // maxId 업데이트, null일 경우 0으로 설정
       })
       .addCase(fetchBoardsMedia.fulfilled, (state, action) => {
         state.perPageBoardsMedia = action.payload; // 게시물 사진 업데이트
@@ -198,5 +213,6 @@ export const selectBoardAuthors = (state) => state.board.boardsAuthors;
 export const selectFilteredBoards = (state) => state.board.filteredBoards;
 export const selectSearchQuery = (state) => state.board.searchQuery;
 export const selectLikedMap = (state) => state.board.likedMap;
+export const selectMaxId = (state) => state.board.maxId;
 
 export default boardSlice.reducer;

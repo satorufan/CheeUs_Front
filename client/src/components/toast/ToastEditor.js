@@ -6,8 +6,8 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../firebase/firebase";
 
 // 이미지 업로드 함수 정의
-const onUploadImage = async (blob, callback, uploadedImages, setUploadedImages) => {
-  const storageRef = ref(storage, `images/${blob.name}`);
+const onUploadImage = async (blob, callback, uploadedImages, setUploadedImages, category, postId) => {
+  const storageRef = ref(storage, `images/${category}/${postId}/${blob.name}`);
 
   try {
     // Firebase Storage에 이미지 업로드
@@ -23,7 +23,7 @@ const onUploadImage = async (blob, callback, uploadedImages, setUploadedImages) 
   }
 };
 
-const ToastEditor = forwardRef(({ content }, ref) => {
+const ToastEditor = forwardRef(({ content, category, postId }, ref) => {
   const editorRef = useRef(null);
   const [uploadedImages, setUploadedImages] = useState([]);
 
@@ -39,13 +39,12 @@ const ToastEditor = forwardRef(({ content }, ref) => {
       <Box sx={{ m: 2 }}>
         <Editor
           height="63vh"
-         //placeholder="내용을 입력해주세요."
           initialValue={content || ' '}
           ref={editorRef}
           previewStyle="vertical"
           initialEditType="wysiwyg"
           hooks={{
-            addImageBlobHook: (blob, callback) => onUploadImage(blob, callback, uploadedImages, setUploadedImages),
+            addImageBlobHook: (blob, callback) => onUploadImage(blob, callback, uploadedImages, setUploadedImages, category, postId),
           }}
           toolbarItems={[
             ["heading", "bold", "italic", "strike"],
