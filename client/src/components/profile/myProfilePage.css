@@ -125,7 +125,16 @@ table tbody tr {
     padding: 5px 20px;
     font-family: 'YeojuCeramic';
     border: solid 2px white;
-    margin-right: 12%;
+    /* margin-right: 12%; */
+    background-color: black;
+    color: white;
+}
+
+.delete-myprofile-btn {
+    padding: 5px 20px;
+    font-family: 'YeojuCeramic';
+    border: solid 2px white;
+    margin-right: 5%;
     background-color: black;
     color: white;
 }

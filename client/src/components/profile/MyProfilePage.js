@@ -9,7 +9,7 @@ import Swal from 'sweetalert2';
 import ProfileSkeleton from '../skeleton/ProfileSkeleton';
 
 const MyProfilePage = () => {
-    const { serverUrl, memberEmail, token } = useContext(AuthContext);
+    const { serverUrl, memberEmail, token, requestDeleteMember } = useContext(AuthContext);
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const userProfile = useSelector(selectUserProfile);
@@ -40,6 +40,10 @@ const MyProfilePage = () => {
         if (userProfile) {
             navigate(`/mypage/edit/${userProfile.profile.id}`);
         }
+    };
+
+    const handleDeleteProfile = () => {
+        requestDeleteMember();
     };
 
     const handleGoPost = (url) => {
@@ -135,6 +139,13 @@ const MyProfilePage = () => {
                     onClick={handleEditProfile}
                 >
                     내 정보 수정
+                </button>
+                <button
+                    type="button"
+                    className="btn btn-light delete-myprofile-btn"
+                    onClick={handleDeleteProfile}
+                >
+                    회원 탈퇴
                 </button>
             </div>
         </div>

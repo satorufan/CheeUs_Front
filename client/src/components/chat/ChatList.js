@@ -126,7 +126,7 @@ const ChatList = ({ selectedChat, handlePersonClick, handleExitChat, isTogether 
                                     <div className="d-flex align-items-center">
                                         {!isTogether && (
                                             <img
-                                                src={room.image}
+                                                src={room.image || `${process.env.PUBLIC_URL}/images/default-user-icon.png`}
                                                 alt={`${room.email}의 프로필`}
                                                 className="rounded-circle mr-3"
                                             />

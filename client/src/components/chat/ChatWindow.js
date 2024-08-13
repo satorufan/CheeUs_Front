@@ -93,6 +93,16 @@ const ChatWindow = ({
         try {
             const response = await axios.get(`${serverUrl}/match/chattingPersonal`, {
                 params: { email }
+            }).catch((err)=>{
+                if (err.response.data.message==="존재하지 않는 유저") {
+                    return {
+                        data : {
+                            email : email,
+                            imageType : null,
+                            nickname : "알 수 없음"
+                        }
+                    };
+                }
             });
             const profile = response.data;
             const profileData = {
@@ -169,7 +179,7 @@ const ChatWindow = ({
                                     style={{ zIndex: avatarsToShow.length - index }}
                                 >
                                     <img
-                                        src={member.image}
+                                        src={member.image || `${process.env.PUBLIC_URL}/images/default-user-icon.png`}
                                         alt={`member`}
                                         className="participant-img"
                                     />
@@ -195,7 +205,7 @@ const ChatWindow = ({
             <div className="d-flex align-items-center">
                 <div>
                 <img 
-                    src={selectedChat.image} 
+                    src={selectedChat.image || `${process.env.PUBLIC_URL}/images/default-user-icon.png`} 
                     alt={`Profile of ${selectedChat.nickname}`} 
                     className="profile-img rounded-circle" 
                     style={{ width: '40px', height: '40px', marginRight: '10px' }}
@@ -418,7 +428,7 @@ const ChatWindow = ({
                             {selectedChat.members.map((member, index) => (
                                 <li key={index} className="participant-modal-item">
                                     <img
-                                        src={member.image}
+                                        src={member.image || `${process.env.PUBLIC_URL}/images/default-user-icon.png`}
                                         alt={`Profile of`}
                                         className="participant-modal-img"
                                         onClick={() => navigateToUserProfile(member.email)}
