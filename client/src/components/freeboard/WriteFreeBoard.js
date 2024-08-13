@@ -26,7 +26,7 @@ const WriteFreeBoard = () => {
   const [nickname, setNickname] = useState('');
 
   // 파이어베이스 이미지 저장 경로 설정
-  const category = "eventboard";
+  const category = "freeboard";
   const postId = maxId+ 1; // maxId를 postId로 사용
 
   let decodedToken;
