@@ -132,7 +132,6 @@ const EventDetail = () => {
                 style={{ cursor: 'pointer' }}
               /> 
             </p>
-            <span className="event-detail-likes"><Favorite/>{data.like}</span>
             <span className="event-detail-views"><Visibility/>{data.views}</span>
           </div>
         </div>
