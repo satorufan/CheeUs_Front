@@ -55,6 +55,8 @@ const handleImageResize = (blob, maxWidth = 800) => {
 
 // 이미지 업로드 함수 정의
 const onUploadImage = async (blob, callback, uploadedImages, setUploadedImages, category, postId) => {
+  const storageRef = ref(storage, `images/${category}/${postId}/${blob.name}`);
+
   try {
     // 이미지 크기 조절 및 크롭 처리 (max-width: 800px 적용)
     const resizedBlob = await handleImageResize(blob);

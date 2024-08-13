@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchBoards, fetchBoardsAuthor, fetchBoardsMedia, selectBoards, selectPageBoardsMedia } from '../../store/BoardSlice';  // 수정 필요
+import { fetchBoards, fetchBoardsAuthor, fetchBoardsMedia, selectBoards, selectPageBoardsMedia, likeBoard } from '../../store/BoardSlice';  // 수정 필요
 import DetailBoard from '../board/DetailBoard';
 import Repl from '../board/Repl';
 import './detailShortForm.css';
