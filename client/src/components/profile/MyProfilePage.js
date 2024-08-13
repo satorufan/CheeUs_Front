@@ -50,6 +50,7 @@ const MyProfilePage = () => {
     const hasMyPosts = userProfile?.profile.myPost.length > 0;
 
     return (
+        <div className="myprofile-container-my">
         <div className="myprofile-container">
             <div className="user-profile-nickname">My Profile</div>
             <div className="userprofile-container">
@@ -77,16 +78,16 @@ const MyProfilePage = () => {
                                 <table>
                                     <thead>
                                         <tr>
-                                            <th width="30%">찜한 목록</th>
+                                            <th width="100%">찜한 목록</th>
                                             <th style={{ background: 'white' }}></th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {hasScrapPosts ? (
-                                            userProfile.profile.scrap.map(post => (
-                                                <tr key={post.id}>
-                                                    <td>{post.type}</td>
-                                                    <td onClick={() => handleGoPost(post.url)}>{post.title}</td>
+                                    {hasScrapPosts ? (
+                                            userProfile.profile.scrap.map((post, index) => (
+                                                <tr key={`${post.id}-${index}`}>
+                                                    <td className="table-type">{post.type}</td>
+                                                    <td className="table-title" onClick={() => handleGoPost(post.url)}>{post.title}</td>
                                                 </tr>
                                             ))
                                         ) : (
@@ -98,28 +99,30 @@ const MyProfilePage = () => {
                                 </table>
                             </div>
                             <div className="my-posts">
+                                <div classNma="my-posts-my">
                                 <table>
                                     <thead>
                                         <tr>
-                                            <th width="30%">내가 쓴 글</th>
+                                            <th width="100%">내가 쓴 글</th>
                                             <th style={{ background: 'white' }}></th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {hasMyPosts ? (
-                                            userProfile.profile.myPost.map(post => (
-                                                <tr key={post.id}>
-                                                    <td>{post.type}</td>
-                                                    <td onClick={() => handleGoPost(post.url)}>{post.title}</td>
-                                                </tr>
-                                            ))
-                                        ) : (
-                                            <tr>
-                                                <td colSpan="2">내 게시물이 없습니다.</td>
+                                    {hasMyPosts  ? (
+                                        userProfile.profile.myPost.map((post, index) => (
+                                            <tr key={`${post.id}-${index}`}>
+                                                <td className="table-type">{post.type}</td>
+                                                <td className="table-title" onClick={() => handleGoPost(post.url)}>{post.title}</td>
                                             </tr>
-                                        )}
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="2">찜한 목록이 없습니다.</td>
+                                        </tr>
+                                    )}
                                     </tbody>
                                 </table>
+                                </div>
                             </div>
                         </>
                     )}
@@ -134,6 +137,7 @@ const MyProfilePage = () => {
                     내 정보 수정
                 </button>
             </div>
+        </div>
         </div>
     );
 };
