@@ -15,6 +15,8 @@ import { AuthContext } from '../login/OAuth';
 import { selectUserProfile } from '../../store/ProfileSlice';
 import axios from 'axios';
 import { fetchTogetherChatRooms } from '../../store/ChatSlice';
+import useToProfile from '../../hooks/useToProfile';
+import UseAuthorImages from '../images/UseAuthorImage';
 
 const PostDetail = () => {
   const { id } = useParams();
@@ -29,13 +31,19 @@ const PostDetail = () => {
   const post = posts.find((post) => post.id === parseInt(id));
   const navigate = useNavigate();
   const userProfile = useSelector(selectUserProfile);
+  const navigateToUserProfile = useToProfile();
+  const authorImages = UseAuthorImages(posts);
+  const [loadedImages, setLoadedImages] = useState({});
+
   // 유저가 해당 게시글 채팅방에 참여중인지 확인
   const rooms = useSelector(state => state.chat.togetherChatRooms);
   const isJoined = rooms ?. filter(room => 
     room.roomId == id && room.members.map(member=>
     member.email == memberEmail)).length > 0 ? true : false;
 
-
+    const handleImageLoad = (authorId) => {
+      setLoadedImages(prevState => ({ ...prevState, [authorId]: true }));
+    };
 
   useEffect(() => {
     if (post) {
@@ -250,8 +258,6 @@ const PostDetail = () => {
    */
 
   if (!currentPost) return <div>Post not found</div>;
-
-  console.log("post.nickname", post.nickname)
   
   const onExitHandler = () => {
     navigate('/dtBoard');
@@ -290,7 +296,6 @@ const PostDetail = () => {
       }
     });
   };
-
   const onScrapHandler = async () => {
     const scrapMessage = await addScrap(serverUrl, memberEmail, id, post.title, token, window.location.href, 2 );
     Swal.fire({
@@ -352,10 +357,10 @@ const PostDetail = () => {
       <div className="dt-detail-left-box">
       <div className="profileContainer">
           <div className="profile1">
-            <img className="rounded-circle mr-3" onClick={() => navigate("/userprofile/"+authorInfo.email)} src={authorInfo ? authorInfo.image : profileImg} alt="Profile" style={{ width: '40px', height: '40px' }}/>
+            <img className="rounded-circle mr-3" onClick={()=>navigateToUserProfile(post.author_id)} src={authorImages[post.author_id]} alt="Profile" style={{ width: '40px', height: '40px' }}/>
           </div>
           <div className="profile2">
-            <a className = "DTprofileName" onClick={() => navigate("/userprofile/"+authorInfo.email)}>{post.nickname}</a>
+            <a className = "DTprofileName" onClick={()=>navigateToUserProfile(post.author_id)}>{post.nickname}</a>
           </div>
         </div>
         <div className="textareaHeader">
