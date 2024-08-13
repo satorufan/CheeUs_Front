@@ -23,7 +23,6 @@ function PostModify() {
   const [startDate, setStartDate] = useState(new Date());
   const [title, setTitle] = useState('');
   const [time, setTime] = useState(format(new Date(), ' yyyy.MM.dd HH:mm'));
-  const {memberEmail} = useContext(AuthContext); 
   const [nickname, setNickname] = useState('');
 
   // url 링크타면 그냥 와져서 이거 무조건 추가해야함
