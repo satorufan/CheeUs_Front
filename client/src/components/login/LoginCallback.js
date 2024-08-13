@@ -42,6 +42,10 @@ const LoginCallback = () => {
                 //없으면 에러 메시지와 함께, 회원가입 페이지로 이동
                 console.log(err.response.data.message);
                 if (err.response.data.message == "존재하지 않는 이메일입니다.") {
+                    const date = new Date();
+					date.setTime(date.getTime() + (5 * 60 * 1000)); // 현재 시간에 5분을 추가합니다.
+					const expires = `expires=${date.toUTCString()}`;
+					document.cookie = `${"Authorization"}=${token}; ${expires};`;
                     sweetalert("회원가입 페이지로 이동합니다.", '','','확인');
                     navigate('/signup');
                 }

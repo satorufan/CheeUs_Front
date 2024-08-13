@@ -30,6 +30,18 @@ function DTBInputForm() {
   const profiles = useSelector(selectProfiles);  
   const [nickname, setNickname] = useState('');
   
+  useEffect(()=>{
+    if (!memberEmail) {
+      Swal.fire({
+        title: `로그인 해주세요!`,
+        icon: '',
+        confirmButtonColor: '#48088A',
+        confirmButtonText: '확인',
+      }).then(()=>{
+          navigate('/');
+      })
+    }
+  }, [memberEmail])
   
   useEffect(() => {
     dispatch(fetchUserProfiles({ serverUrl, memberEmail }));

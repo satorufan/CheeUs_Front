@@ -348,6 +348,14 @@ const PostDetail = () => {
 
   };
 
+  if (!memberEmail) {
+    return (
+      <div className="permissionMessage" >
+          <div>로그인 후 이용할 수 있습니다.</div>
+      </div>
+    );
+  }
+
   if (!currentPost) return <div>로딩 중...</div>;
 
   return (
