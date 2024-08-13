@@ -26,7 +26,7 @@ const PostDetail = () => {
   // const [like, setLike] = useState(false);
   const [authorInfo, setAuthorInfo] = useState();
   const [isScrapped, setIsScrapped] = useState(false);
-  const { posts, setPosts, deletePost, addScrap, checkScrap, toggleLike } = usePosts();
+  const { posts, setPosts, deletePost, addScrap, checkScrap, userLiked, toggleLike } = usePosts();
   const [currentPost, setCurrentPost] = useState(null);
   const post = posts.find((post) => post.id === parseInt(id));
   const navigate = useNavigate();
@@ -44,6 +44,30 @@ const PostDetail = () => {
     const handleImageLoad = (authorId) => {
       setLoadedImages(prevState => ({ ...prevState, [authorId]: true }));
     };
+
+    useEffect(() => {
+      const checkUserLiked = async () => {
+          if (post) {
+              try {
+                  console.log("liked 테스트중-------------");
+                  const likedValue = await userLiked(serverUrl, post.id, memberEmail);
+                  console.log("값은", likedValue);
+                  
+                  setIsLiked(likedValue); // likedValue를 setIsLiked에 넣어 상태 업데이트
+              } catch (error) {
+                  console.error("Error checking if user liked the post:", error);
+              }
+          }
+      };
+  
+      checkUserLiked();
+  }, [post, serverUrl, memberEmail]); // 의존성 배열에 필요한 값들 추가
+  
+  useEffect(() => {
+      if (post) {
+          setCurrentPost(post);
+      }
+  }, [post]);
 
   useEffect(() => {
     if (post) {
@@ -70,6 +94,8 @@ const PostDetail = () => {
       incrementViewCount();
     }
   }, [serverUrl, token]);
+
+  
 
   /*
   // 게시글 정보를 가져오고 조회수를 증가시키는 useEffect
@@ -159,12 +185,7 @@ const PostDetail = () => {
   }, [post, serverUrl, token]);
 */
 
-    useEffect(() => {
-    if (post) {
-      setCurrentPost(post);
-      setIsLiked(post.isLiked);  // 추가된 부분
-    }
-  }, [post]);
+    
 
   /*
   useEffect(() => {

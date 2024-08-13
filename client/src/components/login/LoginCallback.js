@@ -22,6 +22,8 @@ const LoginCallback = () => {
 
     // 로그인 처리 및 유저 정보 찾기
     useEffect(()=>{
+        window.scrollTo(0, 0);
+        
         if (token) {
             axios.get(serverUrl + "/member/signIn", {
                 params : {

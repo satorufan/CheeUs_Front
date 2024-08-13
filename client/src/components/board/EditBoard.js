@@ -40,6 +40,14 @@ const extractImageUrls = (htmlContent) => {
     const [boardToEdit, setBoardToEdit] = useState(null);
     console.log(boards);
 
+    //파이어베이스 이미지 경로 설정
+    var categoryName = "";
+    if (category == 1) {
+      categoryName = "freeboard";
+    } else {
+      categoryName = "eventboard";
+    }
+
     let decodedToken;
     if (token) {
       decodedToken = jwtDecode(token);
@@ -70,20 +78,31 @@ const extractImageUrls = (htmlContent) => {
       }
     }, [id, boards]);
   
+    const board = boards.find(b => b.id === parseInt(id, 10));
+
     // 사용되지 않는 이미지 삭제 함수
     const deleteUnusedImages = async (currentContent) => {
       const usedImageUrls = extractImageUrls(currentContent);
+      const originalImageUrls = extractImageUrls(marked(board.content));
+
+      console.log("usedImage : " , usedImageUrls);
+      console.log("originalImage : " , originalImageUrls);
+
+      
       const uploadedImages = editorRef.current.getUploadedImages();
   
-      const unusedImages = uploadedImages.filter(url => !usedImageUrls.includes(url));
+      // 기존 컨텐츠에 있었으나 현재 컨텐츠에 없는 이미지를 삭제 대상으로 설정
+      const imagesToDelete = originalImageUrls.filter(url => !usedImageUrls.includes(url));
   
-      for (const url of unusedImages) {
-        const imageRef = ref(storage, url);
-        try {
-          await deleteObject(imageRef);
-          console.log(`Deleted unused image: ${url}`);
-        } catch (error) {
-          console.error(`Failed to delete unused image: ${url}`, error);
+      for (const url of imagesToDelete) {
+        if (!uploadedImages.includes(url)) { // 새로 추가된 이미지는 제외
+          const imageRef = ref(storage, url);
+          try {
+            await deleteObject(imageRef);
+            console.log(`Deleted unused image: ${url}`);
+          } catch (error) {
+            console.error(`Failed to delete unused image: ${url}`, error);
+          }
         }
       }
     };
@@ -92,29 +111,13 @@ const extractImageUrls = (htmlContent) => {
         if (title === '') return;
   
         const content = editorRef.current.getInstance().getMarkdown();
-        deleteUnusedImages(content);
         
-        const newHtmlContent = marked(content); // Markdown을 HTML로 변환
-        const newImageUrls = extractImageUrls(newHtmlContent);
-  
-        // 기존 HTML 컨텐츠에서 이미지 URL 추출
-        const oldHtmlContent = marked(boardToEdit.content);
-        const oldImageUrls = extractImageUrls(oldHtmlContent);
-  
-        // 삭제할 이미지 URL 추출
-        const imagesToDelete = oldImageUrls.filter(url => !newImageUrls.includes(url));
-  
-        // Firebase Storage에서 이미지 삭제
-        imagesToDelete.forEach(async (url) => {
-          const path = url.split('/o/')[1].split('?')[0]; // Firebase Storage 경로 추출
-          const imageRef = ref(storage, decodeURIComponent(path));
-          try {
-            await deleteObject(imageRef);
-            console.log(`Image deleted: ${url}`);
-          } catch (error) {
-            console.error(`Failed to delete image: ${url}`, error);
-          }
-        });
+        // 현재 컨텐츠의 HTML
+        const newHtmlContent = marked(content);
+
+        // 불필요한 이미지 삭제
+        await deleteUnusedImages(newHtmlContent);
+      
       
       const updatedBoard = {
         ...boardToEdit,
@@ -155,7 +158,7 @@ const extractImageUrls = (htmlContent) => {
         </div>
         <div className="contentContainer">
           <div className="mypageContainer">
-            <ToastEditor ref={editorRef} content={boardToEdit ? boardToEdit.content : ''} />
+            <ToastEditor ref={editorRef} category={`${categoryName}`} postId={id} />        
           </div>
         </div>
         <div className="bottomContainer">

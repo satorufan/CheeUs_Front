@@ -28,7 +28,7 @@ const DTBoardContent = ({ posts, totalPosts, postsPerPage, paginate, onWriteButt
           {posts.map((post) => (
             <div key={post.id} className="post">
               <div className="postClickArea" onClick={() => onPostClick(post.id)}>
-                <div className='post-img-nick' onClick={()=>navigateToUserProfile(post.author_id)}>
+                <div className='post-img-nick'>
                 <img
                     src={authorImages[post.author_id] || <Skeleton variant="circular" height={25} width={25} />}
                     alt="img"
@@ -39,11 +39,12 @@ const DTBoardContent = ({ posts, totalPosts, postsPerPage, paginate, onWriteButt
                       display: loadedImages[post.author_id] ? 'block' : 'none' 
                     }}
                     onLoad={() => handleImageLoad(post.author_id)}
+                    onClick={()=>navigateToUserProfile(post.author_id)}
                   />
                   {!loadedImages[post.author_id] && (
                     <Skeleton variant="circular" height={25} width={25} />
                   )}
-                  <div className="dt-post-nick">{post.nickname}</div>
+                  <div className="dt-post-nick" onClick={()=>navigateToUserProfile(post.author_id)}>{post.nickname}</div>
                 </div>
                 <div className='dtpostHeader'>
                   <div className="dtpost-title">{post.title}</div>

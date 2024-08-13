@@ -23,6 +23,8 @@ function PostModify() {
   const [startDate, setStartDate] = useState(new Date());
   const [title, setTitle] = useState('');
   const [time, setTime] = useState(format(new Date(), ' yyyy.MM.dd HH:mm'));
+  const {memberEmail} = useContext(AuthContext); 
+  const [nickname, setNickname] = useState('');
 
   // url 링크타면 그냥 와져서 이거 무조건 추가해야함
   useEffect(()=>{
@@ -67,7 +69,7 @@ function PostModify() {
   const onSubmitHandler = async () => {
     if (title === '') return;
     const content = editorRef.current.getInstance().getMarkdown(); // content를 getInstance().getMarkdown()으로 받아옴
-    modifyPost(id, title, content, time);
+    modifyPost(id, title, content, time, nickname, memberEmail);
     swal({
       title: "게시물이 수정되었습니다!",
       icon: "success",
