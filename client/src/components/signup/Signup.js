@@ -321,7 +321,7 @@ const validateName = (name) => {
     } else if (birth == null || birth.length != 8 || !/^\d*$/.test(birth) || !validateBirthdate(birth)) {
       sweetalert("생일을 정확히 입력해주세요!", '', '', '확인');
     } else if (calculateAge(birth) < 19) {
-      sweetalert("만 19세 이상만 사용 가능합니다.", '', '', '확인');
+      sweetalert("성인이 되면 만나요!", '', '', '확인');
           window.location.href = '/'; 
     } else if (tel == null || 
       tel.length != 11 || !/^\d*$/.test(tel)
