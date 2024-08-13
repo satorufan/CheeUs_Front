@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { BsArrowLeft } from 'react-icons/bs';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import ToastEditor from '../toast/ToastEditor';
-import { addBoard, selectMaxId} from '../../store/BoardSlice';
+import { addBoard, selectMaxId } from '../../store/BoardSlice';
 import { fetchUserProfile, selectUserProfile } from '../../store/ProfileSlice';
 import { AuthContext } from '../login/OAuth'; 
 import swal from 'sweetalert';
@@ -170,7 +170,7 @@ const WriteFreeBoard = () => {
       </div>
       <div className="contentContainer">
         <div className="mypageContainer">
-          <ToastEditor ref={editorRef} category={`${category}`} postId={postId} />
+          <ToastEditor ref={editorRef} category={`${category}`} postId={postId} />        
         </div>
       </div>
       <div className="bottomContainer">
