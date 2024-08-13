@@ -39,9 +39,11 @@ const Recommend = () => {
     // 데이터 로딩 완료 전 대기
     if (!magazines) {
       return (
-        <div>로딩중...
-          <div>
-            <Spinner animation="border" variant="dark" />
+        <div className="permissionMessage">
+          <div>로딩중...
+            <div>
+              <Spinner animation="border" variant="dark" />
+            </div>
           </div>
         </div>
       );

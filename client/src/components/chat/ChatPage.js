@@ -156,6 +156,14 @@ const ChatPage = () => {
             console.error('Error sending message:', error);
         }
     };
+
+    if (!loggedInUserId) {
+        return (
+            <div className="permissionMessage" >
+                <div>로그인 후 이용할 수 있습니다.</div>
+            </div>
+        );
+    }
     
     const formatMessageTime = (writeDay) => {
         const date = new Date(writeDay);

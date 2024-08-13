@@ -137,12 +137,13 @@ function Repl({ boardId }) {
     };
 
     const renderComments = (comments) => {
+        
         return comments
             .filter(comment => comment.group === 1)
             .map(comment => (
                 <div key={comment.id} className="comment-container">
                     <div className="detail-comment">
-                        <div className="comment-user-info">
+                        <div className="comment-user-info" onClick={() => navigateToUserProfile(comment.repl_author_id)}>
                             {loadingImages ? (
                                 <div className="skeleton skeleton-small" />
                             ) : (
@@ -150,7 +151,6 @@ function Repl({ boardId }) {
                                     src={authorImg[comment.repl_author_id]}
                                     alt="Profile"
                                     className="reply-profile-pic"
-                                    onClick={() => navigateToUserProfile(comment.repl_author_id)}
                                 />
                             )}
                             <span className="reply-nickname">{comment.nickname}</span>

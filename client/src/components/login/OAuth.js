@@ -115,6 +115,27 @@ const AuthProvider = ({ children }) => {
 		window.location.href = serverUrl+"/logout";
 	}
 
+	//회원탈퇴
+	const requestDeleteMember = () => {
+		if (token !== '') {
+			const formData = new FormData();
+			formData.append("email", memberEmail);
+			axios.post(`${serverUrl}/member/delete`, formData, {
+				headers : {
+					'Authorization' : `Bearer ${token}`
+				},
+				withCredentials : true
+			}).then((res)=>{
+				Swal.fire({
+					title: `<span style="font-weight: 300;">${res.data}</span>`, // font-weight 조정
+					confirmButtonText: '확인',
+				}).then(()=>{
+					requestSignOut();
+				});
+			})
+		}
+	}
+
 	//쿠키에서 JWT 토큰 불러오기.
 	const getJwtToken = () => {
 		const cookies = document.cookie.split('; ');
@@ -136,7 +157,8 @@ const AuthProvider = ({ children }) => {
 		setToken, 
 		getJwtToken, 
 		requestSignIn,
-		requestSignOut
+		requestSignOut,
+		requestDeleteMember
 		}}>
 		{children}
 	</AuthContext.Provider>

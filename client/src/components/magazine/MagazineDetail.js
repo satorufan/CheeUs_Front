@@ -61,9 +61,11 @@ const MagazineDetail = () => {
 
   if (!data) {
     return (
-      <div>로딩중...
-        <div>
-          <Spinner animation="border" variant="dark" />
+      <div className="permissionMessage">
+        <div>로딩중...
+          <div>
+            <Spinner animation="border" variant="dark" />
+          </div>
         </div>
       </div>
     );

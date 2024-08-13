@@ -62,7 +62,8 @@ export const fetchBoardsAuthor = createAsyncThunk(
     const encodedParameter = encodeURIComponent(JSON.stringify(parameter));
     const response = await axios.get('http://localhost:8080/match/loadBoardAuthor', {
       params : {emails : encodedParameter}
-    });
+    })
+    console.log(response);
     const mediaMap = response.data.reduce((acc, data) => {
       // acc[data.email] = "data:" + data.imageType + ";base64," + data.imageBlob;
       acc[data.email] = data.imageType;

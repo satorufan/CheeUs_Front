@@ -12,6 +12,7 @@ import { removeUserFromTogetherChatRoom, fetchTogetherChatRooms } from '../../st
 import ReportModal from '../app/ReportModal';
 import axios from 'axios';
 import { useToast } from '../app/ToastProvider';
+import useToProfile from '../../hooks/useToProfile';
 
 const ChatWindow = ({
     selectedChat,
@@ -33,6 +34,7 @@ const ChatWindow = ({
     const [showParticipants, setShowParticipants] = useState(false);
     const [participants, setParticipants] = useState([]);   // 현재 참여자
     const [profileData, setProfileData] = useState([]); // 프로필 정보 캐시
+    const navigateToUserProfile = useToProfile();
 
     const { toggleNotifications, isNotificationsEnabled } = useToast();
 
@@ -93,6 +95,16 @@ const ChatWindow = ({
         try {
             const response = await axios.get(`${serverUrl}/match/chattingPersonal`, {
                 params: { email }
+            }).catch((err)=>{
+                if (err.response.data.message==="존재하지 않는 유저") {
+                    return {
+                        data : {
+                            email : email,
+                            imageType : null,
+                            nickname : "알 수 없음"
+                        }
+                    };
+                }
             });
             const profile = response.data;
             const profileData = {
@@ -169,7 +181,7 @@ const ChatWindow = ({
                                     style={{ zIndex: avatarsToShow.length - index }}
                                 >
                                     <img
-                                        src={member.image}
+                                        src={member.image || `${process.env.PUBLIC_URL}/images/default-user-icon.png`}
                                         alt={`member`}
                                         className="participant-img"
                                     />
@@ -195,13 +207,13 @@ const ChatWindow = ({
             <div className="d-flex align-items-center">
                 <div>
                 <img 
-                    src={selectedChat.image} 
+                    src={selectedChat.image || `${process.env.PUBLIC_URL}/images/default-user-icon.png`} 
                     alt={`Profile of ${selectedChat.nickname}`} 
                     className="profile-img rounded-circle" 
                     style={{ width: '40px', height: '40px', marginRight: '10px' }}
-                    onClick={() => navigateToUserProfile(selectedChat.id)}
+                    onClick={() => navigateToUserProfile(selectedChat.member1 === memberEmail ? selectedChat.member2 : selectedChat.member1)}
                 />
-                <span onClick={() => navigateToUserProfile(selectedChat.id)}>{selectedChat.nickname}</span> 
+                <span onClick={() => navigateToUserProfile(selectedChat.member1 === memberEmail ? selectedChat.member2 : selectedChat.member1)}>{selectedChat.nickname}</span> 
                 </div>
             </div>
             <div>
@@ -233,16 +245,6 @@ const ChatWindow = ({
 
     const toggleParticipants = () => {
         setShowParticipants(!showParticipants);
-    };
-
-
-    // id로 이동하도록 바꿔야함
-    const navigateToUserProfile = (email) => {
-        if (email) {
-            navigate(`/userprofile/${email}`);
-        } else {
-            console.error('User ID not found for email:', email);
-        }
     };
 
     const getChatBubbleClasses = (senderId) => {
@@ -418,7 +420,7 @@ const ChatWindow = ({
                             {selectedChat.members.map((member, index) => (
                                 <li key={index} className="participant-modal-item">
                                     <img
-                                        src={member.image}
+                                        src={member.image || `${process.env.PUBLIC_URL}/images/default-user-icon.png`}
                                         alt={`Profile of`}
                                         className="participant-modal-img"
                                         onClick={() => navigateToUserProfile(member.email)}
