@@ -16,7 +16,7 @@ import rehypeRaw from 'rehype-raw';
 import { ref, deleteObject } from 'firebase/storage';
 import { storage } from '../firebase/firebase'; // Firebase 저장소 가져오기
 import BoardDetailSkeleton from '../skeleton/BoardDetailSkeleton';
-import CryptoJS from 'crypto-js';
+import useToProfile from '../../hooks/useToProfile';
 
 const DetailBoard = () => {
   const { id } = useParams();
@@ -38,6 +38,7 @@ const DetailBoard = () => {
   const [liked, setLiked] = useState(false);
   const [isScrapped, setIsScrapped] = useState(false);
   const { addScrap, checkScrap } = usePosts();
+  const navigateToUserProfile = useToProfile();
 
   useEffect(()=>{
     if(board.category == 2 && authors && Object.keys(authors).length > 0 && Object.keys(medias).length > 0) {
@@ -72,24 +73,6 @@ const DetailBoard = () => {
       navigate(path);
     }
   }, [board, id, navigate, lastCategory]);
-
-  /*
- useEffect(() => {
-   if (!board) {
-     return;
-   }
-
-   // 게시물 카테고리에 따라 경로 변경
-   if (board.category === 1) {
-     navigate(`/board/freeboard/detail/${id}`);
-   } else if (board.category === 2) {
-     navigate(`/board/shortform/detail/${id}`);
-   } else if (board.category === 3) {
-     navigate(`/board/eventboard/detail/${id}`);
-   }
-
- }, [board, id, navigate, decodedToken]);
-*/
 
   const handleAddComment = (e) => {
     e.preventDefault();
@@ -183,52 +166,10 @@ const DetailBoard = () => {
     });
   };
 
-/*
-  const handleDelete = () => {
-    Swal.fire({
-      title: '정말로 삭제하시겠습니까?',
-      text: '이 작업은 되돌릴 수 없습니다!',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: 'black',
-      cancelButtonColor: '#darkgray',
-      confirmButtonText: '삭제',
-      cancelButtonText: '취소'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // 삭제 로직 구현 
-        console.log('게시물이 삭제되었습니다.');
-      }
-    });
-  };
-*/
-
-const encodeUserInfo = (email) => {
-  const secretKey = CryptoJS.enc.Utf8.parse(process.env.REACT_APP_secretKey); 
-  const iv = CryptoJS.lib.WordArray.random(16); // 랜덤 IV 생성
-  const encryptedData = CryptoJS.AES.encrypt(JSON.stringify(email), secretKey, { iv: iv }).toString();
-  const urlSafeEncryptedData = encryptedData.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-  const encryptedPayload = {
-    iv: iv.toString(CryptoJS.enc.Base64),
-    email: urlSafeEncryptedData,
-  };
-  return encryptedPayload;
-}
-
-const navigateToUserProfile = (email) => {
-  if (email) {
-    console.log(encodeUserInfo(email));
-    navigate(`/userprofile/${encodeUserInfo(email).email}`, {state: encodeUserInfo(email)});
-  } else {
-    console.error('User ID not found for email:', email);
-  }
-};
-
 useEffect(() => {
   const fetchData = async () => {
     if (board) {
         try {
-            // Check if post is scrapped
             const isPostScrapped = await checkScrap(serverUrl, memberEmail, board.id, token, 1);
             setIsScrapped(isPostScrapped);
         } catch (error) {
@@ -265,7 +206,7 @@ const onScrapHandler = async () => {
             className="detail-avatar"
             onClick={()=>navigateToUserProfile(board.author_id)}
           />
-          <div className="detail-author">{board.nickname}</div>
+          <div className="detail-author" onClick={()=>navigateToUserProfile(board.author_id)}>{board.nickname}</div>
         </div>
         <div className="detail-title-container">
           <div className="detail-title">{board.title}</div>
@@ -296,11 +237,6 @@ const onScrapHandler = async () => {
               >
               {board.content}
             </ReactMarkdown>
-              {/* {board.photoes && (
-                <div className="detail-image-container">
-                  <img className="detail-image" src={board.photoes} alt={board.title} />
-                </div>
-              )} */}
             </>
           )}
         </div>
@@ -328,7 +264,6 @@ const onScrapHandler = async () => {
           </div>
         </div>
         <div className="detail-edit-container">
-          {/* 로그인 사용자와 작성자가 같을 경우 수정 버튼 표시 나중에 주석처리 한걸로 수정하기*/}
           {decodedToken && (decodedToken.email === board.author_id ) && (
             <>
               {board.category === 1 && (
@@ -365,44 +300,6 @@ const onScrapHandler = async () => {
               </button>
             </>
           )}
-          {/*
-          {true && (
-            <>
-              {board.category === 1 && (
-                <button
-                  onClick={() => navigate(`/board/freeboard/edit/${id}`)}
-                  className="detail-edit-btn"
-                >
-                  수정하기
-                </button>
-              )}
-
-              {board.category === 2 && (
-                <button
-                  onClick={() => navigate(`/board/shortform/edit/${id}`)}
-                  className="detail-edit-btn"
-                >
-                  수정하기
-                </button>
-              )}
-
-              {board.category === 3 && (
-                <button
-                  onClick={() => navigate(`/board/event/edit/${id}`)}
-                  className="detail-edit-btn"
-                >
-                  수정하기
-                </button>
-              )}
-              <button
-                onClick={handleDelete}
-                className="detail-edit-btn"
-              >
-                삭제하기
-              </button>
-            </>
-          )}
-            */}
         </div>
       </div>) : <BoardDetailSkeleton />}
     </div>

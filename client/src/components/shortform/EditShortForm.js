@@ -12,7 +12,24 @@ import { Form } from 'react-bootstrap';
 import { fetchUserProfile, selectUserProfile } from '../../store/ProfileSlice';
 import BoardDetailTop from '../board/BoardDetailTop';
 import Spinner from 'react-bootstrap/Spinner';
+import { storage } from "../firebase/firebase";
+import { marked } from 'marked'; 
+import { ref, deleteObject } from 'firebase/storage';
 
+// 이미지 URL 추출 함수
+const extractImageUrls = (htmlContent) => {
+  const urls = [];
+  const imgTags = htmlContent.match(/<img[^>]+src="([^">]+)"/g);
+  if (imgTags) {
+    imgTags.forEach((imgTag) => {
+      const match = imgTag.match(/src="([^">]+)"/);
+      if (match) {
+        urls.push(match[1]);
+      }
+    });
+  }
+  return urls;
+};
 function EditShortForm() {
   const { id } = useParams();
   const [title, setTitle] = useState('');
@@ -39,11 +56,39 @@ function EditShortForm() {
       if (board) {
         setBoardToEdit(board); // 기존 게시물 정보 설정
         setTitle(board.title);
-        setContent(board.content);
-        setVideoUrl(board.videoUrl);
+        setContent(board.content)
+        setVideoUrl(board.media);
+
+        console.log('기존 파일 정보:', board.media); // 기존 파일 URL 출력
+        console.log('기존 콘텐츠:', board.content); // 기존 콘텐츠 출력
+        console.log('기존 콘텐츠:', board.title); // 기존 콘텐츠 출력
       }
     }
   }, [id, boards]);
+
+  useEffect(() => {
+    if (editorRef.current) {
+      editorRef.current.getInstance().setMarkdown(content || '');
+    }
+  }, [content]);
+
+      // 사용되지 않는 이미지 삭제 함수
+      const deleteUnusedImages = async (currentContent) => {
+        const usedImageUrls = extractImageUrls(currentContent);
+        const uploadedImages = editorRef.current.getUploadedImages();
+    
+        const unusedImages = uploadedImages.filter(url => !usedImageUrls.includes(url));
+    
+        for (const url of unusedImages) {
+          const imageRef = ref(storage, url);
+          try {
+            await deleteObject(imageRef);
+            console.log(`Deleted unused image: ${url}`);
+          } catch (error) {
+            console.error(`Failed to delete unused image: ${url}`, error);
+          }
+        }
+      };
 
   useEffect(() => {
     if (!userProfile) {
@@ -66,6 +111,9 @@ function EditShortForm() {
   const onSubmitHandler = async () => {
     if (title === '') return;
 
+    const content = editorRef.current.getInstance().getMarkdown();
+    deleteUnusedImages(content);
+
     let updatedFileUrl = '';
     if (file) {
       console.log('업로드된 파일:', file);
@@ -78,8 +126,31 @@ function EditShortForm() {
       content,
       videoUrl: updatedFileUrl || videoUrl, // 파일이 업데이트되지 않으면 기존의 videoUrl 사용
     };
+    dispatch(updateBoard(updatedBoard));
 
     console.log('업데이트될 게시물 정보:', updatedBoard);
+
+    const newHtmlContent = marked(content); // Markdown을 HTML로 변환
+    const newImageUrls = extractImageUrls(newHtmlContent);
+
+    // 기존 HTML 컨텐츠에서 이미지 URL 추출
+    const oldHtmlContent = marked(boardToEdit.content);
+    const oldImageUrls = extractImageUrls(oldHtmlContent);
+
+    // 삭제할 이미지 URL 추출
+    const imagesToDelete = oldImageUrls.filter(url => !newImageUrls.includes(url));
+
+    // Firebase Storage에서 이미지 삭제
+    imagesToDelete.forEach(async (url) => {
+      const path = url.split('/o/')[1].split('?')[0]; // Firebase Storage 경로 추출
+      const imageRef = ref(storage, decodeURIComponent(path));
+      try {
+        await deleteObject(imageRef);
+        console.log(`Image deleted: ${url}`);
+      } catch (error) {
+        console.error(`Failed to delete image: ${url}`, error);
+      }
+    });
 
     swal({
       title: '게시물을 수정하시겠습니까?',
@@ -110,8 +181,10 @@ function EditShortForm() {
   };
 
   const onChangeContentHandler = () => {
-    const newContent = editorRef.current.getInstance().getMarkdown();
-    setContent(newContent); // content 상태 업데이트
+    if (editorRef.current) {
+      const newContent = editorRef.current.getInstance().getMarkdown();
+      setContent(newContent); 
+    }
   };
 
   const onFileChangeHandler = (e) => {
@@ -144,7 +217,11 @@ function EditShortForm() {
       </div>
       <div className="shortform-write-container">
         <div className="shortform-write-editor">
-          <ToastEditor ref={editorRef} initialValue={content} onChangeContent={onChangeContentHandler} />
+        <ToastEditor 
+          ref={editorRef} 
+          initialValue={content || ''}
+          onChange={() => onChangeContentHandler()}
+        />
         </div>
         <div className="shortform-write-upload">
           <Form.Group controlId="formFile" className="mb-3">
