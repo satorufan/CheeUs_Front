@@ -6,6 +6,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../firebase/firebase";
 import Cropper from 'cropperjs';
 import 'cropperjs/dist/cropper.css';
+import './ToastEditor.css'
 
 // 이미지 리사이즈 및 크롭 함수 정의
 const handleImageResize = (blob, maxWidth = 800) => {
