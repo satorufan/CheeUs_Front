@@ -211,9 +211,9 @@ const ChatWindow = ({
                     alt={`Profile of ${selectedChat.nickname}`} 
                     className="profile-img rounded-circle" 
                     style={{ width: '40px', height: '40px', marginRight: '10px' }}
-                    onClick={() => navigateToUserProfile(selectedChat.id)}
+                    onClick={() => navigateToUserProfile(selectedChat.member1 === memberEmail ? selectedChat.member2 : selectedChat.member1)}
                 />
-                <span onClick={() => navigateToUserProfile(selectedChat.id)}>{selectedChat.nickname}</span> 
+                <span onClick={() => navigateToUserProfile(selectedChat.member1 === memberEmail ? selectedChat.member2 : selectedChat.member1)}>{selectedChat.nickname}</span> 
                 </div>
             </div>
             <div>
