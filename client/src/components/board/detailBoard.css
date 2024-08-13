@@ -35,6 +35,10 @@
     font-size: 2rem;
     color: #333;
     font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;        
+    text-overflow: ellipsis;  
+    width : 80%; 
 }
 
 .detail-writeday {

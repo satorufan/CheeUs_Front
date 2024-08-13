@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchChatRooms, fetchTogetherChatRooms } from '../../store/ChatSlice';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import ChatListSkeleton from '../skeleton/ChtListSkeleton';
+import useToProfile from '../../hooks/useToProfile';
 
 const ChatList = ({ selectedChat, handlePersonClick, handleExitChat, isTogether }) => {
     const { token, serverUrl } = useContext(AuthContext);
@@ -17,7 +18,8 @@ const ChatList = ({ selectedChat, handlePersonClick, handleExitChat, isTogether 
     const updatedTogetherChatRooms = useSelector(state => state.chat.togetherChatRooms);
     const status = useSelector(state => state.chat.status);
     const error = useSelector(state => state.chat.error);
-
+    const navigateToUserProfile = useToProfile();
+    
     useEffect(() => {
         if (token) {
             try {
@@ -84,8 +86,7 @@ const ChatList = ({ selectedChat, handlePersonClick, handleExitChat, isTogether 
         }
         return lastMessage.read === 0 && lastMessage.sender_id !== loggedInUserId;
     };
-    
-    
+  
 
     const isError = status === 'failed';
     const isSuccess = status === 'succeeded';
@@ -123,7 +124,7 @@ const ChatList = ({ selectedChat, handlePersonClick, handleExitChat, isTogether 
                                 onClick={() => handlePersonClick(room.roomId)}
                             >
                                 <div className="d-flex align-items-center justify-content-between">
-                                    <div className="d-flex align-items-center">
+                                    <div className="d-flex align-items-center" onClick={()=>navigateToUserProfile(room.email)}>
                                         {!isTogether && (
                                             <img
                                                 src={room.image}

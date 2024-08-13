@@ -12,6 +12,7 @@ import { removeUserFromTogetherChatRoom, fetchTogetherChatRooms } from '../../st
 import ReportModal from '../app/ReportModal';
 import axios from 'axios';
 import { useToast } from '../app/ToastProvider';
+import useToProfile from '../../hooks/useToProfile';
 
 const ChatWindow = ({
     selectedChat,
@@ -33,6 +34,7 @@ const ChatWindow = ({
     const [showParticipants, setShowParticipants] = useState(false);
     const [participants, setParticipants] = useState([]);   // 현재 참여자
     const [profileData, setProfileData] = useState([]); // 프로필 정보 캐시
+    const navigateToUserProfile = useToProfile();
 
     const { toggleNotifications, isNotificationsEnabled } = useToast();
 
@@ -233,16 +235,6 @@ const ChatWindow = ({
 
     const toggleParticipants = () => {
         setShowParticipants(!showParticipants);
-    };
-
-
-    // id로 이동하도록 바꿔야함
-    const navigateToUserProfile = (email) => {
-        if (email) {
-            navigate(`/userprofile/${email}`);
-        } else {
-            console.error('User ID not found for email:', email);
-        }
     };
 
     const getChatBubbleClasses = (senderId) => {

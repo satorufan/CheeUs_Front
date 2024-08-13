@@ -16,7 +16,7 @@ import rehypeRaw from 'rehype-raw';
 import { ref, deleteObject } from 'firebase/storage';
 import { storage } from '../firebase/firebase'; // Firebase 저장소 가져오기
 import BoardDetailSkeleton from '../skeleton/BoardDetailSkeleton';
-import CryptoJS from 'crypto-js';
+import useToProfile from '../../hooks/useToProfile';
 
 const DetailBoard = () => {
   const { id } = useParams();
@@ -38,6 +38,7 @@ const DetailBoard = () => {
   const [liked, setLiked] = useState(false);
   const [isScrapped, setIsScrapped] = useState(false);
   const { addScrap, checkScrap } = usePosts();
+  const navigateToUserProfile = useToProfile();
 
   useEffect(()=>{
     if(board.category == 2 && authors && Object.keys(authors).length > 0 && Object.keys(medias).length > 0) {
@@ -165,32 +166,10 @@ const DetailBoard = () => {
     });
   };
 
-const encodeUserInfo = (email) => {
-  const secretKey = CryptoJS.enc.Utf8.parse(process.env.REACT_APP_secretKey); 
-  const iv = CryptoJS.lib.WordArray.random(16); // 랜덤 IV 생성
-  const encryptedData = CryptoJS.AES.encrypt(JSON.stringify(email), secretKey, { iv: iv }).toString();
-  const urlSafeEncryptedData = encryptedData.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-  const encryptedPayload = {
-    iv: iv.toString(CryptoJS.enc.Base64),
-    email: urlSafeEncryptedData,
-  };
-  return encryptedPayload;
-}
-
-const navigateToUserProfile = (email) => {
-  if (email) {
-    console.log(encodeUserInfo(email));
-    navigate(`/userprofile/${encodeUserInfo(email).email}`, {state: encodeUserInfo(email)});
-  } else {
-    console.error('User ID not found for email:', email);
-  }
-};
-
 useEffect(() => {
   const fetchData = async () => {
     if (board) {
         try {
-            // Check if post is scrapped
             const isPostScrapped = await checkScrap(serverUrl, memberEmail, board.id, token, 1);
             setIsScrapped(isPostScrapped);
         } catch (error) {
