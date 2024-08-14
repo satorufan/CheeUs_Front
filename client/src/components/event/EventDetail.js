@@ -49,19 +49,6 @@ const EventDetail = () => {
     }
   };
 
-  /*
-  const handleLikeClick = async () => {
-    if (data) {
-      try {
-        await toggleLike(serverUrl, data.id, token);
-        setLiked(!liked); 
-        setLikeCount(liked ? likeCount - 1 : likeCount + 1); // 좋아요 카운트 업데이트
-      } catch (error) {
-        console.error('좋아요 토글 에러:', error);
-      }
-    }
-  };
-*/
 
   useEffect(() => {
     const fetchData = async () => {

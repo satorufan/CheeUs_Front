@@ -66,64 +66,6 @@ export const EventProvider = ({ children }) => {
     }
   };
 
-  /*
-  const toggleLike = async (serverUrl, postId, token, memberEmail) => {
-    try {
-      const response = await axios.put(
-          `${serverUrl}/dtBoard/toggleLike/${postId}`,
-          {},
-          {
-            params: { postId, memberEmail },
-            withCredentials: true,
-          }
-      );
-      console.log(">>>>>>>",response);
-      console.log(">>>>>>>>>>>",response.data);
-      console.log(">>>>>>>>>>>>>>>",JSON.stringify(response.data, null, 2));
-      if (response.data.success) {
-        setEvents((prevEvents) =>
-            prevEvents.map((event) =>
-                event.id === postId
-                    ? { ...event, like: response.data.updatedLikeCount, isLiked: response.data.isLiked }
-                    : event
-            )
-        );
-        return { updatedLikeCount: response.data.updatedLikeCount, isLiked: response.data.isLiked };
-      }
-      throw new Error('Toggle like failed');
-    } catch (error) {
-      console.error('좋아요 토글에서 에러남 ', error);
-      throw error;
-    }
-  };
-*/
-  /*
-  const toggleLike = async (serverUrl, postId, token) => {
-    try {
-      const response = await axios.put(
-        `${serverUrl}/Event/toggleLike/${postId}`,
-          {},
-          {
-            headers: {
-            "Authorization": `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
-      );
-      if (response.data.success) {
-        setEvents((prevEvents) =>
-          prevEvents.event.map((event) =>
-            event.id === postId
-              ? { ...event, like: response.data.updatedLikeCount }
-              : event
-          )
-        );
-      }
-    } catch (error) {
-      console.error('좋아요 토글에서 에러남', error);
-    }
-  };
-   */
 
   return (
     <EventContext.Provider value={{ events, setEvents, toggleLike }}>
