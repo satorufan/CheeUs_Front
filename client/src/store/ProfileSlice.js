@@ -57,7 +57,6 @@ export const fetchUserProfile = createAsyncThunk(
                 },
                 imageBlob : imageBlob
             };
-            console.log(profile)
             return profile; // 프로필 데이터 반환
         }
     }

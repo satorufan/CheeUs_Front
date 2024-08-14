@@ -120,8 +120,21 @@ function Repl({ boardId }) {
     };
 
     const handleDeleteComment = async (commentId) => {
-        await dispatch(deleteComment(commentId));
-        dispatch(fetchComments(boardId));
+        Swal.fire({
+            title: '정말로 삭제하시겠습니까?',
+            text: '이 작업은 되돌릴 수 없습니다!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: 'black',
+            cancelButtonColor: '#darkgray',
+            confirmButtonText: '삭제',
+            cancelButtonText: '취소'
+          }).then(async(result) => {
+            if (result.isConfirmed) {
+                await dispatch(deleteComment(commentId));
+                dispatch(fetchComments(boardId));
+            }
+          });
     };
 
     const handleDeleteReply = async (replyId) => {

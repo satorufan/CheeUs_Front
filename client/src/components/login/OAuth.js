@@ -47,7 +47,6 @@ const AuthProvider = ({ children }) => {
 				},
 				withCredentials : true
 			}).then((res)=>{
-				console.log(res);
 				setEmail(jwtDecode(loadToken).email);
 			}).catch((err)=>{
 				console.log(err);
