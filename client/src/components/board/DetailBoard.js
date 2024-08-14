@@ -81,7 +81,7 @@ const DetailBoard = () => {
       return;
     }
     try {
-      await dispatch(likeBoard({ boardId: board.id, userEmail: memberEmail })).unwrap();
+      await dispatch(likeBoard({ id: board.id, userEmail: memberEmail })).unwrap();
   
       setLiked(prevLiked => !prevLiked); 
   
@@ -263,24 +263,24 @@ const onScrapHandler = async () => {
         </div>
         <div className="detail-board-info">
           <div className="left-info">
-              <p>
-                <Bookmark 
-                  color={isScrapped ? 'primary' : 'action'} 
-                  onClick={onScrapHandler}
-                  style={{ cursor: 'pointer' }}
-                /> 
-              </p>
-              <p>
+          </div>
+          <div className="right-info">
+            <p>
                 <Favorite 
                   color={liked ? 'error' : 'action'} 
                   onClick={handleLike}
                 /> 
                 {liked ? board.like + 1 : board.like}
-              </p>
-          </div>
-          <div className="right-info">
+            </p>
+			<p>
+                <Bookmark 
+                  color={isScrapped ? 'primary' : 'action'} 
+                  onClick={onScrapHandler}
+                  style={{ cursor: 'pointer' }}
+                /> 
+            </p>
             <p>
-              <Visibility /> {board.views}
+              <Visibility/>{board.views}
             </p>
           </div>
         </div>

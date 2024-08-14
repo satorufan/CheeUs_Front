@@ -44,7 +44,7 @@
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     height: 80vh;
-    white-space: pre-wrap; /* 줄바꿈을 유지하도록 설정 */
+    white-space: pre-wrap; 
     overflow-wrap: break-word;
     overflow-y: auto;
 }
@@ -76,24 +76,29 @@
   overflow-wrap: break-word;
 }
 
+.nick-avature{
+    display: flex;
+    align-items: center; 
+}
 .card-content {
     display: flex;
-    gap: 1rem;
-    align-items: center;
+    justify-content: space-between;
+    align-items: center; 
     padding: 0;
     margin-bottom: 0;
     font-family: 'GwangyangTouching';
 }
-
 .card-avatar {
     --Avatar-size: 2rem;
+    margin-right: 10px;
 }
 
-.card-icons-container {
+.card-icons-container-list {
     display: flex;
     gap: 0.5rem;
     cursor: pointer;
     white-space: nowrap;
+    justify-content: flex-end;
 }
 
 .card-icon {

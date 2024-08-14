@@ -65,6 +65,9 @@
 .contentBox{
 	height: 100%;
 }
+.content{
+	font-size: 20px !important;
+}
 .dt-input-mypage-box {
   flex: 1;
   padding: 10px;
@@ -199,6 +202,13 @@
   border: 1px solid #ccc;
   border-radius: 5px;
   background: rgba(255, 255, 255, 0.7);
+  width: 10rem;
+}
+
+@media (max-width: 768px) {
+  .map-search-box input{
+      width: 5rem; 
+  }
 }
 
 .map-search-box button {
