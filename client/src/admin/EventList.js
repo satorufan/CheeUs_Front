@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react'; // useEffect 추가
 import { List, Datagrid, TextField, EditButton, DeleteButton, SearchInput, Toolbar, SaveButton, DateInput, ImageInput, ImageField, useNotify } from 'react-admin';
 import { Edit, SimpleForm, TextInput, BooleanInput, RichTextField, DateField } from 'react-admin';
 import { Create } from 'react-admin';
@@ -7,6 +7,8 @@ import { RichTextInput } from 'ra-input-rich-text';
 import BackButton from './custom/BackButton';
 import BooleanField from './BooleanField';
 import TuiEditorInput from './custom/TuiEditorInput';
+import axios from 'axios';
+
 
 const eventFilters = [
     <SearchInput source="q" />,
@@ -47,22 +49,44 @@ const EventToolbar = () =>{
 	</Toolbar>
 };
 
-export const EventCreate = (props) => (
-    <Create  {...props}>
-        <SimpleForm toolbar={<EventToolbar/>}>
-            <TextInput source="id" />
-            <TextInput source="admin_id" />
-            <TextInput source="admin_name" />
-            <TextInput source="title" />
-            <TextInput source="title2" />
-            <TuiEditorInput source="content" defaultValue="" />
-            <DateInput source="writeday" />
-            <BooleanInput source="hidden" label="Hidden" />
-            <SaveButton />
-        </SimpleForm>
-        <BackButton />
-    </Create>
-);
+
+export const EventCreate = (props) => {
+    const [postId, setPostId] = useState(null);
+
+    useEffect(() => {
+        const fetchLatestPostId = async () => {
+            try {
+                const response = await axios.get('http://localhost:8080/board/eventboard/latest');
+                setPostId(response.data.latestId + 1);  // 새로운 postId는 현재 가장 최신 ID에 1을 더한 값
+            } catch (error) {
+                console.error("Failed to fetch latest post ID:", error);
+            }
+        };
+
+        fetchLatestPostId();
+    }, []);
+
+    if (postId === null) {
+        return <div>Loading...</div>;  // postId를 받아올 때까지 로딩 상태
+    }
+
+    return (
+        <Create {...props}>
+            <SimpleForm toolbar={<EventToolbar />}>
+                <TextInput source="id" />
+                <TextInput source="admin_id" />
+                <TextInput source="admin_name" />
+                <TextInput source="title" />
+                <TextInput source="title2" />
+                <TuiEditorInput source="content" category="eventboard" postId={postId} defaultValue="" />
+                <DateInput source="writeday" />
+                <BooleanInput source="hidden" label="Hidden" />
+                <SaveButton />
+            </SimpleForm>
+            <BackButton />
+        </Create>
+    );
+};
 
 export const EventEdit = (props) => (
     <Edit {...props}>
