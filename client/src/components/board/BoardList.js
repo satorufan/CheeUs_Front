@@ -56,7 +56,9 @@ const BoardList = ({ category }) => {
 
   const handleCardClick = (id) => {
     if(category == 1){
-        navigate(`/board/freeboard/detail/${id}`);
+		const boardData = boards.find(board=>board.id ===id);
+		console.log("데이터", boardData);
+       navigate(`/board/freeboard/detail/${id}`);
     } else if (category == 3){
         navigate(`/board/eventboard/detail/${id}`);
     } else if (category == 2){

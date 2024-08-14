@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { usePosts } from '../dtboard/PostContext';
 import { selectBoardAuthors, selectBoards, selectPageBoardsMedia, likeBoard } from '../../store/BoardSlice';
@@ -27,7 +27,6 @@ const DetailBoard = () => {
   const boards = useSelector(selectBoards);
   const medias = useSelector(selectPageBoardsMedia);
   const authors = useSelector(selectBoardAuthors);
-
   const [isLoaded, setIsLoaded] = useState(false);
   const [liked, setLiked] = useState(false);
   const [isScrapped, setIsScrapped] = useState(false);
@@ -38,40 +37,52 @@ const DetailBoard = () => {
 
   const board = boards.find(b => b.id === parseInt(id, 10));
   const currentViews = board?.views || 0;
-
+  const location = useLocation();
+  const [boardData, setBoardData] = useState(location.state?.boardData || null);
+  
   let decodedToken;
   if (token) {
     decodedToken = jwtDecode(token);
   }
-
-  const incrementViewCount = useCallback(async () => {
-    if (viewIncremented || !token) return;
-
-    try {
-      const response = await axios.put(
-          `http://localhost:8080/board/incrementView/${id}`,
-          {},
-          {
-            headers: { "Authorization": `Bearer ${token}` },
-            withCredentials: true,
-          }
-      );
-
-      if (response.data.success) {
-        dispatch({
-          type: 'UPDATE_BOARD_VIEWS',
-          payload: { id: parseInt(id), views: response.data.updatedViewCount }
-        });
-        setViewIncremented(true);
-      }
-    } catch (error) {
-      console.error('Error incrementing view count:', error);
+  
+  
+  useEffect(()=>{
+    if(!boardData) {
+        const newBoardData = boards.find(b => b.id === parseInt(id, 10));
+        setBoardData(newBoardData); // 상태 업데이트 함수로 설정
     }
-  }, [id, token, viewIncremented, dispatch]);
-
+  }, [boardData, id, boards]);  
+  
+  
   useEffect(() => {
-    incrementViewCount();
-  }, [incrementViewCount]);
+	  const incrementViewCount = async () => {
+	    if (viewIncremented || !token) return;
+	
+	    try {
+	      const response = await axios.put(
+	          `http://localhost:8080/board/incrementView/${id}`,
+	          {},
+	          {
+	            headers: { "Authorization": `Bearer ${token}` },
+	            withCredentials: true,
+	          }
+	      );
+	
+	      if (response.data.success) {
+	        dispatch({
+	          type: 'UPDATE_BOARD_VIEWS',
+	          payload: { id: parseInt(id), views: response.data.updatedViewCount }
+	        });
+	        setViewIncremented(true);
+	      }
+	    } catch (error) {
+	      console.error('Error incrementing view count:', error);
+	    }
+	    };
+	    incrementViewCount();
+  }, [id, token, dispatch, viewIncremented]);
+  
+
 
   useEffect(() => {
     if (board) {
@@ -243,7 +254,7 @@ const DetailBoard = () => {
                 {liked ? board.like + 1 : board.like}
               </p>
               <p>
-                <Visibility />{currentViews}
+                <Visibility />{board.views}
               </p>
               <p>
                 <Bookmark
