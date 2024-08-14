@@ -81,7 +81,7 @@ const DetailBoard = () => {
       return;
     }
     try {
-      await dispatch(likeBoard({ boardId: board.id, userEmail: memberEmail })).unwrap();
+      await dispatch(likeBoard({ id: board.id, userEmail: memberEmail })).unwrap();
   
       setLiked(prevLiked => !prevLiked); 
   
