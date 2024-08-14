@@ -44,44 +44,44 @@ const DetailBoard = () => {
   if (token) {
     decodedToken = jwtDecode(token);
   }
-  
-  
   useEffect(()=>{
     if(!boardData) {
         const newBoardData = boards.find(b => b.id === parseInt(id, 10));
         setBoardData(newBoardData); // 상태 업데이트 함수로 설정
     }
-  }, [boardData, id, boards]);  
+  }, [boardData, id]);
   
+  console.log(boardData);
+  
+  const incrementViewCount = useCallback(async () => {
+    if (viewIncremented || !token) return;
+
+    try {
+      const response = await axios.put(
+          `http://localhost:8080/board/incrementView/${id}`,
+          {},
+          {
+            headers: { "Authorization": `Bearer ${token}` },
+            withCredentials: true,
+          }
+      );
+
+      if (response.data.success) {
+        dispatch({
+          type: 'UPDATE_BOARD_VIEWS',
+          payload: { id: parseInt(id), views: response.data.updatedViewCount }
+        });
+        setViewIncremented(true);
+      }
+    } catch (error) {
+      console.error('Error incrementing view count:', error);
+    }
+  }, [id, token, viewIncremented, dispatch]);
   
   useEffect(() => {
-	  const incrementViewCount = async () => {
-	    if (viewIncremented || !token) return;
-	
-	    try {
-	      const response = await axios.put(
-	          `http://localhost:8080/board/incrementView/${id}`,
-	          {},
-	          {
-	            headers: { "Authorization": `Bearer ${token}` },
-	            withCredentials: true,
-	          }
-	      );
-	
-	      if (response.data.success) {
-	        dispatch({
-	          type: 'UPDATE_BOARD_VIEWS',
-	          payload: { id: parseInt(id), views: response.data.updatedViewCount }
-	        });
-	        setViewIncremented(true);
-	      }
-	    } catch (error) {
-	      console.error('Error incrementing view count:', error);
-	    }
-	    };
-	    incrementViewCount();
-  }, [id, token, dispatch, viewIncremented]);
-  
+    incrementViewCount();
+  }, [incrementViewCount]);
+
 
 
   useEffect(() => {
@@ -254,7 +254,7 @@ const DetailBoard = () => {
                 {liked ? board.like + 1 : board.like}
               </p>
               <p>
-                <Visibility />{board.views}
+                <Visibility />{currentViews}
               </p>
               <p>
                 <Bookmark
