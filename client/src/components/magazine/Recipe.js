@@ -33,7 +33,8 @@ const Recipe = () => {
   }, [location.search]);
 
   const handleCardClick = (id) => {
-    navigate(`/magazine/detail/recipe/${id}`);
+	const magazineData = magazines.magazine.find(magazine=>magazine.id === id);    
+    navigate(`/magazine/detail/recipe/${id}`,{state: {magazineData}});
   };
 
     // 데이터 로딩 완료 전 대기
