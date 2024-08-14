@@ -243,14 +243,14 @@ const DetailBoard = () => {
                 {liked ? board.like + 1 : board.like}
               </p>
               <p>
+                <Visibility />{currentViews}
+              </p>
+              <p>
                 <Bookmark
                     color={isScrapped ? 'primary' : 'action'}
                     onClick={onScrapHandler}
                     style={{ cursor: 'pointer' }}
                 />
-              </p>
-              <p>
-                <Visibility />{currentViews}
               </p>
             </div>
           </div>

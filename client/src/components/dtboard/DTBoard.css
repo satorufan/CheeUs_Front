@@ -101,7 +101,10 @@ body{
 .dticonBox {
   font-size: 12px;
 } 
-
+.dticonBox svg{
+	margin-right: 2px;
+	margin-left: 10px;
+}
 /* 페이지네이션, 작성 버튼 */
 .board-footer {
   display: flex;

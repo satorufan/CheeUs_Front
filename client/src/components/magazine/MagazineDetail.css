@@ -69,7 +69,10 @@
 
 .magazine-detail-stats {
   display: flex;
-  gap: 15px;
+}
+.magazine-detail-stats svg{
+	margin-right: 3px;
+	margin-left: 10px;
 }
 
 .magazine-detail-likes,

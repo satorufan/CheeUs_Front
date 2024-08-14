@@ -241,11 +241,6 @@ const PostDetail = () => {
           <div className="textareaBox">{post.title}</div>
           <div className='textareaBoxRight'>
           	<div className = 'iconBox'>
-              <Bookmark 
-                  color={isScrapped ? 'primary' : 'action'} 
-                  onClick={onScrapHandler}
-                  style={{ cursor: 'pointer', marginRight:'10px' }}
-                /> 
           		<Favorite 
 	              className='likeIcon' 
 	              color={isLiked ? 'error' : 'action'}
@@ -254,6 +249,11 @@ const PostDetail = () => {
             	<span>{currentPost?.like}</span>
           		<Visibility className='viewIcon'/>
           		<span>{post.views}</span>
+              <Bookmark 
+                  color={isScrapped ? 'primary' : 'action'} 
+                  onClick={onScrapHandler}
+                  style={{ cursor: 'pointer', marginRight:'10px' }}
+                /> 
           	</div>
           	<div>
           	</div>
