@@ -91,11 +91,13 @@
 .left-info p {
     margin-right: 10px;
 }
-
 .right-info {
-    text-align: right; 
+	display: flex;
+    align-items: center; 
 }
-
+.right-info svg{
+	margin-left: 10px;
+}
 .detail-edit-btn {
     padding: 5px 20px;
     border: solid 2px black;
