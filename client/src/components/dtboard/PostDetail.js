@@ -240,23 +240,23 @@ const PostDetail = () => {
         <div className="textareaHeader">
           <div className="textareaBox">{post.title}</div>
           <div className='textareaBoxRight'>
-             <div className = 'iconBox'>
+          	<div className = 'iconBox'>
               <Bookmark 
                   color={isScrapped ? 'primary' : 'action'} 
                   onClick={onScrapHandler}
                   style={{ cursor: 'pointer', marginRight:'10px' }}
                 /> 
-                <Favorite 
-                 className='likeIcon' 
-                 color={isLiked ? 'error' : 'action'}
-                 onClick={handleLikeClick} 
-               />
-               <span>{currentPost?.like}</span>
-                <Visibility className='viewIcon'/>
-                <span>{post.views}</span>
-             </div>
-             <div>
-             </div>
+          		<Favorite 
+	              className='likeIcon' 
+	              color={isLiked ? 'error' : 'action'}
+	              onClick={handleLikeClick} 
+            	/>
+            	<span>{currentPost?.like}</span>
+          		<Visibility className='viewIcon'/>
+          		<span>{post.views}</span>
+          	</div>
+          	<div>
+          	</div>
           </div>
         </div>
         <div className="contentContainer">
