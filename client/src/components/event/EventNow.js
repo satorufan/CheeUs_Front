@@ -80,10 +80,12 @@ const EventNow = () => {
     setCurrentPage(value);
   };
 
+  console.log(currentEvents);
   return (
     <>
       <EventTop />
-      <div className="eventContent-container">
+      {currentEvents.length > 0 ?
+      (<div className="eventContent-container">
         <div className="eventContent-card-container">
           {currentEvents.map((event) => (
             <Card
@@ -151,7 +153,9 @@ const EventNow = () => {
             </Card>
           ))}
         </div>
-      </div>
+      </div>) : (<div className="permissionMessage" >
+          <p>진행중인 이벤트가 없습니다.😭<br/> 다음 기회를 노려보세요!</p>
+        </div>)}
       <Pagination
         count={totalPages}
         page={currentPage}

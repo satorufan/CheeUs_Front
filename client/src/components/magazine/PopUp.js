@@ -72,7 +72,8 @@ const PopUp = () => {
   return (
     <>
       <MagazineTop/>
-      <div className="magazineContent-container">
+      {currentMagazines.length > 0 ?
+      (<div className="magazineContent-container">
         <div className="magazineContent-card-container">
           {currentMagazines.map((magazine) => (
             <Card
@@ -140,7 +141,9 @@ const PopUp = () => {
             </Card>
           ))}
         </div>
-      </div>
+      </div>) : (<div className="permissionMessage" >
+          <p>현재 팝업이 존재하지 않습니다.😭</p>
+        </div>)}
       <Pagination
         count={totalPages}
         page={currentPage}
