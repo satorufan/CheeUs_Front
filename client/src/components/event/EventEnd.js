@@ -37,7 +37,8 @@ const EventEnd = () => {
   }, [location.search]);
 
   const handleCardClick = (id) => {
-    navigate(`/event/detail/event/${id}`);
+	const eventData = events.event.find(event=>event.id === id);
+    navigate(`/event/detail/event/${id}`, {state: {eventData}});
   };
 
   // 날짜 필터링

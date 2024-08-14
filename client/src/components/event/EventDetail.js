@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import './EventDetail.css';
 import Favorite from '@mui/icons-material/Favorite';
 import Visibility from '@mui/icons-material/Visibility';
-import EventTop from './EventTop';
 import { useEvents } from './EventContext';
 import { AuthContext } from '../login/OAuth';
 import ReactMarkdown from 'react-markdown';
@@ -26,7 +25,25 @@ const EventDetail = () => {
   const [likeCount, setLikeCount] = useState(0);
   const [isScrapped, setIsScrapped] = useState(false);
   const { addScrap, checkScrap } = usePosts();
-
+  const location = useLocation();
+  const { eventData } = location.state || {};
+  const navigate = useNavigate(); 
+  
+  const eventToListClick = ()=>{
+	  navigate(-1);
+	  setTimeout(() => {
+	    window.location.reload();
+	  }, 100);
+  }
+  
+  
+  useEffect(() => {
+   	if (!eventData) {
+      // eventData가 없는 경우, 서버로부터 데이터를 가져오는 로직
+      setData(eventData);
+    }
+  }, [eventData, id]);
+  
   
   useEffect(() => {
     if (events && events.event) {
@@ -99,7 +116,9 @@ const EventDetail = () => {
 
   return (
     <div className="event-detail-container">
-      <EventTop />
+      <div className ="event-header-button">
+      	<button className='chip-name btn btn-outline-dark' onClick={eventToListClick}>목록으로</button>
+      </div>
       <div className="event-detail-content">
         <h2 className="event-detail-title">{data.title}</h2>
         <p className="event-detail-date">작성일: {data.writeday}</p>

@@ -4,7 +4,11 @@
   align-items: center;
   padding: 20px;
 }
-
+.event-header-button{
+	width: 800px;
+	display: flex;
+	justify-content: flex-end;
+}
 .event-detail-image {
   width: 100%;
   max-width: 800px;

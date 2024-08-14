@@ -31,8 +31,13 @@ const EventAll = () => {
   }, [location.search]);
 
   const handleCardClick = (id) => {
-    navigate(`/event/detail/event/${id}`);
+	const eventData = events.event.find(event=>event.id === id);
+    navigate(`/event/detail/event/${id}`, {state: {eventData}});
   };
+
+  if (!events || !events.event) {
+    return <div>Loading...</div>;
+  }
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentEvents = Object.values(events.event)
@@ -45,7 +50,9 @@ const EventAll = () => {
   const handleChange = (event, value) => {
     setCurrentPage(value);
   };
-
+  
+  
+  
   return (
     <>
       <EventTop />
