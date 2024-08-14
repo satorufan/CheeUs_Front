@@ -55,13 +55,12 @@ const BoardList = ({ category }) => {
   };
 
   const handleCardClick = (id) => {
+	const boardData = boards.find(board=>board.id ===id);
     if(category == 1){
-        navigate(`/board/freeboard/detail/${id}`);
+       navigate(`/board/freeboard/detail/${id}`, {state: {boardData}});
     } else if (category == 3){
-        navigate(`/board/eventboard/detail/${id}`);
-    } else if (category == 2){
-        navigate(`/board/shortform/detail/${id}`);
-    }
+        navigate(`/board/eventboard/detail/${id}`,{state: {boardData}});
+    } //shortForm.js에서 따로 처리해야함
   };
 
   const handleCreatePost = () => {

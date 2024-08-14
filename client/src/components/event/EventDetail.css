@@ -4,7 +4,11 @@
   align-items: center;
   padding: 20px;
 }
-
+.event-header-button{
+	width: 800px;
+	display: flex;
+	justify-content: flex-end;
+}
 .event-detail-image {
   width: 100%;
   max-width: 800px;
@@ -68,10 +72,12 @@
 
 .event-detail-stats {
   display: flex;
-  gap: 15px;
   transition: color 0.3s;
 }
-
+.event-detail-stats svg{
+	margin-right: 3px;
+	margin-left: 10px;
+}
 .event-detail-likes,
 .event-detail-views {
   font-size: 0.9em;

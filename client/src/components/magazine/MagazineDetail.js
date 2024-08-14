@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import './MagazineDetail.css';
 import Favorite from '@mui/icons-material/Favorite';
 import Visibility from '@mui/icons-material/Visibility';
-import MagazineTop from './MagazineTop';
 import { useMagazines } from './MagazineContext';
 import { AuthContext } from '../login/OAuth';
 import ReactMarkdown from 'react-markdown';
@@ -28,7 +27,23 @@ const MagazineDetail = () => {
   const [isScrapped, setIsScrapped] = useState(false);
   const { addScrap, checkScrap } = usePosts();
   const [viewIncremented, setViewIncremented] = useState(false);
+  const location = useLocation();
+  const { magazineData } = location.state || {};
+  const navigate = useNavigate();   
+  
+    const magazineToListClick = ()=>{
+	  navigate(-1);
+	  setTimeout(() => {
+	    window.location.reload();
+	  }, 100);
+  }
 
+  useEffect(() => {
+   	if (!magazineData) {
+      // magazineData가 없는 경우, 서버로부터 데이터를 가져오는 로직
+      setData(magazineData);
+    }
+  }, [magazineData, id]);
 
   useEffect(() => {
     if (magazines && magazines.magazine) { // magazines 객체에 magazine 배열이 있는지 확인
@@ -153,7 +168,9 @@ const MagazineDetail = () => {
 
   return (
     <div className="magazine-detail-container">
-      <MagazineTop/>
+       <div className ="magazine-header-button">
+      	<button className='chip-name btn btn-outline-dark' onClick={magazineToListClick}>목록으로</button>
+      </div>
       <div className="magazine-detail-content">
         <h2 className="magazine-detail-title">{data.title}</h2>
         <p className="magazine-detail-date">작성일: {data.writeday}</p>
@@ -181,6 +198,7 @@ const MagazineDetail = () => {
                 />
               {likeCount}
           	</span>
+            <span className="magazine-detail-views"><Visibility/>{data.views}</span>
             <p>
               <Bookmark
                   color={isScrapped ? 'primary' : 'action'}
@@ -188,7 +206,6 @@ const MagazineDetail = () => {
                   style={{cursor: 'pointer'}}
               />
             </p>
-            <span className="magazine-detail-views"><Visibility/>{data.views}</span>
           </div>
         </div>
       </div>

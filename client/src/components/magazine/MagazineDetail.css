@@ -4,7 +4,11 @@
   align-items: center;
   padding: 20px;
 }
-
+.magazine-header-button{
+	width: 800px;
+	display: flex;
+	justify-content: flex-end;
+}
 .magazine-detail-image {
   width: 100%;
   max-width: 800px;
@@ -65,7 +69,10 @@
 
 .magazine-detail-stats {
   display: flex;
-  gap: 15px;
+}
+.magazine-detail-stats svg{
+	margin-right: 3px;
+	margin-left: 10px;
 }
 
 .magazine-detail-likes,

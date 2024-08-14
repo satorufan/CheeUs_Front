@@ -110,6 +110,10 @@
     color: #808080;
     transition: color 0.3s;
 }
+.card-icon svg{
+	margin-right: -7px;
+	margin-left: 3px;
+}
 
 @media (max-width: 1200px) {
     .freeboard-card-container {

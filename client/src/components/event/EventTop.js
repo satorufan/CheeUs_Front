@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Search } from '@mui/icons-material';
 import './EventTop.css';
 
+
 const chipData = [
   { label: '전체 이벤트', path: '/event/eventAll' },
   { label: '진행중인 이벤트', path: '/event/eventNow' },
@@ -13,13 +14,15 @@ function EventTop() {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchQuery, setSearchQuery] = useState('');
-
+  const [prevPath, setPrevPath] = useState(location.pathname);
   // URL 쿼리에서 검색어를 읽어와 상태에 설정
+  
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const query = params.get('search') || '';
     setSearchQuery(query);
   }, [location.search]);
+
 
   // 검색어 변경 시 URL 업데이트
   const handleSearchChange = (e) => {
