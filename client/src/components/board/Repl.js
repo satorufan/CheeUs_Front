@@ -10,6 +10,7 @@ import { jwtDecode } from "jwt-decode";
 import { fetchUserProfile, selectUserProfile } from '../../store/ProfileSlice';
 import { useNavigate } from 'react-router-dom';
 import CryptoJS from 'crypto-js';
+import Swal from 'sweetalert2';
 
 function Repl({ boardId }) {
     const dispatch = useDispatch();
@@ -19,7 +20,7 @@ function Repl({ boardId }) {
     const [commentText, setCommentText] = useState('');
     const [replyText, setReplyText] = useState({});
     const [showReplyInput, setShowReplyInput] = useState({});
-    const { token } = useContext(AuthContext);
+    const { token, memberEmail } = useContext(AuthContext);
     const userProfile = useSelector(selectUserProfile);
     const [nickname, setNickname] = useState('');
     const [loadingImages, setLoadingImages] = useState(true); // 이미지 로딩 상태
@@ -63,6 +64,16 @@ function Repl({ boardId }) {
 
     const handleAddComment = async (e) => {
         e.preventDefault();
+        if(!memberEmail) {
+            Swal.fire({
+                title: `로그인 해주세요!`,
+                icon: '',
+                confirmButtonColor: '#48088A',
+                confirmButtonText: '확인',
+            }).then(()=>{
+                navigate('/');
+            })
+        }
         if (commentText.trim() !== '') {
             const newComment = {
                 board_id: boardId,
@@ -80,6 +91,16 @@ function Repl({ boardId }) {
     };
 
     const handleAddReply = async (e) => {
+        if(!memberEmail) {
+            Swal.fire({
+                title: `로그인 해주세요!`,
+                icon: '',
+                confirmButtonColor: '#48088A',
+                confirmButtonText: '확인',
+            }).then(()=>{
+                navigate('/');
+            })
+        }
         const parentId = parseInt(e.currentTarget.getAttribute('data-parent-id'), 10);
         if (replyText[parentId]?.trim() !== '') {
             const reply = {

@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { AuthContext } from '../login/OAuth';
 import axios from 'axios';
 
 const EventContext = createContext();
@@ -7,6 +8,7 @@ export const useEvents = () => useContext(EventContext);
 
 export const EventProvider = ({ children }) => {
   const [events, setEvents] = useState(null);
+  const { serverUrl, token, memberEmail } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -39,11 +41,70 @@ export const EventProvider = ({ children }) => {
     fetchEvents();
   }, []);
 
+  const toggleLike = async (serverUrl, eventId, token, memberEmail) => {
+    try {
+      const response = await axios.put(
+          `${serverUrl}/Event/toggleLike/${eventId}`,
+          {},
+          {
+            params: { memberEmail },
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+          }
+      );
+      console.log("Response:", response.data);
+      if (response.data.success) {
+        return {
+          updatedLikeCount: response.data.updatedLikeCount,
+          isLiked: response.data.isLiked
+        };
+      }
+      throw new Error('Toggle like failed');
+    } catch (error) {
+      console.error('좋아요 토글에서 에러남 ', error);
+      throw error;
+    }
+  };
+
+  /*
+  const toggleLike = async (serverUrl, postId, token, memberEmail) => {
+    try {
+      const response = await axios.put(
+          `${serverUrl}/dtBoard/toggleLike/${postId}`,
+          {},
+          {
+            params: { postId, memberEmail },
+            withCredentials: true,
+          }
+      );
+      console.log(">>>>>>>",response);
+      console.log(">>>>>>>>>>>",response.data);
+      console.log(">>>>>>>>>>>>>>>",JSON.stringify(response.data, null, 2));
+      if (response.data.success) {
+        setEvents((prevEvents) =>
+            prevEvents.map((event) =>
+                event.id === postId
+                    ? { ...event, like: response.data.updatedLikeCount, isLiked: response.data.isLiked }
+                    : event
+            )
+        );
+        return { updatedLikeCount: response.data.updatedLikeCount, isLiked: response.data.isLiked };
+      }
+      throw new Error('Toggle like failed');
+    } catch (error) {
+      console.error('좋아요 토글에서 에러남 ', error);
+      throw error;
+    }
+  };
+*/
+  /*
   const toggleLike = async (serverUrl, postId, token) => {
     try {
-      const response = await axios.post(
-        `${serverUrl}/event/toggleLike/${postId}`, {}, {
-          headers: {
+      const response = await axios.put(
+        `${serverUrl}/Event/toggleLike/${postId}`,
+          {},
+          {
+            headers: {
             "Authorization": `Bearer ${token}`,
           },
           withCredentials: true,
@@ -62,6 +123,7 @@ export const EventProvider = ({ children }) => {
       console.error('좋아요 토글에서 에러남', error);
     }
   };
+   */
 
   return (
     <EventContext.Provider value={{ events, setEvents, toggleLike }}>

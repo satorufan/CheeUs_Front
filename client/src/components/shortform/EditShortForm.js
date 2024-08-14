@@ -40,7 +40,7 @@ function EditShortForm() {
   const videoRef = useRef();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { token } = useContext(AuthContext);
+  const { token, memberEmail } = useContext(AuthContext);
   const userProfile = useSelector(state => state.profile.userProfile);
   const boards = useSelector(state => state.board.boards);
   const [boardToEdit, setBoardToEdit] = useState(null); // boardToEdit 상태 추가
@@ -53,6 +53,17 @@ function EditShortForm() {
   useEffect(() => {
     if (id && boards.length > 0) {
       const board = boards.find(b => b.id === parseInt(id, 10));
+      if(boards.length === 0 || (board && memberEmail !== board?.author_id)) {
+        swal({
+          title: '잘못된 접근입니다.',
+          icon: 'warning',
+          button: '확인',
+          className: 'custom-swal-warning'
+        }).then(() => {
+            navigate(-1); // 이전 페이지로 이동
+        });
+      }
+
       if (board) {
         setBoardToEdit(board); // 기존 게시물 정보 설정
         setTitle(board.title);

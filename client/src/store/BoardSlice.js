@@ -66,7 +66,7 @@ export const fetchBoardsMedia = createAsyncThunk(
   }
 )
 
-// 작성자 부럴오기
+// 작성자 불러오기
 export const fetchBoardsAuthor = createAsyncThunk(
   'board.fetchBoardsAuthor',
   async ({category, perPageBoards}) => {
@@ -131,16 +131,17 @@ export const updateBoard = createAsyncThunk(
 // 좋아요 토글 >>>>
 export const likeBoard = createAsyncThunk(
   'board/likeBoard',
-  async ({ boardId, userEmail }) => { 
+  async ({ id, userEmail }) => {
     try {
-      console.log('Sending like request:', { boardId, userEmail });
+      console.log('Sending like request:', { id, userEmail });
 
-      const response = await axios.post(
-        `http://localhost:8080/board/like/${boardId}`, 
-        { boardId, userEmail }, 
+      const response = await axios.put(
+          `http://localhost:8080/board/toggleLike/${id}`,
+          null,
         {
-          headers: {
-            'Content-Type': 'application/json'
+            params:{ userEmail },
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
             // 'Authorization': `Bearer ${token}` // Authorization 헤더 제거
           }
         }
@@ -150,7 +151,7 @@ export const likeBoard = createAsyncThunk(
 
       return response.data;
     } catch (error) {
-      console.error('Error liking board:', error);
+      console.error('Error liking board:', error.response?.status, error.response?.data, error.message);
       throw error;
     }
   }
