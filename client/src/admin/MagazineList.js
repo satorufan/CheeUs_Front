@@ -63,7 +63,7 @@ export const MagazineCreate = (props) => (
             ]} />
             <TextInput source="title" />
             <TextInput source="title2" />
-            <TuiEditorInput source="content" defaultValue="" />
+            <TuiEditorInput source="content" category="megazineboard" defaultValue="" />
             <DateInput source="writeday" />
             <BooleanInput source="hidden" label="Hidden" />
             <SaveButton/>

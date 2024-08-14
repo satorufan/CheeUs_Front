@@ -40,42 +40,33 @@ const httpHeader = {
 
 // 이미지 URL 추출 함수
 const extractImageUrls = (content) => {
-    console.log("Extracting image URLs from content:", content); // 로그 추가
     const regex = /!\[.*?\]\((.*?)\)/g;
     let urls = [];
     let match;
     while ((match = regex.exec(content)) !== null) {
-        urls.push(match[1]);
+      urls.push(match[1]);
     }
-    console.log("Extracted image URLs:", urls); // 로그 추가
     return urls;
-};
-// Firebase 스토리지 경로 추출 함수
-const extractFirebasePath = (url) => {
-    const match = url.match(/\/o\/(.*?)\?/);
-    return match ? decodeURIComponent(match[1]) : null;
-};
+  };
 
-// 사용되지 않는 이미지 삭제 함수
-const deleteUnusedImages = async (unusedImages) => {
-    for (const url of unusedImages) {
-        const firebasePath = extractFirebasePath(url);
-        if (firebasePath) {
-            const imageRef = ref(storage, firebasePath);
-            try {
-                await deleteObject(imageRef);
-                console.log(`Deleted unused image: ${url}`);
-            } catch (error) {
-                console.error(`Failed to delete unused image: ${url}`, error);
-            }
-        } else {
-            console.error(`Failed to extract Firebase path from URL: ${url}`);
-        }
-    }
-};
+//   // 사용되지 않는 이미지 삭제 함수
+//   const deleteUnusedImages = async (currentContent) => {
+//     const usedImageUrls = extractImageUrls(currentContent);
+//     const uploadedImages = editorRef.current.getUploadedImages();
 
-// 사용자가 업로드한 이미지 URL을 추적할 배열
-let uploadedImages = [];
+//     const unusedImages = uploadedImages.filter(url => !usedImageUrls.includes(url));
+
+//     for (const url of unusedImages) {
+//       const imageRef = ref(storage, url);
+//       try {
+//         await deleteObject(imageRef);
+//         console.log(`Deleted unused image: ${url}`);
+//       } catch (error) {
+//         console.error(`Failed to delete unused image: ${url}`, error);
+//       }
+//     }
+//   };
+
 
 
 const dataProvider = {
@@ -121,27 +112,33 @@ const dataProvider = {
         await Promise.all(promises);
         return { data: params.ids };
     },
-    create: async (resource, params) => {
-        console.log('params.data:', params.data);
-        const url = endpoints[resource];
+    // create: async (resource, params) => {
+    //     console.log('params.data:', params.data);
+    //     const url = endpoints[resource];
 
-        const content = params.data.content;
-        const usedImageUrls = extractImageUrls(content);
+    //     const category = params.data.category;
+    //     if(category == "") {
 
-        // 삭제할 이미지는 초기 업로드된 이미지 목록에서 사용된 이미지를 제외한 것입니다.
-        const unusedImages = uploadedImages.filter(url => !usedImageUrls.includes(url));
+    //     } else {
 
-        // 사용되지 않은 이미지를 Firebase에서 삭제합니다.
-        await deleteUnusedImages(unusedImages);
+    //     }
+    //     const content = params.data.content;
+    //     const usedImageUrls = extractImageUrls(content);
 
-        // 초기화
-        uploadedImages = [];
+    //     // 삭제할 이미지는 초기 업로드된 이미지 목록에서 사용된 이미지를 제외한 것입니다.
+    //     const unusedImages = uploadedImages.filter(url => !usedImageUrls.includes(url));
 
-        const { data } = await axios.post(url, params.data, httpHeader);
-        console.log('Resource created successfully:', data); // 로그 추가
+    //     // 사용되지 않은 이미지를 Firebase에서 삭제합니다.
+    //     await deleteUnusedImages(unusedImages);
 
-        return { data: { ...params.data, id: data.email || data.id } };
-    },
+    //     // 초기화
+    //     uploadedImages = [];
+
+    //     const { data } = await axios.post(url, params.data, httpHeader);
+    //     console.log('Resource created successfully:', data); // 로그 추가
+
+    //     return { data: { ...params.data, id: data.email || data.id } };
+    // },
     delete: async (resource, params) => {
         // 게시글 데이터 가져오기
         const getPost = async (postId) => {
@@ -158,7 +155,7 @@ const dataProvider = {
         const imageUrls = extractImageUrls(content);
 
         // 이미지 삭제
-        await deleteUnusedImages(imageUrls);
+        //await deleteUnusedImages(imageUrls);
 
         // 게시글 삭제
         const url = `${endpoints[resource]}/${postId}`;

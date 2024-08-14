@@ -78,14 +78,16 @@ const DetailBoard = () => {
 	    } catch (error) {
 	      console.error('Error incrementing view count:', error);
 	    }
-	    };
-	    incrementViewCount();
-  }, [id, token, dispatch, viewIncremented]);
+	  };
+    
+    if (id && serverUrl && token) {
+      incrementViewCount();
+    }
+  }, [id, serverUrl, token, viewIncremented]);
   
 
 
   useEffect(() => {
-    if (board) {
       const loadData = async () => {
         try {
           const isPostScrapped = await checkScrap(serverUrl, memberEmail, board.id, token, 1);
@@ -95,7 +97,6 @@ const DetailBoard = () => {
         }
       };
       loadData();
-    }
   }, [board, serverUrl, memberEmail, token, checkScrap]);
 
   useEffect(() => {
@@ -254,7 +255,7 @@ const DetailBoard = () => {
                 {liked ? board.like + 1 : board.like}
               </p>
               <p>
-                <Visibility />{board.views}
+                <Visibility />{boardData.views}
               </p>
               <p>
                 <Bookmark
