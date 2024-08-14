@@ -113,17 +113,19 @@ const PopUp = () => {
                 </div>
               </Box>
               <Box className="card-title2">
-                <Avatar
-                  src={`https://images.unsplash.com/profile-${magazine.admin_id}?dpr=2&auto=format&fit=crop&w=32&h=32&q=60&crop=faces&bg=fff`}
-                  size="sm"
-                  sx={{ '--Avatar-size': '1.5rem' }}
-                  className="card-avatar"
-                />
-                <div>
-                  <div className="card-admin-name">
-                    {magazine.admin_name}<a className = 'hidden'>{magazine.admin_id}</a>
+                <div className="nick-avature">
+                  <Avatar
+                    src={`https://images.unsplash.com/profile-${magazine.admin_id}?dpr=2&auto=format&fit=crop&w=32&h=32&q=60&crop=faces&bg=fff`}
+                    size="sm"
+                    sx={{ '--Avatar-size': '1.5rem' }}
+                    className="card-avatar"
+                  />
+                  <div>
+                    <div className="card-admin-name">
+                      {magazine.admin_name}<a className = 'hidden'>{magazine.admin_id}</a>
+                    </div>
                   </div>
-                </div>
+                 </div>
                 <div className="card-icons-container">
                   <div className="card-icon">
                     <Favorite color="action" />
@@ -133,7 +135,7 @@ const PopUp = () => {
                     <Visibility />
                     {magazine.views}
                   </div>
-                </div>
+                  </div>
               </Box>
             </Card>
           ))}

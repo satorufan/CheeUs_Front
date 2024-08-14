@@ -161,14 +161,14 @@ const BoardList = ({ category }) => {
                     </div>
                   </div>
                   <div className="card-icons-container-list">
-                    <div className="card-icon-like">
-                      <Favorite className='likeIcon' style={{ fontSize: '20px', color: '#808080' }} />
-                      {board.like}
-                    </div>
-                    <div className="card-icon">
-                      <Visibility style={{ fontSize: '23px' }} />
-                      {board.views}
-                    </div>
+                  <div className="card-icon">
+                    <Favorite color="action" />
+                    {board.like}
+                  </div>
+                  <div className="card-icon">
+                    <Visibility />
+                    {board.views}
+                  </div>
                   </div>
                 </Box>
             </Card>
