@@ -17,6 +17,10 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+.comment-form {
+    width: 90%; 
+}
+
 .comment-form,
 .reply-form {
     display: flex;
@@ -25,6 +29,7 @@
 
 .reply-form {
     margin-left: 50px;
+    width: 80%;
 }
 
 .detail-comment,
