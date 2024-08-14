@@ -45,8 +45,9 @@
 .likeIcon{
   cursor: pointer;
 }
-.viewIcon{
-  margin-left: 10px;
+.iconBox svg{
+	margin-left: 10px;
+	margin-right: 3px;
 }
 
 .dt-input-left-box {

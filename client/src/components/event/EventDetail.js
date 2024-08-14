@@ -187,6 +187,7 @@ const EventDetail = () => {
 	          	/>
 	          	{likeCount}
           	</span>
+            <span className="event-detail-views"><Visibility/>{data.views}</span>
             <p>
               <Bookmark 
                 color={isScrapped ? 'primary' : 'action'} 
@@ -194,7 +195,6 @@ const EventDetail = () => {
                 style={{ cursor: 'pointer' }}
               /> 
             </p>
-            <span className="event-detail-views"><Visibility/>{data.views}</span>
           </div>
         </div>
       </div>

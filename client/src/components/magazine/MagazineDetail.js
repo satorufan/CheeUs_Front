@@ -198,6 +198,7 @@ const MagazineDetail = () => {
                 />
               {likeCount}
           	</span>
+            <span className="magazine-detail-views"><Visibility/>{data.views}</span>
             <p>
               <Bookmark
                   color={isScrapped ? 'primary' : 'action'}
@@ -205,7 +206,6 @@ const MagazineDetail = () => {
                   style={{cursor: 'pointer'}}
               />
             </p>
-            <span className="magazine-detail-views"><Visibility/>{data.views}</span>
           </div>
         </div>
       </div>
