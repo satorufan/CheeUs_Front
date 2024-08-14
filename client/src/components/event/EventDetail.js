@@ -15,35 +15,71 @@ import Swal from 'sweetalert2';
 import { usePosts } from '../dtboard/PostContext';
 import { Bookmark } from '@mui/icons-material';
 import Spinner from 'react-bootstrap/Spinner';
+import axios from "axios";
 
 const EventDetail = () => {
   const { id } = useParams();
   const { events, toggleLike } = useEvents();
   const { serverUrl, token, memberEmail } = useContext(AuthContext);
+  const [currentEvent, setCurrentEvent] = useState(null);
   const [data, setData] = useState(null);
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [isScrapped, setIsScrapped] = useState(false);
   const { addScrap, checkScrap } = usePosts();
-
+  const [viewIncremented, setViewIncremented] = useState(false);
+  
   useEffect(() => {
     if (events && events.event) {
       const eventData = Object.values(events.event).find(event => event.id.toString() === id);
       setData(eventData);
-      setLiked(eventData?.liked || false); // 초기 liked 상태 설정
-      setLikeCount(eventData?.like || 0); // 초기 like 카운트 설정
+      setLiked(eventData?.liked); // 초기 liked 상태 설정
+      setLikeCount(eventData?.like); // 초기 like 카운트 설정
     }
   }, [id, events]);
-  
+
+  // 조회수
+  useEffect(() => {
+    const incrementViewCount = async () => {
+      if (viewIncremented) return; // 이미 증가했다면 요청 보내지 않음
+
+      try {
+        const response = await axios.put(
+            `${serverUrl}/Event/incrementView/${id}`,
+            {},
+            {
+              headers: {
+                "Authorization": `Bearer ${token}`,
+              },
+              withCredentials: true,
+            }
+        );
+
+        if (response.data.success) {
+          setData(prevData => ({
+            ...prevData,
+            views: response.data.updatedViewCount
+          }));
+          setViewIncremented(true); // 증가 완료 표시
+        }
+      } catch (error) {
+        console.error('Error incrementing view count:', error.response?.status, error.response?.data, error.message);
+      }
+    };
+
+    if (id && serverUrl && token) {
+      incrementViewCount();
+    }
+  }, [id, serverUrl, token, viewIncremented]);
 
   const handleLikeClick = async () => {
     if (data) {
       try {
-        await toggleLike(serverUrl, data.id, token);
-        setLiked(!liked); 
-        setLikeCount(liked ? likeCount - 1 : likeCount + 1); // 좋아요 카운트 업데이트
+        const result = await toggleLike(serverUrl, data.id, token, memberEmail);
+        setLiked(result.isLiked);
+        setLikeCount(result.updatedLikeCount);
       } catch (error) {
-        console.error('좋아요 토글 에러:', error);
+        console.error('좋아요 토글 에러:', error.response?.status, error.response?.data, error.message);
       }
     }
   };
@@ -93,8 +129,6 @@ const EventDetail = () => {
 
   console.log("썸네일?", thumbnail);
 
-
-
   return (
     <div className="event-detail-container">
       <EventTop />
@@ -120,10 +154,10 @@ const EventDetail = () => {
           <div className="event-detail-stats">
             <span className="event-detail-likes">
 	            <Favorite
-	          	  color={data.liked ? 'error' : 'action'} 
+	          	  color={liked ? 'error' : 'action'}
 	          	  onClick={handleLikeClick}
 	          	/>
-	          	{data.like}
+	          	{likeCount}
           	</span>
             <p>
               <Bookmark 
@@ -132,7 +166,6 @@ const EventDetail = () => {
                 style={{ cursor: 'pointer' }}
               /> 
             </p>
-            <span className="event-detail-likes"><Favorite/>{data.like}</span>
             <span className="event-detail-views"><Visibility/>{data.views}</span>
           </div>
         </div>

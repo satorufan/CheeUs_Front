@@ -9,18 +9,26 @@ import { AuthContext } from '../login/OAuth';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
+import { ref, deleteObject } from 'firebase/storage';
+import { storage } from '../firebase/firebase';
 import Swal from 'sweetalert2';
 import { usePosts } from '../dtboard/PostContext';
 import { Bookmark } from '@mui/icons-material';
 import Spinner from 'react-bootstrap/Spinner';
+import axios from "axios";
 
 const MagazineDetail = () => {
   const { category, id } = useParams();
-  const { magazines } = useMagazines();
-  const [data, setData] = useState(null);
+  const { magazines, toggleLike } = useMagazines();
   const { memberEmail, serverUrl, token } = useContext(AuthContext);
+  const [currentEvent, setCurrentEvent] = useState(null);
+  const [data, setData] = useState(null);
+  const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
   const [isScrapped, setIsScrapped] = useState(false);
   const { addScrap, checkScrap } = usePosts();
+  const [viewIncremented, setViewIncremented] = useState(false);
+
 
   useEffect(() => {
     if (magazines && magazines.magazine) { // magazines 객체에 magazine 배열이 있는지 확인
@@ -30,6 +38,40 @@ const MagazineDetail = () => {
       setData(magazineData); // 찾은 데이터를 state에 설정
     }
   }, [category, id, magazines]);
+
+  // 조회수
+  useEffect(() => {
+    const incrementViewCount = async () => {
+      if (viewIncremented) return; // 이미 증가했다면 요청 보내지 않음
+
+      try {
+        const response = await axios.put(
+            `${serverUrl}/Magazine/incrementView/${id}`,
+            {},
+            {
+              headers: {
+                "Authorization": `Bearer ${token}`,
+              },
+              withCredentials: true,
+            }
+        );
+
+        if (response.data.success) {
+          setData(prevData => ({
+            ...prevData,
+            views: response.data.updatedViewCount
+          }));
+          setViewIncremented(true); // 증가 완료 표시
+        }
+      } catch (error) {
+        console.error('Error incrementing view count:', error.response?.status, error.response?.data, error.message);
+      }
+    };
+
+    if (id && serverUrl && token) {
+      incrementViewCount();
+    }
+  }, [id, serverUrl, token, viewIncremented]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,6 +88,28 @@ const MagazineDetail = () => {
     fetchData();
   }, [data, serverUrl, memberEmail, token]);
 
+  useEffect(() => {
+    if (magazines && magazines.magazine) {
+      const magazineData = Object.values(magazines.magazine).find(magazine => magazine.id.toString() === id);
+      setData(magazineData);
+      setLiked(magazineData?.liked); // 초기 liked 상태 설정
+      setLikeCount(magazineData?.like); // 초기 like 카운트 설정
+    }
+  }, [id, magazines]);
+
+  // 좋아요 관련
+  const handleLikeClick = async () => {
+    if (data) {
+      try {
+        const result = await toggleLike(serverUrl, data.id, token, memberEmail);
+        setLiked(result.isLiked);
+        setLikeCount(result.updatedLikeCount);
+      } catch (error) {
+        console.error('좋아요 토글 에러:', error);
+      }
+    }
+  };
+  
   const onScrapHandler = async () => {
     const scrapMessage = await addScrap(serverUrl, memberEmail, id, data.title, token, window.location.href, 4 );
     Swal.fire({
@@ -97,16 +161,23 @@ const MagazineDetail = () => {
         	</ReactMarkdown>
         </p>
         <div className="magazine-detail-footer">
-          <div className="magazine-detail-admin">에디터 : {data.admin_name}<a className = 'hidden'>{data.admin_id}</a></div>
+          <div className="magazine-detail-admin">에디터 : {data.admin_name}
+            <a className = 'hidden'>{data.admin_id}</a></div>
           <div className="magazine-detail-stats">
+            <span className="magazine-detail-likes">
+	            <Favorite
+                    color={liked ? 'error' : 'action'}
+                    onClick={handleLikeClick}
+                />
+              {likeCount}
+          	</span>
             <p>
-                <Bookmark 
-                  color={isScrapped ? 'primary' : 'action'} 
+              <Bookmark
+                  color={isScrapped ? 'primary' : 'action'}
                   onClick={onScrapHandler}
-                  style={{ cursor: 'pointer' }}
-                /> 
+                  style={{cursor: 'pointer'}}
+              />
             </p>
-            <span className="magazine-detail-likes"><Favorite/>{data.like}</span>
             <span className="magazine-detail-views"><Visibility/>{data.views}</span>
           </div>
         </div>

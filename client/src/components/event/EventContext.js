@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { AuthContext } from '../login/OAuth';
 import axios from 'axios';
 
 const EventContext = createContext();
@@ -7,6 +8,7 @@ export const useEvents = () => useContext(EventContext);
 
 export const EventProvider = ({ children }) => {
   const [events, setEvents] = useState(null);
+  const { serverUrl, token, memberEmail } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -39,29 +41,31 @@ export const EventProvider = ({ children }) => {
     fetchEvents();
   }, []);
 
-  const toggleLike = async (serverUrl, postId, token) => {
+  const toggleLike = async (serverUrl, eventId, token, memberEmail) => {
     try {
-      const response = await axios.post(
-        `${serverUrl}/event/toggleLike/${postId}`, {}, {
-          headers: {
-            "Authorization": `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
+      const response = await axios.put(
+          `${serverUrl}/Event/toggleLike/${eventId}`,
+          {},
+          {
+            params: { memberEmail },
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+          }
       );
+      console.log("Response:", response.data);
       if (response.data.success) {
-        setEvents((prevEvents) =>
-          prevEvents.event.map((event) =>
-            event.id === postId
-              ? { ...event, like: response.data.updatedLikeCount }
-              : event
-          )
-        );
+        return {
+          updatedLikeCount: response.data.updatedLikeCount,
+          isLiked: response.data.isLiked
+        };
       }
+      throw new Error('Toggle like failed');
     } catch (error) {
-      console.error('좋아요 토글에서 에러남', error);
+      console.error('좋아요 토글에서 에러남 ', error);
+      throw error;
     }
   };
+
 
   return (
     <EventContext.Provider value={{ events, setEvents, toggleLike }}>
