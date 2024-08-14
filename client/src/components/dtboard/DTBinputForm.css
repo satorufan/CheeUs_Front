@@ -65,6 +65,9 @@
 .contentBox{
 	height: 100%;
 }
+.content{
+	font-size: 20px !important;
+}
 .dt-input-mypage-box {
   flex: 1;
   padding: 10px;
