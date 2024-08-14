@@ -124,7 +124,7 @@ const ShortForm = () => {
       <BoardTop />
       <div className="shortform-container">
         <div className="video-card-container">
-          {arraysEqualAsSets(Object.keys(authors), perPageAuthors) ? currentBoards.map((board) => (
+          {isLoaded && arraysEqualAsSets(Object.keys(authors), perPageAuthors) ? currentBoards.map((board) => (
             board.category === 2 && ( // 카테고리가 2인 경우에만 렌더링
               <Card
                 key={board.id}
