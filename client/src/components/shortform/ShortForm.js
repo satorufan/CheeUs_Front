@@ -178,12 +178,12 @@ const ShortForm = () => {
                     </div>
                   </div>
                   <div className="card-icons-container-list">
-                    <div className="card-icon-like">
-                      <Favorite className='likeIcon' style={{ fontSize: '20px', color: '#808080' }} />
+                    <div className="card-icon">
+                      <Favorite color="action" />
                       {board.like}
                     </div>
                     <div className="card-icon">
-                      <Visibility style={{ fontSize: '23px' }} />
+                      <Visibility />
                       {board.views}
                     </div>
                   </div>
