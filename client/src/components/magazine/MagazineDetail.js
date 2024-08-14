@@ -15,6 +15,7 @@ import Swal from 'sweetalert2';
 import { usePosts } from '../dtboard/PostContext';
 import { Bookmark } from '@mui/icons-material';
 import Spinner from 'react-bootstrap/Spinner';
+import axios from "axios";
 
 const MagazineDetail = () => {
   const { category, id } = useParams();
@@ -26,6 +27,7 @@ const MagazineDetail = () => {
   const [likeCount, setLikeCount] = useState(0);
   const [isScrapped, setIsScrapped] = useState(false);
   const { addScrap, checkScrap } = usePosts();
+  const [viewIncremented, setViewIncremented] = useState(false);
 
 
   useEffect(() => {
@@ -36,6 +38,40 @@ const MagazineDetail = () => {
       setData(magazineData); // 찾은 데이터를 state에 설정
     }
   }, [category, id, magazines]);
+
+  // 조회수
+  useEffect(() => {
+    const incrementViewCount = async () => {
+      if (viewIncremented) return; // 이미 증가했다면 요청 보내지 않음
+
+      try {
+        const response = await axios.put(
+            `${serverUrl}/Magazine/incrementView/${id}`,
+            {},
+            {
+              headers: {
+                "Authorization": `Bearer ${token}`,
+              },
+              withCredentials: true,
+            }
+        );
+
+        if (response.data.success) {
+          setData(prevData => ({
+            ...prevData,
+            views: response.data.updatedViewCount
+          }));
+          setViewIncremented(true); // 증가 완료 표시
+        }
+      } catch (error) {
+        console.error('Error incrementing view count:', error.response?.status, error.response?.data, error.message);
+      }
+    };
+
+    if (id && serverUrl && token) {
+      incrementViewCount();
+    }
+  }, [id, serverUrl, token, viewIncremented]);
 
   useEffect(() => {
     const fetchData = async () => {

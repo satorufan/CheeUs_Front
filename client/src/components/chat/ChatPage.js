@@ -176,7 +176,7 @@ const ChatPage = () => {
                 dispatch(updateOneOnOneChatRoomStatus({ roomId, match: 3 }))
                     .then(() => {
                         dispatch(fetchChatRooms({ serverUrl, loggedInUserId }));
-                        setSelectedChat(null); // Go back to default screen
+                        setSelectedChat(null); 
                         navigate('/chatpage');
                     })
                     .catch(err => console.error('1:1 채팅방 match 업데이트 오류:', err));
@@ -186,7 +186,7 @@ const ChatPage = () => {
                 dispatch(removeUserFromTogetherChatRoom({ roomId, userId: loggedInUserId }))
                     .then(() => {
                         dispatch(fetchTogetherChatRooms({ serverUrl, userId: loggedInUserId }));
-                        setSelectedChat(null); // Go back to default screen
+                        setSelectedChat(null); 
                         navigate('/chatpage');
                     })
                     .catch(err => console.error('단체 채팅방에서 사용자 제거 오류:', err));
@@ -215,7 +215,7 @@ const ChatPage = () => {
                                         chatRooms={chatRooms}
                                         selectedChat={selectedChat}
                                         handlePersonClick={handlePersonClick}
-                                        handleExitChat={handleExitChat} // Pass the handler here
+                                        handleExitChat={handleExitChat} 
                                         isTogether={false}
                                     />
                                 </div>

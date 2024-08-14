@@ -14,6 +14,7 @@ import Swal from 'sweetalert2';
 import { usePosts } from '../dtboard/PostContext';
 import { Bookmark } from '@mui/icons-material';
 import Spinner from 'react-bootstrap/Spinner';
+import axios from "axios";
 
 const EventDetail = () => {
   const { id } = useParams();
@@ -25,6 +26,7 @@ const EventDetail = () => {
   const [likeCount, setLikeCount] = useState(0);
   const [isScrapped, setIsScrapped] = useState(false);
   const { addScrap, checkScrap } = usePosts();
+  const [viewIncremented, setViewIncremented] = useState(false);
   const location = useLocation();
   const { eventData } = location.state || {};
   const navigate = useNavigate(); 
@@ -36,14 +38,12 @@ const EventDetail = () => {
 	  }, 100);
   }
   
-  
   useEffect(() => {
    	if (!eventData) {
       // eventData가 없는 경우, 서버로부터 데이터를 가져오는 로직
       setData(eventData);
     }
   }, [eventData, id]);
-  
   
   useEffect(() => {
     if (events && events.event) {
@@ -53,7 +53,41 @@ const EventDetail = () => {
       setLikeCount(eventData?.like); // 초기 like 카운트 설정
     }
   }, [id, events]);
-  
+
+  // 조회수
+  useEffect(() => {
+    const incrementViewCount = async () => {
+      if (viewIncremented) return; // 이미 증가했다면 요청 보내지 않음
+
+      try {
+        const response = await axios.put(
+            `${serverUrl}/Event/incrementView/${id}`,
+            {},
+            {
+              headers: {
+                "Authorization": `Bearer ${token}`,
+              },
+              withCredentials: true,
+            }
+        );
+
+        if (response.data.success) {
+          setData(prevData => ({
+            ...prevData,
+            views: response.data.updatedViewCount
+          }));
+          setViewIncremented(true); // 증가 완료 표시
+        }
+      } catch (error) {
+        console.error('Error incrementing view count:', error.response?.status, error.response?.data, error.message);
+      }
+    };
+
+    if (id && serverUrl && token) {
+      incrementViewCount();
+    }
+  }, [id, serverUrl, token, viewIncremented]);
+
   const handleLikeClick = async () => {
     if (data) {
       try {
@@ -61,11 +95,10 @@ const EventDetail = () => {
         setLiked(result.isLiked);
         setLikeCount(result.updatedLikeCount);
       } catch (error) {
-        console.error('좋아요 토글 에러:', error);
+        console.error('좋아요 토글 에러:', error.response?.status, error.response?.data, error.message);
       }
     }
   };
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -111,8 +144,6 @@ const EventDetail = () => {
   const thumbnail = data.content.match(/!\[alt text]\(https:\/\/[^\s]+\)/)?.[0];
 
   console.log("썸네일?", thumbnail);
-
-
 
   return (
     <div className="event-detail-container">

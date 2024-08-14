@@ -10,7 +10,7 @@ import { useToast } from '../components/app/ToastProvider';
 
 const useSocketIo = (activeKey, selectedChat, userEmail, setHasUnreadMessages) => {
     const dispatch = useDispatch();
-    const socket = useRef(null);
+    const socket = useRef(null); // 소켓 객체 참조
     const { notify } = useToast();
 
     useEffect(() => {
@@ -41,7 +41,7 @@ const useSocketIo = (activeKey, selectedChat, userEmail, setHasUnreadMessages) =
                 member
             };
             
-            if (activeKey === 'one') {
+            if (activeKey === 'one') { // 수신메세지 스토어에 업뎃
                 dispatch(updateLastMessageInChatRooms({ 
                     roomId: chat_room_id, 
                     message: enrichedMessage 
@@ -53,7 +53,7 @@ const useSocketIo = (activeKey, selectedChat, userEmail, setHasUnreadMessages) =
                 }));
             }
             
-            if (selectedChat && selectedChat.roomId) {
+            if (selectedChat && selectedChat.roomId) { // 활성화된 텝에 메세지 추가
                 if (activeKey === 'one' && chat_room_id === selectedChat.roomId) {
                     dispatch(appendMessageToChat(enrichedMessage));
                 } else if (activeKey === 'together' && room_id === selectedChat.roomId) {
@@ -72,9 +72,9 @@ const useSocketIo = (activeKey, selectedChat, userEmail, setHasUnreadMessages) =
             }
         };
 
-        socket.current.on('receiveMessage', handleReceiveMessage);
+        socket.current.on('receiveMessage', handleReceiveMessage); // 이벤트 수신할때마다
 
-        return () => {
+        return () => { // 소켓 연결 해제
             socket.current.off('receiveMessage', handleReceiveMessage);
             if (socket.current) {
                 socket.current.disconnect();

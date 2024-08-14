@@ -6,8 +6,7 @@ import '@toast-ui/editor/dist/toastui-editor.css';
 import './DTBinputForm.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import profileImg from '../images/noimage.jpg';
-import Favorite from '@mui/icons-material/Favorite';
-import Visibility from '@mui/icons-material/Visibility';
+import { Favorite, Visibility, Bookmark } from '@mui/icons-material';
 import Swal from 'sweetalert2';
 import { fetchUserProfiles} from '../../store/MatchSlice';
 import { useDispatch, useSelector} from 'react-redux';
@@ -17,6 +16,8 @@ import axios from 'axios';
 import { fetchTogetherChatRooms } from '../../store/ChatSlice';
 import useToProfile from '../../hooks/useToProfile';
 import UseAuthorImages from '../images/UseAuthorImage';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 
 const PostDetail = () => {
   const { id } = useParams();
@@ -94,6 +95,20 @@ const PostDetail = () => {
       incrementViewCount();
     }
   }, [serverUrl, token]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (post) {
+          try {
+              const isPostScrapped = await checkScrap(serverUrl, memberEmail, post.id, token, 2);
+              setIsScrapped(isPostScrapped);
+          } catch (error) {
+              console.error('Error fetching data:', error);
+          }
+        }
+    };
+    fetchData();
+  }, [post, serverUrl, memberEmail, token]);
 
 
   const handleLikeClick = async () => {
@@ -226,6 +241,11 @@ const PostDetail = () => {
           <div className="textareaBox">{post.title}</div>
           <div className='textareaBoxRight'>
           	<div className = 'iconBox'>
+              <Bookmark 
+                  color={isScrapped ? 'primary' : 'action'} 
+                  onClick={onScrapHandler}
+                  style={{ cursor: 'pointer', marginRight:'10px' }}
+                /> 
           		<Favorite 
 	              className='likeIcon' 
 	              color={isLiked ? 'error' : 'action'}
@@ -278,7 +298,7 @@ const PostDetail = () => {
         <button className="backButton" onClick={handleClickJoinBtn} hidden={!isJoined}>현재 참여중</button>
       </div>
       <div className="buttonArea2">
-        {memberEmail === post.author_id ? (
+        {memberEmail === post.author_id && (
           <>
             <button className="backButton" onClick={onModifyHandler}>
               글 수정
@@ -286,11 +306,6 @@ const PostDetail = () => {
             <button className="backButton" onClick={onDeleteHandler}>
               글 삭제
             </button>
-          </>
-        ) : (
-          <>
-            <button className="backButton" onClick={onScrapHandler} hidden={isScrapped}>찜하기</button>
-            <button className="backButton" onClick={onScrapHandler} hidden={!isScrapped}>찜삭제</button>
           </>
         )}
       </div>

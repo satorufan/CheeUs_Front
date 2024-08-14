@@ -73,6 +73,7 @@
     gap: 0.5rem;
     cursor: pointer;
     white-space: nowrap;
+    justify-content: flex-end;
 }
 .card-icon {
     display: flex;

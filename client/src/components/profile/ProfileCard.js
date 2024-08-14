@@ -10,7 +10,6 @@ import ReportModal from '../app/ReportModal';
 const ProfileCard = ({ profileInfo, loggedInUserId, type }) => {
     const dispatch = useDispatch();
     const userLocation = useSelector((state) => state.profile.userLocation);
-    console.log(profileInfo);
 
     const {serverUrl, memberEmail, token} = useContext(AuthContext);
     const [showModal, setShowModal] = useState(false);
