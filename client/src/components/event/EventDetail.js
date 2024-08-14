@@ -89,6 +89,11 @@ const EventDetail = () => {
   }, [id, serverUrl, token, viewIncremented]);
 
   const handleLikeClick = async () => {
+    if (!memberEmail) {
+      Swal.fire('로그인 후 이용가능합니다');
+      return;
+    }
+
     if (data) {
       try {
         const result = await toggleLike(serverUrl, data.id, token, memberEmail);
@@ -116,6 +121,11 @@ const EventDetail = () => {
   }, [data, serverUrl, memberEmail, token]);
 
   const onScrapHandler = async () => {
+    if (!memberEmail) {
+      Swal.fire('로그인 후 이용가능합니다');
+      return;
+    }
+    
     const scrapMessage = await addScrap(serverUrl, memberEmail, id, data.title, token, window.location.href, 3 );
     Swal.fire({
       title: `${scrapMessage}!`,

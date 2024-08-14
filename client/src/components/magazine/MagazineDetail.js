@@ -114,6 +114,11 @@ const MagazineDetail = () => {
 
   // 좋아요 관련
   const handleLikeClick = async () => {
+    if (!memberEmail) {
+      Swal.fire('로그인 후 이용가능합니다');
+      return;
+    }
+
     if (data) {
       try {
         const result = await toggleLike(serverUrl, data.id, token, memberEmail);
@@ -126,6 +131,11 @@ const MagazineDetail = () => {
   };
   
   const onScrapHandler = async () => {
+    if (!memberEmail) {
+      Swal.fire('로그인 후 이용가능합니다');
+      return;
+    }
+    
     const scrapMessage = await addScrap(serverUrl, memberEmail, id, data.title, token, window.location.href, 4 );
     Swal.fire({
       title: `${scrapMessage}!`,
