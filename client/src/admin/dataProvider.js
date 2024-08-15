@@ -87,15 +87,25 @@ const dataProvider = {
             total: data.length,
         };
     },
-    getOne: async (resource, params) => {
-        console.log('params:', params);
-        const url = `${endpoints[resource]}/${params.email || params.id}`;
-        const { data } = await axios.get(url, httpHeader);
-        // 응답 데이터가 `id` 필드를 포함하도록 변환
-        const result = { ...data, id: data.email }; // 여기서 data.email을 id로 사용
-        return { data: result };
-        //return { data };
-    },
+	getOne: async (resource, params) => {
+	    console.log('params:', params);
+	
+	    // 모든 리소스에 대해 id를 사용
+	    const resourceId = params.id;
+	
+	    if (!resourceId) {
+	        console.error(`Resource ID is missing for resource: ${resource}`);
+	        throw new Error(`Resource ID is missing for resource: ${resource}`);
+	    }
+	
+	    const url = `${endpoints[resource]}/${resourceId}`;
+	    const { data } = await axios.get(url, httpHeader);
+	
+	    // 응답 데이터가 `id` 필드를 포함하도록 변환
+	    const result = { ...data, id: data.id || resourceId };
+	
+	    return { data: result };
+	},
     getMany: async (resource, params) => {
         const url = `${endpoints[resource]}?${stringify(params)}`;
         const { data } = await axios.get(url, httpHeader);
@@ -106,13 +116,25 @@ const dataProvider = {
         const { data } = await axios.get(url);
         return { data };
     },
-    update: async (resource, params) => {
-        console.log('params.data:', params.data);
-        const url = `${endpoints[resource]}/${params.data.email || params.data.id}`;
-        console.log("update params.data " + params.data);
-        await axios.put(url, params.data, httpHeader);
-        return { data: params.data };
-    },
+	update: async (resource, params) => {
+	    console.log('params.data:', params.data);
+	
+	    // 항상 id 필드를 사용하여 리소스 ID 가져오기
+	    const resourceId = params.data.id;
+	
+	    if (!resourceId) {
+	        throw new Error(`Resource ID is missing for resource: ${resource}`);
+	    }
+	
+	    const url = `${endpoints[resource]}/${resourceId}`;
+	    console.log("update params.data:", params.data);
+	
+	    // 서버에 PUT 요청 보내기
+	    const { data } = await axios.put(url, params.data, httpHeader);
+	
+	    // 반환 데이터에 ID 포함
+	    return { data: { ...params.data, id: resourceId } };
+	},
     updateMany: async (resource, params) => {
         const promises = params.ids.map(id => {
             const url = `${endpoints[resource]}/${id}`;
@@ -138,7 +160,8 @@ const dataProvider = {
         uploadedImages = [];
 
         const { data } = await axios.post(url, params.data, httpHeader);
-        console.log('Resource created successfully:', data); // 로그 추가
+        console.log('Resource created successfully:', params.data); // 로그 추가
+        console.log('url', params.data); // 로그 추가
 
         return { data: { ...params.data, id: data.email || data.id } };
     },
