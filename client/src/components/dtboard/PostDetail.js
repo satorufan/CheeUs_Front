@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { usePosts } from './PostContext';
 import PostDetailMap from './PostDetailMap';
 import '@toast-ui/editor/dist/toastui-editor.css';
@@ -35,6 +35,8 @@ const PostDetail = () => {
   const navigateToUserProfile = useToProfile();
   const authorImages = UseAuthorImages(posts);
   const [loadedImages, setLoadedImages] = useState({});
+  const location = useLocation();
+  const { dtPostData } = location.state || {};
 
   // 유저가 해당 게시글 채팅방에 참여중인지 확인
   const rooms = useSelector(state => state.chat.togetherChatRooms);
@@ -46,6 +48,23 @@ const PostDetail = () => {
       setLoadedImages(prevState => ({ ...prevState, [authorId]: true }));
     };
 
+	useEffect(() => {
+	  console.log("dtPostData:", dtPostData);
+	  console.log("currentPost:", currentPost);
+	
+	  if (!dtPostData) {
+	    // 서버에서 데이터를 가져오는 로직...
+	  } else {
+	    setCurrentPost(dtPostData);
+	  }
+	}, [dtPostData, id]);
+    
+    
+   console.log("데이타11",dtPostData);
+   
+   
+   
+   
     useEffect(() => {
       const checkUserLiked = async () => {
           if (post) {
