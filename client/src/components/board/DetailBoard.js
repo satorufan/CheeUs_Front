@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext, useCallback } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { usePosts } from '../dtboard/PostContext';
-import { selectBoardAuthors, selectBoards, selectPageBoardsMedia, likeBoard } from '../../store/BoardSlice';
+import { selectBoardAuthors, selectBoards, selectPageBoardsMedia, likeBoard, updateBoardViews } from '../../store/BoardSlice';
 import Avatar from '@mui/material/Avatar';
 import { Favorite, Visibility, Bookmark } from '@mui/icons-material';
 import { AuthContext } from '../login/OAuth';
@@ -35,26 +35,21 @@ const DetailBoard = () => {
   const { addScrap, checkScrap } = usePosts();
   const navigateToUserProfile = useToProfile();
 
-  const board = boards.find(b => b.id === parseInt(id, 10));
-  const currentViews = board?.views || 0;
   const location = useLocation();
-  const [boardData, setBoardData] = useState(location.state?.boardData || null);
-  
+  const [boardData, setBoardData] = useState(null);
+
   let decodedToken;
   if (token) {
     decodedToken = jwtDecode(token);
   }
-  useEffect(()=>{
-    if(!boardData) {
-        const newBoardData = boards.find(b => b.id === parseInt(id, 10));
-        setBoardData(newBoardData); // 상태 업데이트 함수로 설정
-    }
-  }, [boardData, id]);
-  
-  console.log(boardData);
-  
+
+  useEffect(() => {
+    const initialBoardData = location.state?.boardData || boards.find(b => b.id === parseInt(id, 10));
+    setBoardData(initialBoardData);
+  }, [location.state, boards, id]);
+
   const incrementViewCount = useCallback(async () => {
-    if (viewIncremented || !token) return;
+    if (viewIncremented || !token || !boardData) return;
 
     try {
       const response = await axios.put(
@@ -67,28 +62,31 @@ const DetailBoard = () => {
       );
 
       if (response.data.success) {
-        dispatch({
-          type: 'UPDATE_BOARD_VIEWS',
-          payload: { id: parseInt(id), views: response.data.updatedViewCount }
-        });
+        const updatedViewCount = response.data.updatedViewCount;
+
+        setBoardData((prevData) => ({
+          ...prevData,
+          views: updatedViewCount,
+        }));
+
+        dispatch(updateBoardViews({ id: parseInt(id), views: updatedViewCount }));
+
         setViewIncremented(true);
       }
     } catch (error) {
       console.error('Error incrementing view count:', error);
     }
-  }, [id, token, viewIncremented, dispatch]);
-  
+  }, [id, token, viewIncremented, dispatch, boardData]);
+
   useEffect(() => {
     incrementViewCount();
   }, [incrementViewCount]);
 
-
-
   useEffect(() => {
-    if (board) {
+    if (boardData) {
       const loadData = async () => {
         try {
-          const isPostScrapped = await checkScrap(serverUrl, memberEmail, board.id, token, 1);
+          const isPostScrapped = await checkScrap(serverUrl, memberEmail, boardData.id, token, 1);
           setIsScrapped(isPostScrapped);
         } catch (error) {
           console.error('Error fetching data:', error);
@@ -96,25 +94,25 @@ const DetailBoard = () => {
       };
       loadData();
     }
-  }, [board, serverUrl, memberEmail, token, checkScrap]);
+  }, [boardData, serverUrl, memberEmail, token, checkScrap]);
 
   useEffect(() => {
-    if (board?.category === 2 && authors && Object.keys(authors).length > 0 && Object.keys(medias).length > 0) {
+    if (boardData?.category === 2 && authors && Object.keys(authors).length > 0 && Object.keys(medias).length > 0) {
       setIsLoaded(true);
-    } else if (board?.category !== 2 && authors && Object.keys(authors).length > 0) {
+    } else if (boardData?.category !== 2 && authors && Object.keys(authors).length > 0) {
       setIsLoaded(true);
     }
-  }, [board, authors, medias]);
+  }, [boardData, authors, medias]);
 
   useEffect(() => {
-    if (board) {
-      const path = board.category === 1 ? `/board/freeboard/detail/${id}`
-          : board.category === 2 ? `/board/shortform/detail/${id}`
-              : board.category === 3 ? `/board/eventboard/detail/${id}`
+    if (boardData) {
+      const path = boardData.category === 1 ? `/board/freeboard/detail/${id}`
+          : boardData.category === 2 ? `/board/shortform/detail/${id}`
+              : boardData.category === 3 ? `/board/eventboard/detail/${id}`
                   : '/';
       navigate(path);
     }
-  }, [board, id, navigate]);
+  }, [boardData, id, navigate]);
 
   const handleLike = async () => {
     if (!memberEmail) {
@@ -122,7 +120,7 @@ const DetailBoard = () => {
       return;
     }
     try {
-      await dispatch(likeBoard({ id: board.id, userEmail: memberEmail })).unwrap();
+      await dispatch(likeBoard({ id: boardData.id, userEmail: memberEmail })).unwrap();
       setLiked(prevLiked => !prevLiked);
     } catch (error) {
       Swal.fire('Oops! 잠시 후 다시 시도해 주세요.');
@@ -136,7 +134,7 @@ const DetailBoard = () => {
     }
 
     try {
-      const scrapMessage = await addScrap(serverUrl, memberEmail, id, board.title, token, window.location.href, 1);
+      const scrapMessage = await addScrap(serverUrl, memberEmail, id, boardData.title, token, window.location.href, 1);
       Swal.fire({
         title: `${scrapMessage}!`,
         icon: '',
@@ -165,7 +163,7 @@ const DetailBoard = () => {
 
     if (result.isConfirmed) {
       try {
-        const toBeDeletedImages = extractImageUrls(board.content);
+        const toBeDeletedImages = extractImageUrls(boardData.content);
         if (toBeDeletedImages.length > 0) {
           await Promise.all(toBeDeletedImages.map(async (photoUrl) => {
             const imageRef = ref(storage, photoUrl);
@@ -178,13 +176,13 @@ const DetailBoard = () => {
           }));
         }
 
-        await axios.delete(`http://localhost:8080/board/delete/${board.id}`);
+        await axios.delete(`http://localhost:8080/board/delete/${boardData.id}`);
         console.log('게시물이 삭제되었습니다.');
         await Swal.fire('삭제 완료!', '게시물이 성공적으로 삭제되었습니다.', 'success');
 
-        const path = board.category === 1 ? '/board/freeboard'
-            : board.category === 2 ? '/board/shortform'
-                : board.category === 3 ? '/board/eventboard'
+        const path = boardData.category === 1 ? '/board/freeboard'
+            : boardData.category === 2 ? '/board/shortform'
+                : boardData.category === 3 ? '/board/eventboard'
                     : '/';
         navigate(path);
       } catch (error) {
@@ -199,7 +197,7 @@ const DetailBoard = () => {
     return Array.from(content.matchAll(regex), m => m[1]);
   };
 
-  if (!board) return <div>게시물을 찾을 수 없습니다.</div>;
+  if (!boardData) return <div>게시물을 찾을 수 없습니다.</div>;
   if (!isLoaded) return <BoardDetailSkeleton />;
 
   return (
@@ -207,28 +205,28 @@ const DetailBoard = () => {
         <div className="detail-post">
           <div className="detail-avatar-container">
             <Avatar
-                src={authors[board.author_id]}
+                src={authors[boardData.author_id]}
                 sx={{ width: 40, height: 40 }}
                 className="detail-avatar"
-                onClick={() => navigateToUserProfile(board.author_id)}
+                onClick={() => navigateToUserProfile(boardData.author_id)}
             />
-            <div className="detail-author" onClick={() => navigateToUserProfile(board.author_id)}>{board.nickname}</div>
+            <div className="detail-author" onClick={() => navigateToUserProfile(boardData.author_id)}>{boardData.nickname}</div>
           </div>
           <div className="detail-title-container">
-            <div className="detail-title">{board.title}</div>
-            <div className="detail-writeday">{board.writeday}</div>
+            <div className="detail-title">{boardData.title}</div>
+            <div className="detail-writeday">{boardData.writeday}</div>
           </div>
           <div className="detail-content-container">
-            {board.category === 2 ? (
+            {boardData.category === 2 ? (
                 <div className="detail-video-container">
                   <div className="detail-video-wrapper">
                     <video className="detail-video" controls>
-                      <source src={medias[board.id]} type="video/mp4" />
+                      <source src={medias[boardData.id]} type="video/mp4" />
                       Your browser does not support the video tag.
                     </video>
                   </div>
                   <div className="detail-video-content">
-                    <p>{board.content}</p>
+                    <p>{boardData.content}</p>
                   </div>
                 </div>
             ) : (
@@ -240,7 +238,7 @@ const DetailBoard = () => {
                       img: ({ node, ...props }) => <img className="detail-image" {...props} />
                     }}
                 >
-                  {board.content}
+                  {boardData.content}
                 </ReactMarkdown>
             )}
           </div>
@@ -251,10 +249,10 @@ const DetailBoard = () => {
                     color={liked ? 'error' : 'action'}
                     onClick={handleLike}
                 />
-                {liked ? board.like + 1 : board.like}
+                {liked ? boardData.like + 1 : boardData.like}
               </p>
               <p>
-                <Visibility />{currentViews}
+                <Visibility />{boardData.views}
               </p>
               <p>
                 <Bookmark
@@ -265,10 +263,10 @@ const DetailBoard = () => {
               </p>
             </div>
           </div>
-          {decodedToken && (decodedToken.email === board.author_id) && (
+          {decodedToken && (decodedToken.email === boardData.author_id) && (
               <div className="detail-edit-container">
                 <button
-                    onClick={() => navigate(`/board/${board.category === 1 ? 'freeboard' : board.category === 2 ? 'shortform' : 'eventboard'}/edit/${id}`)}
+                    onClick={() => navigate(`/board/${boardData.category === 1 ? 'freeboard' : boardData.category === 2 ? 'shortform' : 'eventboard'}/edit/${id}`)}
                     className="detail-edit-btn"
                 >
                   수정하기
