@@ -22,6 +22,7 @@ import ChatList from './ChatList';
 import ChatWindow from './ChatWindow';
 import useSocketIo from '../../hooks/useSocketIo';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const ChatPage = () => {
     const dispatch = useDispatch();
@@ -47,7 +48,7 @@ const ChatPage = () => {
         }
     }, [token]);
 
-    const socket = useSocketIo(activeKey, selectedChat); // 커스텀훅
+    const socket = useSocketIo(activeKey, selectedChat);
 
     useEffect(() => {
         if (loggedInUserId) {
@@ -92,7 +93,7 @@ const ChatPage = () => {
         try {
             const selectedRoom = togetherChatRooms.find(room => room.roomId === roomId);
             if (!selectedRoom) {
-                console.error(`roomId ${roomId}에 해당하는 단체 채팅방을 찾을 수 없습니다.`);
+                //console.error(`roomId ${roomId}에 해당하는 단체 채팅방을 찾을 수 없습니다.`);
                 return;
             }
     
@@ -138,7 +139,7 @@ const ChatPage = () => {
                 member: (selectedChat?.members || [])
             .filter(member => member.email !== loggedInUserId) 
             .map(member => member.email)
-    })
+         })
         };
     
         // 소켓으로 메시지 전송
@@ -172,25 +173,41 @@ const ChatPage = () => {
 
     const handleExitChat = (roomId) => {
         if (activeKey === 'one') {
-            if (window.confirm('정말로 이 1:1 채팅방을 나가시겠습니까?')) {
-                dispatch(updateOneOnOneChatRoomStatus({ roomId, match: 3 }))
-                    .then(() => {
-                        dispatch(fetchChatRooms({ serverUrl, loggedInUserId }));
-                        setSelectedChat(null); 
-                        navigate('/chatpage');
-                    })
-                    .catch(err => console.error('1:1 채팅방 match 업데이트 오류:', err));
-            }
+            Swal.fire({
+                title: '정말로 이 1:1 채팅방을 나가시겠습니까?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '채팅방 나가기',
+                cancelButtonText: '머무르기'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    dispatch(updateOneOnOneChatRoomStatus({ roomId, match: 3 }))
+                        .then(() => {
+                            dispatch(fetchChatRooms({ serverUrl, loggedInUserId }));
+                            setSelectedChat(null); 
+                            navigate('/chatpage');
+                        })
+                        .catch(err => console.error('1:1 채팅방 match 업데이트 오류:', err));
+                }
+            });
         } else {
-            if (window.confirm('정말로 이 단체 채팅방에서 나가시겠습니까?')) {
-                dispatch(removeUserFromTogetherChatRoom({ roomId, userId: loggedInUserId }))
-                    .then(() => {
-                        dispatch(fetchTogetherChatRooms({ serverUrl, userId: loggedInUserId }));
-                        setSelectedChat(null); 
-                        navigate('/chatpage');
-                    })
-                    .catch(err => console.error('단체 채팅방에서 사용자 제거 오류:', err));
-            }
+            Swal.fire({
+                title: '정말로 이 단체 채팅방에서 나가시겠습니까?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '채팅방 나가기',
+                cancelButtonText: '머무르기'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    dispatch(removeUserFromTogetherChatRoom({ roomId, userId: loggedInUserId }))
+                        .then(() => {
+                            dispatch(fetchTogetherChatRooms({ serverUrl, userId: loggedInUserId }));
+                            setSelectedChat(null); 
+                            navigate('/chatpage');
+                        })
+                        .catch(err => console.error('단체 채팅방에서 사용자 제거 오류:', err));
+                }
+            });
         }
     };
 
@@ -241,7 +258,7 @@ const ChatPage = () => {
                                         chatRooms={togetherChatRooms}
                                         selectedChat={selectedChat}
                                         handlePersonClick={handleTogetherRoomClick}
-                                        handleExitChat={handleExitChat} // Pass the handler here
+                                        handleExitChat={handleExitChat}
                                         isTogether={true}
                                     />
                                 </div>

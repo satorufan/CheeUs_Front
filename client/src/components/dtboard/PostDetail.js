@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { usePosts } from './PostContext';
 import PostDetailMap from './PostDetailMap';
 import '@toast-ui/editor/dist/toastui-editor.css';
@@ -8,8 +8,8 @@ import 'react-datepicker/dist/react-datepicker.css';
 import profileImg from '../images/noimage.jpg';
 import { Favorite, Visibility, Bookmark } from '@mui/icons-material';
 import Swal from 'sweetalert2';
-import { fetchUserProfiles} from '../../store/MatchSlice';
-import { useDispatch, useSelector} from 'react-redux';
+import { fetchUserProfiles } from '../../store/MatchSlice';
+import { useDispatch, useSelector } from 'react-redux';
 import { AuthContext } from '../login/OAuth';
 import { selectUserProfile } from '../../store/ProfileSlice';
 import axios from 'axios';
@@ -24,7 +24,6 @@ const PostDetail = () => {
   const dispatch = useDispatch();
   const { memberEmail, serverUrl, token } = useContext(AuthContext);
   const [isLiked, setIsLiked] = useState(false);
-  // const [like, setLike] = useState(false);
   const [authorInfo, setAuthorInfo] = useState();
   const [isScrapped, setIsScrapped] = useState(false);
   const { posts, setPosts, deletePost, addScrap, checkScrap, userLiked, toggleLike } = usePosts();
@@ -35,6 +34,11 @@ const PostDetail = () => {
   const navigateToUserProfile = useToProfile();
   const authorImages = UseAuthorImages(posts);
   const [loadedImages, setLoadedImages] = useState({});
+  const location = useLocation();
+  const { dtPostData } = location.state || {};
+  const [joinTime, setJoinTime] = useState({});
+  const [views, setViews] = useState(0);
+  const [viewIncremented, setViewIncremented] = useState(false);
 
   // 유저가 해당 게시글 채팅방에 참여중인지 확인
   const rooms = useSelector(state => state.chat.togetherChatRooms);
@@ -45,6 +49,19 @@ const PostDetail = () => {
     const handleImageLoad = (authorId) => {
       setLoadedImages(prevState => ({ ...prevState, [authorId]: true }));
     };
+
+	useEffect(() => {
+	  console.log("dtPostData:", dtPostData);
+	  console.log("currentPost:", currentPost);
+	
+	  if (!dtPostData) {
+	    // 서버에서 데이터를 가져오는 로직...
+	  } else {
+	    setCurrentPost(dtPostData);
+	  }
+	}, [dtPostData, id]);
+
+   console.log("데이타11",dtPostData);
 
     useEffect(() => {
       const checkUserLiked = async () => {
@@ -71,30 +88,37 @@ const PostDetail = () => {
   }, [post]);
 
   useEffect(() => {
-    if (post) {
-      const incrementViewCount = async () => {
-        try {
-          const response = await axios.put(`${serverUrl}/dtBoard/incrementView/${post.id}`, {}, {
-            headers: {
-              "Authorization": `Bearer ${token}`,
-            },
-            withCredentials: true,
-          });
-
-          if (response.data.success) {
-            setCurrentPost(prevPost => ({
-              ...prevPost,
-              views: response.data.updatedViewCount
-            }));
-          }
-        } catch (error) {
-          console.error('Error incrementing view count:', error);
-        }
-      };
-
-      incrementViewCount();
+    if (currentPost && !viewIncremented) {
+      setViews(currentPost.views + 1);
     }
-  }, [serverUrl, token]);
+  }, [currentPost]);
+
+  useEffect(() => {
+    if (viewIncremented || !views) return;
+
+    const incrementViewCount = async () => {
+      try {
+        const response = await axios.put(`${serverUrl}/dtBoard/incrementView/${id}`, {}, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+          withCredentials: true,
+        });
+
+        if (response.data.success) {
+          setCurrentPost(prevPost => ({
+            ...prevPost,
+            views: views
+          }));
+          setViewIncremented(true);
+        }
+      } catch (error) {
+        console.error('Error incrementing view count:', error);
+      }
+    };
+
+    incrementViewCount();
+  }, [views, id, serverUrl, token, viewIncremented]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -109,7 +133,6 @@ const PostDetail = () => {
     };
     fetchData();
   }, [post, serverUrl, memberEmail, token]);
-
 
   const handleLikeClick = async () => {
     if (currentPost) {
@@ -224,8 +247,9 @@ const PostDetail = () => {
     await axios.post(joinRoom, join).then(res=>console.log(res)).catch(err=>console.log(err));
     await axios.post(sendMessage, newMessage);
 
+    setJoinTime(new Date());
+    
     handleClickJoinBtn();
-
   };
 
   if (!memberEmail) {
@@ -263,7 +287,7 @@ const PostDetail = () => {
                   />
                     <span>{currentPost?.like}</span>
                   <Visibility className='viewIcon'/>
-                    <span>{post.views}</span>
+                    <span>{views}</span>
                   <Bookmark 
                     color={isScrapped ? 'primary' : 'action'} 
                     onClick={onScrapHandler}
