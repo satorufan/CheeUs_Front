@@ -37,6 +37,7 @@ const PostDetail = () => {
   const [loadedImages, setLoadedImages] = useState({});
   const location = useLocation();
   const { dtPostData } = location.state || {};
+  const [joinTime, setJoinTime] = useState({});
 
   // 유저가 해당 게시글 채팅방에 참여중인지 확인
   const rooms = useSelector(state => state.chat.togetherChatRooms);
@@ -243,8 +244,9 @@ const PostDetail = () => {
     await axios.post(joinRoom, join).then(res=>console.log(res)).catch(err=>console.log(err));
     await axios.post(sendMessage, newMessage);
 
+    setJoinTime(new Date());
+    
     handleClickJoinBtn();
-
   };
 
   if (!memberEmail) {

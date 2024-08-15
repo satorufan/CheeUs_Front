@@ -8,11 +8,12 @@ import { selectProfiles, fetchUserProfiles } from '../../store/MatchSlice';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { Modal, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { removeUserFromTogetherChatRoom, fetchTogetherChatRooms } from '../../store/ChatSlice';
+import { removeUserFromTogetherChatRoom, fetchTogetherChatRooms, setSelectedChat } from '../../store/ChatSlice';
 import ReportModal from '../app/ReportModal';
 import axios from 'axios';
 import { useToast } from '../app/ToastProvider';
 import useToProfile from '../../hooks/useToProfile';
+import Swal from 'sweetalert2';
 
 const ChatWindow = ({
     selectedChat,
@@ -32,9 +33,10 @@ const ChatWindow = ({
 
     const [loggedInUserId, setLoggedInUserId] = useState(null);
     const [showParticipants, setShowParticipants] = useState(false);
-    const [participants, setParticipants] = useState([]);   // 현재 참여자
-    const [profileData, setProfileData] = useState([]); // 프로필 정보 캐시
+    const [participants, setParticipants] = useState([]); 
+    const [profileData, setProfileData] = useState([]); 
     const navigateToUserProfile = useToProfile();
+    const [joinTime, setJoinTime] = useState(null); 
 
     const { toggleNotifications, isNotificationsEnabled } = useToast();
 
@@ -110,9 +112,6 @@ const ChatWindow = ({
             const profileData = {
                 email: profile.email,
                 nickname: profile.nickname,
-                // image: profile && profile.imageBlob.length > 0
-                //     ? `data:${profile.imageType};base64,${profile.imageBlob}`
-                //     : `${process.env.PUBLIC_URL}/images/default-user-icon.png`
                 image: profile
                     ? profile.imageType : `${process.env.PUBLIC_URL}/images/default-user-icon.png`
             };
@@ -256,94 +255,115 @@ const ChatWindow = ({
     
         let lastDate = null;
     
-        return selectedChat.messages.map((message, index) => {
-            if (!message) {
-                console.error('Undefined message at index:', index);
-                return null; 
-            }
+        return selectedChat.messages
+            .filter(message => new Date(message.write_day) > new Date(joinTime))
+            .map((message, index) => {
+                if (!message) {
+                    console.error('Undefined message at index:', index);
+                    return null;
+                }
     
-            const messageDate = formatDate(message.write_day);
-            const showDateSeparator = lastDate !== messageDate;
+                const messageDate = formatDate(message.write_day);
+                const showDateSeparator = lastDate !== messageDate;
     
-            lastDate = messageDate;
+                lastDate = messageDate;
     
-            const senderProfile = profileData[message.sender_id] || {};
-            const isSameSenderAsPrevious = index > 0 && selectedChat.messages[index - 1].sender_id === message.sender_id;
-            const isProfileLoading = !profileData[message.sender_id]; 
+                const senderProfile = profileData[message.sender_id] || {};
+                const isSameSenderAsPrevious = index > 0 && selectedChat.messages[index - 1].sender_id === message.sender_id;
+                const isProfileLoading = !profileData[message.sender_id];
     
-            return (
-                <React.Fragment key={index}>
-                    {showDateSeparator && (
-                        <div className="date-separator">
-                            <div className="messageDate">{messageDate}</div>
-                        </div>
-                    )}
-                    <div className={`chat-bubble-container ${isSender(message.sender_id) ? 'me' : 'you'}`}>
-                        {(message.sender_id !== "System") && !isSender(message.sender_id) && !isSameSenderAsPrevious && (
-                            <div className="message-info">
-                                {isProfileLoading ? (
-                                    <div className="skeleton-img skeleton-loading"></div>
-                                ) : (
-                                    <img
-                                        src={senderProfile.image || `${process.env.PUBLIC_URL}/images/default-user-icon.png`}
-                                        alt={`Profile of ${senderProfile.nickname || 'Unknown'}`}
-                                        className="profile-img rounded-circle"
-                                        style={{ width: '40px', height: '40px' }}
-                                        onClick={() => navigateToUserProfile(message.sender_id)}
-                                    />
-                                )}
-                                <span className="nickname" onClick={() => navigateToUserProfile(message.sender_id)}>
-                                    {isProfileLoading ? (
-                                        <div className="skeleton-nick skeleton-loading"></div>
-                                    ) : (
-                                        senderProfile.nickname || '알수없음'
-                                    )}
-                                </span>
+                return (
+                    <React.Fragment key={index}>
+                        {showDateSeparator && (
+                            <div className="date-separator">
+                                <div className="messageDate">{messageDate}</div>
                             </div>
                         )}
-                        <div className={getChatBubbleClasses(message.sender_id)}>
-                            {message.message}
+                        <div className={`chat-bubble-container ${isSender(message.sender_id) ? 'me' : 'you'}`}>
+                            {(message.sender_id !== "System") && !isSender(message.sender_id) && !isSameSenderAsPrevious && (
+                                <div className="message-info">
+                                    {isProfileLoading ? (
+                                        <div className="skeleton-img skeleton-loading"></div>
+                                    ) : (
+                                        <img
+                                            src={senderProfile.image || `${process.env.PUBLIC_URL}/images/default-user-icon.png`}
+                                            alt={`Profile of ${senderProfile.nickname || 'Unknown'}`}
+                                            className="profile-img rounded-circle"
+                                            style={{ width: '40px', height: '40px' }}
+                                            onClick={() => navigateToUserProfile(message.sender_id)}
+                                        />
+                                    )}
+                                    <span className="nickname" onClick={() => navigateToUserProfile(message.sender_id)}>
+                                        {isProfileLoading ? (
+                                            <div className="skeleton-nick skeleton-loading"></div>
+                                        ) : (
+                                            senderProfile.nickname || '알수없음'
+                                        )}
+                                    </span>
+                                </div>
+                            )}
+                            <div className={getChatBubbleClasses(message.sender_id)}>
+                                {message.message}
+                            </div>
+                            <span className="chat-time">{formatMessageTime(message.write_day)}</span>
                         </div>
-                        <span className="chat-time">{formatMessageTime(message.write_day)}</span>
-                    </div>
-                </React.Fragment>
-            );
-        });
+                    </React.Fragment>
+                );
+            });
     };
     
-
     //강퇴
     const handleKick = (userEmailObj) => {
         const roomId = selectedChat.roomId;
         const userId = userEmailObj.email;
-    
-        console.log(roomId);
-        console.log(userId);
-    
         if (!roomId || !userId) {
             console.error('Invalid roomId or userEmail:', roomId, userId);
             return;
         }
     
-        console.log({ roomId, userId });
-    
-        if (window.confirm('정말로 이 사용자를 단체 채팅방에서 강퇴하시겠습니까?')) {
-            dispatch(removeUserFromTogetherChatRoom({ roomId, userId, mode : 'kick' }))
-                .then(() => {
-                    console.log('단체 채팅방에서 사용자 강퇴 성공');
-                    // 단체 채팅방 리스트 다시 불러오기
-                    dispatch(fetchTogetherChatRooms({ serverUrl, userId: loggedInUserId }))
-                        .then(() => {
-                            // 참여자 목록 업데이트
-                            setParticipants(prevParticipants => prevParticipants.filter(participant => participant.email !== userId));
+        Swal.fire({
+            title: '정말로 이 사용자를 단체 채팅방에서 강퇴하시겠습니까?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '강퇴',
+            cancelButtonText: '취소'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                dispatch(removeUserFromTogetherChatRoom({ roomId, userId, mode : 'kick' }))
+                    .then(() => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: '사용자 강퇴 성공',
+                            text: '사용자가 성공적으로 강퇴되었습니다.',
                         });
-                })
-                .catch(err => console.error('단체 채팅방에서 사용자 강퇴 오류:', err));
-        }
+    
+                        const newParticipants = participants.filter(member => member.email !== userId);
+                        setParticipants(newParticipants);
+    
+                        if (newParticipants.length > 0) {
+                            setSelectedChat(prev => ({
+                                ...prev,
+                                members: newParticipants
+                            }));
+                        } else {
+                            dispatch(setSelectedChat(null));
+                        }
+                        dispatch(fetchTogetherChatRooms({ serverUrl, userId: loggedInUserId }));
+                        toggleParticipants(); // +
+                    })
+                    .catch(err => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: '강퇴 오류',
+                            text: '단체 채팅방에서 사용자를 강퇴하는 중에 오류가 발생했습니다.',
+                        });
+                        console.error('단체 채팅방에서 사용자 강퇴 오류:', err);
+                    });
+            }
+        });
     };
 
     const handleReport = (memberId) => {
-        // 신고할 유저의 email을 상태로 저장
         setReportedId(memberId.email);
     
         handleReportModalOpen();
@@ -387,8 +407,6 @@ const ChatWindow = ({
                         className="form-control flex-grow-1 chat-input"
                         placeholder="메시지를 입력하세요..."
                         ref={inputMessageRef}
-                        // value={inputMessageRef.current}
-                        // onChange={(e) => setMessageInput(e.target.value)}
                         onKeyPress={(e) => {
                             if (e.key === 'Enter') {
                                 sendMessage(inputMessageRef.current.value);
@@ -410,7 +428,7 @@ const ChatWindow = ({
             )}
 
             {/* 채팅 참여자 모달 */}
-            <Modal show={showParticipants} onHide={toggleParticipants}>
+             <Modal show={showParticipants} onHide={toggleParticipants}>
                 <Modal.Header closeButton>
                     <Modal.Title>채팅 참여자</Modal.Title>
                 </Modal.Header>
@@ -445,7 +463,7 @@ const ChatWindow = ({
                             ))}
                         </ul>
                     ) : (
-                        <p>No participants found.</p>
+                        <p>참여자가 없습니다.</p>
                     )}
                 </Modal.Body>
                 <Modal.Footer>
@@ -454,6 +472,7 @@ const ChatWindow = ({
                     </Button>
                 </Modal.Footer>
             </Modal>
+
 
             {/* 신고 모달 */}
             <ReportModal
