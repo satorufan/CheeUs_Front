@@ -255,63 +255,63 @@ const ChatWindow = ({
     
         let lastDate = null;
     
-        return selectedChat.messages
-            .filter(message => new Date(message.write_day) > new Date(joinTime))
-            .map((message, index) => {
-                if (!message) {
-                    console.error('Undefined message at index:', index);
-                    return null;
-                }
+        return selectedChat.messages.map((message, index) => {
+            if (!message) {
+                console.error('Undefined message at index:', index);
+                return null; 
+            }
     
-                const messageDate = formatDate(message.write_day);
-                const showDateSeparator = lastDate !== messageDate;
+            const messageDate = formatDate(message.write_day);
+            const showDateSeparator = lastDate !== messageDate;
     
-                lastDate = messageDate;
+            lastDate = messageDate;
     
-                const senderProfile = profileData[message.sender_id] || {};
-                const isSameSenderAsPrevious = index > 0 && selectedChat.messages[index - 1].sender_id === message.sender_id;
-                const isProfileLoading = !profileData[message.sender_id];
+            const senderProfile = profileData[message.sender_id] || {};
+            const isSameSenderAsPrevious = index > 0 && selectedChat.messages[index - 1].sender_id === message.sender_id;
+            const isProfileLoading = !profileData[message.sender_id]; 
     
-                return (
-                    <React.Fragment key={index}>
-                        {showDateSeparator && (
-                            <div className="date-separator">
-                                <div className="messageDate">{messageDate}</div>
-                            </div>
-                        )}
-                        <div className={`chat-bubble-container ${isSender(message.sender_id) ? 'me' : 'you'}`}>
-                            {(message.sender_id !== "System") && !isSender(message.sender_id) && !isSameSenderAsPrevious && (
-                                <div className="message-info">
-                                    {isProfileLoading ? (
-                                        <div className="skeleton-img skeleton-loading"></div>
-                                    ) : (
-                                        <img
-                                            src={senderProfile.image || `${process.env.PUBLIC_URL}/images/default-user-icon.png`}
-                                            alt={`Profile of ${senderProfile.nickname || 'Unknown'}`}
-                                            className="profile-img rounded-circle"
-                                            style={{ width: '40px', height: '40px' }}
-                                            onClick={() => navigateToUserProfile(message.sender_id)}
-                                        />
-                                    )}
-                                    <span className="nickname" onClick={() => navigateToUserProfile(message.sender_id)}>
-                                        {isProfileLoading ? (
-                                            <div className="skeleton-nick skeleton-loading"></div>
-                                        ) : (
-                                            senderProfile.nickname || '알수없음'
-                                        )}
-                                    </span>
-                                </div>
-                            )}
-                            <div className={getChatBubbleClasses(message.sender_id)}>
-                                {message.message}
-                            </div>
-                            <span className="chat-time">{formatMessageTime(message.write_day)}</span>
+            return (
+                <React.Fragment key={index}>
+                    {showDateSeparator && (
+                        <div className="date-separator">
+                            <div className="messageDate">{messageDate}</div>
                         </div>
-                    </React.Fragment>
-                );
-            });
+                    )}
+                    <div className={`chat-bubble-container ${isSender(message.sender_id) ? 'me' : 'you'}`}>
+                        {(message.sender_id !== "System") && !isSender(message.sender_id) && !isSameSenderAsPrevious && (
+                            <div className="message-info">
+                                {isProfileLoading ? (
+                                    <div className="skeleton-img skeleton-loading"></div>
+                                ) : (
+                                    <img
+                                        src={senderProfile.image || `${process.env.PUBLIC_URL}/images/default-user-icon.png`}
+                                        alt={`Profile of ${senderProfile.nickname || 'Unknown'}`}
+                                        className="profile-img rounded-circle"
+                                        style={{ width: '40px', height: '40px' }}
+                                        onClick={() => navigateToUserProfile(message.sender_id)}
+                                    />
+                                )}
+                                <span className="nickname" onClick={() => navigateToUserProfile(message.sender_id)}>
+                                {isProfileLoading ? (
+                                    <div className="skeleton-nick skeleton-loading"></div>
+                                ) : (
+                                senderProfile.nickname || '알수없음'
+                            )}
+                                </span>
+                                </div>
+                        )}
+                        <div className={getChatBubbleClasses(message.sender_id)}>
+                            {message.message}
+                            </div>
+                        <span className="chat-time">{formatMessageTime(message.write_day)}</span>
+                    </div>
+                </React.Fragment>
+            );
+        });
     };
     
+    
+
     //강퇴
     const handleKick = (userEmailObj) => {
         const roomId = selectedChat.roomId;
