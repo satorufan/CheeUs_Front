@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { usePosts } from './PostContext'; // usePosts 훅을 임포트
 import { useNavigate } from 'react-router-dom';
+import MyLocationIcon from '@mui/icons-material/MyLocation';
+import { selectUserProfile } from '../../store/ProfileSlice';
+import { useSelector } from 'react-redux';
+import { selectUserLocation } from '../../store/MatchSlice';
+
 /* global kakao */
 const kakaokey = "cc91cb103ac5f5d244562ea0a92a3053"; // 카카오 API 키
 
@@ -10,7 +15,8 @@ const DTBoardMap = ({ selectedPostId }) => {
   const [markers, setMarkers] = useState([]);
   const { posts } = usePosts(); // usePosts 훅을 사용하여 posts 데이터를 가져옴
   const navigate = useNavigate();
-
+  const userProfile = useSelector(selectUserProfile);
+  
   useEffect(() => {
     // 카카오맵 스크립트 로드
     const script = document.createElement('script');
@@ -98,9 +104,17 @@ const DTBoardMap = ({ selectedPostId }) => {
     }
   }, [selectedPostId, markers]);
 
-  const handlePostClick = (id) => {
-    navigate(`/dtboard/post/${id}`);
-  };
+const handlePostClick = (id) => {
+  const dtPostData = posts.find(post => post.id === parseInt(id, 10)); // id를 정수로 변환
+  if (dtPostData) {
+    navigate(`/dtboard/post/${id}`, { state: { dtPostData } });
+  } else {
+    console.error("해당 ID를 가진 게시물을 찾을 수 없습니다.");
+  }
+  console.log("데이터", dtPostData);
+};
+  
+console.log("포스트",posts);
 
   const handleSearch = () => {
     if (!map || searchInput === '') return;
@@ -164,6 +178,17 @@ const DTBoardMap = ({ selectedPostId }) => {
     };
   }, []);
 
+
+  const setUserLocation = () => {
+    if (map && userProfile.profile.latitude && userProfile.profile.longitude) {
+      const userLocation = new kakao.maps.LatLng(userProfile.profile.latitude, userProfile.profile.longitude);
+      map.setCenter(userLocation);
+    } else {
+      console.error("사용자 위치 정보가 없습니다.");
+    }
+  };
+	
+	
   return (
     <>
       <div className="map-search-box">
@@ -174,6 +199,7 @@ const DTBoardMap = ({ selectedPostId }) => {
           onChange={(e) => setSearchInput(e.target.value)} 
         />
         <button onClick={handleSearch}>검색</button>
+        <MyLocationIcon onClick={setUserLocation} />
       </div>
       <div id="map" style={{  height: '100%'}}></div>
     </>

@@ -419,11 +419,10 @@ const chatSlice = createSlice({
         clearUnreadStatus(state, action) {
             const { roomId } = action.payload;
             if (roomId && state[roomId]) {
-                state[roomId] = {}; // 특정 방의 읽음 상태를 초기화
+                state[roomId] = {};
             }
         },
         clearAllUnreadStatus(state, action) {
-            // 모든 방의 읽음 상태를 초기화합니다.
             Object.keys(state).forEach(roomId => {
                 state[roomId] = {};
             });
@@ -467,15 +466,17 @@ const chatSlice = createSlice({
                         members: room.members.filter(member => member !== userId)
                     } : room
                 );
-                // 선택된 채팅방에서 나간 경우, selectedChat을 null로 설정
+        
                 if (state.selectedChat && state.selectedChat.roomId === roomId) {
-                    state.selectedChat = null;
+                    state.selectedChat = {
+                        ...state.selectedChat,
+                        members: state.selectedChat.members.filter(member => member !== userId)
+                    };
                 }
             })
             .addCase(updateOneOnOneChatRoomStatus.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.error.message;
-
             });
     }
 });
