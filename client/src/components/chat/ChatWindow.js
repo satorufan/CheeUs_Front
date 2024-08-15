@@ -262,11 +262,6 @@ const ChatWindow = ({
                     console.error('Undefined message at index:', index);
                     return null;
                 }
-
-                if (message.sender_id === 'System') {
-                    console.log('System 메시지:', message);
-                    // 여기서 추가적으로 System 메시지를 처리하는 로직을 넣을 수 있습니다.
-                }
     
                 const messageDate = formatDate(message.write_day);
                 const showDateSeparator = lastDate !== messageDate;
