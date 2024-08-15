@@ -38,6 +38,7 @@ const PostDetail = () => {
 
   // 유저가 해당 게시글 채팅방에 참여중인지 확인
   const rooms = useSelector(state => state.chat.togetherChatRooms);
+  console.log(rooms);
   const isJoined = rooms ?. filter(room => 
     room.roomId == id && room.members.map(member=>
     member.email == memberEmail)).length > 0 ? true : false;
@@ -45,6 +46,10 @@ const PostDetail = () => {
     const handleImageLoad = (authorId) => {
       setLoadedImages(prevState => ({ ...prevState, [authorId]: true }));
     };
+
+    useEffect(()=> {
+      dispatch(fetchTogetherChatRooms({serverUrl, userId : memberEmail}));
+    }, [dispatch]);
 
     useEffect(() => {
       const checkUserLiked = async () => {

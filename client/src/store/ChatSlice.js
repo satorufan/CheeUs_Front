@@ -85,7 +85,7 @@ export const fetchTogetherChatRooms = createAsyncThunk(
         try {
             const response = await axios.get('http://localhost:8889/api/togetherChatRooms');
             const chatRooms = response.data.filter(room => room.members.includes(userId));
-
+            console.log(chatRooms);
             const chatRoomsWithMessages = await Promise.all(chatRooms.map(async (room) => {
                 const messagesResponse = await axios.get(`http://localhost:8889/api/togetherMessages/${room.roomId}`);
                 const messages = messagesResponse.data;
