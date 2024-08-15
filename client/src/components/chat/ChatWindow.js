@@ -328,7 +328,7 @@ const ChatWindow = ({
         console.log({ roomId, userId });
     
         if (window.confirm('정말로 이 사용자를 단체 채팅방에서 강퇴하시겠습니까?')) {
-            dispatch(removeUserFromTogetherChatRoom({ roomId, userId }))
+            dispatch(removeUserFromTogetherChatRoom({ roomId, userId, mode : 'kick' }))
                 .then(() => {
                     console.log('단체 채팅방에서 사용자 강퇴 성공');
                     // 단체 채팅방 리스트 다시 불러오기

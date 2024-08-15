@@ -196,6 +196,20 @@ const PostDetail = () => {
       room_id : id,
       member : userProfile.profile.email
     }
+    
+    // 강퇴 당했는지 체크
+    const checkKick = await axios.post(`http://localhost:8889/api/togetherChatRooms/${id}/kickCheck`, join);
+    console.log(checkKick);
+    if(checkKick.data == true) {
+      Swal.fire({
+        title: '채팅방에 입장할 수 없습니다!',
+        icon: 'error',
+        confirmButtonColor: '#48088A',
+        confirmButtonText: '확인',
+      })
+      return ;
+    }
+
     const newMessage = {
       sender_id: 'System',
       message: userProfile.profile.nickname + '님이 입장하였습니다.',

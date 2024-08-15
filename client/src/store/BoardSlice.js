@@ -131,7 +131,37 @@ export const updateBoard = createAsyncThunk(
     }
 );
 
-// 좋아요 토글 >>>>
+
+// updateBoardViews 액션 수정
+export const updateBoardViews = createAsyncThunk(
+    'boards/updateViews',
+    async ({ id, views }, { rejectWithValue }) => {
+        try {
+            const response = await axios.put(
+                `http://localhost:8080/board/incrementView/${id}`,
+                { views },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // 필요한 경우 인증 토큰을 추가
+                        // 'Authorization': `Bearer ${token}`
+                    }
+                }
+            );
+
+            if (response.data.success) {
+                return { id, views: response.data.updatedViewCount };
+            } else {
+                return rejectWithValue('Failed to update view count');
+            }
+        } catch (error) {
+            return rejectWithValue(error.response.data);
+        }
+    }
+);
+
+
+// 좋아요 토글
 export const likeBoard = createAsyncThunk(
   'board/likeBoard',
   async ({ id, userEmail }) => {
@@ -235,7 +265,19 @@ const boardSlice = createSlice({
       })
       .addCase(updateComment.fulfilled, (state, action) => {
         // 댓글 업데이트와 관련된 게시물 상태 업데이트는 현재 필요 없음
-      });
+      })
+        .addCase(updateBoardViews.fulfilled, (state, action) => {
+          const { id, views } = action.payload;
+          const board = state.boards.find(b => b.id === id);
+          if (board) {
+              board.views = views;
+          }
+          const filteredBoard = state.filteredBoards.find(b => b.id === id);
+          if (filteredBoard) {
+              filteredBoard.views = views;
+          }
+      })
+    ;
   },
 });
 
