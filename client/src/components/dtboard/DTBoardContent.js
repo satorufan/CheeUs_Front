@@ -23,8 +23,7 @@ const DTBoardContent = ({ posts, totalPosts, postsPerPage, paginate, onWriteButt
   //console.log(posts);
   return (
     <>
-      <div className="dt-left">
-        <div className="board-left">
+     <div className="board-left">
           {posts.map((post) => (
             <div key={post.id} className="post">
               <div className="postClickArea" onClick={() => onPostClick(post.id)}>
@@ -75,7 +74,6 @@ const DTBoardContent = ({ posts, totalPosts, postsPerPage, paginate, onWriteButt
             <button className="write-button" onClick={onWriteButtonClick}>게시글 작성</button>
           </div>
         </div>
-      </div>
     </>
 
   );

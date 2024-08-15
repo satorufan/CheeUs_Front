@@ -1,17 +1,17 @@
-
 .input-Container {
   display: flex;
   gap: 10px;
   margin: 20px;
   overflow: hidden;
-  height: 76vh;
+  height:600px;
+  
 }
 .dt-detail{
 	margin-bottom:  0px;
 }
 .detailContainer{
-	height: 80vh;
-	margin-bottom: 0px;
+  height:600px;
+	margin-bottom: 20px;
 }
 .textareaHeader {
   display: flex;
@@ -20,7 +20,7 @@
 }
 .textareaBox input {
   border: none;
-  font-size: 1.8vw;
+  font-size: 2rem;
   margin-left: 30px;
 }
 .textareaBox input {
@@ -32,6 +32,7 @@
   border: none !important;
   box-shadow: none !important; 
 }
+
 .textareaBoxRight{
   padding: 4px;
   display: flex;
@@ -63,9 +64,6 @@
 .contentContainer{
 	height: 84.5%;
 }
-.contentBox{
-	height: 100%;
-}
 .content{
 	font-size: 20px !important;
 }
@@ -94,13 +92,11 @@
   padding: 10px;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
 }
 .mapContainer {
   flex: 1;
-  overflow: hidden;
   border-radius: 10px;
-  height: 50%;
+  height: 100%
 }
 
 .bottomContainer {
@@ -124,40 +120,36 @@
 }
 
 
-/* .react-datepicker__header.react-datepicker__header--time 클래스에 대한 스타일 */
 .react-datepicker__header.react-datepicker__header--time {
-  height: auto !important;  /* 높이 자동 설정 */
-  line-height: 1.2 !important;  /* 라인 높이 설정 */
-  padding: 10px 0 !important;  /* 위아래 패딩 추가 */
-  font-size: 14px !important;  /* 폰트 크기 조정 */
-  display: flex !important;  /* 플렉스 박스 사용 */
-  align-items: center !important;  /* 수직 중앙 정렬 */
-  justify-content: center !important;  /* 수평 중앙 정렬 */
-  text-align: center !important;  /* 텍스트 중앙 정렬 */
+  height: auto !important; 
+  line-height: 1.2 !important;
+  padding: 10px 0 !important;
+  font-size: 14px !important;
+  display: flex !important; 
+  align-items: center !important; 
+  justify-content: center !important; 
+  text-align: center !important; 
 }
 
-/* .react-datepicker-time__header 클래스에 대한 스타일 */
 .react-datepicker-time__header {
-  height: auto !important;  /* 높이 자동 설정 */
-  line-height: 1.35 !important;  /* 라인 높이 설정 */
-  padding: 10px 0 !important;  /* 위아래 패딩 추가 */
-  font-size: 14px !important;  /* 폰트 크기 조정 */
-  display: flex !important;  /* 플렉스 박스 사용 */
-  align-items: center !important;  /* 수직 중앙 정렬 */
-  justify-content: center !important;  /* 수평 중앙 정렬 */
-  text-align: center !important;  /* 텍스트 중앙 정렬 */
+  height: auto !important; 
+  line-height: 1.35 !important; 
+  padding: 10px 0 !important;
+  font-size: 14px !important; 
+  display: flex !important; 
+  align-items: center !important; 
+  justify-content: center !important; 
+  text-align: center !important; 
 }
 .react-datepicker__time-list {
-  height: 170px !important; /* 시간 목록의 높이를 전체 컨테이너에 맞추기 */
+  height: 170px !important;
 }
 .react-datepicker-popper {
   z-index: 9999 !important;
 }
 
-
-
 .mapping {
-  font-size: 1.5vw;
+  font-size: 1rem;
 }
 
 .submitButton, .backButton {
@@ -177,7 +169,7 @@
 }
 
  .detailMapContainer{
-  height: 84.5%;
+  height: 73%;
   }
   
  .board-right {
@@ -299,35 +291,107 @@
   .input-Container {
     flex-direction: column;
     gap: 10px;
+    height:1200px;
   }
 
   .dt-input-left-box, .dt-input-right-box {
-    flex: none;
+    flex: 1;
     width: 100%;
     box-shadow: none;
     background-color: transparent;
+    height:250px
+  }
+  .textareaBox input {
+    border: none;
+    font-size: 1rem;
+  }
+  .dt-input-mypage-box{
+    height:200px  }
+
+  .dt-input-left-box{
+    flex: 1;
+    width: 100%;
+    box-shadow: none;
+    background-color: transparent;
+    height:200px
   }
 
-  .mapContainer {
-    width: 100%;
-    height: 300px; 
-  }
+  .example-custom-input {
+    border-radius: 10px;
+    font-size: 12px;
+}
+  .mapHeader{
+  font-size: 12px;
 }
 
 
-@media (max-width: 480px) {
-  .bottomContainer {
-    flex-direction: column;
-    height: auto;
-  }
-
-  .submitButton, .backButton {
-    width: 100%;
-    padding: 15px;
-    margin: 10px 0;
-  }
-  
   .mapContainer {
+    flex: 1;
+    width: 100%;
     height: 250px; 
+  }
+  .mapContainer {
+    flex: 1;
+    width: 100%;
+    height: 250px; 
+  }
+
+  .detailMapContainer{
+    height:400px;
+  }
+  .contentContainer{
+    height:1000px;
+    margin:0;
+  }
+  .detailContainer-big{
+    height:3000px;
+  }
 }
+
+@media (max-width: 1200px) {
+  .input-Container {
+    flex-direction: column;
+    gap: 10px;
+    height:1200px;
+  }
+
+  .dt-input-left-box, .dt-input-right-box {
+    flex: 1;
+    width: 100%;
+    box-shadow: none;
+    background-color: transparent;
+    height:250px
+  }
+  .textareaBox input {
+    border: none;
+    font-size: 1rem;
+  }
+  .dt-input-mypage-box{
+    height:200px  }
+
+  .dt-input-left-box{
+    flex: 1;
+    width: 100%;
+    box-shadow: none;
+    background-color: transparent;
+    height:200px
+  }
+
+  .example-custom-input {
+    border-radius: 10px;
+    font-size: 12px;
+}
+  .mapHeader{
+    font-size: 12px;
+  }
+
+  .contentBox{
+    margin:0;
+  }
+
+  .mapContainer {
+    flex: 1;
+    width: 100%;
+    height: 250px; 
+  }
 }
