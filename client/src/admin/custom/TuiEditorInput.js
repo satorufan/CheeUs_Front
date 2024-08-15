@@ -8,8 +8,8 @@ import { storage } from "../../components/firebase/firebase";
 
 
 // 이미지 업로드 함수 정의
-const onUploadImage = async (blob, callback, uploadedImages, setUploadedImages) => {
-    const storageRef = ref(storage, `images/${blob.name}`);
+const onUploadImage = async (blob, callback, uploadedImages, setUploadedImages, category, postId) => {
+    const storageRef = ref(storage, `images/admin/${category}/${postId}/${blob.name}`);
   
     try {
       // Firebase Storage에 이미지 업로드
@@ -25,7 +25,7 @@ const onUploadImage = async (blob, callback, uploadedImages, setUploadedImages) 
     }
   };
   
-const TuiEditorInput = ({ label, source, ...props }) => {
+const TuiEditorInput = ({ label, source, category, postId, ...props }) => {
     const {
         field: { value, onChange },
         fieldState: { error },
@@ -58,7 +58,7 @@ const TuiEditorInput = ({ label, source, ...props }) => {
                 previewStyle="vertical"
                 initialEditType="markdown"
                 hooks={{
-                    addImageBlobHook: (blob, callback) => onUploadImage(blob, callback, uploadedImages, setUploadedImages),
+                    addImageBlobHook: (blob, callback) => onUploadImage(blob, callback, uploadedImages, setUploadedImages, category, postId),
                 }}
 	            toolbarItems={[
 	              ["heading", "bold", "italic", "strike"],

@@ -1,6 +1,8 @@
-import React from 'react';
+import {React, useState, useEffect} from 'react';
+import axios from 'axios';
 import { List, Datagrid, TextField, EditButton, DeleteButton, Toolbar, SaveButton, SearchInput, ChipField, CreateButton, SelectInput } from 'react-admin';
 import { Edit, SimpleForm, TextInput, BooleanInput, DateField, ChipInput, DateInput } from 'react-admin';
+import { useParams } from 'react-router-dom'; // react-router-dom에서 useParams를 가져옵니다
 import { Create } from 'react-admin';
 import BooleanField from './BooleanField'; 
 import { FilterSidebar, ListActions } from './FilterSidebar';
@@ -49,48 +51,73 @@ const MagazineToolbar = () =>{
 	</Toolbar>
 };
 
-export const MagazineCreate = (props) => (
-    <Create {...props}>
-        <SimpleForm toolbar={<MagazineToolbar/>}>
-            <TextInput source="id" />
-            <TextInput source="admin_id" />
-            <TextInput source="admin_name" />
-            <SelectInput source="category"choices={[
-                { id: 'popup', name: 'POP-UP' },
-                { id: 'tmi', name: 'TMI' },
-                { id: 'recipe', name: 'Recipe' },
-                { id: 'recommend', name: 'Recommend' },
-            ]} />
-            <TextInput source="title" />
-            <TextInput source="title2" />
-            <TuiEditorInput source="content" defaultValue="" />
-            <DateInput source="writeday" />
-            <BooleanInput source="hidden" label="Hidden" />
-            <SaveButton/>
-        </SimpleForm>
-        <BackButton/>
-    </Create>
-);
+export const MagazineCreate = (props) => {
+    const [postId, setPostId] = useState(null);
 
-export const MagazineEdit = (props) => (
-    <Edit {...props}>
-        <SimpleForm toolbar={MagazineToolbar}>
-            <TextInput source="id" />
-            <TextInput source="admin_id" />
-            <TextInput source="admin_name" />
-            <SelectInput source="category"choices={[
-                { id: 'popup', name: 'POP-UP' },
-                { id: 'tmi', name: 'TMI' },
-                { id: 'recipe', name: 'Recipe' },
-                { id: 'recommend', name: 'Recommend' },
-            ]} />
-            <TextInput source="title" />
-            <TextInput source="title2" />
-            <TuiEditorInput source="content" defaultValue="" />
-            <DateInput source="writeday" />
-            <BooleanInput source="hidden" label="Hidden" />
-            <SaveButton/>
-        </SimpleForm>
-        <BackButton/>
-    </Edit>
-);
+    useEffect(() => {
+        const fetchLatestPostId = async () => {
+            try {
+                const response = await axios.get('http://localhost:8080/board/magazineboard/latest');
+                setPostId(response.data.latestId + 1);  // 새로운 postId는 현재 가장 최신 ID에 1을 더한 값
+            } catch (error) {
+                console.error("Failed to fetch latest post ID:", error);
+            }
+        };
+
+        fetchLatestPostId();
+    }, []);
+    console.log("postId category --- ", postId);
+
+    if (postId === null) {
+        return <div>Loading...</div>;  // postId를 받아올 때까지 로딩 상태
+    }
+    return (
+        <Create {...props}>
+            <SimpleForm toolbar={<MagazineToolbar/>}>
+                <TextInput source="id" />
+                <TextInput source="admin_id" />
+                <TextInput source="admin_name" />
+                <SelectInput source="category"choices={[
+                    { id: 'popup', name: 'POP-UP' },
+                    { id: 'tmi', name: 'TMI' },
+                    { id: 'recipe', name: 'Recipe' },
+                    { id: 'recommend', name: 'Recommend' },
+                ]} />
+                <TextInput source="title" />
+                <TextInput source="title2" />
+                <TuiEditorInput source="content" category="magazineboard" postId={postId} defaultValue="" />
+                <DateInput source="writeday" />
+                <BooleanInput source="hidden" label="Hidden" />
+                <SaveButton/>
+            </SimpleForm>
+            <BackButton/>
+        </Create>
+    );
+};
+
+export const MagazineEdit = (props) => {
+    const { id } = useParams(); // URL에서 id를 가져옵니다
+
+    return(
+        <Edit {...props}>
+            <SimpleForm toolbar={MagazineToolbar}>
+                <TextInput source="id" />
+                <TextInput source="admin_id" />
+                <TextInput source="admin_name" />
+                <SelectInput source="category"choices={[
+                    { id: 'popup', name: 'POP-UP' },
+                    { id: 'tmi', name: 'TMI' },
+                    { id: 'recipe', name: 'Recipe' },
+                    { id: 'recommend', name: 'Recommend' },
+                ]} />
+                <TextInput source="title" />
+                <TextInput source="title2" />
+                <TuiEditorInput source="content" category="magazineboard" postId={id} defaultValue="" />
+                <DateInput source="writeday" />
+                <BooleanInput source="hidden" label="Hidden" />
+                <SaveButton/>
+            </SimpleForm>
+            <BackButton/>
+        </Edit>
+    );
+};
