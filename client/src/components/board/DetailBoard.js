@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useCallback } from 'react';
+import React, { useEffect, useState, useContext, useCallback, useMemo } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { usePosts } from '../dtboard/PostContext';
@@ -31,6 +31,7 @@ const DetailBoard = () => {
   const [liked, setLiked] = useState(false);
   const [isScrapped, setIsScrapped] = useState(false);
   const [viewIncremented, setViewIncremented] = useState(false);
+  const [views, setViews] = useState();
 
   const { addScrap, checkScrap } = usePosts();
   const navigateToUserProfile = useToProfile();
@@ -48,8 +49,15 @@ const DetailBoard = () => {
     setBoardData(initialBoardData);
   }, [location.state, boards, id]);
 
-  const incrementViewCount = useCallback(async () => {
-    if (viewIncremented || !token || !boardData) return;
+  useEffect(()=>{
+    if (boardData && !viewIncremented) {
+      setViews(boardData.views + 1);
+    }
+  }, [boardData])
+
+  useMemo(async () => {
+    if (viewIncremented || !views) return;
+    console.log(boardData);
 
     try {
       const response = await axios.put(
@@ -61,26 +69,12 @@ const DetailBoard = () => {
           }
       );
 
-      if (response.data.success) {
-        const updatedViewCount = response.data.updatedViewCount;
-
-        setBoardData((prevData) => ({
-          ...prevData,
-          views: updatedViewCount,
-        }));
-
-        dispatch(updateBoardViews({ id: parseInt(id), views: updatedViewCount }));
-
-        setViewIncremented(true);
-      }
+      dispatch(updateBoardViews({ id: parseInt(id), views: views }));
+      setViewIncremented(true);
     } catch (error) {
       console.error('Error incrementing view count:', error);
     }
-  }, [id, token, viewIncremented, dispatch, boardData]);
-
-  useEffect(() => {
-    incrementViewCount();
-  }, [incrementViewCount]);
+  }, [views]);
 
   useEffect(() => {
     if (boardData) {
@@ -252,7 +246,7 @@ const DetailBoard = () => {
                 {liked ? boardData.like + 1 : boardData.like}
               </p>
               <p>
-                <Visibility />{boardData.views}
+                <Visibility />{views}
               </p>
               <p>
                 <Bookmark
