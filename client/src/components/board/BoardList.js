@@ -103,6 +103,7 @@ const BoardList = ({ category }) => {
   return (
     <>
       <BoardTop />
+      {filteredBoards[0] !== -1 ? (
       <div className="freeboard-container">
         <div className="freeboard-card-container">
           {arraysEqualAsSets(Object.keys(authors), perPageAuthors) ? currentBoards.map((board) => (
@@ -173,7 +174,9 @@ const BoardList = ({ category }) => {
             </Card>
           )) : <BoardSkeleton />}
         </div>
-      </div>
+      </div>) : (<div className="permissionMessage" >
+          <p>게시글이 존재하지 않습니다.<br/> 첫 게시글의 주인공이 되어 보세요~!</p>
+        </div>)}
       <div className="create-post-container">
         <button onClick={handleCreatePost} className="create-post-button">
           게시글 작성

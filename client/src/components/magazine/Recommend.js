@@ -73,7 +73,8 @@ const Recommend = () => {
   return (
     <>
       <MagazineTop/>
-      <div className="magazineContent-container">
+      {currentMagazines.length > 0 ?
+      (<div className="magazineContent-container">
         <div className="magazineContent-card-container">
           {currentMagazines.map((magazine) => (
             <Card
@@ -141,7 +142,9 @@ const Recommend = () => {
             </Card>
           ))}
         </div>
-      </div>
+      </div>):(<div className="permissionMessage" >
+          <p>괜찮은 술집 알게되면 바로 알려드릴게요...😭</p>
+        </div>)}
       <Pagination
         count={totalPages}
         page={currentPage}

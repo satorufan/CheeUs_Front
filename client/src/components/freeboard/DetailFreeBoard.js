@@ -16,18 +16,16 @@ const DetailFreeBoard = () => {
     dispatch(fetchBoards('freeboard'));
   }, [dispatch]);
   
-  // 게시물 찾기
   const board = boards.find(b => b.id === parseInt(id) && b.category === 1);
 
   useEffect(()=>{
     dispatch(fetchBoardsAuthor({category : 'freeboard', perPageBoards : [board]}));
   }, [dispatch, boards]);
 
-  // 게시물이 없을 경우
   if (!board) return <div>게시물을 찾을 수 없습니다.</div>;
 
   return (
-    <>
+    <div className="freeContiner">
        <BoardDetailTop category={board.category} />
       <div className="detail-free-container">
         <div className="free-detail-container">
@@ -37,7 +35,8 @@ const DetailFreeBoard = () => {
           <Repl boardId={board.id} />
         </div>
       </div>
-    </>
+      </div>
+
   );
 };
 

@@ -54,8 +54,23 @@
 
 }
 
-@media (max-width: 768px) {
-    .free-detail-container {
-        width: 40vw;
+  /* 미디어 쿼리 */
+  @media (max-width: 768px) {
+    .freeContiner{
+        height: auto;
     }
-}
+    .detail-free-container {
+      flex-direction: column;
+      margin-bottom: 20px;
+      justify-content: center;
+      padding:20px;
+
+    }
+  
+    .free-detail-container,
+    .free-detail-repl {
+      width: 90%;
+      height: auto; 
+      padding:auto;
+    }
+  }

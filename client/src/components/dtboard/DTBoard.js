@@ -56,34 +56,44 @@ const DTBoard = () => {
 
   return (
     <>
-    <div className="board-page-top">함께 마셔요</div>
-    <div className="board-layout">
-      {profiles && userProfile ? (    
-      <div className="board-content">
-        <DTBoardContent
-          posts={currentPosts}
-          totalPosts={posts.length}
-          postsPerPage={postsPerPage}
-          paginate={paginate}
-          onWriteButtonClick={() => navigate('/dtboard/input')}
-          onPostClick={(id) => setSelectedPostId(id)} // 게시물 클릭 시 선택된 게시물 ID를 설정
-        />
-        <DTBoardMap selectedPostId={selectedPostId} /> {/* 선택된 게시물 ID를 전달 */}
-      </div>
-      ): memberEmail ? (<div className="permissionMessage" >
-              <div className="moving-container">
-                <div>모임 정보 확인중...
+      <div className="board-page-top">함께 마셔요</div>
+      <div className="board-layout">
+        {profiles && userProfile ? (    
+          <div className="board-content">
+            <div className="dt-left">
+              <DTBoardContent
+                posts={currentPosts}
+                totalPosts={posts.length}
+                postsPerPage={postsPerPage}
+                paginate={paginate}
+                onWriteButtonClick={() => navigate('/dtboard/input')}
+                onPostClick={(id) => setSelectedPostId(id)} // 게시물 클릭 시 선택된 게시물 ID를 설정
+              />
+            </div>
+            <div className='board-right'>
+              <DTBoardMap selectedPostId={selectedPostId} /> {/* 선택된 게시물 ID를 전달 */}
+            </div>
+          </div>
+          
+        ) : memberEmail ? (
+          <div className="permissionMessage" >
+            <div className="moving-container">
+              <div>모임 정보 확인중...
                 <div className="moving-icon">
                   <RoomSharpIcon fontSize="large" />
                 </div>
-                </div>
               </div>
-            </div>) : (<div className="permissionMessage" >
-              <p onClick={goLogin}>로그인 후 이용할 수 있습니다.</p>
-            </div>)}
-    </div>
+            </div>
+          </div>
+        ) : (
+          <div className="permissionMessage" >
+            <p onClick={goLogin}>로그인 후 이용할 수 있습니다.</p>
+          </div>
+        )}
+      </div>
     </>
   );
 };
+
 
 export default DTBoard;

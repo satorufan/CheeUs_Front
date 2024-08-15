@@ -73,7 +73,8 @@ const Recipe = () => {
   return (
     <>
       <MagazineTop/>
-      <div className="magazineContent-container">
+      {currentMagazines.length > 0 ?
+      (<div className="magazineContent-container">
         <div className="magazineContent-card-container">
           {currentMagazines.map((magazine) => (
             <Card
@@ -141,7 +142,9 @@ const Recipe = () => {
             </Card>
           ))}
         </div>
-      </div>
+      </div>) : (<div className="permissionMessage" >
+          <p>현재 레시피가 존재하지 않습니다.😭</p>
+        </div>)}
       <Pagination
         count={totalPages}
         page={currentPage}

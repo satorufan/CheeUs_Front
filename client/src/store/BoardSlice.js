@@ -22,6 +22,9 @@ export const fetchBoards = createAsyncThunk(
     };
     const response = await axios.get(urlMap[category]);
     console.log(response);
+    if (response.data.length == 0) {
+      return {data : [-1]};
+    }
 
     let boardList, maxId;
 

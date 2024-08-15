@@ -226,64 +226,66 @@ const PostDetail = () => {
 
   return (
     <div className="dt-detail">
-    <div className="board-page-top">함께 마셔요</div>
-    <div className="detailContainer">
-      <div className="dt-detail-left-box">
-      <div className="profileContainer">
-          <div className="profile1">
-            <img className="rounded-circle mr-3" onClick={()=>navigateToUserProfile(post.author_id)} src={authorImages[post.author_id]} alt="Profile" style={{ width: '40px', height: '40px' }}/>
-          </div>
-          <div className="profile2">
-            <a className = "DTprofileName" onClick={()=>navigateToUserProfile(post.author_id)}>{post.nickname}</a>
-          </div>
-        </div>
-        <div className="textareaHeader">
-          <div className="textareaBox">{post.title}</div>
-          <div className='textareaBoxRight'>
-          	<div className = 'iconBox'>
-          		<Favorite 
-	              className='likeIcon' 
-	              color={isLiked ? 'error' : 'action'}
-	              onClick={handleLikeClick} 
-            	/>
-            	<span>{currentPost?.like}</span>
-          		<Visibility className='viewIcon'/>
-          		<span>{post.views}</span>
-              <Bookmark 
-                  color={isScrapped ? 'primary' : 'action'} 
-                  onClick={onScrapHandler}
-                  style={{ cursor: 'pointer', marginRight:'10px' }}
-                /> 
-          	</div>
-          	<div>
-          	</div>
-          </div>
-        </div>
-        <div className="contentContainer">
-            <div className="contentHeader">
+      <div className="board-page-top">함께 마셔요</div>
+      <div className='detailContainer-big'>
+        <div className="detailContainer">
+          <div className="dt-detail-left-box">
+            <div className="profileContainer">
+              <div className="profile1">
+              <img className="rounded-circle mr-3" onClick={()=>navigateToUserProfile(post.author_id)} src={authorImages[post.author_id]} alt="Profile" style={{ width: '40px', height: '40px' }}/>
+              </div>
+              <div className="profile2">
+                <a className = "DTprofileName" onClick={()=>navigateToUserProfile(post.author_id)}>{post.nickname}</a>
+              </div>
             </div>
-            <br />
-            <div className="contentBox">
-              <div className="content">{post.content}</div>
+          <div className="textareaHeader">
+            <div className="textareaBox">{post.title}</div>
+              <div className='textareaBoxRight'>
+                <div className = 'iconBox'>
+                  <Favorite 
+                    className='likeIcon' 
+                    color={isLiked ? 'error' : 'action'}
+                    onClick={handleLikeClick} 
+                  />
+                    <span>{currentPost?.like}</span>
+                  <Visibility className='viewIcon'/>
+                    <span>{post.views}</span>
+                  <Bookmark 
+                    color={isScrapped ? 'primary' : 'action'} 
+                    onClick={onScrapHandler}
+                    style={{ cursor: 'pointer', marginLeft:'8px' }}
+                  /> 
+                </div>
+              <div>
             </div>
           </div>
-      </div>
-      <div className="dt-detail-right-box">
-        <div className="mapHeader-detail">
-          <div className="mapping2">
-            장소 | {post.location} ({post.address})
-          </div>
-          <div className="dateHeader">
-            <a>시간 | {post.time}</a>
-          </div>
         </div>
-        <div className="detailMapContainer">
-          <PostDetailMap
-            latitude={post.latitude}
-            longitude={post.longitude}
-            title={post.title}
-            location={post.location}
-          />
+          <div className="contentContainer">
+              <div className="contentHeader">
+              </div>
+              <br />
+              <div className="contentBox">
+                <div className="content">{post.content}</div>
+              </div>
+            </div>
+        </div>
+        <div className="dt-detail-right-box">
+          <div className="mapHeader-detail">
+            <div className="mapping2">
+              장소 | {post.location} ({post.address})
+            </div>
+            <div className="dateHeader">
+              <a>시간 | {post.time}</a>
+            </div>
+          </div>
+          <div className="detailMapContainer">
+            <PostDetailMap
+              latitude={post.latitude}
+              longitude={post.longitude}
+              title={post.title}
+              location={post.location}
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -294,7 +296,7 @@ const PostDetail = () => {
             <span className="arrowText">↩ 목록으로</span>
           </div>
         </button>
-        <button className="backButton" onClick={joinChatRoom} hidden={isJoined}>채팅에 참여하기</button>
+        <button className="backButton" onClick={joinChatRoom} hidden={isJoined}>채팅 참여하기</button>
         <button className="backButton" onClick={handleClickJoinBtn} hidden={!isJoined}>현재 참여중</button>
       </div>
       <div className="buttonArea2">

@@ -144,8 +144,8 @@ function DTBInputForm() {
             </div>
             <div className="dt-input-mypage-box">
             <ToastEditor 
-            ref={editorRef} />
-          </div>
+              ref={editorRef} />
+            </div>
           </div>
           <div className="dt-input-right-box">
             <div className="mapHeader">

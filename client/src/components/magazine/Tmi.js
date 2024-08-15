@@ -74,7 +74,8 @@ const Tmi = () => {
   return (
     <>
       <MagazineTop/>
-      <div className="magazineContent-container">
+      {currentMagazines.length > 0 ?
+      (<div className="magazineContent-container">
         <div className="magazineContent-card-container">
           {currentMagazines.map((magazine) => (
             <Card
@@ -142,7 +143,10 @@ const Tmi = () => {
             </Card>
           ))}
         </div>
-      </div>
+      </div>) : (<div className="permissionMessage" >
+          <p>현재 저희의 TMI는 없습니다만.. <br/> 혹시 그거 아세요~? <br/>세계에서 가장 인기있는 주류는 맥주이고
+          <br/> 국내에선 카스가 원탑입니다............<br/>그리고 ...</p>
+        </div>)}
       <Pagination
         count={totalPages}
         page={currentPage}
