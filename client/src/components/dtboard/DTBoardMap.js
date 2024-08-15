@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
 import { selectUserProfile } from '../../store/ProfileSlice';
 import { useSelector } from 'react-redux';
+import { selectUserLocation } from '../../store/MatchSlice';
 
 /* global kakao */
 const kakaokey = "cc91cb103ac5f5d244562ea0a92a3053"; // 카카오 API 키
@@ -178,10 +179,15 @@ console.log("포스트",posts);
   }, []);
 
 
-const findLocation = (latitude) =>{
-	const locationData = userProfile.profile.find(profile=>profile.latitude === latitude );
-	console.log('위치',locationData);
-};
+  const setUserLocation = () => {
+    if (map && userProfile.profile.latitude && userProfile.profile.longitude) {
+      const userLocation = new kakao.maps.LatLng(userProfile.profile.latitude, userProfile.profile.longitude);
+      map.setCenter(userLocation);
+    } else {
+      console.error("사용자 위치 정보가 없습니다.");
+    }
+  };
+	
 	
   return (
     <>
@@ -193,7 +199,7 @@ const findLocation = (latitude) =>{
           onChange={(e) => setSearchInput(e.target.value)} 
         />
         <button onClick={handleSearch}>검색</button>
-        <MyLocationIcon onClick={findLocation}/>
+        <MyLocationIcon onClick={setUserLocation} />
       </div>
       <div id="map" style={{  height: '100%'}}></div>
     </>
