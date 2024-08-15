@@ -29,11 +29,10 @@ const ShortForm = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   
   useEffect(() => {
-    if (medias && Object.keys(medias).length > 0) {
+    if (medias && Object.keys(medias).length == boards.length) {
       setIsLoaded(true);
     }
   }, [medias, boards]);
-  console.log(isLoaded, medias);
   const searchQuery = useSelector(state => state.board.searchQuery);
 
   const itemsPerPage = 8;
@@ -90,7 +89,8 @@ const ShortForm = () => {
   });
 
   useEffect(() => {
-    if (currentBoards.length > 0 && (!arraysEqualAsSets(Object.keys(authors), perPageAuthors) || medias.length == 0)) {
+    if (currentBoards.length > 0 && 
+      (!arraysEqualAsSets(Object.keys(authors), perPageAuthors) || Object.keys(medias).length !== currentBoards.length)) {
       dispatch(fetchBoardsMedia({category: 'shortform', perPageBoards: currentBoards}));
       dispatch(fetchBoardsAuthor({category: 'eventboard', perPageBoards: currentBoards}));
     }
@@ -122,6 +122,7 @@ const ShortForm = () => {
   return (
     <>
       <BoardTop />
+      {filteredBoards[0] !== -1 ? (
       <div className="shortform-container">
         <div className="video-card-container">
           {isLoaded && arraysEqualAsSets(Object.keys(authors), perPageAuthors) ? currentBoards.map((board) => (
@@ -192,7 +193,9 @@ const ShortForm = () => {
             )
           )) : <ShortformSkeleton />}
         </div>
-      </div>
+      </div>) : (<div className="permissionMessage" >
+          <p>게시글이 존재하지 않습니다.<br/> 첫 게시글의 주인공이 되어 보세요~!</p>
+        </div>)}
       <div className="create-post-container">
         <button onClick={handleCreatePost} className="create-post-button">
           게시글 작성

@@ -165,7 +165,7 @@ const DTBoardMap = ({ selectedPostId }) => {
   }, []);
 
   return (
-    <div className="board-right">
+    <>
       <div className="map-search-box">
         <input 
           type="text" 
@@ -176,7 +176,7 @@ const DTBoardMap = ({ selectedPostId }) => {
         <button onClick={handleSearch}>검색</button>
       </div>
       <div id="map" style={{  height: '100%'}}></div>
-    </div>
+    </>
   );
 };
 

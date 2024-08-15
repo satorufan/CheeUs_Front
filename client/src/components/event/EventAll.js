@@ -56,7 +56,8 @@ const EventAll = () => {
   return (
     <>
       <EventTop />
-      <div className="eventContent-container">
+      {currentEvents.length > 0 ?
+      (<div className="eventContent-container">
         <div className="eventContent-card-container">
           {currentEvents.map((event) => (
             <Card
@@ -124,7 +125,9 @@ const EventAll = () => {
             </Card>
           ))}
         </div>
-      </div>
+      </div>) : (<div className="permissionMessage" >
+          <p>현재 이벤트가 존재하지 않습니다.</p>
+        </div>)}
       <Pagination
         count={totalPages}
         page={currentPage}
