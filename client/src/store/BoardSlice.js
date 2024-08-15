@@ -137,23 +137,29 @@ export const updateBoardViews = createAsyncThunk(
     'boards/updateViews',
     async ({ id, views }, { rejectWithValue }) => {
         try {
-            const response = await axios.put(
-                `http://localhost:8080/board/incrementView/${id}`,
-                { views },
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        // 필요한 경우 인증 토큰을 추가
-                        // 'Authorization': `Bearer ${token}`
-                    }
-                }
-            );
+            // const response = await axios.put(
+            //     `http://localhost:8080/board/incrementView/${id}`,
+            //     { views },
+            //     {
+            //         headers: {
+            //             'Content-Type': 'application/json',
+            //             // 필요한 경우 인증 토큰을 추가
+            //             // 'Authorization': `Bearer ${token}`
+            //         }
+            //     }
+            // );
 
-            if (response.data.success) {
-                return { id, views: response.data.updatedViewCount };
+            // if (response.data.success) {
+            //     return { id, views: response.data.updatedViewCount };
+            // } else {
+            //     return rejectWithValue('Failed to update view count');
+            // }
+            if (!id) {
+              return rejectWithValue('Failed to update view count');
             } else {
-                return rejectWithValue('Failed to update view count');
+              return { id, views };
             }
+            
         } catch (error) {
             return rejectWithValue(error.response.data);
         }
