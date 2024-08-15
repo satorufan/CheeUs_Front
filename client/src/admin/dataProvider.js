@@ -2,9 +2,11 @@ import axios from 'axios';
 import { stringify } from 'query-string';
 import { useContext } from 'react';
 import { useAuth } from './AuthContext';
+import { Editor } from "@toast-ui/react-editor";
 
-import { ref, deleteObject } from "firebase/storage";
+import { ref, deleteObject, getDownloadURL, listAll } from "firebase/storage";
 import { storage } from "../components/firebase/firebase";
+
 
 const apiUrl = 'http://localhost:8080/admin';
 
@@ -37,17 +39,72 @@ const httpHeader = {
     withCredentials : true
 }
 
+const getUploadedImageUrls = async (directoryPath) => {
+    try {
+        const directoryRef = ref(storage, directoryPath);
+        const result = await listAll(directoryRef);
 
-// 이미지 URL 추출 함수
+        const fileUrls = [];
+        for (const itemRef of result.items) {
+            const url = await getDownloadURL(itemRef);
+            fileUrls.push(url);
+        }
+
+        return fileUrls;
+    } catch (error) {
+        console.error('Error listing files in directory:', error);
+        return [];
+    }
+};
+
 const extractImageUrls = (content) => {
     const regex = /!\[.*?\]\((.*?)\)/g;
     let urls = [];
     let match;
     while ((match = regex.exec(content)) !== null) {
-      urls.push(match[1]);
+        urls.push(match[1]);
     }
     return urls;
-  };
+};
+
+const deleteUnusedImages = async (currentContent, directoryPath) => {
+    console.log("direcgoryPah///////", directoryPath);
+    const usedImageUrls = extractImageUrls(currentContent);
+    const uploadedImageUrls = await getUploadedImageUrls(directoryPath);
+    console.log("uploadedimagesurls///////", uploadedImageUrls);
+    const unusedImageUrls = uploadedImageUrls.filter(url => !usedImageUrls.includes(url));
+    console.log("unusedimagesurls///////", unusedImageUrls);
+
+    for (const url of unusedImageUrls) {
+        const imageRef = ref(storage, url);
+        try {
+            await deleteObject(imageRef);
+            console.log(`Deleted unused image: ${url}`);
+        } catch (error) {
+            console.error(`Failed to delete unused image: ${url}`, error);
+        }
+    }
+};
+
+const fetchEventLatestPostId = async () => {
+    try {
+        const response = await axios.get('http://localhost:8080/board/eventboard/latest');
+        return response.data.latestId + 1;
+    } catch (error) {
+        console.error("Failed to fetch latest post ID:", error);
+        return null;
+    }
+};
+
+const fetchMagazineLatestPostId = async () => {
+    try {
+        const response = await axios.get('http://localhost:8080/board/magazineboard/latest');
+        return response.data.latestId + 1;
+    } catch (error) {
+        console.error("Failed to fetch latest post ID:", error);
+        return null;
+    }
+};
 
 //   // 사용되지 않는 이미지 삭제 함수
 //   const deleteUnusedImages = async (currentContent) => {
@@ -68,7 +125,6 @@ const extractImageUrls = (content) => {
 //   };
 
 
-
 const dataProvider = {
     getList: async (resource, params) => {
         const url = endpoints[resource];
@@ -80,6 +136,7 @@ const dataProvider = {
     },
     getOne: async (resource, params) => {
         console.log('params:', params);
+        console.log('params url', endpoints[resource]);
         const url = `${endpoints[resource]}/${params.email || params.id}`;
         const { data } = await axios.get(url, httpHeader);
         // 응답 데이터가 `id` 필드를 포함하도록 변환
@@ -99,9 +156,29 @@ const dataProvider = {
     },
     update: async (resource, params) => {
         console.log('params.data:', params.data);
-        const url = `${endpoints[resource]}/${params.data.email || params.data.id}`;
+        var url = endpoints[resource];
+        console.log('data-----------:', url);
         console.log("update params.data " + params.data);
+        const category = url.substring(url.lastIndexOf('/') + 1); // "AdminMagazine"
+        console.log("category>>>>>>>>>>>>.", category);
+        // 현재 게시물 ID 가져오기
+        const postId = params.data.id;
+        console.log("postId : ", postId);
+
+        // Firebase Storage에서 사용되지 않는 이미지 삭제
+        var directoryPath = "";
+        if ( category == "AdminEvent" ) {
+            directoryPath = `images/admin/eventboard/${postId}`;
+        } else {
+            directoryPath = `images/admin/magazineboard/${postId}`;
+        }
+
+        const content = params.data.content;
+        await deleteUnusedImages(content, directoryPath);
+
+        url = `${endpoints[resource]}/${postId}`;
         await axios.put(url, params.data, httpHeader);
+
         return { data: params.data };
     },
     updateMany: async (resource, params) => {
@@ -112,33 +189,39 @@ const dataProvider = {
         await Promise.all(promises);
         return { data: params.ids };
     },
-    // create: async (resource, params) => {
-    //     console.log('params.data:', params.data);
-    //     const url = endpoints[resource];
+    create: async (resource, params) => {
+       
+        const url = endpoints[resource];
 
-    //     const category = params.data.category;
-    //     if(category == "") {
+        const category = url.substring(url.lastIndexOf('/') + 1); // "AdminMagazine"
+        console.log('Last Segment:', category);
+        console.log('params.data:', params.data);
 
-    //     } else {
+        
+        
+        // 최신 게시물 ID 가져오기
+        var postId = "";
 
-    //     }
-    //     const content = params.data.content;
-    //     const usedImageUrls = extractImageUrls(content);
+        var directoryPath = "";
+        if ( category == "AdminEvent" ) {
+            postId = await fetchEventLatestPostId();
+            directoryPath = `images/admin/eventboard/${postId}`;
+        } else {
+            postId = await fetchMagazineLatestPostId();
+            directoryPath = `images/admin/magazineboard/${postId}`;
+        }
 
-    //     // 삭제할 이미지는 초기 업로드된 이미지 목록에서 사용된 이미지를 제외한 것입니다.
-    //     const unusedImages = uploadedImages.filter(url => !usedImageUrls.includes(url));
+        console.log("directoryPaht-----", directoryPath);
+        // Firebase Storage에서 사용되지 않는 이미지 삭제
+        const content = params.data.content;
+        console.log("contentd////////////", content);
+        await deleteUnusedImages(content, directoryPath);
 
-    //     // 사용되지 않은 이미지를 Firebase에서 삭제합니다.
-    //     await deleteUnusedImages(unusedImages);
+        const { data } = await axios.post(url, params.data, httpHeader);
+        console.log('Resource created successfully:', data); // 로그 추가
 
-    //     // 초기화
-    //     uploadedImages = [];
-
-    //     const { data } = await axios.post(url, params.data, httpHeader);
-    //     console.log('Resource created successfully:', data); // 로그 추가
-
-    //     return { data: { ...params.data, id: data.email || data.id } };
-    // },
+        return { data: { ...params.data, id: data.email || data.id } };
+    },
     delete: async (resource, params) => {
         // 게시글 데이터 가져오기
         const getPost = async (postId) => {
@@ -152,10 +235,19 @@ const dataProvider = {
         // 게시글 데이터에서 이미지 URL 추출
         const postData = await getPost(postId);
         const content = postData.content;
-        const imageUrls = extractImageUrls(content);
 
         // 이미지 삭제
-        //await deleteUnusedImages(imageUrls);
+        const toBeDeletedImages = extractImageUrls(content);
+        toBeDeletedImages.map(async (photoUrl) => {
+            const imageRef = ref(storage, photoUrl);
+            try {
+              await deleteObject(imageRef);
+              console.log(`이미지가 성공적으로 삭제되었습니다: ${photoUrl}`);
+            } catch (error) {
+              console.error(`이미지 삭제 중 오류가 발생했습니다 (${photoUrl}):`, error);
+            }
+          }
+        )
 
         // 게시글 삭제
         const url = `${endpoints[resource]}/${postId}`;

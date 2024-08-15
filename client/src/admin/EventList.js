@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react'; // useEffect 추가
 import { List, Datagrid, TextField, EditButton, DeleteButton, SearchInput, Toolbar, SaveButton, DateInput, ImageInput, ImageField, useNotify } from 'react-admin';
 import { Edit, SimpleForm, TextInput, BooleanInput, RichTextField, DateField } from 'react-admin';
+import { useParams } from 'react-router-dom'; // react-router-dom에서 useParams를 가져옵니다
+
 import { Create } from 'react-admin';
+import { useGetOne } from 'react-admin';
 import { FilterSidebar, ListActions } from './FilterSidebar';
 import { RichTextInput } from 'ra-input-rich-text';
 import BackButton from './custom/BackButton';
@@ -65,6 +68,7 @@ export const EventCreate = (props) => {
 
         fetchLatestPostId();
     }, []);
+    console.log("postId category --- ", postId);
 
     if (postId === null) {
         return <div>Loading...</div>;  // postId를 받아올 때까지 로딩 상태
@@ -88,19 +92,23 @@ export const EventCreate = (props) => {
     );
 };
 
-export const EventEdit = (props) => (
-    <Edit {...props}>
-        <SimpleForm toolbar={<EventToolbar/>}>
-            <TextInput source="id" />
-            <TextInput source="admin_id" />
-            <TextInput source="admin_name" />
-            <TextInput source="title" />
-            <TextInput source="title2" />
-            <TuiEditorInput source="content" />
-            <DateInput source="writeday" />
-            <BooleanInput source="hidden" label="Hidden" />
-            <SaveButton/>
-        </SimpleForm>
-        <BackButton />
-    </Edit>
-);
+export const EventEdit = (props) => {
+    const { id } = useParams(); // URL에서 id를 가져옵니다
+    
+    return (
+        <Edit {...props}>
+            <SimpleForm toolbar={<EventToolbar />}>
+                <TextInput source="id" />
+                <TextInput source="admin_id" />
+                <TextInput source="admin_name" />
+                <TextInput source="title" />
+                <TextInput source="title2" />
+                <TuiEditorInput source="content" category="eventboard" postId={id} defaultValue="" />
+                <DateInput source="writeday" />
+                <BooleanInput source="hidden" label="Hidden" />
+                <SaveButton />
+            </SimpleForm>
+            <BackButton />
+        </Edit>
+    );
+};
