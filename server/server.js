@@ -310,6 +310,58 @@ app.put('/api/togetherChatRooms/:roomId/leave', async (req, res) => {
     }
 });
 
+// 단체 채팅방 강퇴 체크
+app.post('/api/togetherChatRooms/:roomId/kickCheck', async (req, res) => {
+    console.log(req.body);
+    const roomId = parseInt(req.body.room_id, 10);
+    const userId = req.body.member;
+    try {
+        const response = await db.collection('together_chat_rooms').findOne({ id: roomId });
+        console.log(response);
+        if (response.blacklist.includes(userId)) {
+            res.send(true);
+        } else {
+            res.json(response);
+        }
+    } catch (error) {
+        console.error('Error fetching messages:', error);
+        res.status(500).json({ error: 'Failed to fetch messages' });
+    }
+});
+
+// 단체 채팅방에서 사용자 제거 API
+app.post('/api/togetherChatRooms/:roomId/kick', async (req, res) => {
+    const roomId = parseInt(req.params.roomId, 10);
+    const { userId } = req.body; // 강퇴당하는 사용자의 ID
+
+    if (!userId) {
+        return res.status(400).json({ error: '사용자 ID가 필요합니다' });
+    }
+
+    try {
+        // 1. 블랙리스트에 추가
+        const result = await db.collection('together_chat_rooms').updateOne(
+            { id: roomId },
+            { $addToSet: { blacklist: userId } } // members 배열에서 userId를 제거
+        );
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ error: '단체 채팅방을 찾을 수 없습니다' });
+        }
+
+        // 2. 메시지의 read 배열에서 사용자 제거
+        await db.collection('together_chat_messages').updateMany(
+            { room_id: roomId },
+            { $pull: { read: userId } } // read 배열에서 userId를 제거
+        );
+
+        res.status(200).json({ message: '채팅방에서 사용자 제거 완료' });
+    } catch (error) {
+        console.error('채팅방에서 사용자 제거 오류:', error);
+        res.status(500).json({ error: '채팅방에서 사용자 제거 실패' });
+    }
+});
+
 async function startServer() {
     console.log('>>>> Starting server...');
     try {

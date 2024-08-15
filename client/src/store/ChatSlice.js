@@ -169,15 +169,20 @@ export const updateOneOnOneChatRoomStatus = createAsyncThunk(
 //단체 채팅방 나가기
 export const removeUserFromTogetherChatRoom = createAsyncThunk(
     'together/removeUserFromChatRoom',
-    async ({ roomId, userId }, { dispatch }) => {
+    async ({ roomId, userId, mode }, { dispatch }) => {
         if (!roomId || !userId) {
             console.error('Invalid roomId or userId:', roomId, userId);
             return;
         }
         try {
-            // API 요청으로 사용자를 제거
-            await axios.put(`http://localhost:8889/api/togetherChatRooms/${roomId}/leave`, { userId });
-            dispatch(userRemovedFromChatRoom({ roomId, userId }));
+            if (mode != 'kick') {   // 자기가 직접 나간 경우
+                // API 요청으로 사용자를 제거
+                await axios.put(`http://localhost:8889/api/togetherChatRooms/${roomId}/leave`, { userId });
+                dispatch(userRemovedFromChatRoom({ roomId, userId }));
+            } else {    // 강퇴당한 경우
+                await axios.put(`http://localhost:8889/api/togetherChatRooms/${roomId}/kick`, { userId });
+                dispatch(userRemovedFromChatRoom({ roomId, userId }));
+            }
         } catch (error) {
             console.error('단체 채팅방에서 사용자 제거 오류:', error);
             throw new Error(error.message);

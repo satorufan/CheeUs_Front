@@ -53,7 +53,8 @@ export const PostProvider = ({ children }) => {
     const req = { 
       together_id : newPost.title, 
       members : [newPost.author_id], 
-      id: id.data 
+      id: id.data,
+      blacklist : []
     };
 
     const newMessage = {
