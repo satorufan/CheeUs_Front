@@ -47,6 +47,7 @@ const EventToolbar = () =>{
 	</Toolbar>
 };
 
+
 export const EventCreate = (props) => (
     <Create  {...props}>
         <SimpleForm toolbar={<EventToolbar/>}>
@@ -73,7 +74,7 @@ export const EventEdit = (props) => (
             <TextInput source="title" />
             <TextInput source="title2" />
             <TuiEditorInput source="content" />
-            <DateInput source="writeday" />
+            <DateInput source="writeday" fullWidth={false}/>
             <BooleanInput source="hidden" label="Hidden" />
             <SaveButton/>
         </SimpleForm>
