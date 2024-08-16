@@ -196,6 +196,28 @@ export const likeBoard = createAsyncThunk(
   }
 );
 
+// 사용자가 이미 좋아요를 눌렀는지 확인
+export const userLiked = createAsyncThunk(
+  'board/userLiked',
+  async ({ id, userEmail }) => {
+    try {
+      console.log('Sending userLiked request:', { id, userEmail });
+
+      const response = await axios.get(`http://localhost:8080/board/userLiked/${id}`, {
+        params: { userEmail }, // Query parameter로 userEmail을 전달
+        withCredentials: true, // 쿠키를 사용한 인증이 필요한 경우에만 사용
+      });
+
+      console.log('Response received:', response.data.userIsLiked);
+
+      return response.data.userIsLiked; // 서버에서 반환한 userIsLiked 값을 반환
+    } catch (error) {
+      console.error('Error fetching userLiked status:', error.response?.status, error.response?.data, error.message);
+      throw error;
+    }
+  }
+);
+
 const boardSlice = createSlice({
   name: 'board',
   initialState,

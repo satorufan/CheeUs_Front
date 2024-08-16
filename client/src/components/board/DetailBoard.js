@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext, useCallback, useMemo } from 're
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { usePosts } from '../dtboard/PostContext';
-import { selectBoardAuthors, selectBoards, selectPageBoardsMedia, likeBoard, updateBoardViews } from '../../store/BoardSlice';
+import { selectBoardAuthors, selectBoards, selectPageBoardsMedia, likeBoard, updateBoardViews, userLiked } from '../../store/BoardSlice';
 import Avatar from '@mui/material/Avatar';
 import { Favorite, Visibility, Bookmark } from '@mui/icons-material';
 import { AuthContext } from '../login/OAuth';
@@ -32,12 +32,13 @@ const DetailBoard = () => {
   const [isScrapped, setIsScrapped] = useState(false);
   const [viewIncremented, setViewIncremented] = useState(false);
   const [views, setViews] = useState();
-
+  const [firstLiked, setFirstLiked] = useState(false);
   const { addScrap, checkScrap } = usePosts();
   const navigateToUserProfile = useToProfile();
 
   const location = useLocation();
   const [boardData, setBoardData] = useState(null);
+  const [likes, setLikes] = useState(boardData?.likes || 0);
 
   let decodedToken;
   if (token) {
@@ -48,6 +49,12 @@ const DetailBoard = () => {
     const initialBoardData = location.state?.boardData || boards.find(b => b.id === parseInt(id, 10));
     setBoardData(initialBoardData);
   }, [location.state, boards, id]);
+
+  useEffect(() => {
+    if (boardData) {
+      setLikes(boardData.like); // 초기화 시 boardData에서 likes 가져오기
+    }
+  }, [boardData]);
 
   useEffect(()=>{
     if (boardData && !viewIncremented) {
@@ -90,6 +97,33 @@ const DetailBoard = () => {
     }
   }, [boardData, serverUrl, memberEmail, token, checkScrap]);
 
+  useEffect(()=> {
+    const checkUserLiked = async () => {
+      if (boardData) {
+        try {
+          console.log("liked 테스트중-------------");
+          console.log("boardDatad.id", boardData.id + "-----" + memberEmail);
+          // dispatch로 액션을 디스패치하여 실행
+        const actionResult = await dispatch(userLiked({ id: boardData.id, userEmail: memberEmail }));
+        
+        // actionResult는 fulfilled, rejected 등의 액션 타입과 함께 반환된 데이터를 포함
+        const likedValue = actionResult.payload; // API 응답 데이터에 접근
+        console.log("값은", likedValue);
+
+        setLiked(likedValue); // likedValue를 setLiked로 상태 업데이트
+        setFirstLiked(likedValue); // 화면에서 보이기 위한 수 업데이트
+    
+          //setLiked(likedValue); // likedValue를 setIsLiked에 넣어 상태 업데이트
+      } catch (error) {
+          console.error("Error checking if user liked the post:", error);
+      }
+      }
+    };
+
+    checkUserLiked();
+    
+  }, [boardData, memberEmail]);
+
   useEffect(() => {
     if (boardData?.category === 2 && authors && Object.keys(authors).length > 0 && Object.keys(medias).length > 0) {
       setIsLoaded(true);
@@ -116,6 +150,14 @@ const DetailBoard = () => {
     try {
       await dispatch(likeBoard({ id: boardData.id, userEmail: memberEmail })).unwrap();
       setLiked(prevLiked => !prevLiked);
+
+      // 좋아요가 이미 눌려있으면 감소, 아니면 증가
+      if (liked) {
+        setLikes(prevLikes => prevLikes - 1);
+      } else {
+        setLikes(prevLikes => prevLikes + 1);
+      }
+      console.log("likes-------", likes);
     } catch (error) {
       Swal.fire('Oops! 잠시 후 다시 시도해 주세요.');
     }
@@ -243,8 +285,8 @@ const DetailBoard = () => {
                     color={liked ? 'error' : 'action'}
                     onClick={handleLike}
                 />
-                {liked ? boardData.like + 1 : boardData.like}
-              </p>
+                {likes}
+              </p> 
               <p>
                 <Visibility />{views}
               </p>
