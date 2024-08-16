@@ -14,8 +14,6 @@
 }
 
 .permissionMessage p {
-    border-radius: 25px;
-    border: solid 2px;
     padding: 10px 20px;
     width: 100%;
     max-width: 600px;

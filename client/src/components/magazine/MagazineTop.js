@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Search } from '@mui/icons-material';
-import './MagazineTop.css';
+//import './MagazineTop.css';
+import './Magazine.css';
 
 const chipData = [
   { label: '이달의 POP-UP', path: '/magazine/popup' },

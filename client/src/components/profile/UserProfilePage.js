@@ -33,7 +33,7 @@ const UserProfilePage = () => {
     };
 
     return (
-        <div className="myprofile-container user">
+        <div className="userprofile-container">
             <div className="user-profile-nickname">
                 {otherStatus === 'loading'
                     ? <Spinner animation="border" variant="dark" /> // 로딩 상태일 때의 텍스트

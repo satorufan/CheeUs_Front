@@ -117,7 +117,7 @@ table tbody tr {
 }
 
 .mybtn-container {
-    width: 85vw;
+    width: calc(80vw - 30px);
     display: flex;
     justify-content: flex-end;
 }
