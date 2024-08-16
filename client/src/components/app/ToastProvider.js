@@ -10,31 +10,44 @@ export const useToast = () => useContext(ToastContext);
 const ToastProvider = ({ children }) => {
   const navigate = useNavigate();
 
-  // 로컬 스토리지에서 초기 상태를 가져옴
   const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(() => {
     const saved = localStorage.getItem('isNotificationsEnabled');
     return saved === null ? true : JSON.parse(saved);
   });
 
+  const [isPageVisible, setIsPageVisible] = useState(true);
+
   useEffect(() => {
-    // 상태가 변경될 때 로컬 스토리지에 저장
+    const handleVisibilityChange = () => {
+      setIsPageVisible(!document.hidden);
+      
+      if (!document.hidden) {
+        toast.dismiss(); 
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
+
+  useEffect(() => {
     localStorage.setItem('isNotificationsEnabled', JSON.stringify(isNotificationsEnabled));
   }, [isNotificationsEnabled]);
 
-  // 알림을 클릭했을 때 호출될 함수
   const handleToastClick = () => {
     if (isNotificationsEnabled) {
       navigate('/chatpage');
-      // 알림을 끄는 로직
       setIsNotificationsEnabled(false);
     }
   };
 
-  // 알림 표시를 위한 함수
   const notify = useCallback((message) => {
-    if (isNotificationsEnabled) {
+    if (isNotificationsEnabled && isPageVisible) {
       toast(message, {
-        onClick: handleToastClick, // 클릭 시 호출될 함수
+        onClick: handleToastClick,
         autoClose: 1000,
         hideProgressBar: true,
         newestOnTop: false,
@@ -43,9 +56,8 @@ const ToastProvider = ({ children }) => {
         limit: 1,
       });
     }
-  }, [navigate, isNotificationsEnabled]);
+  }, [navigate, isNotificationsEnabled, isPageVisible]);
 
-  // 알림 설정을 변경하는 함수
   const toggleNotifications = () => {
     setIsNotificationsEnabled(prev => !prev);
   };
@@ -63,7 +75,6 @@ const ToastProvider = ({ children }) => {
           limit={1}
         />
       </ToastContext.Provider>
-
     </>
   );
 };
