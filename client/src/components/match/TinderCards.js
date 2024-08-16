@@ -186,8 +186,6 @@ const TinderCards = () => {
   }
 
   return (
-    <>
-      <div className="board-page-top">둘이 마셔요</div>
     <div className="tinderCard_container">
       {profileCards.length === 0 || !canSwipe ? (
         <div className="noMoreCardsMessage">
@@ -246,7 +244,6 @@ const TinderCards = () => {
         </>
       )}
     </div>
-    </>
   );
 };
 

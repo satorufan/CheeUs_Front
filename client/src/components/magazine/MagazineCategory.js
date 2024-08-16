@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ArrowOutwardIcon from '@mui/icons-material/ArrowOutward';
-import "./MagazineCategory.css";
+//import "./MagazineCategory.css";
+import './Magazine.css';
 
 function MagazineCategory() {
     const navigate = useNavigate();

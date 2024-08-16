@@ -3,55 +3,59 @@ import { BrowserRouter as Router, Routes, Route, BrowserRouter } from 'react-rou
 import './App.css';
 import './fonts/fonts.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'react-toastify/dist/ReactToastify.css';
+import Spinner from 'react-bootstrap/Spinner';
 import Main from './components/main/Main';
-import NotFound from './components/app/NotFound';
-import Signup from './components/signup/Signup';
-import Login from './components/login/Login';
-import LoginCallback from './components/login/LoginCallback';
-import SignupCallback from './components/signup/SignupCallback';
 import Header from './components/app/Header';
 import Footer from './components/app/Footer';
-import MyProfilePage from './components/profile/MyProfilePage';
-import EditProfile from './components/profile/EditProfile';
-import UserProfilePage from './components/profile/UserProfilePage';
-import Match from './components/match/Match';
-import DTBoard from './components/dtboard/DTBoard';
-import DTBInputForm from './components/dtboard/DTBInputForm';
-import PostDetail from './components/dtboard/PostDetail';
-import PostModify from './components/dtboard/PostModify';
 import { PostProvider } from './components/dtboard/PostContext';
-import BoardPage from './components/board/BoardPage';
-import ShortForm from './components/shortform/ShortForm';
-import WriteShortForm from './components/shortform/WriteShortForm.js'
-import EditShortForm from './components/shortform/EditShortForm'
-import DetailShortForm from './components/shortform/DetailShortForm';
-import InputFrom from './components/toast/InputForm';
-import FreeBoard from './components/freeboard/FreeBoard';
-import DetailFreeBoard from './components/freeboard/DetailFreeBoard';
-import WriteFreeBoard from './components/freeboard/WriteFreeBoard';
-import EditFreeBoard from './components/freeboard/EditFreeBoard';
-import EventBoard from './components/eventboard/EventBoard';
-import DetailEventBoard from './components/eventboard/DetailEventBoard';
-import WriteEventBoard from './components/eventboard/WriteEventBoard';
-import EditEventBoard from './components/eventboard/EditEventBoard';
+import { EventProvider } from './components/event/EventContext';
+import { MagazineProvider } from './components/magazine/MagazineContext';
 import { AuthProvider } from './components/login/OAuth';
-import AdminDashboard from './admin/AdminDashboard';
-import Magazine from './components/magazine/Magazine';
-import PopUp from './components/magazine/PopUp';
-import Recipe from './components/magazine/Recipe';
-import Tmi from './components/magazine/Tmi';
-import Recommend from './components/magazine/Recommend';
-import MagazineDetail from './components/magazine/MagazineDetail';
+import ToastProvider from './components/app/ToastProvider';
+
 import Event from './components/event/Event';
 import EventAll from './components/event/EventAll';
 import EventNow from './components/event/EventNow';
 import EventEnd from './components/event/EventEnd';
 import EventDetail from './components/event/EventDetail';
-import { EventProvider } from './components/event/EventContext';
-import { MagazineProvider } from './components/magazine/MagazineContext';
-import ChatPage from './components/chat/ChatPage'
-import ToastProvider from './components/app/ToastProvider';
-import 'react-toastify/dist/ReactToastify.css';
+
+
+const ChatPage = lazy(() => import('./components/chat/ChatPage'));
+const NotFound = lazy(() => import('./components/app/NotFound'));
+const Signup = lazy(() => import('./components/signup/Signup'));
+const Login = lazy(() => import('./components/login/Login'));
+const LoginCallback = lazy(() => import('./components/login/LoginCallback'));
+const SignupCallback = lazy(() => import('./components/signup/SignupCallback'));
+const Match = lazy(() => import('./components/match/Match'));
+const MyProfilePage = lazy(() => import('./components/profile/MyProfilePage'));
+const EditProfile = lazy(() => import('./components/profile/EditProfile'));
+const UserProfilePage = lazy(() => import('./components/profile/UserProfilePage'));
+const DTBoard = lazy(() => import('./components/dtboard/DTBoard'));
+const DTBInputForm = lazy(() => import('./components/dtboard/DTBInputForm'));
+const PostDetail = lazy(() => import('./components/dtboard/PostDetail'));
+const PostModify = lazy(() => import('./components/dtboard/PostModify'));
+const BoardPage = lazy(() => import('./components/board/BoardPage'));
+const ShortForm = lazy(() => import('./components/shortform/ShortForm'));
+const WriteShortForm = lazy(() => import('./components/shortform/WriteShortForm'));
+const EditShortForm = lazy(() => import('./components/shortform/EditShortForm'));
+const DetailShortForm = lazy(() => import('./components/shortform/DetailShortForm'));
+const InputFrom = lazy(() => import('./components/toast/InputForm'));
+const FreeBoard = lazy(() => import('./components/freeboard/FreeBoard'));
+const DetailFreeBoard = lazy(() => import('./components/freeboard/DetailFreeBoard'));
+const WriteFreeBoard = lazy(() => import('./components/freeboard/WriteFreeBoard'));
+const EditFreeBoard = lazy(() => import('./components/freeboard/EditFreeBoard'));
+const EventBoard = lazy(() => import('./components/eventboard/EventBoard'));
+const DetailEventBoard = lazy(() => import('./components/eventboard/DetailEventBoard'));
+const WriteEventBoard = lazy(() => import('./components/eventboard/WriteEventBoard'));
+const EditEventBoard = lazy(() => import('./components/eventboard/EditEventBoard'));
+const AdminDashboard = lazy(() => import('./admin/AdminDashboard'));
+const Magazine = lazy(() => import('./components/magazine/Magazine'));
+const PopUp = lazy(() => import('./components/magazine/PopUp'));
+const Recipe = lazy(() => import('./components/magazine/Recipe'));
+const Tmi = lazy(() => import('./components/magazine/Tmi'));
+const Recommend = lazy(() => import('./components/magazine/Recommend'));
+const MagazineDetail = lazy(() => import('./components/magazine/MagazineDetail'));
 
 function App() {
   return (
@@ -59,10 +63,17 @@ function App() {
       <AuthProvider>
       <Router>
         <PostProvider>
-        <MagazineProvider>
-        <EventProvider>
-        <ToastProvider>
-          <Header />
+         <MagazineProvider>
+          <EventProvider>
+          <ToastProvider>
+           <Header />
+           <Suspense fallback={<div className="permissionMessage">
+                      <div>로딩중...
+                        <div>
+                          <Spinner animation="border" variant="dark" />
+                        </div>
+                      </div>
+                    </div>}>
             <Routes>
               <Route exact path="/" element={<Main />} />
               <Route path="/signup" element={<Signup />} />
@@ -107,10 +118,11 @@ function App() {
               <Route path="/event/detail/:category/:id" element={<EventDetail />} />
               <Route path="/admin/*" element={<AdminDashboard />} />
             </Routes>
-	      <Footer />
-        </ToastProvider>
-	    </EventProvider>
-	    </MagazineProvider>
+	        <Footer />
+          </Suspense>
+          </ToastProvider>
+	       </EventProvider>
+	       </MagazineProvider>
         </PostProvider>
       </Router>
       </AuthProvider>

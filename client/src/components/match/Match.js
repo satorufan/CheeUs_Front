@@ -104,6 +104,8 @@ const Match = () => {
   }
 
   return (
+    <>
+    <div className="board-page-top">둘이 마셔요</div>
     <div className="match_container">
       {profiles && userProfile ?  (userProfile.profile.locationOk === null ? (
         <div className="permissionMessage">
@@ -221,6 +223,7 @@ const Match = () => {
         </Modal.Footer>
       </Modal>
     </div>
+    </>
   );
 };
 
