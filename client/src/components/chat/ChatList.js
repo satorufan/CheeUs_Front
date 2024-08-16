@@ -7,6 +7,7 @@ import { fetchChatRooms, fetchTogetherChatRooms } from '../../store/ChatSlice';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import ChatListSkeleton from '../skeleton/ChtListSkeleton';
 import useToProfile from '../../hooks/useToProfile';
+import useSocketIo from '../../hooks/useSocketIo';
 
 const ChatList = ({ selectedChat, handlePersonClick, handleExitChat, isTogether }) => {
     const { token, serverUrl } = useContext(AuthContext);
@@ -19,6 +20,12 @@ const ChatList = ({ selectedChat, handlePersonClick, handleExitChat, isTogether 
     const status = useSelector(state => state.chat.status);
     const error = useSelector(state => state.chat.error);
     const navigateToUserProfile = useToProfile();
+    const [hasUnreadMessages, setHasUnreadMessages] = useState(() => {
+        const storedUnreadStatus = localStorage.getItem('hasUnreadMessages');
+        return storedUnreadStatus ? JSON.parse(storedUnreadStatus) : false;
+    });
+
+    useSocketIo(isTogether ? 'together' : 'one', selectedChat, loggedInUserId, setHasUnreadMessages);
     
     useEffect(() => {
         if (token) {
@@ -38,7 +45,7 @@ const ChatList = ({ selectedChat, handlePersonClick, handleExitChat, isTogether 
                 console.error('Token decoding error:', err);
             }
         }
-    }, [token, dispatch, isTogether, serverUrl]);
+    }, [token, dispatch, isTogether, serverUrl, hasUnreadMessages]);
 
     const formatDate = (dateString) => {
         if (!dateString) return '메시지가 없습니다'; 

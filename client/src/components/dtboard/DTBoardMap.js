@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
 import { selectUserProfile } from '../../store/ProfileSlice';
 import { useSelector } from 'react-redux';
-import { selectUserLocation } from '../../store/MatchSlice';
 
 /* global kakao */
 const kakaokey = "cc91cb103ac5f5d244562ea0a92a3053"; // 카카오 API 키
@@ -188,7 +187,6 @@ console.log("포스트",posts);
     }
   };
 	
-	
   return (
     <>
       <div className="map-search-box">
@@ -199,7 +197,8 @@ console.log("포스트",posts);
           onChange={(e) => setSearchInput(e.target.value)} 
         />
         <button onClick={handleSearch}>검색</button>
-        <MyLocationIcon onClick={setUserLocation} />
+        <MyLocationIcon 
+        	onClick={setUserLocation}  color='action' />
       </div>
       <div id="map" style={{  height: '100%'}}></div>
     </>

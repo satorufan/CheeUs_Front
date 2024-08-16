@@ -32,7 +32,7 @@ const ChatPage = () => {
     const togetherChatRooms = useSelector(state => state.chat.togetherChatRooms);
     const messageInput = useSelector(state => state.chat.messageInput);
     const showMessageInput = useSelector(state => state.chat.showMessageInput);
-
+    const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
     const { token, serverUrl } = useContext(AuthContext);
     const [loggedInUserId, setLoggedInUserId] = useState(null);
     const navigate = useNavigate();
@@ -48,7 +48,7 @@ const ChatPage = () => {
         }
     }, [token]);
 
-    const socket = useSocketIo(activeKey, selectedChat);
+    const socket = useSocketIo(activeKey, selectedChat, loggedInUserId, setHasUnreadMessages);
 
     useEffect(() => {
         if (loggedInUserId) {
@@ -234,6 +234,7 @@ const ChatPage = () => {
                                         handlePersonClick={handlePersonClick}
                                         handleExitChat={handleExitChat} 
                                         isTogether={false}
+
                                     />
                                 </div>
                                 <div className="col-md-8 chat-right">
