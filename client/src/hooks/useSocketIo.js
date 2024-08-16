@@ -17,16 +17,14 @@ const useSocketIo = (activeKey, selectedChat, userEmail, setHasUnreadMessages) =
         socket.current = io('http://localhost:8888');
 
         const handleReceiveMessage = (message) => {
-            
+                        
             if (!message) {
-
+                console.error('잘못된 메시지 수신:', message);
                 return;
             }
                         
             const { chat_room_id, room_id, member = [] } = message;
-        
             
-            // 모든 멤버를 문자열로 변환
             const membersAsString = member.map(m => (m ? m.toString().trim() : ''));
             
             const enrichedMessage = {
@@ -35,7 +33,7 @@ const useSocketIo = (activeKey, selectedChat, userEmail, setHasUnreadMessages) =
                 member
             };
             
-            if (activeKey === 'one') { // 수신메세지 스토어에 업뎃
+            if (activeKey === 'one') { 
                 dispatch(updateLastMessageInChatRooms({ 
                     roomId: chat_room_id, 
                     message: enrichedMessage 
@@ -47,7 +45,7 @@ const useSocketIo = (activeKey, selectedChat, userEmail, setHasUnreadMessages) =
                 }));
             }
             
-            if (selectedChat && selectedChat.roomId) {
+            if (selectedChat && selectedChat.roomId) { 
                 if (activeKey === 'one' && chat_room_id === selectedChat.roomId) {
                     dispatch(appendMessageToChat(enrichedMessage));
                 } else if (activeKey === 'together' && room_id === selectedChat.roomId) {
@@ -55,24 +53,18 @@ const useSocketIo = (activeKey, selectedChat, userEmail, setHasUnreadMessages) =
                 }
             }
             
-            if (typeof userEmail === 'string') {
-                const trimmedUserEmail = userEmail.trim().toLowerCase();
-                if (membersAsString.includes(trimmedUserEmail)) {
-                    console.log('읽지 않은 메시지 상태를 true로 설정합니다.');
-                    setHasUnreadMessages(true);
-            
-                    //notify('새로운 메시지가 도착했습니다!');
-                } else {
-                    //console.log('멤버 배열에 사용자 이메일이 없습니다:', membersAsString);
-                }
+            if (userEmail && membersAsString.includes(userEmail.trim())) {
+                setHasUnreadMessages(true);
+
+                //notify('새로운 메시지가 도착했습니다!');
             } else {
-                //console.log('userEmail이 유효하지 않습니다:', userEmail);
+                console.log('멤버 배열에 사용자 이메일이 없습니다.');
             }
         };
 
         socket.current.on('receiveMessage', handleReceiveMessage); 
 
-        return () => { // 소켓 연결 해제
+        return () => { 
             socket.current.off('receiveMessage', handleReceiveMessage);
             if (socket.current) {
                 socket.current.disconnect();
