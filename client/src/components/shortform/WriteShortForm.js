@@ -108,7 +108,6 @@ function WriteShortForm() {
             like: 0,
             repl_cnt: 0,
             photoes: 1,
-            media: uploadedFileUrl,
             file: file
         };
 

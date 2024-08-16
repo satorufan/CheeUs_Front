@@ -128,8 +128,7 @@ const WriteEventBoard = () => {
       views: 0,
       like: 0,
       repl_cnt: 0,
-      photoes: '',
-      media: ''
+      photoes: ''
     };
     
     swal({

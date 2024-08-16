@@ -64,7 +64,7 @@ function App() {
         <ToastProvider>
           <Header />
             <Routes>
-              <Route path="/" element={<Main />} />
+              <Route exact path="/" element={<Main />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/signupcallback" element={<SignupCallback />} />
               <Route path="/login" element={<Login />} />
