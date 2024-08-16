@@ -1,4 +1,4 @@
-import React, { useRef, useState, forwardRef, useImperativeHandle } from "react";
+import React, { useRef, useState, forwardRef, useImperativeHandle, useEffect } from "react";
 import Box from "@mui/material/Box";
 import "@toast-ui/editor/dist/toastui-editor.css";
 import { Editor } from "@toast-ui/react-editor";
@@ -7,6 +7,7 @@ import { storage } from "../firebase/firebase";
 import Cropper from 'cropperjs';
 import 'cropperjs/dist/cropper.css';
 import './ToastEditor.css'
+import Swal from "sweetalert2";
 
 // 이미지 리사이즈 및 크롭 함수 정의
 const handleImageResize = (blob, maxWidth = 800) => {
@@ -77,9 +78,10 @@ const onUploadImage = async (blob, callback, uploadedImages, setUploadedImages, 
   }
 };
 
-const ToastEditor = forwardRef(({ content, category, postId }, ref) => {
+const ToastEditor = forwardRef(({ content, category, postId, maxLength = 3000 }, ref) => {
   const editorRef = useRef(null);
   const [uploadedImages, setUploadedImages] = useState([]);
+  const [warningShown, setWarningShown] = useState(false);
 
   useImperativeHandle(ref, () => ({
     getInstance: () => editorRef.current.getInstance(),
@@ -87,6 +89,33 @@ const ToastEditor = forwardRef(({ content, category, postId }, ref) => {
     setUploadedImages: (images) => setUploadedImages(images),
     getContent: () => editorRef.current.getInstance().getMarkdown()
   }));
+
+  useEffect(() => {
+    const editorInstance = editorRef.current.getInstance();
+
+    const handleChange = () => {
+      const textLength = editorInstance.getMarkdown().length;
+
+      if (textLength > maxLength && !warningShown) {
+        setWarningShown(true);
+        Swal.fire({
+          title: `글자 수는 ${maxLength}자를 초과할 수 없습니다.`,
+          icon: 'warning',
+          confirmButtonColor: '#48088A',
+          confirmButtonText: '확인',
+        }).then(() => {
+          setWarningShown(false);
+        });
+      }
+    };
+
+    editorInstance.on('change', handleChange);
+
+    return () => {
+      editorInstance.off('change', handleChange);
+    };
+  }, [maxLength, warningShown]);
+
 
   return (
     <div className="dt-input-size">
