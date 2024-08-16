@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import './MagazineDetail.css';
+//import './MagazineDetail.css';
+import './Magazine.css';
 import Favorite from '@mui/icons-material/Favorite';
 import Visibility from '@mui/icons-material/Visibility';
 import { useMagazines } from './MagazineContext';

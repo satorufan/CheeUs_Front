@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  client:
+    build:
+      context: .
+      dockerfile: satorufan/cheeusClient
+    ports:
+      - "80:80"
+    depends_on:
+      - server
+
+  server:
+    build:
+      context: .
+      dockerfile: satorufan/cheeusNodeServer
+    ports:
+      - "8888:8888"
+      - "8889:8889"

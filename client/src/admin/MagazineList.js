@@ -1,10 +1,9 @@
 import {React, useState, useEffect} from 'react';
 import axios from 'axios';
 import { List, Datagrid, TextField, EditButton, DeleteButton, Toolbar, SaveButton, SearchInput, ChipField, CreateButton, SelectInput } from 'react-admin';
-import { Edit, SimpleForm, TextInput, BooleanInput, DateField, ChipInput, DateInput } from 'react-admin';
+import { Edit, SimpleForm, TextInput, DateField, DateInput } from 'react-admin';
 import { useParams } from 'react-router-dom'; // react-router-dom에서 useParams를 가져옵니다
 import { Create } from 'react-admin';
-import BooleanField from './BooleanField'; 
 import { FilterSidebar, ListActions } from './FilterSidebar';
 import BackButton from './custom/BackButton';
 import TuiEditorInput from './custom/TuiEditorInput';
@@ -19,7 +18,6 @@ const magazineFilters = [
     <TextInput label="title2" source="title2" defaultValue="" />,
     <TextInput label="content" source="content" defaultValue="" />,
     <TextInput label="writeday" source="writeday" defaultValue="" />,
-    <BooleanInput label="hidden" source="hidden" defaultValue="" />
 ];
 
 export const MagazineList = (props) => (
@@ -32,7 +30,6 @@ export const MagazineList = (props) => (
             <TextField source="title" />
             <TextField source="title2" />
             <DateField source="writeday" />
-            <BooleanField source="hidden" />
             <CreateButton/>
             <EditButton />
             <DeleteButton />
@@ -87,7 +84,6 @@ export const MagazineCreate = (props) => {
                 <TextInput source="title2" />
                 <TuiEditorInput source="content" category="magazineboard" postId={postId} defaultValue="" />
                 <DateInput source="writeday" />
-                <BooleanInput source="hidden" label="Hidden" />
                 <SaveButton/>
             </SimpleForm>
             <BackButton/>
@@ -114,7 +110,6 @@ export const MagazineEdit = (props) => {
                 <TextInput source="title2" />
                 <TuiEditorInput source="content" category="magazineboard" postId={id} defaultValue="" />
                 <DateInput source="writeday" />
-                <BooleanInput source="hidden" label="Hidden" />
                 <SaveButton/>
             </SimpleForm>
             <BackButton/>
