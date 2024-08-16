@@ -35,7 +35,7 @@ function Main() {
         });
         setVisibleSections(newVisibleSections);
       },
-      { threshold: 1 } 
+      { threshold: 0.7 } 
     );
 
     sections.forEach((section) => observer.observe(section));
