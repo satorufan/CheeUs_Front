@@ -3,15 +3,15 @@
   gap: 10px;
   margin: 20px;
   overflow: hidden;
-  height:600px;
+  height: 76vh;
   
 }
 .dt-detail{
 	margin-bottom:  0px;
 }
 .detailContainer{
-  height:600px;
-	margin-bottom: 20px;
+  height: 80vh;
+	margin-bottom: 0px;
 }
 .textareaHeader {
   display: flex;
@@ -92,11 +92,13 @@
   padding: 10px;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 .mapContainer {
   flex: 1;
   border-radius: 10px;
-  height: 100%
+  height: 50%;
+  overflow: hidden;
 }
 
 .bottomContainer {
@@ -169,7 +171,7 @@
 }
 
  .detailMapContainer{
-  height: 73%;
+  height: 84.5%;
   }
   
  .board-right {
@@ -291,15 +293,7 @@
   .input-Container {
     flex-direction: column;
     gap: 10px;
-    height:1200px;
-  }
-
-  .dt-input-left-box, .dt-input-right-box {
-    flex: 1;
-    width: 100%;
-    box-shadow: none;
-    background-color: transparent;
-    height:250px
+    height:1100px;
   }
   .textareaBox input {
     border: none;
@@ -307,14 +301,6 @@
   }
   .dt-input-mypage-box{
     height:200px  }
-
-  .dt-input-left-box{
-    flex: 1;
-    width: 100%;
-    box-shadow: none;
-    background-color: transparent;
-    height:200px
-  }
 
   .example-custom-input {
     border-radius: 10px;
@@ -323,29 +309,373 @@
   .mapHeader{
   font-size: 12px;
 }
+.body{
+  font-family: 'GwangyangTouching';
+}
+.board-layout {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  height: 100vh;
+  justify-content: center;
+}
+.dtpostHeader{
+  display: flex;
+  justify-content: space-between;
+}
+/* 게시판과 지도 영역 */
+.board-content {
+  display: flex;
+  flex: 1;
+  padding: 40px 20px;
+  background-color: #f9f9f9;
+  margin: 20px 0;
+  height: 100vh;
+}
 
+.board-left {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  height: 600px;
+  overflow-y: auto;
+  flex: 1;
+}
 
-  .mapContainer {
-    flex: 1;
-    width: 100%;
-    height: 250px; 
+.dt-left{
+  display: flex;
+  width: 35%;
+  margin: 20px;
+  flex-direction: column;
+}
+.board-left h2{
+	margin-top: 15px;
+}
+.board-right {
+  flex: 1;
+  margin: 20px;
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+#map {
+  width: 100%;
+  height: 100vh; 
+  border-radius: 10px;
+}
+.map-search-box {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+  background: white;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  gap: 10px;
+}
+.map-search-box svg{
+  margin-top : 5px;
+  font-size: 28px;
+}
+.map-search-box input {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.map-search-box button {
+  padding: 5px 10px;
+  border: none;
+  background-color: #333;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.map-search-box button:hover {
+  background-color: #555;
+}
+
+.dtpost-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 1rem;
+}
+@media (max-width: 1200px) {
+  .dticonBox {
+    display: none;
+  } 
+}
+
+.dticonBox {
+  font-size: 12px;
+} 
+.dticonBox svg{
+	margin-right: 2px;
+	margin-left: 10px;
+}
+/* 페이지네이션, 작성 버튼 */
+.board-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: auto;
+  align-items: center;
+}
+.footerLeft{
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	height: 100%;
+}
+.footerRight{
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	height: 100%;
+}
+.pagination {
+  display: flex;
+  gap: 0.1vw;
+}
+.pagination a {
+  color: black;
+  float: left;
+  padding: 8px 16px;
+  text-decoration: none;
+  transition: background-color .3s;
+  margin: 0 4px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.pagination a:hover {
+  background-color: #ddd;
+}
+
+.write-button {
+  padding: 10px 15px;
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  border: solid 3px black;
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+}
+.write-button:hover {
+  background-color: white;
+  color: black;
+}
+.divider{
+  border: none;
+  border-top: 2px solid black;
+  margin: 15px 0 0 0;
+}
+.postClickArea{
+  padding: 15px;
+  cursor: pointer;
+  transition: background-color 0.5s ease;
+  border-radius: 10px;
+}
+.postClickArea:hover{
+  background-color: #ffb2b2;
+}
+
+.contentHidden{
+	display: none;
+}
+.post-img-nick{
+  display: flex;
+  margin-bottom: 10px;
+}
+.dtpost-location,
+.dtpost-time {
+  text-align:end;
+  font-size: 13px;
+}
+.profileContainer{
+  display: flex;
+  margin-bottom: 5px;
+  margin-left: 30px;
+
+}
+.profile2, .profile1{
+  margin-right : 10px;
+  text-align:center;
+  justify-content: center;
+  justify-items: center;
+  align-items: center;
+  align-content: center;
+  margin-top: 10px;
+}
+.profile2{
+  margin-right:30px;
+}
+.dt-detail {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.detailContainer {
+  display: flex;
+  justify-content: space-between;
+}
+.dt-detail-left-box {
+  flex: 1;
+  padding: 10px;
+}
+.dt-detail-right-box {
+  flex: 1;
+  padding: 10px;
+}
+
+.contentBox .content {
+  font-size: 16px;
+}
+
+.detailMapContainer {
+  margin-bottom: 10px;
+}
+.contentBox{
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  height:100%;
+  border-radius: 20px;
+  padding: 20px;
+  margin:10px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
+.mapHeader{
+  border-radius: 20px;
+  background-color: #f0f0f0;
+  padding : 15px;
+  width:auto;
+  margin-bottom: 5px ;
+}
+
+.mapHeader-detail{
+  border-radius: 20px;
+  background-color: #f0f0f0;
+  padding : 15px;
+  width:auto;
+  margin: 25px 0 ;
+  font-size: 0.9rem;
+}
+.textareaBox{
+  font-size : 30px;
+  margin-left: 30px;
+}
+.dt-post-nick {
+  margin-left: 10px;
+}
+.moving-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; 
+}
+
+.moving-icon {
+  animation: moveUpDown 0.5s ease-in-out infinite;
+}
+
+/* 애니메이션 정의 */
+@keyframes moveUpDown {
+  0% {
+    transform: translateY(0);
   }
-  .mapContainer {
-    flex: 1;
-    width: 100%;
-    height: 250px; 
+  50% {
+    transform: translateY(-10px); 
   }
+  100% {
+    transform: translateY(0);
+  }
+}
 
-  .detailMapContainer{
+@media (max-width: 768px) {
+
+
+  .board-layout {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    height:1100px;
+    justify-content: center;
+  }
+  .dt-input-mypage-box{
     height:400px;
   }
+
+  .board-content {
+    flex-direction: column; 
+    gap: 10px;
+    height:400px;
+  }
+  .dt-left{
+    display: flex;
+    width: 100%;
+    margin: 20px;
+  }
+
+  .dt-detail {
+    flex-direction: column; 
+    height:1300px;
+  }
+
+  .board-right {
+    flex: 1;
+    margin: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    order: -1;
+  }
+  .bottomContainer{
+    justify-content: start;
+  }
+
+  .dt-detail-left-box{
+    flex: 1;
+    width: 100%;
+    margin: 0;
+  }
+
+  .dt-detail-right-box{
+    flex: 1;
+    width: 100%;
+    margin-right: 20px;
+  }
+  .detailContainer{
+    flex-direction: column; 
+    height:800px;
+  }
+  .board-left {
+    max-height: 500px;
+  }
+}
+
+  .mapContainer {
+    flex: 1;
+    width: 100%;
+    height: 300px; 
+  }
+
   .contentContainer{
-    height:1000px;
+    height:400px;
     margin:0;
   }
   .detailContainer-big{
-    height:3000px;
+    height:1100px;
   }
+  .dt-input-size{
+    height:400px;
+  }
+
 }
 
 @media (max-width: 1200px) {
@@ -354,7 +684,20 @@
     gap: 10px;
     height:1200px;
   }
+  .toastui-editor-defaultUI{
+    height: 450px;
+  }
+  .toastui-editor-ww-container {
+    height:auto;
+  }
 
+  .toastui-editor-ww-container > .toastui-editor {
+    height:400px !important;
+    width: 100%;
+  }
+  .dt-input{
+    height:1400px;
+  }
   .dt-input-left-box, .dt-input-right-box {
     flex: 1;
     width: 100%;
@@ -368,14 +711,6 @@
   }
   .dt-input-mypage-box{
     height:200px  }
-
-  .dt-input-left-box{
-    flex: 1;
-    width: 100%;
-    box-shadow: none;
-    background-color: transparent;
-    height:200px
-  }
 
   .example-custom-input {
     border-radius: 10px;
