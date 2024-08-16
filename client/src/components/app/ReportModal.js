@@ -39,23 +39,21 @@ function ReportModal({ show, handleClose, reportedId }) {
             const reportData = {
                 reporter_id: loggedInUserId,
                 reported_id: reportedId,
-                content: reason,
-                writeday: new Date().toISOString(),
+                content: reason
             };
 
             // 콘솔에 신고 데이터 출력
-            console.log('신고 데이터:', reportData);
-
-            await axios.post('http://localhost:8080/admin/AdminReport', reportData, {
+            //console.log('신고 데이터:', reportData);
+            const response = await axios.post('http://localhost:8080/report/insert', reportData, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
             });
-
+            //console.log('서버 응답:', response);
             // 신고가 완료된 후 모달을 닫습니다.
             handleClose();
         } catch (error) {
-            console.error('신고 정보를 저장하는 중 오류 발생:', error);
+            //console.error('신고 정보를 저장하는 중 오류 발생:', error.response ? error.response.data : error.message);
         }
     };
 
