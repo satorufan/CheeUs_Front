@@ -209,12 +209,10 @@ const dataProvider = {
     create: async (resource, params) => {
        
         const url = endpoints[resource];
-
         const category = url.substring(url.lastIndexOf('/') + 1); // "AdminMagazine"
         console.log('Last Segment:', category);
         console.log('params.data:', params.data);
 
-        
         
         // 최신 게시물 ID 가져오기
         var postId = "";

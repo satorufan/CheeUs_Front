@@ -39,7 +39,7 @@ body{
   flex-direction: column;
 }
 .board-left h2{
-	margin-top: 15px;
+   margin-top: 15px;
 }
 .board-right {
   flex: 1;
@@ -90,6 +90,14 @@ body{
   background-color: #555;
 }
 
+.map-search-box svg{
+	cursor: pointer;
+}
+.map-search-box svg:hover{
+	color: skyblue;
+	transition: color 0.3s;
+}
+
 .dtpost-title {
   white-space: nowrap;
   overflow: hidden;
@@ -106,8 +114,8 @@ body{
   font-size: 12px;
 } 
 .dticonBox svg{
-	margin-right: 2px;
-	margin-left: 10px;
+   margin-right: 2px;
+   margin-left: 10px;
 }
 /* 페이지네이션, 작성 버튼 */
 .board-footer {
@@ -117,16 +125,16 @@ body{
   align-items: center;
 }
 .footerLeft{
-	display: flex;
-	flex-direction: column;
-	justify-content: flex-end;
-	height: 100%;
+   display: flex;
+   flex-direction: column;
+   justify-content: flex-end;
+   height: 100%;
 }
 .footerRight{
-	display: flex;
-	flex-direction: column;
-	justify-content: flex-end;
-	height: 100%;
+   display: flex;
+   flex-direction: column;
+   justify-content: flex-end;
+   height: 100%;
 }
 .pagination {
   display: flex;
@@ -178,7 +186,7 @@ body{
 }
 
 .contentHidden{
-	display: none;
+   display: none;
 }
 .post-img-nick{
   display: flex;
@@ -275,6 +283,7 @@ body{
   animation: moveUpDown 0.5s ease-in-out infinite;
 }
 
+
 /* 애니메이션 정의 */
 @keyframes moveUpDown {
   0% {
@@ -297,6 +306,7 @@ body{
   .board-content {
     flex-direction: column; 
     gap: 10px;
+    height:200px;
     height:1200px;
   }
   .dt-left{

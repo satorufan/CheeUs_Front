@@ -18,6 +18,7 @@ import useToProfile from '../../hooks/useToProfile';
 import UseAuthorImages from '../images/UseAuthorImage';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
+import useSocketIo from '../../hooks/useSocketIo';
 
 const PostDetail = () => {
   const { id } = useParams();
@@ -36,9 +37,9 @@ const PostDetail = () => {
   const [loadedImages, setLoadedImages] = useState({});
   const location = useLocation();
   const { dtPostData } = location.state || {};
-  const [joinTime, setJoinTime] = useState({});
   const [views, setViews] = useState(0);
   const [viewIncremented, setViewIncremented] = useState(false);
+  const socket = useSocketIo('together', null, memberEmail);
 
   // 유저가 해당 게시글 채팅방에 참여중인지 확인
   const rooms = useSelector(state => state.chat.togetherChatRooms);
@@ -238,21 +239,35 @@ const PostDetail = () => {
       return ;
     }
 
-    const newMessage = {
-      sender_id: 'System',
+    const dbMessage = {
+      sender_id: memberEmail,
       message: userProfile.profile.nickname + '님이 입장하였습니다.',
       write_day: new Date().toISOString(),
       read: [],
-      room_id : parseInt(id, 10)
+      room_id : parseInt(id, 10),
     };
 
     const joinRoom = 'http://localhost:8889/api/joinTogetherRoom';
     const sendMessage = 'http://localhost:8889/api/togetherMessages';
 
     await axios.post(joinRoom, join).then(res=>console.log(res)).catch(err=>console.log(err));
-    await axios.post(sendMessage, newMessage);
+    await axios.post(sendMessage, dbMessage);
 
-    setJoinTime(new Date());
+    // 소켓으로 보낼 메시지
+     const socketMessage = {
+      ...dbMessage,
+        member: (parseInt(id, 10)?.members || [])
+          .filter(member => member.email !== memberEmail)
+          .map(member => member.email)
+    };
+   
+      // 소켓으로 메시지 전송
+      if (socket.current) {
+        socket.current.emit('sendMessage', socketMessage);
+    } else {
+        console.error('Socket is not connected.');
+    }
+
     
     handleClickJoinBtn();
   };
