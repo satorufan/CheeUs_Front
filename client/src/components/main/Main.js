@@ -22,24 +22,30 @@ function Main() {
 
   useEffect(() => {
     const sections = Array.from(greyRef.current.querySelectorAll('.main-section'));
-
+  
     const observer = new IntersectionObserver(
       (entries) => {
-        const newVisibleSections = {};
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            newVisibleSections[entry.target.id] = true;
+            setVisibleSections((prev) => ({
+              ...prev,
+              [entry.target.id]: true,
+            }));
           } else {
-            newVisibleSections[entry.target.id] = false;
+            setTimeout(() => {
+              setVisibleSections((prev) => ({
+                ...prev,
+                [entry.target.id]: false,
+              }));
+            }, 100); // 500ms 후에 opacity를 0으로 설정
           }
         });
-        setVisibleSections(newVisibleSections);
       },
-      { threshold: 0.7 } 
+      { threshold: 1 } // Threshold를 0.5로 변경
     );
-
+  
     sections.forEach((section) => observer.observe(section));
-
+  
     return () => {
       sections.forEach((section) => observer.unobserve(section));
     };

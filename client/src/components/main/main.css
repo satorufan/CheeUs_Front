@@ -104,6 +104,17 @@
     }
 }
 
+@media (max-width: 1200px) {
+    .main-section-text {
+        font-size: 15px; 
+    }
+
+    .main-section-image img {
+        width : 110px;
+        height:66px;
+    }
+}
+
 /* 타이핑 애니메이션 설정 */
 @keyframes typing {
     from { width: 0; }

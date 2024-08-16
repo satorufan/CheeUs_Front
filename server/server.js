@@ -94,7 +94,6 @@ app.get('/api/chatRooms', async (req, res) => {
 // 1:1 채팅방 생성 API
 app.post('/api/createOneoneRoom', async(req, res)=>{
     const newRoom = req.body;
-    console.log(newRoom);
     try {
         const result = await db.collection('oneone_chat_rooms').insertOne(newRoom);
         console.log('>>>>Room Created:', result.insertedId);
@@ -109,7 +108,6 @@ app.post('/api/createOneoneRoom', async(req, res)=>{
 // 1:1 채팅 메시지 생성 API
 app.post('/api/messages', async (req, res) => {
     const newMessage = req.body;
-    console.log(newMessage);
     try {
         const result = await db.collection('oneone_chat_messages').insertOne(newMessage);
         console.log('>>>>Message sent:', result.insertedId);
