@@ -18,6 +18,7 @@ import {
 import { AuthContext } from '../login/OAuth';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import useSocketIo from '../../hooks/useSocketIo';
 
 const TinderCards = () => {
   const dispatch = useDispatch();
@@ -29,7 +30,7 @@ const TinderCards = () => {
   const [showMessages, setShowMessages] = React.useState([]);
   const { memberEmail, serverUrl } = useContext(AuthContext);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
-
+  const socket = useSocketIo('one', null, memberEmail);
   const childRefs = useRef([]); // 리랜더링 돼도 참조 유지
 
   useEffect(() => {
@@ -117,7 +118,7 @@ const TinderCards = () => {
       match: data.matchState
     };
 
-    const newMessage = {
+    const dbMessage = {
       sender_id: 'System',
       message: '매칭 성공! 즐거운 대화를 나누어 보아요',
       write_day: new Date().toISOString(),
@@ -129,9 +130,22 @@ const TinderCards = () => {
       const createRoom = 'http://localhost:8889/api/createOneoneRoom';
       const sendMessage = 'http://localhost:8889/api/messages';
       await axios.post(createRoom, newRoom);
-      await axios.post(sendMessage, newMessage);
+      await axios.post(sendMessage, dbMessage);
     } catch (error) {
       console.error('Error sending message:', error);
+    }
+
+    // 소켓으로 보낼 메시지
+    const socketMessage = {
+      ...dbMessage,
+        member: [data.member1, data.member2].filter(member => member !== memberEmail)
+   };
+   
+      // 소켓으로 메시지 전송
+      if (socket.current) {
+        socket.current.emit('sendMessage', socketMessage);
+    } else {
+        console.error('Socket is not connected.');
     }
   };
 

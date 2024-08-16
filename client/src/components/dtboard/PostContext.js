@@ -58,7 +58,7 @@ export const PostProvider = ({ children }) => {
     };
 
     const newMessage = {
-      sender_id: 'System',
+      sender_id: memberEmail,
       message: '방이 생성되었습니다.',
       write_day: new Date().toISOString(),
       read: [newPost.author_id],

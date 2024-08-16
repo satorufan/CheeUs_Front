@@ -36,7 +36,7 @@ const ChatWindow = ({
     const [participants, setParticipants] = useState([]); 
     const [profileData, setProfileData] = useState([]); 
     const navigateToUserProfile = useToProfile();
-    const [joinTime, setJoinTime] = useState(null); 
+    const isSender = (senderId) => senderId === loggedInUserId;
 
     const { toggleNotifications, isNotificationsEnabled } = useToast();
 
@@ -123,30 +123,31 @@ const ChatWindow = ({
     }
 
     // 프로필 사진 저장 함수
-    useMemo(async () => {
-        console.log(selectedChat)
-        if (!selectedChat || !selectedChat.messages) return;
-
-        // 참여자 로드
-        const newSenderIds = [...new Set(selectedChat.messages.map(msg => msg.sender_id))]
-                                .filter(id => !profileData[id]);
-
-        try {
-            const profilePromises = newSenderIds.map(id => getProfileForSender(id));
-            const profilesData = await Promise.all(profilePromises);
-
-            const newProfiles = profilesData.reduce((acc, profile, index) => {
-                if (profile) acc[newSenderIds[index]] = profile;
-                return acc;
-            }, {});
-
-            setProfileData(prevProfiles => ({ ...prevProfiles, ...newProfiles }));
-        } catch (error) {
-            console.error('프로필 사진 로딩 오류:', error);
+    useEffect(() => {
+        if (selectedChat && selectedChat.messages) {
+            // 참여자 프로필 로드
+            const newSenderIds = [...new Set(selectedChat.messages.map(msg => msg.sender_id))]
+                                    .filter(id => !profileData[id]);
+    
+            const fetchProfiles = async () => {
+                try {
+                    const profilePromises = newSenderIds.map(id => getProfileForSender(id));
+                    const profilesData = await Promise.all(profilePromises);
+    
+                    const newProfiles = profilesData.reduce((acc, profile, index) => {
+                        if (profile) acc[newSenderIds[index]] = profile;
+                        return acc;
+                    }, {});
+    
+                    setProfileData(prevProfiles => ({ ...prevProfiles, ...newProfiles }));
+                } catch (error) {
+                    console.error('프로필 사진 로딩 오류:', error);
+                }
+            };
+    
+            fetchProfiles();
         }
-    }, [participants]);
-
-    const isSender = (senderId) => senderId === loggedInUserId;
+    }, [selectedChat,participants]); 
 
     // 상단
     const getDisplayName = () => {
@@ -154,9 +155,11 @@ const ChatWindow = ({
             return (
                 <>
                     <div className='chat-window-top-no'>나랑 같이 취할 사람 찾으러 가기!</div>
+                    {/*
                     <button className="notification-toggle no-style" onClick={toggleNotifications}>
                         {isNotificationsEnabled ? '🔔' : '🔕'}
                     </button>
+                    */}
                 </>
             ); 
         }
@@ -254,64 +257,125 @@ const ChatWindow = ({
         if (!selectedChat || !selectedChat.messages) return null;
     
         let lastDate = null;
-    
-        return selectedChat.messages.map((message, index) => {
-            if (!message) {
-                console.error('Undefined message at index:', index);
-                return null; 
-            }
-    
-            const messageDate = formatDate(message.write_day);
-            const showDateSeparator = lastDate !== messageDate;
-    
-            lastDate = messageDate;
-    
-            const senderProfile = profileData[message.sender_id] || {};
-            const isSameSenderAsPrevious = index > 0 && selectedChat.messages[index - 1].sender_id === message.sender_id;
-            const isProfileLoading = !profileData[message.sender_id]; 
-    
-            return (
-                <React.Fragment key={index}>
-                    {showDateSeparator && (
-                        <div className="date-separator">
-                            <div className="messageDate">{messageDate}</div>
-                        </div>
-                    )}
-                    <div className={`chat-bubble-container ${isSender(message.sender_id) ? 'me' : 'you'}`}>
-                        {(message.sender_id !== "System") && !isSender(message.sender_id) && !isSameSenderAsPrevious && (
-                            <div className="message-info">
-                                {isProfileLoading ? (
-                                    <div className="skeleton-img skeleton-loading"></div>
-                                ) : (
-                                    <img
-                                        src={senderProfile.image || `${process.env.PUBLIC_URL}/images/default-user-icon.png`}
-                                        alt={`Profile of ${senderProfile.nickname || 'Unknown'}`}
-                                        className="profile-img rounded-circle"
-                                        style={{ width: '40px', height: '40px' }}
-                                        onClick={() => navigateToUserProfile(message.sender_id)}
-                                    />
-                                )}
-                                <span className="nickname" onClick={() => navigateToUserProfile(message.sender_id)}>
-                                {isProfileLoading ? (
-                                    <div className="skeleton-nick skeleton-loading"></div>
-                                ) : (
-                                senderProfile.nickname || '알수없음'
-                            )}
-                                </span>
-                                </div>
-                        )}
-                        <div className={getChatBubbleClasses(message.sender_id)}>
-                            {message.message}
-                            </div>
-                        <span className="chat-time">{formatMessageTime(message.write_day)}</span>
-                    </div>
-                </React.Fragment>
-            );
-        });
-    };
-    
-    
+        
 
+
+        if (activeKey === 'together') {
+            const userFirstMessageIndex = selectedChat.messages.findIndex(msg => msg.sender_id === loggedInUserId);
+            const startIndex = userFirstMessageIndex !== -1 ? userFirstMessageIndex : 0;
+            const filteredMessages = selectedChat.messages.slice(startIndex);
+
+            return filteredMessages.map((message, index) => {
+                if (!message) {
+                    console.error('Undefined message at index:', index);
+                    return null;
+                }
+    
+                const messageDate = formatDate(message.write_day);
+                const showDateSeparator = lastDate !== messageDate;
+    
+                lastDate = messageDate;
+    
+                const senderProfile = profileData[message.sender_id] || {};
+                const isSameSenderAsPrevious = index > 0 && filteredMessages[index - 1].sender_id === message.sender_id;
+                const isProfileLoading = !profileData[message.sender_id];
+    
+                return (
+                    <React.Fragment key={index}>
+                        {showDateSeparator && (
+                            <div className="date-separator">
+                                <div className="messageDate">{messageDate}</div>
+                            </div>
+                        )}
+                        <div className={`chat-bubble-container ${isSender(message.sender_id) ? 'me' : 'you'}`}>
+                            {(message.sender_id !== "System") && !isSender(message.sender_id) && !isSameSenderAsPrevious && (
+                                <div className="message-info">
+                                    {isProfileLoading ? (
+                                        <div className="skeleton-img skeleton-loading"></div>
+                                    ) : (
+                                        <img
+                                            src={senderProfile.image || `${process.env.PUBLIC_URL}/images/default-user-icon.png`}
+                                            alt={`Profile of ${senderProfile.nickname || 'Unknown'}`}
+                                            className="profile-img rounded-circle"
+                                            style={{ width: '40px', height: '40px' }}
+                                            onClick={() => navigateToUserProfile(message.sender_id)}
+                                        />
+                                    )}
+                                    <span className="nickname" onClick={() => navigateToUserProfile(message.sender_id)}>
+                                        {isProfileLoading ? (
+                                            <div className="skeleton-nick skeleton-loading"></div>
+                                        ) : (
+                                            senderProfile.nickname || '알수없음'
+                                        )}
+                                    </span>
+                                </div>
+                            )}
+                            <div className={getChatBubbleClasses(message.sender_id)}>
+                                {message.message}
+                            </div>
+                            <span className="chat-time">{formatMessageTime(message.write_day)}</span>
+                        </div>
+                    </React.Fragment>
+                );
+            });
+        } else {
+            return selectedChat.messages.map((message, index) => {
+                if (!message) {
+                    console.error('Undefined message at index:', index);
+                    return null;
+                }
+    
+                const messageDate = formatDate(message.write_day);
+                const showDateSeparator = lastDate !== messageDate;
+    
+                lastDate = messageDate;
+    
+                const senderProfile = profileData[message.sender_id] || {};
+                const isSameSenderAsPrevious = index > 0 && selectedChat.messages[index - 1].sender_id === message.sender_id;
+                const isProfileLoading = !profileData[message.sender_id];
+    
+                return (
+                    <React.Fragment key={index}>
+                        {showDateSeparator && (
+                            <div className="date-separator">
+                                <div className="messageDate">{messageDate}</div>
+                            </div>
+                        )}
+                        <div className={`chat-bubble-container ${isSender(message.sender_id) ? 'me' : 'you'}`}>
+                            {(message.sender_id !== "System") && !isSender(message.sender_id) && !isSameSenderAsPrevious && (
+                                <div className="message-info">
+                                    {isProfileLoading ? (
+                                        <div className="skeleton-img skeleton-loading"></div>
+                                    ) : (
+                                        <img
+                                            src={senderProfile.image || `${process.env.PUBLIC_URL}/images/default-user-icon.png`}
+                                            alt={`Profile of ${senderProfile.nickname || 'Unknown'}`}
+                                            className="profile-img rounded-circle"
+                                            style={{ width: '40px', height: '40px' }}
+                                            onClick={() => navigateToUserProfile(message.sender_id)}
+                                        />
+                                    )}
+                                    <span className="nickname" onClick={() => navigateToUserProfile(message.sender_id)}>
+                                        {isProfileLoading ? (
+                                            <div className="skeleton-nick skeleton-loading"></div>
+                                        ) : (
+                                            senderProfile.nickname || '알수없음'
+                                        )}
+                                    </span>
+                                </div>
+                            )}
+                            <div className={getChatBubbleClasses(message.sender_id)}>
+                                {message.message}
+                            </div>
+                            <span className="chat-time">{formatMessageTime(message.write_day)}</span>
+                        </div>
+                    </React.Fragment>
+                );
+            });
+        }
+    };
+
+    
     //강퇴
     const handleKick = (userEmailObj) => {
         const roomId = selectedChat.roomId;

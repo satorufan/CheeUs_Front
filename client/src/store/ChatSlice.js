@@ -85,7 +85,6 @@ export const fetchTogetherChatRooms = createAsyncThunk(
         try {
             const response = await axios.get('http://localhost:8889/api/togetherChatRooms');
             const chatRooms = response.data.filter(room => room.members.includes(userId));
-            console.log(chatRooms);
             const chatRoomsWithMessages = await Promise.all(chatRooms.map(async (room) => {
                 const messagesResponse = await axios.get(`http://localhost:8889/api/togetherMessages/${room.roomId}`);
                 const messages = messagesResponse.data;
@@ -211,7 +210,6 @@ export const updateMessageReadStatus = createAsyncThunk(
 export const updateTogetherMessageReadStatus = createAsyncThunk(
     'together/updateMessageReadStatus',
     async ({ roomId, userId }, { dispatch }) => {
-        console.log('Thunk called with userId:', userId); // 디버깅용
         try {
             await axios.put(`http://localhost:8889/api/togetherMessages/${roomId}/read`, { userId });
             dispatch(messageReadTogether({ roomId, userId }));
