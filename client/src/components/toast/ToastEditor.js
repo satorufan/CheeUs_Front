@@ -89,7 +89,7 @@ const ToastEditor = forwardRef(({ content, category, postId }, ref) => {
   }));
 
   return (
-    <div>
+    <div className="dt-input-size">
       <Box sx={{ m: 2 }}>
         <Editor
           height="63vh"
