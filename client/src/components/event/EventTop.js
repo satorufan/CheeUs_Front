@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Search } from '@mui/icons-material';
-import './EventTop.css';
-
+//import './EventTop.css';
+import './Event.css';
 
 const chipData = [
   { label: '전체 이벤트', path: '/event/eventAll' },

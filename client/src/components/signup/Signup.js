@@ -575,7 +575,7 @@ const validateName = (name) => {
                     type="button"
                     onClick={handleOpenTagModal}
                     variant="outlined"
-                    className="edit-tags-btn"
+                    className="check-button"
                   >
                     음주 선호 태그
                   </button>

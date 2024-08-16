@@ -6,13 +6,14 @@
     font-family : 'YeojuCeramic';
     font-size : 20px;
     text-align: center;
+    margin-top: 30px;;
 }
 
 .inner-content {
     display: flex;
     justify-content: center; 
     align-items: center;
-    min-height: calc(100vh - 100px); 
+    height:65vh;
   }
 
   .footer-btn {
@@ -29,6 +30,8 @@
     border: solid 2px black;
     background-color: black; 
     color: white; 
+    margin-right : 20vw;
+    margin-bottom : 20px;
 }
 
 .back-page-btn :hover {

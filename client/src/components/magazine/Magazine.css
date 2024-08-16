@@ -1,3 +1,4 @@
+/*Magazin.css*/
 .magazineContent-container {
     width: 100vw;
     display: flex;
@@ -154,4 +155,209 @@
 }
 .hidden{
 	display: none;
+}
+
+
+/*MagazineTop.css*/
+.magazine-page-top {
+    background-color: black;
+    width: 100vw;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    color: white;
+    font-family: 'GwangyangTouching';
+    font-size: 20px;
+    position: relative;
+}
+
+.magazine-top {
+    display: flex;
+    align-items: center;
+    position: absolute; 
+    right: 20px; 
+}
+
+.magazine-search {
+    padding: 5px;
+    font-size: 14px;
+    flex: 1;
+    height: 35px;
+    padding: 0 15px;
+    background-color: #eceff1;
+    border-radius: 21px;
+    font-family: 'GwangyangTouching';
+}
+
+.magazine-search-icon {
+    font-size: 20px;
+    color: white;
+    margin-left: 8px;
+}
+
+.category-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    gap: 20px;
+}
+
+.chip-name {
+    padding: 5px 15px;
+    font-family: 'GwangyangTouching';
+    font-size: 15px;
+    border-radius: 50px;
+    background-color: white;
+    color: black;
+}
+
+/*MagazineDetail.css*/
+.magazine-detail-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  .magazine-header-button{
+      width: 800px;
+      display: flex;
+      justify-content: flex-end;
+  }
+  .magazine-detail-image {
+    width: 100%;
+    max-width: 800px;
+    height: auto;
+    border-radius: 10px;
+    margin: 20px 0;
+  }
+  
+  .magazine-detail-ctext {
+    max-width: 800px;
+    text-align: left;
+  }
+  
+  .magazine-detail-title {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    border-top: 1px solid #eee;
+    margin-top: 30px;
+    padding-top: 20px;
+  }
+  
+  .magazine-detail-title2 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    border-top: 1px solid #eee;
+    margin-top: 30px;
+    padding-top: 20px;
+  }
+  
+  .magazine-detail-date {
+    font-size: 0.9em;
+    color: gray;
+    margin-bottom: 20px;
+    text-align: right;
+  }
+  
+  .magazine-detail-text {
+    font-size: 1.2em;
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+  
+  .magazine-detail-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+  }
+  
+  .magazine-detail-author {
+    font-size: 0.9em;
+    color: gray;
+  }
+  
+  .magazine-detail-stats {
+    display: flex;
+  }
+  .magazine-detail-stats svg{
+      margin-right: 3px;
+      margin-left: 10px;
+  }
+  
+  .magazine-detail-likes,
+  .magazine-detail-views {
+    font-size: 0.9em;
+    color: gray;
+  }
+  .hidden{
+      display: none;
+  }
+
+  /*MagazineCategory.css*/
+  .magazine-category-container {
+    display: flex;
+    font-family: 'GwangyangTouching';
+    justify-content: center;
+    align-items: center; 
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+.magazine-page-card {
+    box-shadow: 0px 10px 15px -3px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    height: 30rem;
+    width: 13rem;
+    border-radius: 2rem;
+    margin: 10px;
+    background-position: end;
+    background-repeat: no-repeat;
+    background-size: cover;
+    overflow: hidden;
+    transition: width 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.magazine-page-card:hover {
+    width: 40rem; 
+    transform: scale(1.05);
+}
+
+.magazine-page-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    height: 100%;
+    transform: scale(0.8);
+    transition: transform 0.3s ease;
+}
+
+.magazine-page-card:hover .magazine-page-content {
+    transform: scale(1);
+}
+
+.magazine-page-detail {
+    margin-top: 0.75rem;
+    height: 30%;
+    margin-left: 2rem;
+    transition: opacity 0.3s ease, margin-left 0.3s ease;
+    color: white;
+    opacity: 0;
+}
+
+.magazine-page-card:hover .magazine-page-detail {
+    opacity: 1;
+    margin-left: 0;
+    background-color: rgba(11, 11, 11, 0.5);
+    padding-top:3%;
+}
+
+.magazine-page-card:hover .magazine-page-detail .magazine-page-title,
+.magazine-page-card:hover .magazine-page-detail .magazine-page-title-content {
+    margin-left: 1.5rem;
+
 }

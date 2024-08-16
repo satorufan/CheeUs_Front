@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import ProfileCard from './ProfileCard';
 import { fetchUserProfile, selectUserProfile, selectProfileStatus, selectProfileError } from '../../store/ProfileSlice';
 import './myProfilePage.css';
+import './userProfilePage.css';
 import { AuthContext } from '../login/OAuth';
 import Swal from 'sweetalert2';
 import ProfileSkeleton from '../skeleton/ProfileSkeleton';
