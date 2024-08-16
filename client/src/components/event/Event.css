@@ -252,6 +252,8 @@
     border-radius: 21px;
     font-family: 'GwangyangTouching';
     font-weight: 400;
+    width: 15rem;
+    transition: width 0.3s ease; 
 }
 
 .event-search-icon {
@@ -275,4 +277,9 @@
     border-radius: 50px;
     background-color: white;
     color: black;
+}
+@media (max-width: 768px) {
+    .event-search {
+        width: 5rem; 
+    }
 }

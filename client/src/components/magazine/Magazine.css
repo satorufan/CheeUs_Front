@@ -153,10 +153,6 @@
     border : solid 2px black;
     
 }
-.hidden{
-	display: none;
-}
-
 
 /*MagazineTop.css*/
 .magazine-page-top {
@@ -188,6 +184,9 @@
     background-color: #eceff1;
     border-radius: 21px;
     font-family: 'GwangyangTouching';
+    font-weight: 400;
+    width: 15rem;
+    transition: width 0.3s ease; 
 }
 
 .magazine-search-icon {
@@ -360,4 +359,10 @@
 .magazine-page-card:hover .magazine-page-detail .magazine-page-title-content {
     margin-left: 1.5rem;
 
+}
+
+@media (max-width: 768px) {
+    .magazine-search {
+        width: 5rem; 
+    }
 }

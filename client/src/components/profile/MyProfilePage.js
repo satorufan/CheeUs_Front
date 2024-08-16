@@ -118,7 +118,7 @@ const MyProfilePage = () => {
                                 </table>
                             </div>
                             <div className="my-posts">
-                                <div classNma="my-posts-my">
+                                <div className="my-posts-my">
                                 <table>
                                     <thead>
                                         <tr>
