@@ -321,8 +321,13 @@ const validateName = (name) => {
     } else if (birth == null || birth.length != 8 || !/^\d*$/.test(birth) || !validateBirthdate(birth)) {
       sweetalert("생일을 정확히 입력해주세요!", '', '', '확인');
     } else if (calculateAge(birth) < 19) {
-      sweetalert("성인이 되면 만나요!", '', '', '확인');
-          window.location.href = '/'; 
+      Swal.fire({
+        title: '성인이 되면 만나요!',
+        icon: 'warning',
+        confirmButtonText: '확인'
+      }).then(() => {
+        window.location.href = '/';
+      });
     } else if (tel == null || 
       tel.length != 11 || !/^\d*$/.test(tel)
     ) {

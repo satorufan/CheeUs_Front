@@ -108,9 +108,22 @@ const extractImageUrls = (htmlContent) => {
     };
   
     const onSubmitHandler = async () => {
-        if (title === '') return;
-  
-        const content = editorRef.current.getInstance().getMarkdown();
+      const content = editorRef.current.getInstance().getMarkdown();
+      if (title.trim() === '') {
+        swal({
+          title: '제목을 입력해 주세요.',
+          icon: 'warning',
+          button: '확인',
+        });
+        return;
+      } else if (content.trim() === '') {
+        swal({
+          title: '내용을 입력해 주세요.',
+          icon: 'warning',
+          button: '확인'
+        });
+        return;
+      }
         
         // 현재 컨텐츠의 HTML
         const newHtmlContent = marked(content);

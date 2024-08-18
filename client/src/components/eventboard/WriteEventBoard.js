@@ -95,10 +95,22 @@ const WriteEventBoard = () => {
   };
 
   const onSubmitHandler = async () => {
-    if (title === '') return;
-
     const content = editorRef.current.getInstance().getMarkdown();
-
+    if (title.trim() === '') {
+      swal({
+        title: '제목을 입력해 주세요.',
+        icon: 'warning',
+        button: '확인',
+      });
+      return;
+    } else if (content.trim() === '') {
+      swal({
+        title: '내용을 입력해 주세요.',
+        icon: 'warning',
+        button: '확인'
+      });
+      return;
+    }
     await deleteUnusedImages(content);
 
     const findMaxId = () => {

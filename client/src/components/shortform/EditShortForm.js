@@ -120,9 +120,16 @@ function EditShortForm() {
   }
 
   const onSubmitHandler = async () => {
-    if (title === '') return;
-
     const content = editorRef.current.getInstance().getMarkdown();
+        if (title.trim() === '') {
+            return swal('제목을 입력해주세요', '', 'warning');
+        }
+        if (content.trim() === '') {
+            return swal('내용을 입력해주세요', '', 'warning');
+        }
+        if (!file) {
+            return swal('파일을 등록해주세요', '', 'warning');
+        }
     deleteUnusedImages(content);
 
     let updatedFileUrl = '';

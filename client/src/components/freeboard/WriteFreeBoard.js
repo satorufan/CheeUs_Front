@@ -95,9 +95,22 @@ const WriteFreeBoard = () => {
   };
 
   const onSubmitHandler = async () => {
-    if (title === '') return;
-
     const content = editorRef.current.getInstance().getMarkdown();
+    if (title.trim() === '') {
+      swal({
+        title: '제목을 입력해 주세요.',
+        icon: 'warning',
+        button: '확인'
+      });
+      return;
+    } else if (content.trim() === '') {
+      swal({
+        title: '내용을 입력해 주세요.',
+        icon: 'warning',
+        button: '확인'
+      });
+      return;
+    }
 
     await deleteUnusedImages(content);
     
@@ -113,11 +126,9 @@ const WriteFreeBoard = () => {
 
     const newId = findMaxId() + 1;
 
-    // author_id와 author_name, nickname 설정
     const authorId = decodedToken?.email;
     const authorName = userProfile.name;
     const nickname = userProfile.profile.nickname;
-    //console.log("붙었나? " + nickname);
 
     const newBoard = {
       author_id: authorId,
@@ -139,10 +150,6 @@ const WriteFreeBoard = () => {
       dangerMode: true,
     }).then((willSubmit) => {
       if (willSubmit) {
-        // 콘솔에 제출된 정보 출력
-        // console.log('제출된 게시물 정보:', newBoard);
-
-        // 사용자가 확인 버튼을 누르면 게시물 제출
         dispatch(addBoard(newBoard));
 
         // 성공 메시지 표시
