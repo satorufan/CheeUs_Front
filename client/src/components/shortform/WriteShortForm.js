@@ -25,6 +25,9 @@ function WriteShortForm() {
     const { token, memberEmail } = useContext(AuthContext);
     const userProfile = useSelector(selectUserProfile);
     const boards = useSelector((state) => state.board.boards);
+    const MAX_FILE_SIZE_MB = 50; 
+    const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+    const MAX_VIDEO_DURATION_SECONDS = 60;
 
     // 로그인 상태 확인
     useEffect(() => {
@@ -135,6 +138,7 @@ function WriteShortForm() {
 
         Swal.fire({
             title: '게시물을 제출하시겠습니까?',
+            content:'동영상 파일은 수정 불가능합니다',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: 'black',
@@ -174,17 +178,50 @@ function WriteShortForm() {
 
     const onFileChangeHandler = (e) => {
         const selectedFile = e.target.files[0];
-        setFile(selectedFile);
 
-        const fileUrl = URL.createObjectURL(selectedFile);
-        setVideoUrl(fileUrl);
-        console.log(fileUrl);
+        if (selectedFile) {
+            // Check file size
+            if (selectedFile.size > MAX_FILE_SIZE_BYTES) {
+                Swal.fire({
+                    title: '파일 크기 초과',
+                    text: `50MB 이하의 파일만 업로드할 수 있습니다.`,
+                    icon: 'warning',
+                    confirmButtonColor: '#48088A',
+                    confirmButtonText: '확인',
+                });
+                e.target.value = null;
+                setFile(null);
+                setVideoUrl('');
+                return;
+            }
 
-        if (videoRef.current) {
-            videoRef.current.load();
+            const fileUrl = URL.createObjectURL(selectedFile);
+            setVideoUrl(fileUrl);
+
+            const videoElement = document.createElement('video');
+            videoElement.src = fileUrl;
+            videoElement.addEventListener('loadedmetadata', () => {
+                const duration = videoElement.duration; 
+                if (duration > MAX_VIDEO_DURATION_SECONDS) {
+                    Swal.fire({
+                        title: '숏폼 길이 초과',
+                        text: `1분 이하의 비디오만 업로드할 수 있습니다.`,
+                        icon: 'warning',
+                        confirmButtonColor: '#48088A',
+                        confirmButtonText: '확인',
+                    });
+                    e.target.value = null; 
+                    setFile(null);
+                    setVideoUrl('');
+                } else {
+                    setFile(selectedFile);
+                    if (videoRef.current) {
+                        videoRef.current.load();
+                    }
+                }
+            });
         }
     };
-
     return (
         <>
             <BoardDetailTop category={2} />
@@ -207,7 +244,7 @@ function WriteShortForm() {
                     </div>
                     <div className="shortform-write-upload">
                         <Form.Group controlId="formFile" className="mb-3">
-                            <Form.Label>동영상 파일:</Form.Label>
+                            <Form.Label>동영상 업로드</Form.Label>
                             <Form.Control
                                 type="file"
                                 onChange={onFileChangeHandler}
