@@ -12,7 +12,6 @@ function NotFoundPage() {
 
   const imageStyle = {
     maxWidth: '100%', 
-    height: '600px', 
     objectFit: 'cover',
     objectPosition: 'center', 
 };

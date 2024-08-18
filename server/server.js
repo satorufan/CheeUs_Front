@@ -328,7 +328,7 @@ app.post('/api/togetherChatRooms/:roomId/kickCheck', async (req, res) => {
 });
 
 // 단체 채팅방에서 사용자 제거 API
-app.post('/api/togetherChatRooms/:roomId/kick', async (req, res) => {
+app.put('/api/togetherChatRooms/:roomId/kick', async (req, res) => {
     const roomId = parseInt(req.params.roomId, 10);
     const { userId } = req.body; // 강퇴당하는 사용자의 ID
 

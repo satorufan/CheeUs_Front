@@ -159,8 +159,12 @@ const TinderCards = () => {
     if (!canSwipe || index < 0 || index >= profileCards.length || !childRefs.current[index]?.swipe) {
       return;
     }
-
-    await childRefs.current[index].swipe(dir);
+  
+    try {
+      await childRefs.current[index].swipe(dir);
+    } catch (error) {
+      console.error('Error while swiping:', error);
+    }
   };
 
   const handleSwipeLeft = async () => {

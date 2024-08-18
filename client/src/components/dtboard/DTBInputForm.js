@@ -69,6 +69,7 @@ function DTBInputForm() {
   });
 
   const onSubmitHandler = async () => {
+    const content = editorRef.current.getInstance().getMarkdown(); // content를 getInstance().getMarkdown()으로 받아옴
     if (title === '') {
     Swal.fire({
 	      title: '제목을 입력해주세요!',
@@ -98,8 +99,6 @@ function DTBInputForm() {
     });
   return;
   }
-    
-    const content = editorRef.current.getInstance().getMarkdown(); // content를 getInstance().getMarkdown()으로 받아옴
     
     addPost(title, content, time, nickname, memberEmail);
     Swal.fire({

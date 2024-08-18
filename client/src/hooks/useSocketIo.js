@@ -6,12 +6,12 @@ import {
     updateLastMessageInChatRooms, 
     updateLastMessageInTogetherChatRooms, 
 } from '../store/ChatSlice';
-import { useToast } from '../components/app/ToastProvider';
+//import { useToast } from '../components/app/ToastProvider';
 
 const useSocketIo = (activeKey, selectedChat, userEmail, setHasUnreadMessages) => {
     const dispatch = useDispatch();
     const socket = useRef(null); // 소켓 객체 참조
-    const { notify } = useToast();
+    //const { notify } = useToast();
 
     useEffect(() => {
         socket.current = io('http://localhost:8888');
@@ -54,11 +54,14 @@ const useSocketIo = (activeKey, selectedChat, userEmail, setHasUnreadMessages) =
             }
             
             if (userEmail && membersAsString.includes(userEmail.trim())) {
-                setHasUnreadMessages(true);
-
-                //notify('새로운 메시지가 도착했습니다!');
+                if (typeof setHasUnreadMessages === 'function') {
+                    setHasUnreadMessages(true);
+                } else {
+                    console.error('setHasUnreadMessages가 함수가 아닙니다.');
+                }
+                // notify('새로운 메시지가 도착했습니다!');
             } else {
-                console.log('멤버 배열에 사용자 이메일이 없습니다.');
+                //console.log('멤버 배열에 사용자 이메일이 없습니다.');
             }
         };
 
@@ -70,7 +73,7 @@ const useSocketIo = (activeKey, selectedChat, userEmail, setHasUnreadMessages) =
                 socket.current.disconnect();
             }
         };
-    }, [dispatch, activeKey, selectedChat, userEmail, notify]);
+    }, [dispatch, activeKey, selectedChat, userEmail]);
 
     return socket;
 };
