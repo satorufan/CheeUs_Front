@@ -1,7 +1,6 @@
 import React, { useState, useRef, useContext, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
-import { BsArrowLeft } from 'react-icons/bs';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import ToastEditor from '../toast/ToastEditor';
 import { updateBoard } from '../../store/BoardSlice';
@@ -15,6 +14,7 @@ import Spinner from 'react-bootstrap/Spinner';
 import { storage } from "../firebase/firebase";
 import { marked } from 'marked'; 
 import { ref, deleteObject } from 'firebase/storage';
+import './writeShortForm.css';
 
 // 이미지 URL 추출 함수
 const extractImageUrls = (htmlContent) => {
@@ -65,7 +65,7 @@ function EditShortForm() {
       }
 
       if (board) {
-        setBoardToEdit(board); // 기존 게시물 정보 설정
+        setBoardToEdit(board.file); // 기존 게시물 정보 설정
         setTitle(board.title);
         setContent(board.content)
         setVideoUrl(board.media);
@@ -232,6 +232,7 @@ function EditShortForm() {
           ref={editorRef} 
           initialValue={content || ''}
           onChange={() => onChangeContentHandler()}
+
         />
         </div>
         <div className="shortform-write-upload">
