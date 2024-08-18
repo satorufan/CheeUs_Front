@@ -298,14 +298,7 @@ function EditShortForm() {
             />
           </div>
           <div className="shortform-write-upload">
-            <Form.Group controlId="formFile" className="mb-3">
-              <Form.Label>동영상 파일:</Form.Label>
-              <Form.Control
-                type="file"
-                onChange={onFileChangeHandler}
-                accept="video/mp4,video/webm,video/*"
-              />
-            </Form.Group>
+            <p>동영상 파일은 수정 불가능합니다!</p>
             <div className="shortform-videoPreviewContainer">
               {videoUrl && (
                 <video ref={videoRef} controls>
