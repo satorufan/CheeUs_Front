@@ -7,7 +7,7 @@ import ToastEditor from '../toast/ToastEditor';
 import { addBoard } from '../../store/BoardSlice';
 import { fetchUserProfile, selectUserProfile } from '../../store/ProfileSlice';
 import { AuthContext } from '../login/OAuth';
-import swal from 'sweetalert';
+import Swal from 'sweetalert2';
 import { jwtDecode } from 'jwt-decode';
 import './writeShortForm.css';
 import { Form } from 'react-bootstrap';
@@ -29,11 +29,10 @@ function WriteShortForm() {
     // 로그인 상태 확인
     useEffect(() => {
         if (!token) {
-            swal({
+            Swal.fire({
                 title: '로그인 후 이용해 주세요',
                 icon: 'warning',
-                button: '확인',
-                className: 'custom-swal-warning'
+                confirmButtonText: '확인',
             }).then(() => {
                 navigate(-1); // 이전 페이지로 이동
             });
@@ -66,13 +65,34 @@ function WriteShortForm() {
     const onSubmitHandler = async () => {
         const content = editorRef.current.getInstance().getMarkdown();
         if (title.trim() === '') {
-            return swal('제목을 입력해주세요', '', 'warning');
+            Swal.fire({
+                title: '제목을 입력해주세요!',
+                icon: 'warning',
+                showCancelButton: false,
+                confirmButtonColor: '#48088A',
+                confirmButtonText: '확인',
+            });
+            return;
         }
         if (content.trim() === '') {
-            return swal('내용을 입력해주세요', '', 'warning');
+            Swal.fire({
+                title: '내용을 입력해주세요!',
+                icon: 'warning',
+                showCancelButton: false,
+                confirmButtonColor: '#48088A',
+                confirmButtonText: '확인',
+            });
+            return;
         }
         if (!file) {
-            return swal('파일을 등록해주세요', '', 'warning');
+            Swal.fire({
+                title: '파일을 등록해주세요!',
+                icon: 'warning',
+                showCancelButton: false,
+                confirmButtonColor: '#48088A',
+                confirmButtonText: '확인',
+            });
+            return;
         }
 
         let uploadedFileUrl = '';
@@ -113,23 +133,33 @@ function WriteShortForm() {
 
         console.log('제출될 게시물 정보:', newBoard);
 
-        swal({
+        Swal.fire({
             title: '게시물을 제출하시겠습니까?',
             icon: 'warning',
-            buttons: true,
-            dangerMode: true,
-        }).then((willSubmit) => {
-            if (willSubmit) {
+            showCancelButton: true,
+            confirmButtonColor: 'black',
+            cancelButtonColor: 'grey',
+            confirmButtonText: '제출',
+            cancelButtonText: '취소'
+        }).then((result) => {
+            if (result.isConfirmed) {
                 dispatch(addBoard(newBoard));
 
-                swal('게시물이 성공적으로 등록되었습니다!', {
+                Swal.fire({
+                    title: '게시물이 등록되었습니다!',
                     icon: 'success',
+                    fontSize:'15px',
+                    confirmButtonColor: 'black'
                 }).then(() => {
                     navigate('/board/shortform'); 
                     window.location.reload();
                 });
             } else {
-                swal('게시물 제출이 취소되었습니다.');
+                Swal.fire({
+                    title: '게시물 제출이 취소되었습니다.',
+                    icon: 'info',
+                    confirmButtonColor: 'black'
+                });
             }
         });
     };

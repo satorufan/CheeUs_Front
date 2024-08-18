@@ -70,7 +70,7 @@ function DTBInputForm() {
 
   const onSubmitHandler = async () => {
     if (title === '') {
-	  Swal.fire({
+    Swal.fire({
 	      title: '제목을 입력해주세요!',
 	      icon: 'warning',
 	      showCancelButton: false,
@@ -79,7 +79,7 @@ function DTBInputForm() {
       });
 	  return;
 	}
-	if(!selectedPlace){
+	else if(!selectedPlace){
 	  Swal.fire({
 	      title: '지도에서 장소를 선택해주세요!',
 	      icon: 'warning',
@@ -88,7 +88,16 @@ function DTBInputForm() {
 	      confirmButtonText: '확인',
       });		
       return;
-	}
+	} else if(content === ''){
+    Swal.fire({
+      title: '내용을 입력해주세요!',
+      icon: 'warning',
+      showCancelButton: false,
+      confirmButtonColor: '#48088A',
+      confirmButtonText: '확인',
+    });
+  return;
+  }
     
     const content = editorRef.current.getInstance().getMarkdown(); // content를 getInstance().getMarkdown()으로 받아옴
     

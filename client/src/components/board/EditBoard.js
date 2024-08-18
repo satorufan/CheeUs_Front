@@ -6,6 +6,7 @@ import '@toast-ui/editor/dist/toastui-editor.css';
 import ToastEditor from '../toast/ToastEditor';
 import { updateBoard } from '../../store/BoardSlice';
 import swal from 'sweetalert';
+import Swal from 'sweetalert2';
 import { jwtDecode } from "jwt-decode";
 import { AuthContext } from '../login/OAuth';
 import BoardDetailTop from '../board/BoardDetailTop';
@@ -57,17 +58,15 @@ const extractImageUrls = (htmlContent) => {
       if (id) {
         const board = boards.find(b => b.id === parseInt(id, 10));
         if(boards.length === 0 || (board && memberEmail !== board?.author_id)) {
-          swal({
+          Swal.fire({
             title: '잘못된 접근입니다.',
             icon: 'warning',
-            button: '확인',
-            className: 'custom-swal-warning'
+            confirmButtonText: '확인',
+            confirmButtonColor: 'black'
           }).then(() => {
-              navigate(-1); // 이전 페이지로 이동
+            navigate(-1);
           });
-        }
-
-        if (board) {
+        } else {
           setBoardToEdit(board);
           setIsEditMode(true);
           setTitle(board.title);
@@ -110,19 +109,23 @@ const extractImageUrls = (htmlContent) => {
     const onSubmitHandler = async () => {
       const content = editorRef.current.getInstance().getMarkdown();
       if (title.trim() === '') {
-        swal({
-          title: '제목을 입력해 주세요.',
+        Swal.fire({
+          title: '제목을 입력해주세요!',
           icon: 'warning',
-          button: '확인',
-        });
-        return;
+          showCancelButton: false,
+          confirmButtonColor: '#48088A',
+          confirmButtonText: '확인',
+      });
+      return;
       } else if (content.trim() === '') {
-        swal({
-          title: '내용을 입력해 주세요.',
+        Swal.fire({
+          title: '내용을 입력해주세요!',
           icon: 'warning',
-          button: '확인'
-        });
-        return;
+          showCancelButton: false,
+          confirmButtonColor: '#48088A',
+          confirmButtonText: '확인',
+      });
+      return;
       }
         
         // 현재 컨텐츠의 HTML
@@ -139,12 +142,32 @@ const extractImageUrls = (htmlContent) => {
       };
   
       dispatch(updateBoard(updatedBoard));
+      Swal.fire({
+        title: '게시물을 수정하시겠습니까?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: 'black',
+        cancelButtonColor: 'grey',
+        confirmButtonText: '제출',
+        cancelButtonText: '취소'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          dispatch(updateBoard(updatedBoard));
   
-      swal({
-        title: "게시물이 수정되었습니다!",
-        icon: "success",
-      }).then(() => {
-        navigate(`/board/${category === 1 ? 'freeboard' : 'eventboard'}`);
+          Swal.fire({
+            title: '게시물이 수정되었습니다!',
+            icon: 'success',
+            confirmButtonColor: 'black'
+          }).then(() => {
+            navigate(`/board/${category === 1 ? 'freeboard' : 'eventboard'}`);
+          });
+        } else {
+          Swal.fire({
+            title: '게시물 수정이 취소되었습니다.',
+            icon: 'info',
+            confirmButtonColor: 'black'
+          });
+        }
       });
     };
   

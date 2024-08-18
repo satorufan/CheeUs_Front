@@ -1,10 +1,11 @@
 import React, { useState, useRef, useContext, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
+import { BsArrowLeft } from 'react-icons/bs';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import ToastEditor from '../toast/ToastEditor';
 import { updateBoard } from '../../store/BoardSlice';
-import swal from 'sweetalert';
+import Swal from 'sweetalert2';
 import { jwtDecode } from 'jwt-decode';
 import { AuthContext } from '../login/OAuth';
 import { Form } from 'react-bootstrap';
@@ -14,7 +15,6 @@ import Spinner from 'react-bootstrap/Spinner';
 import { storage } from "../firebase/firebase";
 import { marked } from 'marked'; 
 import { ref, deleteObject } from 'firebase/storage';
-import './writeShortForm.css';
 
 // 이미지 URL 추출 함수
 const extractImageUrls = (htmlContent) => {
@@ -53,19 +53,19 @@ function EditShortForm() {
   useEffect(() => {
     if (id && boards.length > 0) {
       const board = boards.find(b => b.id === parseInt(id, 10));
-      if(boards.length === 0 || (board && memberEmail !== board?.author_id)) {
-        swal({
+      if (!board || memberEmail !== board.author_id) {
+        Swal.fire({
           title: '잘못된 접근입니다.',
           icon: 'warning',
-          button: '확인',
-          className: 'custom-swal-warning'
+          confirmButtonText: '확인',
+          confirmButtonColor: '#48088A'
         }).then(() => {
-            navigate(-1); // 이전 페이지로 이동
+            navigate(-1);
         });
       }
 
       if (board) {
-        setBoardToEdit(board.file); // 기존 게시물 정보 설정
+        setBoardToEdit(board); // 기존 게시물 정보 설정
         setTitle(board.title);
         setContent(board.content)
         setVideoUrl(board.media);
@@ -120,16 +120,38 @@ function EditShortForm() {
   }
 
   const onSubmitHandler = async () => {
+
+
     const content = editorRef.current.getInstance().getMarkdown();
-        if (title.trim() === '') {
-            return swal('제목을 입력해주세요', '', 'warning');
-        }
-        if (content.trim() === '') {
-            return swal('내용을 입력해주세요', '', 'warning');
-        }
-        if (!file) {
-            return swal('파일을 등록해주세요', '', 'warning');
-        }
+
+    if (title.trim() === '') {
+        Swal.fire({
+            title: '제목을 입력해주세요!',
+            icon: 'warning',
+            showCancelButton: false,
+            confirmButtonColor: '#48088A',
+            confirmButtonText: '확인'
+        });
+        return;
+    } else if (content.trim() === '') {
+        Swal.fire({
+            title: '내용을 입력해주세요!',
+            icon: 'warning',
+            showCancelButton: false,
+            confirmButtonColor: '#48088A',
+            confirmButtonText: '확인'
+        });
+        return;
+    } else if (!file) {
+        Swal.fire({
+            title: '파일을 등록해주세요!',
+            icon: 'warning',
+            showCancelButton: false,
+            confirmButtonColor: '#48088A',
+            confirmButtonText: '확인'
+        });
+        return;
+    }
     deleteUnusedImages(content);
 
     let updatedFileUrl = '';
@@ -170,24 +192,35 @@ function EditShortForm() {
       }
     });
 
-    swal({
+    Swal.fire({
       title: '게시물을 수정하시겠습니까?',
       icon: 'warning',
-      buttons: true,
-      dangerMode: true,
-    }).then((willSubmit) => {
-      if (willSubmit) {
-        dispatch(updateBoard(updatedBoard)); // updateBoard 액션 디스패치
+      showCancelButton: true,
+      confirmButtonColor: 'black',
+      cancelButtonColor: 'grey',
+      confirmButtonText: '제출',
+      cancelButtonText: '취소'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(updateBoard(updatedBoard));
 
-        swal('게시물이 성공적으로 수정되었습니다!', {
+        Swal.fire({
+          title: '게시물이 수정되었습니다!',
           icon: 'success',
+          confirmButtonColor: 'black'
         }).then(() => {
-          navigate('/board/shortform'); // 수정 후 이동할 경로 설정
+          navigate('/board/shortform');
         });
       } else {
-        swal('게시물 수정이 취소되었습니다.');
+        Swal.fire({
+          title: '게시물 수정이 취소되었습니다.',
+          icon: 'info',
+          confirmButtonColor: 'black'
+        });
       }
     });
+
+    
   };
 
   const onExitHandler = () => {
@@ -239,7 +272,6 @@ function EditShortForm() {
           ref={editorRef} 
           initialValue={content || ''}
           onChange={() => onChangeContentHandler()}
-
         />
         </div>
         <div className="shortform-write-upload">
