@@ -78,13 +78,13 @@ function App() {
               <Route exact path="/" element={<Main />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/signupcallback" element={<SignupCallback />} />
-              <Route path="/login" element={<Login />} />
+              <Route path="/signin" element={<Login />} />
               <Route path="/logincallback" element={<LoginCallback />} />
               <Route path="/mypage" element={<MyProfilePage />} />
               <Route path="/userprofile/:email" element={<UserProfilePage />} />
               <Route path="/mypage/Edit/:id" element={<EditProfile />} />
               <Route path="/main" element={<Main />} />
-              <Route path="/match" element={<Match />} />
+              <Route path="/matching" element={<Match />} />
               <Route path="/dtboard" element={<DTBoard />} />
               <Route path="/dtboard/input" element={<DTBInputForm />} />
               <Route path="/dtboard/post/:id" element={<PostDetail />} />

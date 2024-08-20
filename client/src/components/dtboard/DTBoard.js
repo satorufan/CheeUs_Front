@@ -38,7 +38,7 @@ const DTBoard = () => {
    }, [userProfile]);
   
   const goLogin = () =>{
-    navigate('/login') 
+    navigate('/signin') 
   }  
   
   

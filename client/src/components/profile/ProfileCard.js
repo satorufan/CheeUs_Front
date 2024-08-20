@@ -28,21 +28,28 @@ const ProfileCard = ({ profileInfo, loggedInUserId, type }) => {
     const [likeCnt, setLikeCnt] = useState(likes.length);
 
     useEffect(() => {
-        const getUserLocation = () => {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        const location = {
-                            latitude: position.coords.latitude,
-                            longitude: position.coords.longitude,
-                        };
-                        dispatch(updateUserLocation(location));
-                    },
-                    (error) => {
-                        console.error('위치 정보를 가져오는 데 실패했습니다:', error);
-                    }
-                );
-            }
+        const getUserLocation = async () => {
+            const request = await fetch("https://ipinfo.io/json?token=f7a546dc97c741");
+            const jsonResponse = await request.json();
+            console.log(jsonResponse.loc.split(",")[0], jsonResponse.loc.split(",")[1])
+            const location = {
+              latitude: jsonResponse.loc.split(",")[0],
+              longitude: jsonResponse.loc.split(",")[1],
+            };
+            // if (navigator.geolocation) {
+            //     navigator.geolocation.getCurrentPosition(
+            //         (position) => {
+            //             const location = {
+            //                 latitude: position.coords.latitude,
+            //                 longitude: position.coords.longitude,
+            //             };
+            //             dispatch(updateUserLocation(location));
+            //         },
+            //         (error) => {
+            //             console.error('위치 정보를 가져오는 데 실패했습니다:', error);
+            //         }
+            //     );
+            // }
         };
 
         getUserLocation();
@@ -128,7 +135,7 @@ const ProfileCard = ({ profileInfo, loggedInUserId, type }) => {
 
     // 사용자 위치가 있으면 거리 계산
     if (userLocation) {
-        if (profileInfo.profile.email === loggedInUserId) {
+        if (profileInfo.profile.email === memberEmail) {
             distanceToDisplay = '0 km';
         } else {
             distanceToDisplay = `${calculateStraightDistance(

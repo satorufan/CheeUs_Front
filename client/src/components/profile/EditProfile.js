@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateUserProfile, selectUserProfile, updateUserProfileThunk } from '../../store/ProfileSlice';
+import { updateUserProfile, selectUserProfile, updateUserProfileThunk, updateUserLocation } from '../../store/ProfileSlice';
 import './editProfile.css';
 import Avatar from '@mui/joy/Avatar';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
@@ -71,7 +71,18 @@ const EditProfile = ({ onClose = () => {} }) => {
         setOpenConfirmModal(true); 
     };
 
-    const handleConfirmSubmit = () => {
+    const handleConfirmSubmit = async () => {
+        var latitude;
+        var longitude;
+        console.log(locationConsent);
+        if (locationConsent == true) {
+            const request = await fetch("https://ipinfo.io/json?token=f7a546dc97c741");
+            const jsonResponse = await request.json();
+            console.log(jsonResponse.loc.split(",")[0], jsonResponse.loc.split(",")[1]);
+            latitude = jsonResponse.loc.split(",")[0];
+            longitude = jsonResponse.loc.split(",")[1];
+            dispatch(updateUserLocation({latitude, longitude}));
+        }
         if (photos.length == 0) {
             sweetalert("프로필 사진 한 장 이상 추가하여야 합니다", '','','확인');
           } else {
@@ -86,8 +97,8 @@ const EditProfile = ({ onClose = () => {} }) => {
                 email : profile.profile.email,
                 gender : profile.profile.gender,
                 intro : intro,
-                latitude : null,
-                longitude : null,
+                latitude : latitude,
+                longitude : longitude,
                 location : null,
                 locationOk : locationConsent,
                 matchOk : matchingConsent,
@@ -104,11 +115,11 @@ const EditProfile = ({ onClose = () => {} }) => {
                 imageBlob : updateUserProfilePhotos
             }
 
-            dispatch(updateUserProfileThunk({serverUrl, updateUserProfile, token}));
-            onClose();
-            console.log("저장된 프로필:", updateUserProfile);
-            navigate('/mypage');
-            setOpenConfirmModal(false);
+            // dispatch(updateUserProfileThunk({serverUrl, updateUserProfile, token}));
+            // onClose();
+            // console.log("저장된 프로필:", updateUserProfile);
+            // navigate('/mypage');
+            // setOpenConfirmModal(false);
         }
     };
 

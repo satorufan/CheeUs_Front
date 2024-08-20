@@ -106,7 +106,7 @@ const Header = React.memo(function Header() {
                     <Navbar.Toggle aria-controls="navbarNav" onClick={handleNavToggle} />
                     <Navbar.Collapse id="navbarNav">
                         <Nav className="ms-auto">
-                            <Nav.Link href="/match" className="nav-link-list">둘이 마셔요</Nav.Link>
+                            <Nav.Link href="/matching" className="nav-link-list">둘이 마셔요</Nav.Link>
                             <Nav.Link href="/dtboard" className="nav-link-list" onClick={handleLinkClick}>함께 마셔요</Nav.Link>
                             <Nav.Link href="/board" className="nav-link-list">게시판</Nav.Link>
                             <Nav.Link href="/event" className="nav-link-list">이벤트</Nav.Link>
@@ -147,7 +147,7 @@ const Header = React.memo(function Header() {
                                     </Nav.Link>
                                 </>
                             ) : (
-                                <Nav.Link href="/login">
+                                <Nav.Link href="/signin">
                                     {isNavExpanded ? (
                                         "Log-In"
                                     ) : profileStatus === "loading" ? <></> : (

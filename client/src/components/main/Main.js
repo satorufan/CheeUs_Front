@@ -75,7 +75,7 @@ function Main() {
             className="main-section image-left "
             id="firstText"
             style={{ opacity: getOpacity('firstText') }}
-            onClick={() => handleSectionClick('/match')} // 클릭 시 이동
+            onClick={() => handleSectionClick('/matching')} // 클릭 시 이동
           >
             <div className="main-section-image">
               <img src={`${process.env.PUBLIC_URL}/images/match.png`} id="mainImage" alt="Main" />

@@ -197,27 +197,39 @@ const Signup = () => {
 
 
   // 위치 정보 불러오기
-  const getUserLocation = () => {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const location = {
-                    latitude: position.coords.latitude,
-                    longitude: position.coords.longitude,
-                };
-                dispatch(updateUserLocation(location));
-                setLocation({
-                  latitude : location.latitude,
-                  longitude : location.longitude
-                });
-            },
-            (error) => {
-                console.error('위치 정보를 가져오는 데 실패했습니다:', error);
-            }
-        );
-    } else {
-        console.error('Geolocation이 지원되지 않습니다');
-    }
+  const getUserLocation = async () => {
+    const request = await fetch("https://ipinfo.io/json?token=f7a546dc97c741");
+    const jsonResponse = await request.json();
+    console.log(jsonResponse.loc.split(",")[0], jsonResponse.loc.split(",")[1])
+    const location = {
+      latitude: jsonResponse.loc.split(",")[0],
+      longitude: jsonResponse.loc.split(",")[1],
+    };
+    dispatch(updateUserLocation(location));
+    setLocation({
+      latitude : location.latitude,
+      longitude : location.longitude
+    });
+  //   if (navigator.geolocation) {
+  //       navigator.geolocation.getCurrentPosition(
+  //           (position) => {
+  //               const location = {
+  //                   latitude: position.coords.latitude,
+  //                   longitude: position.coords.longitude,
+  //               };
+  //               dispatch(updateUserLocation(location));
+  //               setLocation({
+  //                 latitude : location.latitude,
+  //                 longitude : location.longitude
+  //               });
+  //           },
+  //           (error) => {
+  //               console.error('위치 정보를 가져오는 데 실패했습니다:', error);
+  //           }
+  //       );
+  //   } else {
+  //       console.error('Geolocation이 지원되지 않습니다');
+  //   }
   };
 
   // 태그 모달

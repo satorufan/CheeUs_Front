@@ -52,27 +52,35 @@ const Match = () => {
     }
   }, [profiles, userProfile]);
 
-  const requestGeoLocation = () => {
-    if ('geolocation' in navigator) {
-        navigator.geolocation.getCurrentPosition(
-            position => {
-                const { latitude, longitude } = position.coords; // 필요한 데이터만 추출
-                console.log('사용자의 현재 위치:', { latitude, longitude });
-                setUserLocationState(position.coords);
+  const requestGeoLocation = async () => {
+    const request = await fetch("https://ipinfo.io/json?token=f7a546dc97c741");
+    const jsonResponse = await request.json();
+    const latitude = jsonResponse.loc.split(",")[0];
+    const longitude = jsonResponse.loc.split(",")[1];
+    setUserLocationState({latitude, longitude});
+    dispatch(setUserLocation({ coords: { latitude, longitude } }));
+    dispatch(updateLocationPermission({memberEmail, serverUrl, latitude, longitude, token}));
+    setShowMatchServiceModal(true);
+    // if ('geolocation' in navigator) {
+    //     navigator.geolocation.getCurrentPosition(
+    //         position => {
+    //             const { latitude, longitude } = position.coords; // 필요한 데이터만 추출
+    //             console.log('사용자의 현재 위치:', { latitude, longitude });
+    //             setUserLocationState(position.coords);
                 
-                // 직렬화 가능한 객체로 디스패치
-                dispatch(setUserLocation({ coords: { latitude, longitude } }));
+    //             // 직렬화 가능한 객체로 디스패치
+    //             dispatch(setUserLocation({ coords: { latitude, longitude } }));
                 
-                //updateLocationPermissionOnServer();
-                dispatch(updateLocationPermission({memberEmail, serverUrl, latitude, longitude, token}));
-                setShowMatchServiceModal(true);
-            },
-            error => {
-                console.error('위치 정보 요청 에러:', error);
-                dispatch(setLocationDenied());
-            }
-        );
-      }
+    //             //updateLocationPermissionOnServer();
+    //             dispatch(updateLocationPermission({memberEmail, serverUrl, latitude, longitude, token}));
+    //             setShowMatchServiceModal(true);
+    //         },
+    //         error => {
+    //             console.error('위치 정보 요청 에러:', error);
+    //             dispatch(setLocationDenied());
+    //         }
+    //     );
+    //   }
     }
 
   const handleConfirm = () => {
@@ -100,7 +108,7 @@ const Match = () => {
     setShowHelpModal(true);
   };
   const goLogin = () =>{
-	 navigate('/login') 
+	 navigate('/signin') 
   }
 
   return (

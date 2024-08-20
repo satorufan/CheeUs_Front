@@ -8,10 +8,10 @@ import Spinner from 'react-bootstrap/Spinner';
 
 const SignupCallback = () => {
     const [signUp, setUp] = useState(false);
-    const {token, requestSignIn} = useContext(AuthContext);
+    const {token, requestSignIn, serverUrl} = useContext(AuthContext);
     const [loading, setLoading] = useState(true);
 
-    const serverUrl = "http://localhost:8080";
+    // const serverUrl = "http://localhost:8080";
     const navigate = useNavigate();
     const callbackData = useLocation();
     const {memberProfileDetail, imageFiles} = callbackData.state || {};

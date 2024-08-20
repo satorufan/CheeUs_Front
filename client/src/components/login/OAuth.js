@@ -33,6 +33,7 @@ const AuthProvider = ({ children }) => {
 	const [memberEmail, setEmail] = useState('');
 	const [token, setToken] = useState('');
 	const serverUrl = "http://localhost:8080";
+	// const serverUrl = "http://192.168.56.101:8080";
 
 	useEffect(()=>{
 		const loadToken = getJwtToken();
@@ -47,7 +48,23 @@ const AuthProvider = ({ children }) => {
 				},
 				withCredentials : true
 			}).then((res)=>{
-				setEmail(jwtDecode(loadToken).email);
+				if (res && res.data) {
+					if (res.data === "존재하지 않는 이메일입니다.") {
+						// 기존 코드
+					} else if (res.data === "제한된 사용자입니다 ㅉㅉ") {
+						// 기존 코드
+					} else if (res.data === "토큰 만료"){
+						Swal.fire({
+							title : '만료되었습니다. 다시 로그인해주세요',
+							text : '',
+							icon : 'error'
+						}).then(()=>{
+						   requestSignOut();
+						});
+					} else {
+						setEmail(jwtDecode(loadToken).email);
+					}
+				}
 			}).catch((err)=>{
 				console.log(err);
 				if (err.response && err.response.data) {
@@ -65,13 +82,13 @@ const AuthProvider = ({ children }) => {
 						});
 					}
 				} else {
-					console.error('Unexpected error:', err);
-					// 예상치 못한 오류에 대한 처리
-					Swal.fire({
-						title: '오류가 발생했습니다',
-						text: '잠시 후 다시 시도해주세요',
-						icon: 'error'
-					});
+					// console.error('Unexpected error:', err);
+					// // 예상치 못한 오류에 대한 처리
+					// Swal.fire({
+					// 	title: '오류가 발생했습니다',
+					// 	text: '잠시 후 다시 시도해주세요',
+					// 	icon: 'error'
+					// });
 				}
 			});	
 
