@@ -127,6 +127,7 @@ const BoardList = ({ category }) => {
                         src={board.photoes}
                         alt="게시물 사진"
                         className="card-photo"
+                        style={{ width: '100%', height: 'auto', objectFit: 'contain' }} 
                       />
                       <div className="card-overlay-text">
                         {board.content}

@@ -179,6 +179,7 @@ export const removeUserFromTogetherChatRoom = createAsyncThunk(
                 await axios.put(`http://localhost:8889/api/togetherChatRooms/${roomId}/leave`, { userId });
                 dispatch(userRemovedFromChatRoom({ roomId, userId }));
             } else {    // 강퇴당한 경우
+                await axios.put(`http://localhost:8889/api/togetherChatRooms/${roomId}/leave`, { userId });
                 await axios.put(`http://localhost:8889/api/togetherChatRooms/${roomId}/kick`, { userId });
                 dispatch(userRemovedFromChatRoom({ roomId, userId }));
             }

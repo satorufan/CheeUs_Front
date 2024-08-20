@@ -7,7 +7,7 @@ import ToastEditor from '../toast/ToastEditor';
 import { addBoard, selectMaxId } from '../../store/BoardSlice';
 import { fetchUserProfile, selectUserProfile } from '../../store/ProfileSlice';
 import { AuthContext } from '../login/OAuth'; 
-import swal from 'sweetalert';
+import Swal from 'sweetalert2';
 import { jwtDecode } from "jwt-decode";
 import BoardDetailTop from '../board/BoardDetailTop';
 import { ref, deleteObject } from "firebase/storage";
@@ -36,14 +36,14 @@ const WriteFreeBoard = () => {
 
   useEffect(() => {
     if (!token) {
-        swal({
-            title: '로그인 후 이용해 주세요',
-            icon: 'warning',
-            button: '확인',
-            className: 'custom-swal-warning'
-        }).then(() => {
-            navigate(-1); // 이전 페이지로 이동
-        });
+      Swal.fire({
+        title: '로그인 후 이용해 주세요',
+        icon: 'warning',
+        confirmButtonText: '확인',
+        confirmButtonColor: '#48088A'
+      }).then(() => {
+        navigate(-1);
+      });
     }
 }, [token, navigate]);
 
@@ -95,33 +95,33 @@ const WriteFreeBoard = () => {
   };
 
   const onSubmitHandler = async () => {
-    if (title === '') return;
-
     const content = editorRef.current.getInstance().getMarkdown();
 
-    await deleteUnusedImages(content);
-    
-    const findMaxId = () => {
-      let maxId = 0;
-      boards.forEach(board => {
-        if (board.id > maxId) {
-          maxId = board.id;
-        }
+    if (title.trim() === '') {
+      Swal.fire({
+        title: '제목을 입력해주세요!',
+        icon: 'warning',
+        confirmButtonColor: '#48088A',
+        confirmButtonText: '확인',
       });
-      return maxId;
-    };
+      return;
+    }
 
-    const newId = findMaxId() + 1;
+    if (content.trim() === '') {
+      Swal.fire({
+        title: '내용을 입력해주세요!',
+        icon: 'warning',
+        confirmButtonColor: '#48088A',
+        confirmButtonText: '확인',
+      });
+      return;
+    }
 
-    // author_id와 author_name, nickname 설정
-    const authorId = decodedToken?.email;
-    const authorName = userProfile.name;
-    const nickname = userProfile.profile.nickname;
-    //console.log("붙었나? " + nickname);
+    await deleteUnusedImages(content);
 
     const newBoard = {
-      author_id: authorId,
-      nickname,
+      author_id: decodedToken?.email,
+      nickname: userProfile.profile.nickname,
       category: 1,
       title,
       content,
@@ -132,28 +132,30 @@ const WriteFreeBoard = () => {
       photoes: ''
     };
 
-    swal({
+    Swal.fire({
       title: "게시물을 제출하시겠습니까?",
       icon: "warning",
-      buttons: true,
-      dangerMode: true,
-    }).then((willSubmit) => {
-      if (willSubmit) {
-        // 콘솔에 제출된 정보 출력
-        // console.log('제출된 게시물 정보:', newBoard);
-
-        // 사용자가 확인 버튼을 누르면 게시물 제출
+      showCancelButton: true,
+      confirmButtonColor: 'black',
+      cancelButtonColor: 'grey',
+      confirmButtonText: '제출',
+      cancelButtonText: '취소'
+    }).then((result) => {
+      if (result.isConfirmed) {
         dispatch(addBoard(newBoard));
-
-        // 성공 메시지 표시
-        swal("게시물이 성공적으로 등록되었습니다!", {
-          icon: "success",
+        Swal.fire({
+          title: "게시물이 등록되었습니다!",
+          icon: 'success',
+          confirmButtonColor: 'black'
         }).then(() => {
           navigate('/board/freeboard');
         });
       } else {
-        // 사용자가 취소 버튼을 누르면 알림
-        swal("게시물 제출이 취소되었습니다.");
+        Swal.fire({
+          title: '게시물 수정이 취소되었습니다.',
+          icon: 'info',
+          confirmButtonColor: 'black'
+        });
       }
     });
   };

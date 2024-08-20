@@ -16,6 +16,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../login/OAuth';
 import Swal from 'sweetalert2';
+import '../signup/Signup.css';
+
 
 const availableTags = [
     '소주', '맥주', '양주', '막걸리', '칵테일', '하이볼', '차분하게', '신나게', '시끄럽게', '가성비 술집', '예쁜 술집'

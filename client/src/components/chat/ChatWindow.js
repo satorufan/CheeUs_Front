@@ -393,7 +393,7 @@ const ChatWindow = ({
             cancelButtonText: '취소'
         }).then((result) => {
             if (result.isConfirmed) {
-                dispatch(removeUserFromTogetherChatRoom({ roomId, userId, mode : 'kick' }))
+                dispatch(removeUserFromTogetherChatRoom({ roomId, userId, mode: 'kick' }))
                     .then(() => {
                         Swal.fire({
                             icon: 'success',

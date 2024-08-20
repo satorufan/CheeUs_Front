@@ -110,7 +110,6 @@ const handlePostClick = (id) => {
   } else {
     console.error("해당 ID를 가진 게시물을 찾을 수 없습니다.");
   }
-  console.log("데이터", dtPostData);
 };
   
 console.log("포스트",posts);

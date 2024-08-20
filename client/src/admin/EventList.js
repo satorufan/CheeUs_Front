@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from 'react'; // useEffect 추가
-import { List, Datagrid, TextField, EditButton, DeleteButton, SearchInput, Toolbar, SaveButton, DateInput, ImageInput, ImageField, useNotify } from 'react-admin';
-import { Edit, SimpleForm, TextInput, BooleanInput, RichTextField, DateField } from 'react-admin';
+import { List, Datagrid, TextField, EditButton, DeleteButton, SearchInput, Toolbar, SaveButton, DateInput } from 'react-admin';
+import { Edit, SimpleForm, TextInput, DateField } from 'react-admin';
 import { useParams } from 'react-router-dom'; // react-router-dom에서 useParams를 가져옵니다
 
 import { Create } from 'react-admin';
-import { useGetOne } from 'react-admin';
 import { FilterSidebar, ListActions } from './FilterSidebar';
-import { RichTextInput } from 'ra-input-rich-text';
 import BackButton from './custom/BackButton';
-import BooleanField from './BooleanField';
 import TuiEditorInput from './custom/TuiEditorInput';
 import axios from 'axios';
 
@@ -22,7 +19,6 @@ const eventFilters = [
     <TextInput label="title2" source="title2" defaultValue="" />,
     <TextInput label="content" source="content" defaultValue="" />,
     <TextInput label="writeday" source="writeday" defaultValue="" />,
-    <BooleanInput label="hidden" source="hidden" defaultValue="" />
 ];
 	
 export const EventList = (props) => (
@@ -34,7 +30,6 @@ export const EventList = (props) => (
             <TextField source="title" />
             <TextField source="title2" />
             <DateField source="writeday" />
-            <BooleanField source="hidden" />
             <EditButton />
             <DeleteButton />
         </Datagrid>
@@ -85,7 +80,6 @@ export const EventCreate = (props) => {
                 <TextInput source="title2" />
                 <TuiEditorInput source="content" category="eventboard" postId={postId} defaultValue="" />
                 <DateInput source="writeday" />
-                <BooleanInput source="hidden" label="Hidden" />
                 <SaveButton />
             </SimpleForm>
             <BackButton />
@@ -106,7 +100,6 @@ export const EventEdit = (props) => {
                 <TextInput source="title2" />
                 <TuiEditorInput source="content" category="eventboard" postId={id} defaultValue="" />
                 <DateInput source="writeday" />
-                <BooleanInput source="hidden" label="Hidden" />
                 <SaveButton />
             </SimpleForm>
             <BackButton />

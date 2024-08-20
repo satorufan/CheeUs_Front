@@ -40,6 +40,10 @@
     flex: 1 1 calc(40% - 10px);
     margin-left: 10px;
     margin-bottom: 20px;
+    justify-content: center;
+    text-align: center;
+    justify-items: center;
+    font-size: 1.5rem;
 }
 
 .shortform-videoPreviewContainer {

@@ -53,7 +53,7 @@ function MagazineTop() {
       case '/magazine/recommend':
         return '이주의 술집추천';
       default:
-        return 'Chee Us 메거진';
+        return 'Chee Us 매거진';
     }
   };
 
