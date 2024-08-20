@@ -106,10 +106,8 @@ const BoardList = ({ category }) => {
         <div className="freeboard-card-container">
           {arraysEqualAsSets(Object.keys(authors), perPageAuthors) ? currentBoards.map((board) => {
 
-            // Remove image markdown from content
             const contentWithoutImages = board.content.replace(/!\[.*?\]\(https:\/\/[^\s]+\)/g, '');
 
-            // Extract thumbnail from content
             const thumbnailMatch = board.content.match(/!\[.*?\]\((https:\/\/[^\s]+)\)/);
             const thumbnail = thumbnailMatch ? thumbnailMatch[1] : null;
 
