@@ -186,7 +186,13 @@
 - 테스트 및 배포 : 2024-08-13 ~ 2024-08-22
 
 ## 6. 데모 영상 및 페이지별 기능
+### [데모영상 바로가기]
+#### 일반유저
+[![Video Label](http://img.youtube.com/vi/VHh2DHvB9l8/0.jpg)](https://youtu.be/VHh2DHvB9l8)
 
+#### 어드민
+
+[![Video Label](http://img.youtube.com/vi/xdaZuTFELiU/0.jpg)](https://youtu.be/xdaZuTFELiU)
 
 ### [초기화면]
 - 메인페이지
