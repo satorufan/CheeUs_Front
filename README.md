@@ -187,12 +187,21 @@
 
 ## 6. 데모 영상 및 페이지별 기능
 ### [데모영상 바로가기]
-#### 일반유저
-[![Video Label](http://img.youtube.com/vi/VHh2DHvB9l8/0.jpg)](https://youtu.be/VHh2DHvB9l8)
+<p align="center"><strong>일반 유저</strong></p>
 
-#### 어드민
+<p align="center">
+    <a href="https://youtu.be/VHh2DHvB9l8">
+        <img src="http://img.youtube.com/vi/VHh2DHvB9l8/0.jpg" alt="Video Label">
+    </a>
+</p>
 
-[![Video Label](http://img.youtube.com/vi/xdaZuTFELiU/0.jpg)](https://youtu.be/xdaZuTFELiU)
+<p align="center"><strong>Admin</strong></p>
+
+<p align="center">
+    <a href="https://youtu.be/xdaZuTFELiU">
+        <img src="http://img.youtube.com/vi/xdaZuTFELiU/0.jpg" alt="Video Label">
+    </a>
+</p>
 
 ### [초기화면]
 - 메인페이지
